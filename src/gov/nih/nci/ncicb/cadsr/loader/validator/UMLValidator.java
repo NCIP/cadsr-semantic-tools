@@ -25,7 +25,8 @@ public class UMLValidator implements Validator {
     
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     List ocs = (List)elements.getElements(oc.getClass());
-    for(ObjectClass o : ocs) {
+    for(Iterator it = ocs.iterator(); it.hasNext(); ) {
+      ObjectClass o = (ObjectClass)it.next();
       if(o.getConcept().getPreferredName() == null) {
         errors.add(new ValidationError(SEVERITY_ERROR, "Class: " + o.getLongName() + " has no concept code."));
       }
@@ -33,7 +34,8 @@ public class UMLValidator implements Validator {
 
     Property prop = DomainObjectFactory.newProperty();
     List props = elements.getElements(prop.getClass());
-    for(Property o : props) {
+    for(Iterator it = props.iterator(); it.hasNext(); ) {
+      ObjectClass o = (Property)it.next();
 //       if(o.getConcept().getPreferredName() == null) {
 //         errors.add(new ValidationError(SEVERITY_ERROR, "Attribute: " + o.getLongName() + " has no concept code."));
 //       }
