@@ -49,6 +49,7 @@ public class UMLDefaults {
   private Map params = new HashMap();
 
   private Map packageFilter = new HashMap();
+  private String defaultPackage = null;
 
   private UMLDefaults() {
   }
@@ -137,6 +138,8 @@ public class UMLDefaults {
         if(ind > 0) {
           alias = s.substring(1, ind).trim();
           pkg = s.substring(ind+1).trim();
+          if((pkg.length() == 0) && (pkgs.length == 1)) 
+            defaultPackage = alias;
         } else {
           alias = pkg = s;
         }
@@ -300,6 +303,15 @@ public class UMLDefaults {
    */
   public Map getPackageFilter() {
     return packageFilter;
+  }
+
+  public String getPackageDisplay(String packageName) {
+    if(packageFilter.containsKey(packageName))
+      return (String)packageFilter.get(packageName);
+    else if(defaultPackage != null)
+      return defaultPackage;
+    else
+      return packageName;
   }
 
 }

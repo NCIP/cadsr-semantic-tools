@@ -40,7 +40,7 @@ public class PropertyPersister extends UMLPersister {
 	  prop.setPreferredDefinition(prop.getConcept().getPreferredDefinition());
 
 	  prop.setVersion(new Float(1.0f));
-	  prop.setWorkflowStatus(defaults.getWorkflowStatus());
+	  prop.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
 	  prop.setAudit(defaults.getAudit());
 
           logger.debug("property: " + prop.getLongName());

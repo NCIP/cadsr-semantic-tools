@@ -54,7 +54,7 @@ public class ObjectClassPersister extends UMLPersister {
 	  oc.setPreferredName(oc.getLongName());
 
 	  oc.setVersion(new Float(1.0f));
-	  oc.setWorkflowStatus(defaults.getWorkflowStatus());
+	  oc.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
 	  oc.setAudit(defaults.getAudit());
 
 	  oc.setId(objectClassDAO.create(oc));

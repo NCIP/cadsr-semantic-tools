@@ -12,6 +12,7 @@ import java.util.*;
 
 public class PackagePersister extends UMLPersister {
 
+  protected static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
   
   private static Logger logger = Logger.getLogger(PackagePersister.class.getName());
 
@@ -32,6 +33,7 @@ public class PackagePersister extends UMLPersister {
 	pkg = (ClassificationSchemeItem) it.next();
 	pkg.setAudit(defaults.getAudit());
 	pkg.setType(CSI_PACKAGE_TYPE);
+        pkg.setName(defaults.getPackageDisplay(pkg.getComments()));
 
 	// See if it already exist in DB
 	List l = classificationSchemeItemDAO.find(pkg);

@@ -28,7 +28,6 @@ public class UMLPersister implements Persister {
   protected static ClassSchemeClassSchemeItemDAO classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
   protected static ConceptDAO conceptDAO = DAOAccessor.getConceptDAO();
 
-  protected static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
   protected ElementsLists elements = null;
 
   private Map valueDomains = new HashMap();
