@@ -54,17 +54,7 @@ public class ClassNode extends AbstractUMLNode
       } 
       else
         setIcon(DEFAULT_ICON);
-//      else
-//      {
-//        this.setIcon(REVIEWED_ICON);
-//        if() 
-//        {
-//          
-//        } else 
-//        {
-//          
-//        }
-//      }
+
       
   }
   
