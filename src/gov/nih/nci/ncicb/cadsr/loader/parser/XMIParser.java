@@ -1,6 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.parser;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
+import gov.nih.nci.ncicb.cadsr.loader.UMLDefaults;
 
 import org.apache.log4j.Logger;
 
@@ -17,7 +18,6 @@ import uml.MdrModelManagerFactoryImpl;
 import java.io.*;
 
 import java.util.*;
-
 
 public class XMIParser implements Parser {
   private static final String TV_CONCEPT = "EVS_CONCEPT";
@@ -73,6 +73,8 @@ public class XMIParser implements Parser {
   }
 
   private void doPackage(UmlPackage pack) {
+    UMLDefaults defaults = UMLDefaults.getInstance();
+
     if (packageName.length() == 0) {
       packageName = pack.getName();
     }
@@ -80,7 +82,13 @@ public class XMIParser implements Parser {
       packageName += ("." + pack.getName());
     }
 
-    ((UMLListener) listener).newPackage(new NewPackageEvent(packageName));
+    Map packageFilter = defaults.getPackageFilter();
+
+    if((packageFilter.size() == 0) || (packageFilter.containsKey(packageName))) {
+      ((UMLListener) listener).newPackage(new NewPackageEvent(packageName));
+    } else {
+      logger.debug("Skipping package: " + packageName);
+    }
 
     Iterator it = pack.getOwnedElement().iterator();
 
@@ -116,6 +124,7 @@ public class XMIParser implements Parser {
   }
 
   private void doClass(UmlClass clazz) {
+    UMLDefaults defaults = UMLDefaults.getInstance();
     String pName = clazz.getNamespace().getName();
 
     className = clazz.getName();
@@ -133,7 +142,13 @@ public class XMIParser implements Parser {
       event.setConceptCode(tv.getValue());
     }
 
-    listener.newClass(event);
+    Map packageFilter = defaults.getPackageFilter();
+
+    if((packageFilter.size() == 0) || (packageFilter.containsKey(pName))) {
+      listener.newClass(event);
+    } else {
+      logger.debug("Class : " + className + " filtered by package");
+    }
 
     for (Iterator it = clazz.getFeature().iterator(); it.hasNext();) {
       Object o = it.next();
