@@ -186,10 +186,13 @@ public class UMLDefaultHandler implements UMLHandler {
     List ocs = elements.getElements(oc.getClass());
     logger.debug("direction: " + event.getDirection());
 
+    boolean aDone = false, 
+      bDone = false;
+
     for(Iterator it = ocs.iterator(); it.hasNext(); ) {
       ObjectClass o = (ObjectClass) it.next();
       
-      if (o.getLongName().equals(event.getAClassName())) {
+      if (!aDone && (o.getLongName().equals(event.getAClassName()))) {
         if (event.getDirection().equals("B")) {
           ocr.setSource(o);
           ocr.setSourceRole(event.getARole());
@@ -201,7 +204,9 @@ public class UMLDefaultHandler implements UMLHandler {
           ocr.setTargetLowCardinality(event.getALowCardinality());
           ocr.setTargetHighCardinality(event.getAHighCardinality());
         }
-      } else if (o.getLongName().equals(event.getBClassName())) {
+        aDone = true;
+      }
+      if (!bDone && (o.getLongName().equals(event.getBClassName()))) {
         if (event.getDirection().equals("B")) {
           ocr.setTarget(o);
           ocr.setTargetRole(event.getBRole());
@@ -213,6 +218,7 @@ public class UMLDefaultHandler implements UMLHandler {
           ocr.setSourceLowCardinality(event.getBLowCardinality());
           ocr.setSourceHighCardinality(event.getBHighCardinality());
         }
+        bDone = true;
       }
     }
 
@@ -224,6 +230,13 @@ public class UMLDefaultHandler implements UMLHandler {
 
     ocr.setLongName(event.getRoleName());
     ocr.setType(ObjectClassRelationship.TYPE_HAS);
+
+    if(!aDone)
+      logger.debug("!aDone: " + event.getAClassName() + " -- " + event.getBClassName());
+
+    if(!bDone) 
+      logger.debug("!bDone: " + event.getAClassName() + " -- " + event.getBClassName());
+
     elements.addElement(ocr);
 
   }
