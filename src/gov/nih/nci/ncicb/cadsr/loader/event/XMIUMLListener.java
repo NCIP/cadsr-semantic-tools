@@ -29,15 +29,18 @@ public class XMIUMLListener implements UMLListener {
   public void newClass(NewClassEvent event) {
     logger.debug("Class: " + event.getName());
     
-    String conceptCode = event.getConceptCode();
+    Concept concept = newConcept(event);
     
-    if (conceptCode == null) {
-      logger.warn("Class: " + event.getName() + " has no concept code.");
-    } else {
-      logger.debug("tagged value: " + conceptCode);
-    }
+//     if (conceptCode == null) {
+//       logger.warn("Class: " + event.getName() + " has no concept code.");
+//     } else {
+//       Concept concept = DomainObjectFactory.newConcept();
+//       concept.setPublicId(new Long(conceptCode));
+//       logger.debug("Concept Code: " + conceptCode);
+//     }
 
     ObjectClass oc = DomainObjectFactory.newObjectClass();
+    oc.setConcept(concept);
     oc.setLongName(event.getName());
     elements.addElement(oc);
 
@@ -198,5 +201,23 @@ public class XMIUMLListener implements UMLListener {
     logger.debug("-- " + ocr.getSource().getLongName());
     logger.debug("Target: ");
     logger.debug("-- " + ocr.getTarget().getLongName());
+  }
+
+  private Concept newConcept(NewConceptualEvent event) {
+    Concept concept = DomainObjectFactory.newConcept();
+
+    if(event.getNciConceptCode() != null) {
+      concept.setPreferredName(event.getNciConceptCode());
+      concept.setPreferredDefinition(event.getNciConceptDefinition());
+    } else {
+      concept.setPreferredName(event.getConceptCode());
+      concept.setPreferredDefinition(event.getConceptDefinition());
+    }
+    concept.setDefinitionSource(event.getConceptSource());
+    concept.setLongName(event.getConceptPreferredName());
+
+    elements.addElement(concept);
+    return concept;
+    
   }
 }

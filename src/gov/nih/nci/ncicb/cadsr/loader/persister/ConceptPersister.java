@@ -28,8 +28,8 @@ public class ConceptPersister extends UMLPersister {
       for(Concept c : cons) {
         con.setPublicId(c.getPublicId());
         List l = conceptDAO.find(con);
-        if(l == 0) { // concept does not exist: create it
-          
+        if(l.size() == 0) { // concept does not exist: create it
+          c.setId(conceptDAO.create(c));
         } else { // concept exist: See if we need to add alternate def.
           
         }

@@ -19,7 +19,7 @@ import java.io.*;
 
 import java.util.*;
 
-import static gov.nih.nci.ncicb.cadsr.loader.event.ConceptualEvent.*;
+import static gov.nih.nci.ncicb.cadsr.loader.event.NewConceptualEvent.*;
 
 public class XMIParser implements Parser {
   private static final String EA_CONTAINMENT = "containment";
@@ -338,7 +338,7 @@ public class XMIParser implements Parser {
     }
   }
 
-  private void setConceptInfo(ModelElement elt, ConceptualEvent event) {
+  private void setConceptInfo(ModelElement elt, NewConceptualEvent event) {
 
     TaggedValue tv = mgr.getTaggedValue(elt, TV_CONCEPT_CODE);
     if (tv != null) {

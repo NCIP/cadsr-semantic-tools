@@ -95,6 +95,7 @@ public class UMLPersister implements Persister {
   public void persist() throws PersisterException {
 
     new PackagePersister(elements).persist();
+    new ConceptPersister(elements).persist();
     new PropertyPersister(elements).persist();
     new ObjectClassPersister(elements).persist();
     new DECPersister(elements).persist();

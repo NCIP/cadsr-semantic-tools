@@ -98,10 +98,10 @@ public class UMLLoader {
 
     validator.validate();
 
-//       Persister persister = new UMLPersister(elements);
-//       persister.setParameter("projectName", projectName);
-//       persister.setParameter("username", username);
-//       persister.persist();
+    Persister persister = new UMLPersister(elements);
+    persister.setParameter("projectName", projectName);
+    persister.setParameter("username", username);
+    persister.persist();
 
   }
 
