@@ -237,7 +237,11 @@ public class XMIParser implements Parser {
     NewAttributeEvent event = new NewAttributeEvent(att.getName().trim());
     event.setClassName(className);
     event.setType(att.getType().getName());
-    
+
+    TaggedValue tv = UML13Utils.getTaggedValue(att, NewConceptualEvent.TV_DOCUMENTATION);
+    if(tv != null)
+      event.setDescription(tv.getValue());
+
     setConceptInfo(att, event, NewConceptEvent.TYPE_PROPERTY);
 
     listener.newAttribute(event);

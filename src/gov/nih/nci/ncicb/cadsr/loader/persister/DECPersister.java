@@ -43,7 +43,6 @@ public class DECPersister extends UMLPersister {
         
         String newName = dec.getLongName();
 
-
 	logger.debug("dec name: " + dec.getLongName());
         logger.debug("alt Name: " + newName);
 
@@ -106,8 +105,11 @@ public class DECPersister extends UMLPersister {
 
         // is definition the same?
         // if not, then add alternate Def
+        
         if((newDef.length() > 0) && !newDef.equals(newDec.getPreferredDefinition())) {
-          addAlternateDefinition(newDec, newDef, Definition.TYPE_UML, getPackageName(dec));
+          System.out.println("Adding Alt Def");
+          addAlternateDefinition(newDec, newDef, Definition.TYPE_UML, packageName
+);
         }
 
         addAlternateName(newDec, newName, AlternateName.TYPE_UML_DEC, packageName);

@@ -39,6 +39,8 @@ public class DEPersister extends UMLPersister {
 
 	  de.setValueDomain(lookupValueDomain(de.getValueDomain()));
           newDe.setValueDomain(de.getValueDomain());
+
+          String newDef = de.getPreferredDefinition();
           
 	  List l = dataElementDAO.find(newDe);
 
@@ -74,8 +76,13 @@ public class DEPersister extends UMLPersister {
               addAlternateName(de, defaults.getContext().getName(), AlternateName.TYPE_USED_BY, null);
             }
 
+            if((newDef.length() > 0) && !newDef.equals(de.getPreferredDefinition())) {
+              System.out.println("Adding Alt Def");
+              addAlternateDefinition(de, newDef, Definition.TYPE_UML, packageName);
+            }
 
 	  }
+
 
 	  LogUtil.logAc(de, logger);
 	  logger.info(PropertyAccessor.

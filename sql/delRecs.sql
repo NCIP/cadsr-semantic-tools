@@ -54,7 +54,10 @@ where upper(created_by) = 'LADINO'
 UNION 
 select de_idseq from data_elements
 where upper(created_by) = 'LADINO'
-);
+UNION 
+select con_idseq from concepts_ext
+where upper(created_by) = 'LADINO')
+;
 
 
 prompt deleting AC_CSI
