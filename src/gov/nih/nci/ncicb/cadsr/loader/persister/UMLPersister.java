@@ -99,8 +99,6 @@ public class UMLPersister implements Persister {
 
     this.elements = list;
 
-
-
   }
 
   public void setParameter(String key, Object value) {
@@ -165,7 +163,7 @@ public class UMLPersister implements Persister {
 	  packageCsCsi.setCsi(pkg);
 	  packageCsCsi.setLabel(pkg.getName());
 	  packageCsCsi.setAudit(audit);
-
+	  
 	  classificationSchemeDAO.addClassificationSchemeItem(projectCs, packageCsCsi);
 	  logger.info("Added Package CS_CSI");
 	}
