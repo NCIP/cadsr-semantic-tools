@@ -6,9 +6,12 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 public class XMIUMLListener implements UMLListener {
 
   private ElementsLists elements;
+  private Logger logger = Logger.getLogger(XMIUMLListener.class.getName());
 
   public XMIUMLListener(ElementsLists elements) {
     this.elements = elements;
@@ -16,19 +19,19 @@ public class XMIUMLListener implements UMLListener {
 
 
   public void newPackage(NewPackageEvent event) {
-    System.out.println("Package: " + event.getName());
+    logger.debug("Package: " + event.getName());
   }
   public void newOperation(NewOperationEvent event) {
-    System.out.println("Operation: " + event.getClassName() + "." + event.getName());
+    logger.debug("Operation: " + event.getClassName() + "." + event.getName());
   }
   public void newClass(NewClassEvent event) {
-//     System.out.println("Class: " + event.getName());
+//     logger.debug("Class: " + event.getName());
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     oc.setLongName(event.getName());
     elements.addElement(oc);
   }
   public void newAttribute(NewAttributeEvent event) {
-    System.out.println("Attribute: " + event.getClassName() + "." + event.getName());
+    logger.debug("Attribute: " + event.getClassName() + "." + event.getName());
 
     Property prop = DomainObjectFactory.newProperty();
 //     prop.setPreferredName(event.getName());
@@ -64,13 +67,13 @@ public class XMIUMLListener implements UMLListener {
     
   }
   public void newInterface(NewInterfaceEvent event) {
-    System.out.println("Interface: " + event.getName());
+    logger.debug("Interface: " + event.getName());
   }
   public void newStereotype(NewStereotypeEvent event) {
-    System.out.println("Stereotype: " + event.getName());
+    logger.debug("Stereotype: " + event.getName());
   }
   public void newDataType(NewDataTypeEvent event) {
-    System.out.println("DataType: " + event.getName());
+    logger.debug("DataType: " + event.getName());
   }
 
 

@@ -4,14 +4,14 @@
   <property name="src.dir" value="src"/>
   <property name="class.dir" value="./classes"/>
   <property name="lib.dir" value="./lib"/>
-  <property name="config.dir" value="config/property"/>
+  <property name="config.dir" value="properties"/>
 
 
   <path id="proj.class.path">
+    <pathelement location="${class.dir}"/>
     <fileset dir="${lib.dir}">
       <include name="**/*.jar"/>
     </fileset>
-    <pathelement location="${class.dir}"/>
   </path>
 
   <target name="clean">
@@ -41,17 +41,13 @@
   </target>
 
 
-  <target name="run" depends="compile">
+  <target name="run" depends="prepare">
     <java classname="gov.nih.nci.ncicb.cadsr.loader.UMLLoader" classpathref="proj.class.path" 
       fork="yes" 
       maxmemory="512m"
       >
       <arg value="${dir}"/>
-      <arg value="${contextName}"/>
       <arg value="${projectName}"/>
-      <arg value="${versionNum}"/>
-      <arg value="${workflowStatus}"/>
-      <arg value="${conceptualDomain}"/>
     </java>
   </target>
 

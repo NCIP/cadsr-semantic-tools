@@ -18,7 +18,11 @@ import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.parser.*;
 import gov.nih.nci.ncicb.cadsr.loader.persister.*;
 
+import org.apache.log4j.Logger;
+
 public class UMLLoader {
+
+  private static Logger logger = Logger.getLogger(ElementsLists.class.getName());
 
   public static void main(String[] args) throws Exception {
 
@@ -27,33 +31,30 @@ public class UMLLoader {
 	  return name.endsWith(".xmi");
 	}
       });
-
-
-    String contextName = args[1];
-    String projectName = args[2];
-    String version = args[3];
-    String workflowStatus = args[4];
-    String conceptualDomain = args[5];
+    
+    
+    
+//     String contextName = args[1];
+    String projectName = args[1];
+//     String version = args[3];
+//     String workflowStatus = args[4];
+//     String conceptualDomain = args[5];
 
     
-    System.out.println(filenames.length + " files to process");
+    logger.info(filenames.length + " files to process");
     
     ElementsLists elements = new ElementsLists();
     UMLListener listener = new XMIUMLListener(elements);
 
     for(int i=0; i<filenames.length; i++) {
-      System.out.println("\n\n++++++++++++ Starting file: " + filenames[i]);
+      logger.info("Starting file: " + filenames[i]);
 
       XMIParser  parser = new XMIParser();
       parser.setListener(listener);
       parser.parse(args[0] + "/" + filenames[i]);
 
       Persister persister = new UMLPersister(elements);
-      persister.setParameter("contextName", contextName);
       persister.setParameter("projectName", projectName);
-      persister.setParameter("version", version);
-      persister.setParameter("workflowStatus", workflowStatus);
-      persister.setParameter("conceptualDomain", args[5]);
       persister.persist();
       
     }

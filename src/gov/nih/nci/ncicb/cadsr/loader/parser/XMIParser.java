@@ -16,6 +16,8 @@ import java.io.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
+import org.apache.log4j.Logger;
+
 public class XMIParser implements Parser {
 
   private UMLListener listener;
@@ -25,6 +27,8 @@ public class XMIParser implements Parser {
 
   private String packageName="";
   private String className = "";
+
+  private Logger logger = Logger.getLogger(XMIParser.class.getName());
 
   public void setListener(LoaderListener listener) {
     this.listener = (UMLListener)listener;
@@ -48,11 +52,11 @@ public class XMIParser implements Parser {
 	} else if(o instanceof UmlAssociation) {
 	  doAssociation((UmlAssociation)o);
 	} else {
-	  System.out.println("Root Element: " + o.getClass());
+	  logger.debug("Root Element: " + o.getClass());
 	}
       }
     } catch (Exception e){
-      System.out.println("Could not parse: " + filename);
+      logger.fatal("Could not parse: " + filename);
       e.printStackTrace();
     } // end of try-catch
   }
@@ -84,7 +88,7 @@ public class XMIParser implements Parser {
       } else if(o instanceof Interface) {
 	doInterface((Interface)o);
       } else {
-	System.out.println("Package Child: " + o.getClass());
+	logger.debug("Package Child: " + o.getClass());
       }
     }
     
@@ -93,7 +97,7 @@ public class XMIParser implements Parser {
   
   private void doClass(UmlClass clazz) {
     className = packageName + "." + clazz.getName();
-//     System.out.println("Class: " + className);
+//     logger.debug("Class: " + className);
     
     listener.newClass(new NewClassEvent(className));
 
@@ -105,7 +109,7 @@ public class XMIParser implements Parser {
       } else if(o instanceof Operation) {
 	doOperation((Operation)o);
       } else {
-	System.out.println("Class child: " + o.getClass());
+	logger.debug("Class child: " + o.getClass());
       }
     }
     className = "";
@@ -113,7 +117,7 @@ public class XMIParser implements Parser {
 
   private void doInterface(Interface interf) {
     className = packageName + "." + interf.getName();
-//     System.out.println("Class: " + className);
+//     logger.debug("Class: " + className);
     
     listener.newInterface(new NewInterfaceEvent(className));
 
@@ -125,7 +129,7 @@ public class XMIParser implements Parser {
       } else if(o instanceof Operation) {
 	doOperation((Operation)o);
       } else {
-	System.out.println("Class child: " + o.getClass());
+	logger.debug("Class child: " + o.getClass());
       }
     }
     className = "";
@@ -151,24 +155,24 @@ public class XMIParser implements Parser {
   }
 
   private void doStereotype(Stereotype st) {
-    System.out.println("--- Stereotype " + st.getName());
+    logger.debug("--- Stereotype " + st.getName());
   }
 
   private void doAssociation(UmlAssociation assoc) {
-    System.out.println("-- Association: " + assoc.getName());
+    logger.debug("-- Association: " + assoc.getName());
     Iterator it = assoc.getConnection().iterator();
     while(it.hasNext()) {
       Object o = it.next();
       if(o instanceof AssociationEnd) {
 	AssociationEnd end = (AssociationEnd)o;
 	Classifier classif = end.getType();
-	System.out.println("----" + classif.getName());
+	logger.debug("----" + classif.getName());
       }
     }
   }
 
   private void doComponent(Component comp) {
-    System.out.println("--- Component: " + comp.getName());
+    logger.debug("--- Component: " + comp.getName());
   }
 
 
