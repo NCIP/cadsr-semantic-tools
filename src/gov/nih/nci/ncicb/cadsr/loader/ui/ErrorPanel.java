@@ -78,11 +78,13 @@ public class ErrorPanel extends JPanel
 
   private void firstRun(UMLNode node) {
     Set<UMLNode> children = node.getChildren();
+    
+    Set<ValidationNode> valNodes = node.getValidationNodes();
+
+    for(ValidationNode valNode : valNodes)
+      navTree(valNode);
 
     for(UMLNode child : children) {
-      if(child instanceof ValidationNode) {
-	navTree(child);
-      }
       firstRun(child);
     }
   }
@@ -105,12 +107,20 @@ public class ErrorPanel extends JPanel
     UMLNode umlNode = (UMLNode)node.getUserObject();
 
     Set<UMLNode> children = umlNode.getChildren();
+    Set<ValidationNode> valNodes = umlNode.getValidationNodes();
+
+    for(ValidationNode valNode : valNodes) {
+      DefaultMutableTreeNode newNode = 
+        new DefaultMutableTreeNode(valNode);
+
+      	node.add(newNode);
+    }
     for(UMLNode child : children) {
       DefaultMutableTreeNode newNode = 
         new DefaultMutableTreeNode(child);
 
       if(displaySet.contains(child))
-	node.add(newNode);
+      	node.add(newNode);
 
       doNode(newNode);
     }
