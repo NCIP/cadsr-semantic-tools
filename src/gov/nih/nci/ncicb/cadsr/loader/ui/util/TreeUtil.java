@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui.util;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
 import java.util.Enumeration;
 import javax.swing.tree.*;
 import javax.swing.*;
@@ -7,20 +8,30 @@ import javax.swing.*;
 public class TreeUtil 
 {
 
-  public static void expandAll(JTree tree, TreePath parent) 
+  public static void expandAll(JTree tree, TreeNode root) 
   {
-    TreeNode node = (TreeNode) parent.getLastPathComponent();
-    //Traverse all children
-    if(node.getChildCount() >= 0)
+    //Create TreePath from the root 
+    TreePath parent = new TreePath(root);
+    
+    //Traverse if the root has any children
+    if(root.getChildCount() > 0)
     {
-      for(Enumeration e=node.children(); e.hasMoreElements();) 
+      //Traverse through the package nodes and expand them
+      for(Enumeration e=root.children(); e.hasMoreElements();) 
       {
-        TreeNode n = (TreeNode) e.nextElement();
-        TreePath path = parent.pathByAddingChild(n);
-        expandAll(tree,path);
-      }
+        TreeNode packageNode = (TreeNode) e.nextElement();
+        TreePath path = parent.pathByAddingChild(packageNode);
+        tree.expandPath(path);
+
+        //Traverse through the class nodes and expand them
+        for(Enumeration f=packageNode.children(); f.hasMoreElements();)
+        {
+          TreeNode classNode = (TreeNode) f.nextElement();
+          TreePath path2 = path.pathByAddingChild(classNode);
+          tree.expandPath(path2);
+        }        
+      }      
     }
     
-    tree.expandPath(parent);
   }
 }
