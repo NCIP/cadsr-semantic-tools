@@ -65,6 +65,9 @@ public abstract class AbstractUMLNode implements UMLNode {
     this.parent = parent;
   }
   
+  public void setIcon(Icon newIcon) {
+    icon = newIcon;
+  }
   public Object getUserObject() {
     return userObject;
   }
