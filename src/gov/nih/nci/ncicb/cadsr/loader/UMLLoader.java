@@ -86,9 +86,13 @@ public class UMLLoader {
 	}
       });
 
-    if(filenames == null)
+    if(filenames == null) 
       filenames = new String[0];
     
+    if(filenames.length == 0) {
+      logger.info("no.files");
+    }
+
     LoginContext lc = new LoginContext("UML_Loader", new ConsoleCallbackHandler());
 
     String username = null;
