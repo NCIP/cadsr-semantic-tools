@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="Excel Loader" default="compile" basedir=".">
+  <!--
+       Properties to setr:
+       - projectName
+       - projectVersion
+       - dir
+       -->
   <property file="build.properties"/>
   <property name="src.dir" value="src"/>
   <property name="class.dir" value="./classes"/>
@@ -40,11 +46,26 @@
 
   <target name="clean">
     <delete dir="${class.dir}" failonerror="true" />
-    <mkdir dir="${class.dir}"/>
   </target>
 
+  <available file="${lib.dir}/cadsr-api.jar" property="available.cadsr"/>
+  <available file="build.properties" property="available.build.props"/>
+  <available file="input.properties" property="available.input.props"/>
 
-  <target name="compile">
+  <target name="fail1" unless="available.cadsr">
+    <fail message="missing cadsr-api jar, please build cadsr service layer first"/>
+  </target>
+
+  <target name="fail2" depends="fail1" unless="available.build.props">
+    <fail message="missing build.properties, please create one first first"/>
+  </target>
+
+  <target name="fail3" depends="fail2" unless="available.input.props">
+    <fail message="missing input.properties, please create one first first (username and password)"/>
+  </target>
+
+  <target name="compile" depends="fail3">
+    <mkdir dir="${class.dir}"/>
     <javac
       destdir="${class.dir}"
       debug="on"

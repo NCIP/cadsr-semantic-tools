@@ -85,6 +85,9 @@ public class UMLLoader {
 	  return name.endsWith(".xmi");
 	}
       });
+
+    if(filenames == null)
+      filenames = new String[0];
     
     LoginContext lc = new LoginContext("UML_Loader", new ConsoleCallbackHandler());
 

@@ -22,6 +22,9 @@ public class AssociationValidator implements Validator {
     List errors = new ArrayList();
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
     List ocrs = elements.getElements(ocr.getClass());
+    if(ocrs == null) {
+      return errors;
+    }
     for(Iterator it = ocrs.iterator(); it.hasNext(); ) {
       ocr = (ObjectClassRelationship)it.next();
       if(ocr.getSource() == null || ocr.getTarget() == null) {
