@@ -57,7 +57,8 @@ public class UMLDefaultHandler implements UMLHandler {
     ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
     String csiName = null;
     String pName = event.getPackageName();
-    csi.setComments(pName);
+//     csi.setComments(pName);
+    csi.setName(pName);
     
     if (!packageList.contains(pName)) {
       elements.addElement(csi);

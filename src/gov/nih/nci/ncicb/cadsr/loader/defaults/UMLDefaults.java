@@ -39,8 +39,6 @@ public class UMLDefaults {
   private Context context;
   private ConceptualDomain conceptualDomain;
   private ClassificationScheme projectCs;
-//   private ClassSchemeClassSchemeItem projectCsCsi;
-
   private Context mainContext;
 
   // default Audit holds username
@@ -80,7 +78,6 @@ public class UMLDefaults {
     this.projectVersion = projectVersion;
 
     LoaderDefault loaderDefault = new DBDefaultsLoader().loadDefaults(projectName, projectVersion);
-//     LoaderDefault loaderDefault = loaderDAO.findByName(projectName);
     
     if (loaderDefault == null) {
       throw new PersisterException(

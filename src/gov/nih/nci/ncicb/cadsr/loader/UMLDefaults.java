@@ -36,9 +36,7 @@ public class UMLDefaults {
   private Float version;
   private Context context;
   private ConceptualDomain conceptualDomain;
-  private ClassificationSchemeItem domainCsi;
   private ClassificationScheme projectCs;
-  private ClassSchemeClassSchemeItem projectCsCsi;
 
   // default Audit holds username
   private Audit audit;
@@ -170,23 +168,6 @@ public class UMLDefaults {
    * @exception PersisterException if an error occurs
    */
   public void initClassifications() throws PersisterException {
-    domainCsi = DomainObjectFactory.newClassificationSchemeItem();
-
-    // !!!! TODO
-    domainCsi.setName("Essai-Domain Model");
-
-    // !!!! TODO
-    domainCsi.setType("TEST");
-
-    List result = classificationSchemeItemDAO.find(domainCsi);
-
-    if (result.size() == 0) {
-      throw new PersisterException("Classification Scheme Item: " +
-				   domainCsi.getName() + " does not exist on DB.");
-    }
-
-    domainCsi = (ClassificationSchemeItem) result.get(0);
-
     projectCs = DomainObjectFactory.newClassificationScheme();
     projectCs.setLongName(projectName);
     projectCs.setVersion(new Float(projectVersion));
@@ -194,7 +175,7 @@ public class UMLDefaults {
 
     ArrayList eager = new ArrayList();
     eager.add(EagerConstants.CS_CSI);
-    result = classificationSchemeDAO.find(projectCs, eager);
+    List result = classificationSchemeDAO.find(projectCs, eager);
 
     if (result.size() == 0) { // need to add projectName CS
       projectCs.setPreferredName(projectName);
@@ -213,44 +194,10 @@ public class UMLDefaults {
       LogUtil.logAc(projectCs, logger);
       logger.info("-- Type: " + projectCs.getType());
 
-      projectCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
-      projectCsCsi.setCs(projectCs);
-      projectCsCsi.setCsi(domainCsi);
-      projectCsCsi.setLabel(projectName);
-      projectCsCsi.setAudit(audit);
-
-      classificationSchemeDAO.addClassificationSchemeItem(projectCs,
-							  projectCsCsi);
-      logger.info("Added Project CS_CSI: ");
-      logger.info("-- Label: " + projectCsCsi.getLabel());
     } else { // is domainCsi linked?
       logger.info("Project CS existed");
       projectCs = (ClassificationScheme) result.get(0);
 
-      List csCsis = projectCs.getCsCsis();
-      boolean found = false;
-
-      for (ListIterator it = csCsis.listIterator(); it.hasNext();) {
-	ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it.next();
-
-	if (csCsi.getCsi().getName().equals(domainCsi.getName())) {
-	  projectCsCsi = csCsi;
-	  found = true;
-	}
-      }
-
-      if (!found) {
-	logger.info(
-	  "Project CS was not linked to Domain CSI -- linking it now.");
-	projectCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
-	projectCsCsi.setCs(projectCs);
-	projectCsCsi.setCsi(domainCsi);
-	projectCsCsi.setLabel(projectName);
-	projectCsCsi.setAudit(audit);
-
-	classificationSchemeDAO.addClassificationSchemeItem(projectCs,
-							    projectCsCsi);
-      }
     }
   }
 
@@ -279,22 +226,10 @@ public class UMLDefaults {
     return conceptualDomain;
   }
   /**
-   * @return the domainCsi
-   */
-  public ClassificationSchemeItem getDomainCsi() {
-    return domainCsi;
-  }
-  /**
    * @return the project CS
    */
   public ClassificationScheme getProjectCs() {
     return projectCs;
-  }
-  /**
-   * @return the project CS_CSI
-   */
-  public ClassSchemeClassSchemeItem getProjectCsCsi() {
-    return projectCsCsi;
   }
   /**
    * @return default Audit object -- contains username.

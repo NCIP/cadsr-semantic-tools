@@ -11,7 +11,6 @@ import java.util.*;
 
 
 public class PackagePersister extends UMLPersister {
-
   
   private static Logger logger = Logger.getLogger(PackagePersister.class.getName());
 
@@ -22,17 +21,35 @@ public class PackagePersister extends UMLPersister {
 
   public void persist() {
     ClassificationSchemeItem pkg = DomainObjectFactory.newClassificationSchemeItem();
+
+    ClassificationSchemeItem subProject = DomainObjectFactory.newClassificationSchemeItem();
+
     List packages = (List) elements.getElements(pkg.getClass());
 
     Map packageCsCsis = defaults.getPackageCsCsis();
-
 
     if (packages != null) {
       for (ListIterator it = packages.listIterator(); it.hasNext();) {
 	pkg = (ClassificationSchemeItem) it.next();
 	pkg.setAudit(defaults.getAudit());
-	pkg.setType(CSI_PACKAGE_TYPE);
-        pkg.setName(defaults.getPackageDisplay(pkg.getComments()));
+	pkg.setType(ClassificationSchemeItem.TYPE_UML_PACKAGE);
+
+        subProject.setName(defaults.getPackageDisplay(pkg.getComments()));
+        // Verify is there is a sub project
+        if(!subProject.getName().equals(pkg.getName())) {
+          subProject.setAudit(defaults.getAudit());
+          subProject.setType(ClassificationSchemeItem.TYPE_UML_PROJECT
+);
+          // See if it already exist in DB
+          List l = classificationSchemeItemDAO.find(subProject);
+          
+          if (l.size() == 0) { // not in DB, create it.
+            subProject.setId(classificationSchemeItemDAO.create(subProject));
+          } else {
+            subProject = (ClassificationSchemeItem) l.get(0);
+          }
+        }
+        
 
 	// See if it already exist in DB
 	List l = classificationSchemeItemDAO.find(pkg);
@@ -43,19 +60,36 @@ public class PackagePersister extends UMLPersister {
 	  pkg = (ClassificationSchemeItem) l.get(0);
 	}
 
-	// link package CSI to project CS.
-	List csCsis = defaults.getProjectCs().getCsCsis();
-	boolean found = false;
-	ClassSchemeClassSchemeItem packageCsCsi = null;
+        ClassSchemeClassSchemeItem subCsCsi = null;
+        if(subProject.getId() != null) {
+          subCsCsi = linkCsiToCs(subProject, defaults.getProjectCs(), null);
+        }
 
+        ClassSchemeClassSchemeItem packageCsCsi = linkCsiToCs(pkg, defaults.getProjectCs(), subCsCsi);
+
+	// Put CS_CSI in cache so OCs can use it
+	packageCsCsis.put(pkg.getName(), packageCsCsi);
+
+        
+      }
+    }
+
+  }
+
+  private ClassSchemeClassSchemeItem linkCsiToCs(ClassificationSchemeItem csi, ClassificationScheme cs, ClassSchemeClassSchemeItem parent) {
+	List csCsis = cs.getCsCsis();
+	boolean found = false;
+	ClassSchemeClassSchemeItem newCsCsi = null;
 
         if(csCsis != null && csCsis.size() > 0) {
-          for (ListIterator it2 = csCsis.listIterator(); it2.hasNext();) {
-            ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it2.next();
+          for (ListIterator it = csCsis.listIterator(); it.hasNext();) {
+            ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it.next();
             
-            if (csCsi.getCsi().getType().equals(CSI_PACKAGE_TYPE) &&
-                csCsi.getCsi().getName().equals(pkg.getName())) {
-              packageCsCsi = csCsi;
+            if (csCsi.getCsi().getType().equals(csi.getType()) &&
+                csCsi.getCsi().getName().equals(csi.getName())) {
+              newCsCsi = csCsi;
+              if(parent != null) 
+                newCsCsi.setParent(parent);
               found = true;
             }
           }
@@ -64,25 +98,26 @@ public class PackagePersister extends UMLPersister {
 	if (!found) {
 	  logger.info(
             PropertyAccessor
-            .getProperty("link.package.to.project", pkg.getName()));
-          packageCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
-	  packageCsCsi.setCs(defaults.getProjectCs());
-	  packageCsCsi.setCsi(pkg);
-	  packageCsCsi.setLabel(pkg.getName());
-	  packageCsCsi.setAudit(defaults.getAudit());
+            .getProperty("link.package.to.project", csi.getName()));
+          newCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+	  newCsCsi.setCs(cs);
+	  newCsCsi.setCsi(csi);
+	  newCsCsi.setLabel(csi.getName());
+          if(newCsCsi.getLabel().length() > 30)
+            newCsCsi.setLabel(
+              newCsCsi.getLabel().substring(0, 29));
+	  newCsCsi.setAudit(defaults.getAudit());
+          if(parent != null) {
+            newCsCsi.setParent(parent);
+          }
+	  newCsCsi.setId(classificationSchemeDAO
+                         .addClassificationSchemeItem
+                         (cs, newCsCsi));
 
-	  packageCsCsi.setId(classificationSchemeDAO.addClassificationSchemeItem(defaults.getProjectCs(),
-                                                                                 packageCsCsi));
           defaults.refreshProjectCs();
 	  logger.info(PropertyAccessor.getProperty("added.package"));
 	}
-
-	// Put CS_CSI in cache so OCs can use it
-	packageCsCsis.put(pkg.getComments(), packageCsCsi);
-      }
-    }
-
+        return newCsCsi;
   }
-
 
 }
