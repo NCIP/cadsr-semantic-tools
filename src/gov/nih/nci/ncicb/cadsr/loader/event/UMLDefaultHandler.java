@@ -112,7 +112,6 @@ public class UMLDefaultHandler implements UMLHandler {
 
     DataElement de = DomainObjectFactory.newDataElement();
 
-    // !! TODO Verify format of type (java.lang.String or String?)
     de.setLongName(dec.getLongName() + event.getType());
     de.setPreferredDefinition(event.getDescription());
 
@@ -254,7 +253,7 @@ public class UMLDefaultHandler implements UMLHandler {
           className = className.substring(ind + 1);
           newDec.setLongName(className + ":" + propName);		
           DataElement newDe = DomainObjectFactory.newDataElement();
-          newDe.setDataElementConcept(dec);
+          newDe.setDataElementConcept(newDec);
           newDe.setValueDomain(de.getValueDomain());
           newDe.setLongName(newDec.getLongName() + de.getValueDomain().getPreferredName());
           newDe.setPreferredDefinition(de.getPreferredDefinition());
