@@ -28,6 +28,7 @@ public class UMLElementViewPanel extends JPanel
   implements ActionListener, KeyListener, ItemListener {
 
   private Concept[] concepts;
+  private ConceptUI[] conceptUIs;
 
   private boolean unsavedChanges = false;
 
@@ -115,7 +116,7 @@ public class UMLElementViewPanel extends JPanel
     JPanel gridPanel = new JPanel(new GridLayout(-1, 1));
     JScrollPane scrollPane = new JScrollPane(gridPanel);
 
-    ConceptUI[] conceptUIs = new ConceptUI[concepts.length];
+    conceptUIs = new ConceptUI[concepts.length];
     JPanel[] conceptPanels = new JPanel[concepts.length];
 
     for(int i = 0; i<concepts.length; i++) {
@@ -150,9 +151,10 @@ public class UMLElementViewPanel extends JPanel
       conceptUIs[i].code.addKeyListener(this);
       conceptUIs[i].name.addKeyListener(this);
       conceptUIs[i].defSource.addKeyListener(this);
+      
     }
 
-    
+    //System.out.println("Code is: " + conceptUIs[1]);
 
     addButton = new JButton("Add");
     deleteButton = new JButton("Remove");
@@ -181,6 +183,7 @@ public class UMLElementViewPanel extends JPanel
 
     saveButton.setEnabled(false);
 
+    setButtonState(reviewButton);
 //    GridBagLayout gridbag = new GridBagLayout();
     JPanel buttonPanel = new JPanel();
 //    GridBagConstraints c = new GridBagConstraints();
@@ -207,16 +210,35 @@ public class UMLElementViewPanel extends JPanel
     this.add(buttonPanel, BorderLayout.SOUTH);
 
   }
+  
+  private void setButtonState(AbstractButton button)
+  {
+  	for(int i=0; i < conceptUIs.length; i++)
+  	{
+  	  if(conceptUIs[i].code.getText().equals("")
+        | conceptUIs[i].name.getText().equals("")
+        | conceptUIs[i].defSource.getText().equals("")) 
+  	    button.setEnabled(false);
 
+  	  else
+  	    button.setEnabled(true);
+  	}
+  }
+  
   public void keyTyped(KeyEvent evt) {
-    System.out.println("typed");
+    
+    
+    setButtonState(reviewButton);
     saveButton.setEnabled(true);
   }
+
+
+
   public void keyPressed(KeyEvent evt) {
-    System.out.println("pressed");
+    
   }
   public void keyReleased(KeyEvent evt) {
-    System.out.println("released");
+    
   }
 
   
@@ -378,6 +400,7 @@ class ConceptUI {
     name.setText(concept.getLongName());
     def.setText(concept.getPreferredDefinition());
     defSource.setText(concept.getDefinitionSource());
+    
   }
 
 }
