@@ -39,11 +39,11 @@ public class FileSelectionPanel extends JPanel
     this.setLayout(new BorderLayout());
     
     JPanel infoPanel = new JPanel();
-    infoPanel.setLayout(new GridLayout(0, 1));
+    infoPanel.setLayout(new GridLayout(0, 2));
     
-    JLabel infoLabel = new JLabel("Please choose a file to parse");
-    infoPanel.add(infoLabel);
-    infoLabel = new JLabel("The file must be in XMI format");
+    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("xmi.jpg"))));
+
+    JLabel infoLabel = new JLabel("<html>Please choose a file to parse<br>The file must be in XMI format</html>");
     infoPanel.add(infoLabel);
     
     this.add(infoPanel, BorderLayout.NORTH);

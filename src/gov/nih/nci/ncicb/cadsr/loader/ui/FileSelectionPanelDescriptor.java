@@ -18,7 +18,7 @@ public class FileSelectionPanelDescriptor
   }
   
   public Object getNextPanelDescriptor() {
-    return SemanticConnectorPanelDescriptor.IDENTIFIER;
+    return ValidationPanelDescriptor.IDENTIFIER;
   }
   
   public Object getBackPanelDescriptor() {

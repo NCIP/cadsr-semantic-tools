@@ -52,6 +52,9 @@ public class UMLLoaderGUI
     WizardPanelDescriptor descriptor2 = new FileSelectionPanelDescriptor();
     wizard.registerWizardPanel(FileSelectionPanelDescriptor.IDENTIFIER, descriptor2);
 
+    WizardPanelDescriptor validationDesc = new ValidationPanelDescriptor();
+    wizard.registerWizardPanel(ValidationPanelDescriptor.IDENTIFIER, validationDesc);
+
     WizardPanelDescriptor descriptor3 = new SemanticConnectorPanelDescriptor();
     wizard.registerWizardPanel(SemanticConnectorPanelDescriptor.IDENTIFIER, descriptor3);
 

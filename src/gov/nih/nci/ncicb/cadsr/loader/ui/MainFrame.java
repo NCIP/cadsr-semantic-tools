@@ -175,15 +175,27 @@ public class MainFrame extends JFrame
       if((concepts.length > 0) && (concepts[0] == null))
         concepts = new Concept[0];
       
-      UMLElementViewPanel viewPanel = new UMLElementViewPanel(concepts);
 
-      
-      viewTabbedPane.addTab(node.getDisplay(), viewPanel);
-      viewTabbedPane.setSelectedComponent(viewPanel);
+      if((event.getInNewTab() == true) || (viewPanels.size() == 0)) {
+        UMLElementViewPanel viewPanel = new UMLElementViewPanel(concepts);
+        
+        
+        viewTabbedPane.addTab(node.getDisplay(), viewPanel);
+        viewTabbedPane.setSelectedComponent(viewPanel);
 
-      viewPanel.setName(node.getFullPath());
-      viewPanels.put(viewPanel.getName(), viewPanel);
-      
+        viewPanel.setName(node.getFullPath());
+        viewPanels.put(viewPanel.getName(), viewPanel);
+      } else {
+        UMLElementViewPanel viewPanel = (UMLElementViewPanel)
+          viewTabbedPane.getSelectedComponent();
+        viewPanels.remove(viewPanel.getName());
+
+        viewTabbedPane.setTitleAt(viewTabbedPane.getSelectedIndex(), node.getDisplay());
+
+        viewPanel.setName(node.getFullPath());
+        viewPanel.updateConcepts(concepts);
+        viewPanels.put(viewPanel.getName(), viewPanel);
+      }
 
     }
    

@@ -5,25 +5,25 @@ import java.io.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
-public class SemanticConnectorPanelDescriptor 
+public class ValidationPanelDescriptor 
   extends WizardPanelDescriptor {
   
-  public static final String IDENTIFIER = "SEMANTIC_CONNECTOR_PANEL";
+  public static final String IDENTIFIER = "VALIDATION_PANEL";
   
-  private SemanticConnectorPanel panel;
+  private ValidationPanel panel;
     
-  public SemanticConnectorPanelDescriptor() {
-    panel =  new SemanticConnectorPanel();
+  public ValidationPanelDescriptor() {
+    panel =  new ValidationPanel();
     setPanelDescriptorIdentifier(IDENTIFIER);
     setPanelComponent(panel);
   }
   
   public Object getNextPanelDescriptor() {
-    return ProgressSemanticConnectorPanelDescriptor.IDENTIFIER;
+    return SemanticConnectorPanelDescriptor.IDENTIFIER;
   }
   
   public Object getBackPanelDescriptor() {
-    return ValidationPanelDescriptor.IDENTIFIER;
+    return FileSelectionPanelDescriptor.IDENTIFIER;
   }  
 
 }
