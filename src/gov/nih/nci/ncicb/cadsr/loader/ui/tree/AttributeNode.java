@@ -32,7 +32,10 @@ public class AttributeNode extends AbstractUMLNode
 
     setIcon(reviewed?REVIEWED_ICON:DEFAULT_ICON);
 
-    System.out.println(icon);
+    //calls setReviewed method on parent 
+    ClassNode parent = (ClassNode) getParent();
+    parent.setReviewed(parent.isReviewed());
+
 
   }
   
