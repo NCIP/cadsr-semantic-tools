@@ -31,7 +31,7 @@ public class ObjectClassPersister extends UMLPersister {
     if (ocs != null) {
       for (ListIterator it = ocs.listIterator(); it.hasNext();) {
 	oc = (ObjectClass) it.next();
-	oc.setContext(defaults.getContext());
+	oc.setContext(defaults.getMainContext());
 
 	String className = oc.getLongName();
 	int ind = className.lastIndexOf(".");

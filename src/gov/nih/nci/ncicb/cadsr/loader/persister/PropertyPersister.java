@@ -28,7 +28,7 @@ public class PropertyPersister extends UMLPersister {
       for (ListIterator it = props.listIterator(); it.hasNext();) {
 	prop = (Property) it.next();
 
-	prop.setContext(defaults.getContext());
+	prop.setContext(defaults.getMainContext());
 
         prop.setLongName(prop.getConcept().getLongName());
 

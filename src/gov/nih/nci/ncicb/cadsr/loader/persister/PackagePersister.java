@@ -12,7 +12,6 @@ import java.util.*;
 
 public class PackagePersister extends UMLPersister {
 
-  protected static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
   
   private static Logger logger = Logger.getLogger(PackagePersister.class.getName());
 

@@ -42,6 +42,8 @@ public class UMLDefaults {
   private ClassificationScheme projectCs;
   private ClassSchemeClassSchemeItem projectCsCsi;
 
+  private Context mainContext;
+
   // default Audit holds username
   private Audit audit;
   private Map packageCsCsis = new HashMap();
@@ -95,7 +97,8 @@ public class UMLDefaults {
     context = contextDAO.findByName(cName);
     
     if (context == null) {
-      throw new PersisterException("Context: " + cName + " not found.");
+      logger.error(PropertyAccessor.getProperty("context.not.found", cName));
+      System.exit(1);
     }
     
     version = new Float(loaderDefault.getVersion().toString());
@@ -110,11 +113,9 @@ public class UMLDefaults {
     conceptualDomain.setPreferredName(loaderDefault.getCdName());
     
     Context cdContext = contextDAO.findByName(loaderDefault.getCdContextName());
-    
     if (cdContext == null) {
       throw new PersisterException("CD Context not found.");
     }
-    
     conceptualDomain.setContext(cdContext);
 
     try {
@@ -123,6 +124,12 @@ public class UMLDefaults {
     } catch (NullPointerException e) {
       throw new PersisterException("CD: " +
 				   conceptualDomain.getPreferredName() + " not found.");
+    }
+
+    Context mainContext = contextDAO.findByName(PropertyAccessor.getProperty("context.main.name"));
+    if (mainContext == null) {
+      logger.error(PropertyAccessor.getProperty("context.not.found", PropertyAccessor.getProperty("context.main.name")));
+      System.exit(1);
     }
 
     logger.info(PropertyAccessor.getProperty("listOfPackages"));
@@ -138,8 +145,10 @@ public class UMLDefaults {
         if(ind > 0) {
           alias = s.substring(1, ind).trim();
           pkg = s.substring(ind+1).trim();
-          if((pkg.length() == 0) && (pkgs.length == 1)) 
+          if((pkg.length() == 0) && (pkgs.length == 1)) {
             defaultPackage = alias;
+            logger.info(PropertyAccessor.getProperty("packageAlias.default", alias));
+          }
         } else {
           alias = pkg = s;
         }
@@ -314,4 +323,8 @@ public class UMLDefaults {
       return packageName;
   }
 
+  public Context getMainContext() {
+    return mainContext;
+  }
+  
 }

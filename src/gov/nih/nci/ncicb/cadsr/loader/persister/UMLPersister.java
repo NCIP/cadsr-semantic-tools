@@ -34,6 +34,8 @@ public class UMLPersister implements Persister {
 
   protected UMLDefaults defaults = UMLDefaults.getInstance();
 
+  protected static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
+
   public UMLPersister() {
     
   }

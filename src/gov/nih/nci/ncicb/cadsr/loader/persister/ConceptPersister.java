@@ -33,7 +33,7 @@ public class ConceptPersister extends UMLPersister {
 
         if(l.size() == 0) { // concept does not exist: create it
           c.setVersion(new Float(1.0f));
-          c.setContext(defaults.getContext());
+          c.setContext(defaults.getMainContext());
 	  c.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
 	  c.setAudit(defaults.getAudit());
           c.setId(conceptDAO.create(c));
