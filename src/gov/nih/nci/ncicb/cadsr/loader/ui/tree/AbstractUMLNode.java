@@ -1,7 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui.tree;
 
 import java.util.Set;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import javax.swing.Icon;
 
@@ -12,7 +12,9 @@ public abstract class AbstractUMLNode implements UMLNode {
   protected String display;
   protected Icon icon;
 
-  private Set<UMLNode> children = new HashSet();
+  // No complex ordering, we want to see elements
+  // just the way they were inserted.
+  private Set<UMLNode> children = new LinkedHashSet();
 
   private UMLNode parent;
 

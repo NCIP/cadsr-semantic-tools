@@ -4,6 +4,7 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import java.util.*;
 
@@ -20,6 +21,8 @@ public class TreeBuilder {
 
     rootNode = new RootNode();
     doPackages(rootNode);
+
+    doAssociations(rootNode);
 
     return rootNode;
   }
@@ -53,15 +56,7 @@ public class TreeBuilder {
     List<ClassificationSchemeItem> packages = (List<ClassificationSchemeItem>) elements.getElements(pkg.getClass());
     
     for(ClassificationSchemeItem pack : packages) {
-      System.out.println("1 package");
-      System.out.println(pack.getName());
-      System.out.println(pack.getComments());
-      System.out.println(pack.getType());
-
       String alias = defaults.getPackageDisplay(pack.getName()); 
-     
-      System.out.println("alias: " + alias);
-
 //       if(alias.equals(pack.getName())) {
         UMLNode node = new PackageNode(pack.getName(), alias);
         parentNode.addChild(node);
@@ -90,6 +85,7 @@ public class TreeBuilder {
         parentNode.addChild(node);
         System.out.println("--- " + node.getDisplay());
         doAttributes(node);
+        doAssociations(node);
 
         List<ValidationItem> items = findValidationItems(o);
         for(ValidationItem item : items) {
@@ -114,6 +110,24 @@ public class TreeBuilder {
         parentNode.addChild(node);
       }
     }
+
+
+  }
+
+  private void doAssociations(UMLNode parentNode) {
+    UMLNode assocNode = new PackageNode("Associations", "Associations");
+
+    ObjectClassRelationship o = DomainObjectFactory.newObjectClassRelationship();
+    List<ObjectClassRelationship> ocrs = 
+      (List<ObjectClassRelationship>) 
+      elements.getElements(o.getClass());
+
+    for(ObjectClassRelationship ocr : ocrs) {
+      UMLNode node = new AssociationNode(ocr);
+      assocNode.addChild(node);
+    }
+
+    parentNode.addChild(assocNode);
 
   }
 

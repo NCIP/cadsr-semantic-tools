@@ -58,45 +58,20 @@ public class UMLElementViewPanel extends JScrollPane
 
       conceptPanels[i].setLayout(new BorderLayout());
 
-      JPanel leftPanel = new JPanel();
-      leftPanel.setLayout(new GridLayout(-1, 1));
+      JPanel mainPanel = new JPanel(new GridBagLayout());
 
-      JPanel p = new JPanel();
-      p.add(conceptUIs[i].labels[0]);
-      leftPanel.add(p);
+      insertInBag(mainPanel, conceptUIs[i].labels[0], 0, 0);
+      insertInBag(mainPanel, conceptUIs[i].labels[1], 0, 1);
+      insertInBag(mainPanel, conceptUIs[i].labels[2], 0, 2);
+      insertInBag(mainPanel, conceptUIs[i].labels[3], 0, 3);
 
-      p = new JPanel();
-      p.add(conceptUIs[i].labels[1]);
-      leftPanel.add(p);
+      insertInBag(mainPanel, conceptUIs[i].code, 1, 0);
+      insertInBag(mainPanel, conceptUIs[i].name, 1, 1);
+      insertInBag(mainPanel, conceptUIs[i].defScrollPane, 1, 2);
+      insertInBag(mainPanel, conceptUIs[i].defSource, 1, 3);
 
-      p = new JPanel();
-      p.add(conceptUIs[i].labels[2]);
-      leftPanel.add(p);
-
-      p = new JPanel();
-      p.add(conceptUIs[i].labels[3]);
-      leftPanel.add(p);
-
-      JPanel mainPanel = new JPanel(new GridLayout(-1, 1));
-
-      p = new JPanel(new FlowLayout(FlowLayout.LEADING));
-      p.add(conceptUIs[i].code);
-      mainPanel.add(p);
-
-      p = new JPanel(new FlowLayout(FlowLayout.LEADING));
-      p.add(conceptUIs[i].name);
-      mainPanel.add(p);
-
-      mainPanel.add(conceptUIs[i].defScrollPane);
-
-      p = new JPanel(new FlowLayout(FlowLayout.LEADING));
-      p.add(conceptUIs[i].defSource);
-      mainPanel.add(p);
-
-      conceptPanels[i].add(leftPanel, BorderLayout.WEST);
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
       gridPanel.add(conceptPanels[i]);
-
 
       conceptUIs[i].code.addKeyListener(this);
       conceptUIs[i].name.addKeyListener(this);
@@ -116,7 +91,7 @@ public class UMLElementViewPanel extends JScrollPane
     deleteButton.addActionListener(this);
     saveButton.addActionListener(this);
 
-    if(concepts.length == 0)
+    if(concepts.length < 2)
       deleteButton.setEnabled(false);
 
     saveButton.setEnabled(false);
@@ -197,6 +172,13 @@ public class UMLElementViewPanel extends JScrollPane
 
   }
 
+  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
+    JPanel p = new JPanel();
+    p.add(comp);
+
+    bagComp.add(p, new GridBagConstraints(x, y, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+  }
+
 }
 
 class ConceptUI {
@@ -226,7 +208,7 @@ class ConceptUI {
     defScrollPane
       .setVerticalScrollBarPolicy
       (JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-//     defScrollPane.setPreferredSize(new Dimension(300, 60));
+    defScrollPane.setPreferredSize(new Dimension(400, 100));
 
     code.setText(concept.getPreferredName());
     name.setText(concept.getLongName());

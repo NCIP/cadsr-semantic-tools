@@ -112,13 +112,27 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
       }
     } else if(e.getButton() == MouseEvent.BUTTON1) {
       TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-      DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
-
-      ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
-      evt.setViewObject(dmtn.getUserObject());
-      evt.setInNewTab(false);
-      vcl.viewChanged(evt);
-      
+      if(path != null) {
+        DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
+        
+        ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
+        Object o = dmtn.getUserObject();
+        if((o instanceof ClassNode)
+           || (o instanceof AttributeNode)) {
+          evt.setViewObject(dmtn.getUserObject());
+          evt.setInNewTab(false);
+          vcl.viewChanged(evt);
+        }
+      }
+    } else if(e.getButton() == MouseEvent.BUTTON2) {
+      TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+      if(path != null) {
+        DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
+        ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
+        evt.setViewObject(dmtn.getUserObject());
+        evt.setInNewTab(true);
+        vcl.viewChanged(evt);
+      }
     }
    }
 
