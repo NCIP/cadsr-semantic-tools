@@ -51,6 +51,11 @@ public class XMIParser implements Parser {
 
   public void parse(String filename) {
     try {
+
+      ProgressEvent evt = new ProgressEvent();
+      evt.setMessage("Parsing ...");
+      fireProgressEvent(evt);
+
       ModelAccess access = new UML13ModelAccess();
       access.readModel("file:" + filename, "EA Model");
       uml.UmlPackage umlExtent = (uml.UmlPackage) access.getOutermostExtent();
@@ -206,10 +211,6 @@ public class XMIParser implements Parser {
 
         gEvent.setChildClassName(
           getPackageName(clazz) + "." + clazz.getName());
-//         gEvent.setParentClassName(
-//           p.getNamespace().getName() + "." + p.getName());
-//         gEvent.setChildClassName(
-//           clazz.getNamespace().getName() + "." + clazz.getName());
 
         generalizationEvents.add(gEvent);
       }
@@ -380,6 +381,13 @@ public class XMIParser implements Parser {
     for (Iterator it = generalizationEvents.iterator(); it.hasNext();) {
       listener.newGeneralization((NewGeneralizationEvent) it.next());
     }
+
+    ProgressEvent evt = new ProgressEvent();
+    evt.setGoal(100);
+    evt.setStatus(100);
+    evt.setMessage("Done");
+    fireProgressEvent(evt);
+
   }
 
   private void setConceptInfo(ModelElement elt, NewConceptualEvent event, String type) {

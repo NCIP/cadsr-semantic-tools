@@ -1,6 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
-public class LoginPanelDescriptor extends WizardPanelDescriptor {
+public class LoginPanelDescriptor extends WizardPanelDescriptor 
+ {
     
     public static final String IDENTIFIER = "LOGIN_PANEL";
     
@@ -9,7 +10,7 @@ public class LoginPanelDescriptor extends WizardPanelDescriptor {
     }
     
     public Object getNextPanelDescriptor() {
-      return FileSelectionPanelDescriptor.IDENTIFIER;
+      return ProgressLoginPanelDescriptor.IDENTIFIER;
     }
     
     public Object getBackPanelDescriptor() {

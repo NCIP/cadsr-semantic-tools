@@ -1,12 +1,18 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
+
 import java.awt.BorderLayout;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import java.util.*;
+
 public class NavigationPanel extends JPanel 
 {
   private JTree tree;;
+
+  private Set<NavigationListener> navListeners = new HashSet<NavigationListener>();
 
   private Object[] treeValues = 
   {
@@ -50,6 +56,10 @@ public class NavigationPanel extends JPanel
 
   }
 
+  public void addNavigationListener(NavigationListener l) {
+    navListeners.add(l);
+  }
+  
   private void jbInit() throws Exception
   {
     DefaultMutableTreeNode top = buildTree();
@@ -83,6 +93,10 @@ public class NavigationPanel extends JPanel
 
     return node;
     
+  }
+
+  private void attachMenu() {
+
   }
 
 }

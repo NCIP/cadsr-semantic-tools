@@ -44,14 +44,12 @@ public class WizardController implements ActionListener {
      * @param evt The ActionEvent that occurred.
      */    
     public void actionPerformed(java.awt.event.ActionEvent evt) {
-        
-        if (evt.getActionCommand().equals(Wizard.CANCEL_BUTTON_ACTION_COMMAND))
-            cancelButtonPressed();
-        else if (evt.getActionCommand().equals(Wizard.BACK_BUTTON_ACTION_COMMAND))
-            backButtonPressed();
-        else if (evt.getActionCommand().equals(Wizard.NEXT_BUTTON_ACTION_COMMAND))
-            nextButtonPressed();
-        
+      if (evt.getActionCommand().equals(Wizard.CANCEL_BUTTON_ACTION_COMMAND))
+        cancelButtonPressed();
+      else if (evt.getActionCommand().equals(Wizard.BACK_BUTTON_ACTION_COMMAND))
+        backButtonPressed();
+      else if (evt.getActionCommand().equals(Wizard.NEXT_BUTTON_ACTION_COMMAND))
+        nextButtonPressed();
     }
     
     
@@ -67,19 +65,43 @@ public class WizardController implements ActionListener {
         WizardPanelDescriptor descriptor = model.getCurrentPanelDescriptor();
 
         Object nextPanelDescriptor = descriptor.getNextPanelDescriptor();
-        
         if(descriptor.getPanelDescriptorIdentifier().equals(LoginPanelDescriptor.IDENTIFIER)) {
-          LoginPanel panel = (LoginPanel)descriptor.getPanelComponent();
-          try {
-            LoginContext lc = new LoginContext("UML_Loader", panel);    
-            lc.login();
-            username = panel.getUsername();
-            panel.setErrorMessage("");
-          } catch (Exception e){
-            username = null;
-            panel.setErrorMessage("Login / Password incorrect");
-            nextPanelDescriptor = descriptor;
-          } // end of try-catch
+          final LoginPanel panel = (LoginPanel)descriptor.getPanelComponent();
+          final ProgressLoginPanelDescriptor thisDesc =
+            (ProgressLoginPanelDescriptor)model
+            .getPanelDescriptor(nextPanelDescriptor);
+
+          final SwingWorker worker = new SwingWorker() {
+              public Object construct() {
+                try {
+                  ProgressEvent evt = new ProgressEvent();
+                  evt.setMessage("Sending credentials...");
+                  thisDesc.newProgressEvent(evt);
+
+                  LoginContext lc = new LoginContext("UML_Loader", panel);    
+                  lc.login();
+                  username = panel.getUsername();
+                  panel.setErrorMessage("");
+
+                  evt = new ProgressEvent();
+                  evt.setGoal(100);
+                  evt.setStatus(100);
+                  evt.setMessage("Done");
+                  thisDesc.newProgressEvent(evt);
+                  System.out.println("*** DONE");
+                } catch (Exception e){
+                  ProgressEvent evt = new ProgressEvent();
+                  evt.setStatus(-1);
+                  evt.setMessage("Failed");
+                  thisDesc.newProgressEvent(evt);
+
+                  username = null;
+                  panel.setErrorMessage("Login / Password incorrect");
+                } // end of try-catch
+                return null;
+              }
+            };
+          worker.start(); 
         }
 
         if(descriptor.getPanelDescriptorIdentifier().equals(FileSelectionPanelDescriptor.IDENTIFIER)) {
@@ -92,26 +114,25 @@ public class WizardController implements ActionListener {
           SemanticConnectorPanel panel = 
             (SemanticConnectorPanel)descriptor.getPanelComponent();
 
-          ProgressFrame progressFrame = new ProgressFrame(-1);
-          putToCenter(progressFrame);
-          
-          ProgressEvent evt = new ProgressEvent();
-          evt.setMessage("Loading Defaults");
-          progressFrame.newProgressEvent(evt);
+          System.out.println(nextPanelDescriptor.getClass());
 
-          //       UMLDefaults defaults = UMLDefaults.getInstance();
-          //       defaults.initParams(projectName, projectVersion, username);
-          //       defaults.initClassifications();
-          
-          XMIParser  parser = new XMIParser();
-          ElementsLists elements = new ElementsLists();
-          UMLHandler listener = new UMLDefaultHandler(elements);
-          parser.setEventHandler(listener);
-          parser.addProgressListener(progressFrame);
-          parser.parse(filename);
-            
-          progressFrame.dispose();
-            
+          final ProgressSemanticConnectorPanelDescriptor thisDesc =
+            (ProgressSemanticConnectorPanelDescriptor)model
+            .getPanelDescriptor(nextPanelDescriptor);
+
+          final SwingWorker worker = new SwingWorker() {
+              public Object construct() {
+                XMIParser  parser = new XMIParser();
+                ElementsLists elements = new ElementsLists();
+                UMLHandler listener = new UMLDefaultHandler(elements);
+                parser.setEventHandler(listener);
+                parser.addProgressListener(thisDesc);
+                parser.parse(filename);
+                return null;
+              }
+            };
+          worker.start(); 
+
         }
 
         if (nextPanelDescriptor instanceof WizardPanelDescriptor.FinishIdentifier) {

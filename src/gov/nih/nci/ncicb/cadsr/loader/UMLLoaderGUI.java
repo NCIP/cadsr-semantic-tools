@@ -40,13 +40,16 @@ public class UMLLoaderGUI
 
   public UMLLoaderGUI()
   {
-
-    Wizard wizard = new Wizard();
+    Frame f = new Frame();
+    Wizard wizard = new Wizard(f);
 
     wizard.getDialog().setTitle("Test Wizard Dialog");
     
-    WizardPanelDescriptor descriptor1 = new LoginPanelDescriptor();
-    wizard.registerWizardPanel(LoginPanelDescriptor.IDENTIFIER, descriptor1);
+    WizardPanelDescriptor lpDesc = new LoginPanelDescriptor();
+    wizard.registerWizardPanel(LoginPanelDescriptor.IDENTIFIER, lpDesc);
+
+    WizardPanelDescriptor plpDesc = new ProgressLoginPanelDescriptor();
+    wizard.registerWizardPanel(ProgressLoginPanelDescriptor.IDENTIFIER, plpDesc);
 
     WizardPanelDescriptor descriptor2 = new FileSelectionPanelDescriptor();
     wizard.registerWizardPanel(FileSelectionPanelDescriptor.IDENTIFIER, descriptor2);
@@ -54,19 +57,17 @@ public class UMLLoaderGUI
     WizardPanelDescriptor descriptor3 = new SemanticConnectorPanelDescriptor();
     wizard.registerWizardPanel(SemanticConnectorPanelDescriptor.IDENTIFIER, descriptor3);
 
+
+    WizardPanelDescriptor descriptor4 = new ProgressSemanticConnectorPanelDescriptor();
+    wizard.registerWizardPanel(ProgressSemanticConnectorPanelDescriptor.IDENTIFIER, descriptor4);
+
     
     wizard.setCurrentPanel(LoginPanelDescriptor.IDENTIFIER);
-
-    wizard.showModalDialog();
-
-//     ProgressFrame progressFrame = new ProgressFrame(145);
-//     putToCenter(progressFrame);
-//     ProgressSimulator simulator = new ProgressSimulator();
-//     simulator.addProgressListener(progressFrame);
-//     simulator.run();
-
-//     progressFrame.dispose();
-
+    int wizResult = wizard.showModalDialog();
+    
+    if(wizResult != 0) {
+      System.exit(0);
+    }
 
     Frame frame = new MainFrame();
     putToCenter(frame);

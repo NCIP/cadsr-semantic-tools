@@ -105,6 +105,13 @@ public class WizardModel {
         panelHashmap.put(id, descriptor);
         
     }  
+
+  /** 
+   * returns a registered panel descriptor based on its id
+   */
+  public WizardPanelDescriptor getPanelDescriptor(Object id) {
+    return (WizardPanelDescriptor)panelHashmap.get(id);
+  }
     
     /**
      * Sets the current panel to that identified by the Object passed in.

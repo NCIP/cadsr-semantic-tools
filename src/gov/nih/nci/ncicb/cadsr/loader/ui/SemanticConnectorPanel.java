@@ -7,15 +7,31 @@ import javax.swing.*;
 
 import java.io.File;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+import gov.nih.nci.ncicb.cadsr.loader.event.*;
+
 public class SemanticConnectorPanel extends JPanel 
-{
+  implements ProgressListener {
 
   private JRadioButton noButton, yesButton;
   private JPanel _this = this;
-
+  private ProgressPanel progressPanel;
+  private boolean isProgress = false;
+  private int goal;
+  
   public SemanticConnectorPanel()
   {
     initUI();
+  }
+  public SemanticConnectorPanel(int progressGoal)
+  {
+    this.isProgress = true;
+    this.goal = progressGoal;
+    initUI();
+  }
+
+  public void newProgressEvent(ProgressEvent evt) {
+    progressPanel.newProgressEvent(evt);
   }
 
   public boolean getSelection() {
@@ -48,9 +64,20 @@ public class SemanticConnectorPanel extends JPanel
     buttonPanel.add(yesButton);
     buttonPanel.add(noButton);
 
+    progressPanel = new ProgressPanel(goal);
+
+    if(isProgress) {
+      progressPanel.setVisible(true);
+      yesButton.setEnabled(false);
+      noButton.setEnabled(false);
+    } else {
+      progressPanel.setVisible(false);
+    }
+
     this.setLayout(new BorderLayout());
     this.add(textPanel, BorderLayout.NORTH);
     this.add(buttonPanel, BorderLayout.CENTER);
+    this.add(progressPanel, BorderLayout.SOUTH);
 
   }
 

@@ -302,6 +302,13 @@ public class Wizard implements PropertyChangeListener {
     public int getReturnCode() {
         return returnCode;
     }
+
+  public void doClickNext() {
+    nextButton.doClick();
+  }
+  public void doClickBack() {
+    backButton.doClick();
+  }
     
     /**
      * Closes the dialog and sets the return code to the integer parameter.
@@ -343,7 +350,7 @@ public class Wizard implements PropertyChangeListener {
         backButton = new JButton();
         nextButton = new JButton();
         cancelButton = new JButton();
-        
+
         backButton.setActionCommand(BACK_BUTTON_ACTION_COMMAND);
         nextButton.setActionCommand(NEXT_BUTTON_ACTION_COMMAND);
         cancelButton.setActionCommand(CANCEL_BUTTON_ACTION_COMMAND);

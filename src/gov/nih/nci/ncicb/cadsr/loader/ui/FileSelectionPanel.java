@@ -36,33 +36,6 @@ public class FileSelectionPanel extends JPanel
 
   private void initUI() {
 
-//     newButton = new JButton(null, new ImageIcon(this.getClass().getResource("/new-work.gif")));
-
-//     continueButton = new JButton(null, new ImageIcon(this.getClass().getResource("/continue-work.gif")));
-
-
-//     newLabel = new JLabel("Start New Work");
-//     continueLabel = new JLabel("Continue Saved Work");
-
-
-//     this.setLayout(new GridLayout(2, 2));
-//     this.add(newButton, null);
-//     this.add(newLabel, null);
-//     this.add(continueButton, null);
-//     this.add(continueLabel, null);
-
-//     newButton.addActionListener(new ActionListener() {
-//         public void actionPerformed(ActionEvent evt) {
-//           selection = SELECTION_NEW;
-//         }
-//       });
-
-//     continueButton.addActionListener(new ActionListener() {
-//         public void actionPerformed(ActionEvent evt) {
-//           selection = SELECTION_CONTINUE;
-//         }
-//       });
-
     this.setLayout(new BorderLayout());
     
     JPanel infoPanel = new JPanel();
@@ -77,12 +50,26 @@ public class FileSelectionPanel extends JPanel
     
     browseButton = new JButton("Browse");
     filePathField = new JTextField(30);
+    filePathField.setText("/home/ludetc/dev/umlclassdiagramloader/2.0.0/data/gene_fixed.xmi");
     JPanel browsePanel = new JPanel();
     browsePanel.setLayout(new FlowLayout());
     browsePanel.add(filePathField);
     browsePanel.add(browseButton);
     
     this.add(browsePanel, BorderLayout.CENTER);
+
+    browseButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+
+          new ProgressFrame(-1);
+          
+          try {
+            Thread.currentThread().sleep(10000);
+          } catch (Exception e){
+          } // end of try-catch
+        }
+      });
+
     
     browseButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {

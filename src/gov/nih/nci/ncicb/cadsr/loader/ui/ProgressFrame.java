@@ -11,8 +11,8 @@ public class ProgressFrame extends JFrame
     implements ProgressListener
 {
 
-  JProgressBar progressBar;
-  JLabel msgLabel;
+  private JProgressBar progressBar;
+  private JLabel msgLabel;
 
   public ProgressFrame(int maximum)
   {
@@ -25,7 +25,6 @@ public class ProgressFrame extends JFrame
     }
     progressBar.setValue(evt.getStatus());
     
-    // !!! TODO replace by StringUtil when migrating to UML Loader
     if(evt.getMessage() != null) {
       progressBar.setString(evt.getMessage());
       msgLabel.setText(evt.getMessage());
@@ -53,6 +52,9 @@ public class ProgressFrame extends JFrame
     contentPane.add(msgLabel, BorderLayout.SOUTH);
 
     
+    this.pack();
     this.setVisible(true);
   }
+
+
 }

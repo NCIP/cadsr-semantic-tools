@@ -10,6 +10,7 @@ import java.awt.event.*;
 
 import javax.security.auth.callback.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
 /**
  * Callback handler for Swing based apps
@@ -17,7 +18,8 @@ import javax.security.auth.callback.*;
  * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
  */
 public class LoginPanel extends JPanel 
-  implements CallbackHandler {
+  implements CallbackHandler, ProgressListener
+{
 
   private JLabel errorLabel;
   
@@ -26,8 +28,23 @@ public class LoginPanel extends JPanel
 
   final static int GAP = 30;  
 
+  private ProgressPanel progressPanel;
+  private boolean isProgress = false;
+  private int goal;
+
   public LoginPanel() {
     initUI();
+  
+  }
+  public LoginPanel(int progressGoal)
+  {
+    this.isProgress = true;
+    this.goal = progressGoal;
+    initUI();
+  }
+
+  public void newProgressEvent(ProgressEvent evt) {
+    progressPanel.newProgressEvent(evt);
   }
 
   public String getUsername() {
@@ -56,7 +73,11 @@ public class LoginPanel extends JPanel
   }
   
   private void initUI() {
-    this.setLayout(new SpringLayout());
+
+    this.setLayout(new BorderLayout());
+
+    JPanel mainPanel = new JPanel();
+    mainPanel.setLayout(new SpringLayout());
 //     this.setLayout(new BorderLayout());
     
     JLabel userLabel = new JLabel("Username: ", JLabel.TRAILING), 
@@ -73,20 +94,33 @@ public class LoginPanel extends JPanel
 
     userLabel.setLabelFor(userField);
     pwdLabel.setLabelFor(pwdField);
-    
-    ImageIcon icon = new ImageIcon(this.getClass().getResource("/security_lock.jpg"));
-    
-    this.add(new JLabel(icon));
-    this.add(errorLabel);
-    this.add(userLabel);
-    this.add(userField);
-    this.add(pwdLabel);
-    this.add(pwdField);
 
-    SpringUtilities.makeCompactGrid(this,
+    progressPanel = new ProgressPanel(goal);
+
+    if(isProgress) {
+      progressPanel.setVisible(true);
+      userField.setEnabled(false);
+      pwdField.setEnabled(false);
+    } else {
+      progressPanel.setVisible(false);
+    }
+    
+    ImageIcon icon = new ImageIcon(mainPanel.getClass().getResource("/security_lock.jpg"));
+    
+    mainPanel.add(new JLabel(icon));
+    mainPanel.add(errorLabel);
+    mainPanel.add(userLabel);
+    mainPanel.add(userField);
+    mainPanel.add(pwdLabel);
+    mainPanel.add(pwdField);
+
+    SpringUtilities.makeCompactGrid(mainPanel,
                                     3, 2,
                                     GAP, GAP, //init x,y
                                     GAP, GAP/2);//xpad, ypad
+
+    this.add(mainPanel, BorderLayout.CENTER);
+    this.add(progressPanel, BorderLayout.SOUTH);
 
   }
 
