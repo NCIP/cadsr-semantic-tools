@@ -25,15 +25,31 @@ public class ConsoleCallbackHandler implements CallbackHandler {
         System.out.print(((NameCallback)callbacks[i]).getPrompt());
         String user=br.readLine();
         ((NameCallback)callbacks[i]).setName(user);
+        
       } else if (callbacks[i] instanceof PasswordCallback) {
+        ConsoleEraser consoleEraser = new ConsoleEraser();
         System.out.print(((PasswordCallback)callbacks[i]).getPrompt());
+        consoleEraser.start();
         String pass=br.readLine();
+        consoleEraser.halt();
         ((PasswordCallback)callbacks[i]).setPassword(pass.toCharArray());
       } else {
         throw(new UnsupportedCallbackException(
                 callbacks[i], "Callback class not supported"));
       }
     }
+  }
+
+  class ConsoleEraser extends Thread {
+    private boolean running = true;
+    public void run() {
+      while (running) {
+        System.out.print("\b ");
+      }
+    }
+    public synchronized void halt() {
+      running = false;
+    }  
   }
 }
 
