@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.tree.TreePath;
@@ -31,6 +32,9 @@ public class ErrorPanel extends JPanel {
     tree = new JTree(node);
     tree.setRootVisible(false);
     tree.setShowsRootHandles(true);
+
+    //Traverse Tree expanding all nodes
+    TreeUtil.expandAll(tree, new TreePath(node));
     
     tree.setCellRenderer(new UMLTreeCellRenderer());
 
