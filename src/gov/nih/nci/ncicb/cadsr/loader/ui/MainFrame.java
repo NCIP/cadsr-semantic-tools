@@ -48,7 +48,8 @@ public class MainFrame extends JFrame
 
   private MainFrame _this = this;
 
-  private Map<String, UMLElementViewPanel> viewPanels = new HashMap<String, UMLElementViewPanel>();
+  private Map<String, UMLElementViewPanel> viewPanels = new HashMap();
+  private AssociationViewPanel associationViewPanel = null;
 
   public MainFrame()
   {
@@ -196,6 +197,18 @@ public class MainFrame extends JFrame
         viewPanel.updateConcepts(concepts);
         viewPanels.put(viewPanel.getName(), viewPanel);
       }
+
+    } else if(event.getType() == ViewChangeEvent.VIEW_ASSOCIATION) {
+      UMLNode node = (UMLNode)event.getViewObject();
+
+      if(associationViewPanel == null) {
+        associationViewPanel = new AssociationViewPanel((ObjectClassRelationship)node.getUserObject());
+        viewTabbedPane.addTab("Association", associationViewPanel);
+        associationViewPanel.setName("Association");
+      } else
+        associationViewPanel.update((ObjectClassRelationship)node.getUserObject());
+
+      viewTabbedPane.setSelectedComponent(associationViewPanel);
 
     }
    

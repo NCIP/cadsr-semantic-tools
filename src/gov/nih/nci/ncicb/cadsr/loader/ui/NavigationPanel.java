@@ -84,7 +84,7 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
   }
 
   public void mousePressed(MouseEvent e) {
-    doMouseEvent(e);
+    showPopup(e);
   }
   public void mouseExited(MouseEvent e) {
   }
@@ -94,10 +94,11 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
   }
   
   public void mouseReleased(MouseEvent e) {
+    showPopup(e);
     doMouseEvent(e);
   }
   
-  private void doMouseEvent(MouseEvent e) {
+  private void showPopup(MouseEvent e) {
     if (e.isPopupTrigger()) {
       TreePath path = tree.getPathForLocation(e.getX(), e.getY());
       tree.setSelectionPath(path);
@@ -110,15 +111,25 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
           popup.show(e.getComponent(),
                      e.getX(), e.getY());
       }
-    } else if(e.getButton() == MouseEvent.BUTTON1) {
+    }
+  }
+
+  private void doMouseEvent(MouseEvent e) {
+    if(e.getButton() == MouseEvent.BUTTON1) {
       TreePath path = tree.getPathForLocation(e.getX(), e.getY());
       if(path != null) {
         DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
         
-        ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
         Object o = dmtn.getUserObject();
         if((o instanceof ClassNode)
-           || (o instanceof AttributeNode)) {
+           || (o instanceof AttributeNode)
+           ) {
+          ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
+          evt.setViewObject(dmtn.getUserObject());
+          evt.setInNewTab(false);
+          vcl.viewChanged(evt);
+        } else if(o instanceof AssociationNode) {
+          ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_ASSOCIATION);
           evt.setViewObject(dmtn.getUserObject());
           evt.setInNewTab(false);
           vcl.viewChanged(evt);

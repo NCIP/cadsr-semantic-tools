@@ -85,7 +85,6 @@ public class TreeBuilder {
         parentNode.addChild(node);
         System.out.println("--- " + node.getDisplay());
         doAttributes(node);
-        doAssociations(node);
 
         List<ValidationItem> items = findValidationItems(o);
         for(ValidationItem item : items) {

@@ -3,6 +3,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui.event;
 public class ViewChangeEvent {
 
   public static final int VIEW_CONCEPTS = 1;
+  public static final int VIEW_ASSOCIATION = 2;
 
   private int type;
   private Object viewObject;
