@@ -41,6 +41,11 @@ public interface UMLNode {
   public void setParent(UMLNode parent);
 
   /**
+   * set icon to the newIcon 
+   */
+  public void setIcon(Icon newIcon);
+
+  /**
    * @return the contained object
    */
   public Object getUserObject();
