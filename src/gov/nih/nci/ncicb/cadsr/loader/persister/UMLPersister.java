@@ -15,20 +15,21 @@ public class UMLPersister implements Persister {
 
   private ElementsLists elements = null;
 
-  private AdminComponentDAO adminComponentDAO;
-  private DataElementDAO dataElementDAO;
-  private ContextDAO contextDAO;
-  private DataElementConceptDAO dataElementConceptDAO;
-  private ValueDomainDAO valueDomainDAO; 
-  private ConceptualDomainDAO conceptualDomainDAO;
-  private PropertyDAO propertyDAO;
-  private ObjectClassDAO objectClassDAO;
-  private ClassificationSchemeDAO classificationSchemeDAO;
+  private AdminComponentDAO      adminComponentDAO;
+  private DataElementDAO         dataElementDAO;
+  private ContextDAO             contextDAO;
+  private DataElementConceptDAO  dataElementConceptDAO;
+  private ValueDomainDAO         valueDomainDAO; 
+  private ConceptualDomainDAO    conceptualDomainDAO;
+  private PropertyDAO            propertyDAO;
+  private ObjectClassDAO         objectClassDAO;
+  private ObjectClassRelationshipDAO         objectClassRelationshipDAO;
+  private ClassificationSchemeDAO     classificationSchemeDAO;
   private ClassificationSchemeItemDAO classificationSchemeItemDAO;
-
   private LoaderDAO loaderDAO;
+  private ConceptDAO conceptDAO;
 
-  private HashMap params = new HashMap();
+  private Map params = new HashMap();
   
   private String projectName, projectVersion, version, workflowStatus;
   private Context context;
@@ -38,12 +39,16 @@ public class UMLPersister implements Persister {
   private ClassificationScheme projectCs;
   private ClassSchemeClassSchemeItem projectCsCsi;
 
-  private HashMap valueDomains = new HashMap();
+  // default Audit holds username
+  private Audit audit;
+
+  private Map valueDomains = new HashMap();
 
   private Logger logger = Logger.getLogger(UMLPersister.class.getName());
 
+  private static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
 
-  private static final String DESIG_TYPE = "UML_PACKAGE";
+  private Map packageCsCsis = new HashMap();
 
   public UMLPersister(ElementsLists list) {
 
@@ -76,6 +81,9 @@ public class UMLPersister implements Persister {
     logger.debug("Loading ObjectClassDAO bean");
     objectClassDAO = (ObjectClassDAO) ApplicationContextFactory.getApplicationContext().getBean("objectClassDAO");
 
+    logger.debug("Loading ObjectClassRelationshipDAO bean");
+    objectClassRelationshipDAO = (ObjectClassRelationshipDAO) ApplicationContextFactory.getApplicationContext().getBean("objectClassRelationshipDAO");
+
     logger.debug("Loading CSDAO bean");
     classificationSchemeDAO = (ClassificationSchemeDAO) ApplicationContextFactory.getApplicationContext().getBean("classificationSchemeDAO");
 
@@ -84,6 +92,10 @@ public class UMLPersister implements Persister {
 
     logger.debug("Loading LoaderDAO bean");
     loaderDAO = (LoaderDAO) ApplicationContextFactory.getApplicationContext().getBean("loaderDAO");
+
+    logger.debug("Loading ConceptDAO bean");
+    conceptDAO = (ConceptDAO) ApplicationContextFactory.getApplicationContext().getBean("conceptDAO");
+
 
   }
 
@@ -105,8 +117,23 @@ public class UMLPersister implements Persister {
 
     persistDes();
 
+    persistOcRecs();
   }
 
+  public void persistOcRecs() throws PersisterException {
+    ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
+    List ocrs = (List)elements.getElements(ocr.getClass());
+
+    if(ocrs != null)
+      for(ListIterator it=ocrs.listIterator(); it.hasNext(); ) {
+
+	ocr = (ObjectClassRelationship)it.next();
+	ocr.setAudit(audit);
+	
+	
+      }      
+
+  }
 
   public void persistDes() throws PersisterException {
     DataElement de = DomainObjectFactory.newDataElement();
@@ -139,9 +166,9 @@ public class UMLPersister implements Persister {
 	    de.setPreferredName(de.getPreferredName().substring(0, 29));
 
 	  de.setVersion(new Float(version));
-	  
 	  de.setWorkflowStatus(workflowStatus);
 
+	  de.setAudit(audit);
 	  de.setId(dataElementDAO.create(de));
 	  logger.info("Created DataElement:  ");
 	} else {
@@ -152,7 +179,7 @@ public class UMLPersister implements Persister {
 	logAc(de);
 	logger.info("-- Value Domain (Preferred_Name): " + de.getValueDomain().getPreferredName());
 	
-	addClassificationSchemes(de);
+	addProjectCs(de);
 	it.set(de);
 
       }
@@ -179,8 +206,9 @@ public class UMLPersister implements Persister {
 	  prop.setPreferredName(prop.getLongName());
 	  
 	  prop.setVersion(new Float(1.0f));
-	  
 	  prop.setWorkflowStatus(workflowStatus);
+	  prop.setAudit(audit);
+	  
 	  prop.setId(propertyDAO.create(prop));
 	  logger.info("Created Property: ");
 	} else {
@@ -190,7 +218,7 @@ public class UMLPersister implements Persister {
 
 	logAc(prop);
 	
-	addClassificationSchemes(prop);
+	addProjectCs(prop);
 	it.set(prop);
       }
 
@@ -198,7 +226,6 @@ public class UMLPersister implements Persister {
 
   
   private void persistObjectClasses() throws PersisterException {
-
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     List ocs = (List)elements.getElements(oc.getClass());
 
@@ -229,8 +256,9 @@ public class UMLPersister implements Persister {
 	  oc.setPreferredName(oc.getLongName());
 
 	  oc.setVersion(new Float(1.0f));
-
 	  oc.setWorkflowStatus(workflowStatus);
+	  oc.setAudit(audit);
+
 	  oc.setId(objectClassDAO.create(oc));
 	  logger.info("Created Object Class: ");
 	} else {
@@ -241,7 +269,7 @@ public class UMLPersister implements Persister {
 	  if(designations != null) 
 	    for(Iterator it2 = designations.iterator(); it2.hasNext(); ) {
 	      Designation d = (Designation)it2.next();
-	      if(d.getType().equals(DESIG_TYPE) && d.getName().equals(packageName)) {
+	      if(d.getType().equals(CSI_PACKAGE_TYPE) && d.getName().equals(packageName)) {
 		desigFound = true;
 		logger.debug("Found desig: " + d.getType() + " " + d.getName());
 	      }
@@ -251,7 +279,7 @@ public class UMLPersister implements Persister {
 
 	logAc(oc);
 
-	addClassificationSchemes(oc);
+	addProjectCs(oc);
 	it.set(oc);
 
 	// add designation to hold package name
@@ -261,7 +289,7 @@ public class UMLPersister implements Persister {
 	  Designation desig = DomainObjectFactory.newDesignation();
 	  desig.setContext(context);
 	  desig.setName(packageName);
-	  desig.setType(DESIG_TYPE);
+	  desig.setType(CSI_PACKAGE_TYPE);
 	  des.add(desig);
 	  adminComponentDAO.addDesignations(oc, des);
 	  logger.info("Added Designation: ");
@@ -318,7 +346,7 @@ public class UMLPersister implements Persister {
 	      dec.setProperty(o);
 	  }
 
-	  
+	  dec.setAudit(audit);
 	  dec.setId(dataElementConceptDAO.create(dec));
 	  logger.info("Created DataElementConcept: ");
 	} else {
@@ -330,7 +358,7 @@ public class UMLPersister implements Persister {
 	logger.info("-- Object Class (long_name): " + dec.getObjectClass().getLongName());
 	logger.info("-- Property (long_name): " + dec.getProperty().getLongName());
 
-	addClassificationSchemes(dec);
+	addProjectCs(dec);
 	it.set(dec);
 
 	// add designation to hold package name
@@ -341,9 +369,7 @@ public class UMLPersister implements Persister {
   }
 
 
-  private void addClassificationSchemes(AdminComponent ac) throws PersisterException {
-
-    // Add Classification Schemes
+  private void addProjectCs(AdminComponent ac) throws PersisterException {
     List l = adminComponentDAO.getClassSchemeClassSchemeItems(ac);
     
     // is projectCs linked?
@@ -355,7 +381,6 @@ public class UMLPersister implements Persister {
       if(csCsi.getCs().getLongName().equals(projectCs.getLongName()))
 	if(csCsi.getCsi().getName().equals(domainCsi.getName()))
 	  found = true;
-      
      
     } 
     List csCsis = new ArrayList();
@@ -368,6 +393,8 @@ public class UMLPersister implements Persister {
   }
   
   private void initParams() throws PersisterException {
+    audit = DomainObjectFactory.newAudit();
+    audit.setCreatedBy((String)params.get("username"));
 
     projectName = (String)params.get("projectName");
     // !!!! TODO Use version Too
@@ -441,6 +468,7 @@ public class UMLPersister implements Persister {
       projectCs.setType("TEST");
       projectCs.setLabelType(ClassificationScheme.LABEL_TYPE_ALPHA);
 
+      projectCs.setAudit(audit);
       projectCs.setId(classificationSchemeDAO.create(projectCs));
       logger.info("Addedd Project CS: ");
       logAc(projectCs);
@@ -450,6 +478,7 @@ public class UMLPersister implements Persister {
       projectCsCsi.setCs(projectCs);
       projectCsCsi.setCsi(domainCsi);
       projectCsCsi.setLabel(projectName);
+      projectCsCsi.setAudit(audit);
       
       classificationSchemeDAO.addClassificationSchemeItem(projectCs, projectCsCsi);
       logger.info("Added Project CS_CSI: ");
@@ -474,6 +503,7 @@ public class UMLPersister implements Persister {
 	projectCsCsi.setCs(projectCs);
 	projectCsCsi.setCsi(domainCsi);
 	projectCsCsi.setLabel(projectName);
+	projectCsCsi.setAudit(audit);
 
 	classificationSchemeDAO.addClassificationSchemeItem(projectCs, projectCsCsi);
       }
