@@ -112,7 +112,6 @@ public class DEPersister extends UMLPersister {
 
           for(Iterator it2 = de.getDefinitions().iterator(); it2.hasNext(); ) {
             Definition def = (Definition)it2.next();
-            System.out.println("&&&&&&&&&&&& saving definition: " + def.getDefinition() + " -- " + def.getType());
             addAlternateDefinition(
               newDe, def.getDefinition(), 
               def.getType(), packageName);
