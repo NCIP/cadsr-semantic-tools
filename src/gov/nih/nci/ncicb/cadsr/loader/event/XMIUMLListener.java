@@ -14,7 +14,7 @@ public class XMIUMLListener implements UMLListener {
     private List packageList = new ArrayList();
 
     public XMIUMLListener(ElementsLists elements) {
-        this.elements = elements;
+      this.elements = elements;
     }
 
     public void newPackage(NewPackageEvent event) {
@@ -116,59 +116,63 @@ public class XMIUMLListener implements UMLListener {
         logger.debug("DataType: " + event.getName());
     }
 
-    public void newAssociation(NewAssociationEvent event) {
-        ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
-        ObjectClass oc = DomainObjectFactory.newObjectClass();
-
-        List ocs = elements.getElements(oc.getClass());
-        logger.debug("direction: " + event.getDirection());
-
-        for (int i = 0; i < ocs.size(); i++) {
-            ObjectClass o = (ObjectClass) ocs.get(i);
-
-            if (o.getLongName().equals(event.getAClassName())) {
-                if (event.getDirection().equals("B")) {
-                    ocr.setSource(o);
-                    ocr.setSourceRole(event.getARole());
-                    ocr.setSourceCardinality(event.getACardinality());
-                } else {
-                    ocr.setTarget(o);
-                    ocr.setTargetRole(event.getARole());
-                    ocr.setTargetCardinality(event.getACardinality());
-                }
-            } else if (o.getLongName().equals(event.getBClassName())) {
-                if (event.getDirection().equals("B")) {
-                    ocr.setTarget(o);
-                    ocr.setTargetRole(event.getBRole());
-                    ocr.setTargetCardinality(event.getBCardinality());
-                } else {
-                    ocr.setSource(o);
-                    ocr.setSourceRole(event.getBRole());
-                    ocr.setSourceCardinality(event.getBCardinality());
-                }
-            }
-        }
-
-        if (event.getDirection().equals("AB")) {
-            ocr.setDirection(ObjectClassRelationship.DIRECTION_SINGLE);
+  public void newAssociation(NewAssociationEvent event) {
+    ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
+    ObjectClass oc = DomainObjectFactory.newObjectClass();
+    
+    List ocs = elements.getElements(oc.getClass());
+    logger.debug("direction: " + event.getDirection());
+    
+    for (int i = 0; i < ocs.size(); i++) {
+      ObjectClass o = (ObjectClass) ocs.get(i);
+      
+      if (o.getLongName().equals(event.getAClassName())) {
+        if (event.getDirection().equals("B")) {
+          ocr.setSource(o);
+          ocr.setSourceRole(event.getARole());
+          ocr.setSourceLowCardinality(event.getALowCardinality());
+          ocr.setSourceHighCardinality(event.getAHighCardinality());
         } else {
-            ocr.setDirection(ObjectClassRelationship.DIRECTION_BOTH);
+          ocr.setTarget(o);
+          ocr.setTargetRole(event.getARole());
+          ocr.setTargetLowCardinality(event.getALowCardinality());
+          ocr.setTargetHighCardinality(event.getAHighCardinality());
         }
-
-        ocr.setLongName(event.getRoleName());
-        ocr.setType(ObjectClassRelationship.TYPE_HAS);
-        elements.addElement(ocr);
-
-        logger.debug("Association: ");
-        logger.debug("Source:");
-        logger.debug("-- " + ocr.getSourceRole());
-        logger.debug("-- " + ocr.getSource().getLongName());
-        logger.debug("-- " + ocr.getSourceCardinality());
-        logger.debug("Target: ");
-        logger.debug("-- " + ocr.getTargetRole());
-        logger.debug("-- " + ocr.getTarget().getLongName());
-        logger.debug("-- " + ocr.getTargetCardinality());
+      } else if (o.getLongName().equals(event.getBClassName())) {
+        if (event.getDirection().equals("B")) {
+          ocr.setTarget(o);
+          ocr.setTargetRole(event.getBRole());
+          ocr.setTargetLowCardinality(event.getBLowCardinality());
+          ocr.setTargetHighCardinality(event.getBHighCardinality());
+        } else {
+          ocr.setSource(o);
+          ocr.setSourceRole(event.getBRole());
+          ocr.setSourceLowCardinality(event.getBLowCardinality());
+          ocr.setSourceHighCardinality(event.getBHighCardinality());
+        }
+      }
     }
+
+    if (event.getDirection().equals("AB")) {
+      ocr.setDirection(ObjectClassRelationship.DIRECTION_SINGLE);
+    } else {
+      ocr.setDirection(ObjectClassRelationship.DIRECTION_BOTH);
+    }
+
+    ocr.setLongName(event.getRoleName());
+    ocr.setType(ObjectClassRelationship.TYPE_HAS);
+    elements.addElement(ocr);
+
+    //         logger.debug("Association: ");
+    //         logger.debug("Source:");
+    //         logger.debug("-- " + ocr.getSourceRole());
+    //         logger.debug("-- " + ocr.getSource().getLongName());
+    //         logger.debug("-- " + ocr.getSourceCardinality());
+    //         logger.debug("Target: ");
+    //         logger.debug("-- " + ocr.getTargetRole());
+    //         logger.debug("-- " + ocr.getTarget().getLongName());
+    //         logger.debug("-- " + ocr.getTargetCardinality());
+  }
 
     public void newGeneralization(NewGeneralizationEvent event) {
         ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
