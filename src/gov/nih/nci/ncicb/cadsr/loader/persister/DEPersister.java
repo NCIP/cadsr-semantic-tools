@@ -53,50 +53,60 @@ public class DEPersister extends UMLPersister {
 
           if (l.size() == 0) {
             de.setContext(defaults.getContext());
-            //Did Extract Method refactoring
-            /*de.setPreferredName(
-              de.getDataElementConcept().getPublicId() + "-" +
-              de.getDataElementConcept().getVersion() + ":" +
-              de.getValueDomain().getPublicId() + "-" +
-              de.getValueDomain().getVersion());*/
             de.setPreferredName(this.derivePreferredName(de));
             de.setVersion(defaults.getVersion());
             de.setWorkflowStatus(defaults.getWorkflowStatus());
 
-            de.setAudit(defaults.getAudit());
+            newDe.setAudit(defaults.getAudit());
             logger.debug("Creating DE: " + de.getLongName());
-            de.setId(dataElementDAO.create(de));
+            List altNames = de.getAlternateNames();
+            newDe = dataElementDAO.create(de);
+            // restore altNames
+            for(Iterator it2 = altNames.iterator(); it2.hasNext();) {
+              AlternateName an = (AlternateName)it2.next();
+              de.addAlternateName(an);
+            }
+
             logger.info(PropertyAccessor.getProperty("created.de"));
           }
           else {
-            de = (DataElement) l.get(0);
+            newDe = (DataElement) l.get(0);
             logger.info(PropertyAccessor.getProperty("existed.de"));
 
             /* if DE alreay exists, check context
              * If context is different, add Used_by alt_name
              */
-            if (de.getContext().getId() != defaults.getContext().getId()) {
+            if (newDe.getContext().getId() != defaults.getContext().getId()) {
               addAlternateName(
-                de, defaults.getContext().getName(), AlternateName.TYPE_USED_BY,
+                newDe, defaults.getContext().getName(), AlternateName.TYPE_USED_BY,
                 null);
             }
 
             if (
               (newDef.length() > 0) &&
-                  !newDef.equals(de.getPreferredDefinition())) {
+                  !newDef.equals(newDe.getPreferredDefinition())) {
               System.out.println("Adding Alt Def");
               addAlternateDefinition(
-                de, newDef, Definition.TYPE_UML, packageName);
+                newDe, newDef, Definition.TYPE_UML_DE, packageName);
             }
           }
 
-          LogUtil.logAc(de, logger);
+          LogUtil.logAc(newDe, logger);
           logger.info(
             PropertyAccessor.getProperty(
-              "vd.preferredName", de.getValueDomain().getPreferredName()));
+              "vd.preferredName", newDe.getValueDomain().getPreferredName()));
 
-          addPackageClassification(de, packageName);
-          it.set(de);
+          addPackageClassification(newDe, packageName);
+
+          List ans = de.getAlternateNames();
+          for(Iterator it2 = ans.iterator(); it2.hasNext(); ) {
+            AlternateName altName = (AlternateName)it2.next();
+            
+            addAlternateName(
+              newDe, altName.getName(),
+              altName.getType(), packageName);
+          }
+          it.set(newDe);
         }
         catch (PersisterException e) {
           logger.error("Could not persist DE: " + de.getLongName());

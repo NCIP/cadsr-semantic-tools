@@ -87,9 +87,10 @@ public class UMLDefaultHandler implements UMLHandler {
 
     String propName = event.getName();
 
-    String className = event.getClassName();
-    int ind = className.lastIndexOf(".");
-    className = className.substring(ind + 1);
+    String s = event.getClassName();
+    int ind = s.lastIndexOf(".");
+    String className = s.substring(ind + 1);
+    String packageName = s.substring(0, ind);
 
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
     dec.setLongName(className + ":" + propName);
@@ -118,6 +119,20 @@ public class UMLDefaultHandler implements UMLHandler {
     logger.debug("DE LONG_NAME: " + de.getLongName());
 
     de.setDataElementConcept(dec);
+
+    // Store alt Name for DE:
+    // packageName.ClassName.PropertyName
+    AlternateName fullName = DomainObjectFactory.newAlternateName();
+    fullName.setType(AlternateName.TYPE_FULL_NAME);
+    fullName.setName(packageName + "." + className + "." + propName);
+    de.addAlternateName(fullName);
+    
+    // Store alt Name for DE:
+    // ClassName:PropertyName
+    fullName = DomainObjectFactory.newAlternateName();
+    fullName.setType(AlternateName.TYPE_UML_DE);
+    fullName.setName(className + ":" + propName);
+    de.addAlternateName(fullName);
 
     ValueDomain vd = DomainObjectFactory.newValueDomain();
     vd.setPreferredName(event.getType());
@@ -257,6 +272,12 @@ public class UMLDefaultHandler implements UMLHandler {
           newDe.setValueDomain(de.getValueDomain());
           newDe.setLongName(newDec.getLongName() + de.getValueDomain().getPreferredName());
           newDe.setPreferredDefinition(de.getPreferredDefinition());
+
+          List altNames = de.getAlternateNames();
+          for(Iterator it2 = altNames.iterator(); it2.hasNext();) {
+            AlternateName an = (AlternateName)it2.next();
+            newDe.addAlternateName(an);
+          }
 
           newDe.setAcCsCsis(parentOc.getAcCsCsis());
           newDec.setAcCsCsis(parentOc.getAcCsCsis());

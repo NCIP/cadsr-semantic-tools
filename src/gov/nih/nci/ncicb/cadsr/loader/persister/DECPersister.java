@@ -108,7 +108,7 @@ public class DECPersister extends UMLPersister {
         
         if((newDef.length() > 0) && !newDef.equals(newDec.getPreferredDefinition())) {
           System.out.println("Adding Alt Def");
-          addAlternateDefinition(newDec, newDef, Definition.TYPE_UML, packageName
+          addAlternateDefinition(newDec, newDef, Definition.TYPE_UML_DEC, packageName
 );
         }
 
