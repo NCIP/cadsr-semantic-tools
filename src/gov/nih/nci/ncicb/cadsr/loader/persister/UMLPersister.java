@@ -134,6 +134,9 @@ public class UMLPersister implements Persister {
         found = true;
         logger.info(PropertyAccessor.getProperty(
                       "existed.altName", newName));
+
+        if(packageName == null)
+          return;
         
         boolean csFound = false;
         for(Iterator it2 = an.getCsCsis().iterator(); it2.hasNext();) {
@@ -168,13 +171,15 @@ public class UMLPersister implements Persister {
                       ac.getLongName()
                     }));
       
-      classSchemeClassSchemeItemDAO.addCsCsi(altName, packageCsCsi);
-      logger.info(
-        PropertyAccessor.getProperty(
-          "linked.to.package",
-          "Alternate Name"
-          ));
-      
+      if(packageName != null) {
+        classSchemeClassSchemeItemDAO.addCsCsi(altName, packageCsCsi);
+        logger.info(
+          PropertyAccessor.getProperty(
+            "linked.to.package",
+            "Alternate Name"
+            ));
+      }      
+
     } 
   }
 
@@ -248,39 +253,39 @@ public class UMLPersister implements Persister {
 
   }
 
-  protected Property findProperty(String longName) {
+  protected Property findProperty(String preferredName) {
     List props = (List) elements.getElements(DomainObjectFactory.newProperty().getClass());
     
     for (Iterator it = props.iterator(); it.hasNext(); ) {
       Property o = (Property) it.next();
 
-      if (o.getLongName().equals(longName)) {
+      if (o.getPreferredName().equals(preferredName)) {
         return o;
       }
     }
     return null;
   }
 
-  protected ObjectClass findObjectClass(String longName) {
+  protected ObjectClass findObjectClass(String preferredName) {
     List ocs = (List) elements.getElements(DomainObjectFactory.newObjectClass().getClass());
     
     for (Iterator it = ocs.iterator(); it.hasNext(); ) {
       ObjectClass o = (ObjectClass) it.next();
 
-      if (o.getLongName().equals(longName)) {
+      if (o.getPreferredName().equals(preferredName)) {
         return o;
       }
     }
     return null;
   }
 
-  protected DataElementConcept findDec(String longName) {
+  protected DataElementConcept findDec(String id) {
     List decs = (List) elements.getElements(DomainObjectFactory.newDataElementConcept().getClass());
     
     for (Iterator it = decs.iterator(); it.hasNext(); ) {
       DataElementConcept o = (DataElementConcept) it.next();
 
-      if (o.getLongName().equals(longName)) {
+      if (o.getId().equals(id)) {
         return o;
       }
     }
@@ -328,13 +333,6 @@ public class UMLPersister implements Persister {
 
       if(csCsi.getId().equals(packageCsCsi.getId()))
         found = true;
-//       if (csCsi.getCs().getId().equals(defaults.getProjectCs().getId())) {
-// 	if (csCsi.getCsi().getName().equals(packageName)
-//             && csCsi.getCsi().getType().equals(CSI_PACKAGE_TYPE)
-//             ) {
-// 	  found = true;
-// 	}
-//       }
     }
 
     List csCsis = new ArrayList();

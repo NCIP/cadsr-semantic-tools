@@ -26,18 +26,20 @@ public class DECPersister extends UMLPersister {
     logger.debug("decs... ");
     if (decs != null) {
       for (ListIterator it = decs.listIterator(); it.hasNext();) {
-        DataElementConcept newDec = null;
+        DataElementConcept newDec = DomainObjectFactory.newDataElementConcept();
 	dec = (DataElementConcept) it.next();
         
         String packageName = getPackageName(dec);
         
         // update object class with persisted one
         dec.setObjectClass(findObjectClass(
-                             dec.getObjectClass().getLongName()));
+                             dec.getObjectClass().getPreferredName()));
+        newDec.setObjectClass(dec.getObjectClass());
 
         // update object class with persisted one
         dec.setProperty(findProperty(
-                             dec.getProperty().getLongName()));
+                             dec.getProperty().getPreferredName()));
+        newDec.setProperty(dec.getProperty());
         
         String newName = dec.getLongName();
 
@@ -46,8 +48,8 @@ public class DECPersister extends UMLPersister {
         logger.debug("alt Name: " + newName);
 
 	// does this dec exist?
-	List l = dataElementConceptDAO.find(dec);
-        
+	List l = dataElementConceptDAO.find(newDec);
+
         String newDef = dec.getPreferredDefinition();
 	if (l.size() == 0) {
           dec.setConceptualDomain(defaults.getConceptualDomain());
@@ -88,24 +90,25 @@ public class DECPersister extends UMLPersister {
           newDec = dataElementConceptDAO.create(dec);
 	  logger.info(PropertyAccessor.getProperty("created.dec"));
 
-          // is definition the same?
-          // if not, then add alternate Def
-          if((newDef.length() > 0) && !newDef.equals(newDec.getPreferredDefinition())) {
-            addAlternateDefinition(newDec, newDef, Definition.TYPE_UML, getPackageName(dec));
-          }
-
-
 	} else {
 	  newDec = (DataElementConcept) l.get(0);
 	  logger.info(PropertyAccessor.getProperty("existed.dec"));
 
-          // is definition the same?
-          // if not, then add alternate Def
-          if((newDef.length() > 0) && !newDef.equals(newDec.getPreferredDefinition())) {
-            addAlternateDefinition(dec, newDef, Definition.TYPE_UML, getPackageName(dec));
+          /* if DEC alreay exists, check context
+           * If context is different, add Used_by alt_name
+           */
+          if(newDec.getContext().getId() != defaults.getContext().getId()) {
+            addAlternateName(newDec, defaults.getContext().getName(), AlternateName.TYPE_USED_BY, null);
           }
+          
 
 	}
+
+        // is definition the same?
+        // if not, then add alternate Def
+        if((newDef.length() > 0) && !newDef.equals(newDec.getPreferredDefinition())) {
+          addAlternateDefinition(newDec, newDef, Definition.TYPE_UML, getPackageName(dec));
+        }
 
         addAlternateName(newDec, newName, AlternateName.TYPE_UML_DEC, packageName);
 
@@ -121,8 +124,9 @@ public class DECPersister extends UMLPersister {
 
         addPackageClassification(newDec, packageName);
 	it.set(newDec);
-        
-        dec.setLongName(dec.getLongName());
+
+        // dec still referenced in DE. Need ID to retrieve it in DEPersister.
+        dec.setId(newDec.getId());        
 
       }
     }

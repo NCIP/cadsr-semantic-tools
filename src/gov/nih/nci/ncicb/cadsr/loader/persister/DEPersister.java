@@ -30,22 +30,17 @@ public class DEPersister extends UMLPersister {
       for (ListIterator it = des.listIterator(); it.hasNext();) {
 	try {
 	  de = (DataElement) it.next();
+          DataElement newDe = DomainObjectFactory.newDataElement();
 
           String packageName = getPackageName(de);
-	  de.setContext(defaults.getContext());
 
-// 	  for (ListIterator lit = elements.getElements(
-//                  DomainObjectFactory.
-//                  newDataElementConcept().getClass()).listIterator(); lit.hasNext();) {
-            
-// 	    DataElementConcept o = (DataElementConcept) lit.next();
-
-          de.setDataElementConcept(findDec(de.getDataElementConcept().getLongName()));
-
+          de.setDataElementConcept(findDec(de.getDataElementConcept().getId()));
+          newDe.setDataElementConcept(de.getDataElementConcept());
 
 	  de.setValueDomain(lookupValueDomain(de.getValueDomain()));
-
-	  List l = dataElementDAO.find(de);
+          newDe.setValueDomain(de.getValueDomain());
+          
+	  List l = dataElementDAO.find(newDe);
 
           de.setLongName(
             de.getDataElementConcept()
@@ -53,7 +48,8 @@ public class DEPersister extends UMLPersister {
             + de.getValueDomain().getPreferredName());
           
 	  if (l.size() == 0) {
-	    de.setPreferredName(
+            de.setContext(defaults.getContext());
+            de.setPreferredName(
               de.getDataElementConcept().getPublicId() + "-" +
               de.getDataElementConcept().getVersion() + ":" + 
               de.getValueDomain().getPublicId() + "-" + 
@@ -70,6 +66,15 @@ public class DEPersister extends UMLPersister {
 	  } else {
 	    de = (DataElement) l.get(0);
 	    logger.info(PropertyAccessor.getProperty("existed.de"));
+
+            /* if DE alreay exists, check context
+             * If context is different, add Used_by alt_name
+             */
+            if(de.getContext().getId() != defaults.getContext().getId()) {
+              addAlternateName(de, defaults.getContext().getName(), AlternateName.TYPE_USED_BY, null);
+            }
+
+
 	  }
 
 	  LogUtil.logAc(de, logger);

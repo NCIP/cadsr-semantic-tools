@@ -85,7 +85,7 @@ public class UMLDefaultHandler implements UMLHandler {
     //     prop.setPreferredName(event.getName());
     prop.setLongName(event.getName());
 
-    String propName = StringUtil.upperFirst(event.getName());
+    String propName = event.getName();
 
     String className = event.getClassName();
     int ind = className.lastIndexOf(".");
@@ -247,7 +247,7 @@ public class UMLDefaultHandler implements UMLHandler {
           newDec.setObjectClass(childOc);
           newDec.setPreferredDefinition(dec.getPreferredDefinition());
           
-          String propName = StringUtil.upperFirst(newDec.getProperty().getLongName());
+          String propName = newDec.getProperty().getLongName();
           
           String className = childOc.getLongName();
           int ind = className.lastIndexOf(".");

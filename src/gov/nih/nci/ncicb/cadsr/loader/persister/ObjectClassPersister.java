@@ -65,28 +65,21 @@ public class ObjectClassPersister extends UMLPersister {
 	  oc.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
 	  oc.setAudit(defaults.getAudit());
 
+          List acCsCsis = oc.getAcCsCsis();
           try {
             newOc = objectClassDAO.create(oc, conceptCodes);
             logger.info(PropertyAccessor.getProperty("created.oc"));
           } catch (DAOCreateException e){
             logger.error(PropertyAccessor.getProperty("created.oc.failed", e.getMessage()));
           } // end of try-catch
+          // restore this since we use for package
+          oc.setAcCsCsis(acCsCsis);
 
-          // is definition the same?
-          // if not, then add alternate Def
-          if((newDef.length() > 0) && !newDef.equals(newOc.getPreferredDefinition())) {
-            addAlternateDefinition(newOc, newDef, Definition.TYPE_UML, packageName);
-          }
 	} else {
           String newDefSource = primaryConcept.getDefinitionSource();
           String newConceptDef = primaryConcept.getPreferredDefinition();
 	  newOc = (ObjectClass) l.get(0);
 	  logger.info(PropertyAccessor.getProperty("existed.oc"));
-          // is definition the same?
-          // if not, then add alternate Def
-          if((newDef.length() > 0) && !newDef.equals(newOc.getPreferredDefinition())) {
-            addAlternateDefinition(newOc, newDef, Definition.TYPE_UML, packageName);
-          }
 
           // is concept source the same?
           // if not, then add alternate Def
@@ -96,6 +89,12 @@ public class ObjectClassPersister extends UMLPersister {
 
 	}
 
+        // is definition the same?
+        // if not, then add alternate Def
+        if((newDef.length() > 0) && !newDef.equals(newOc.getPreferredDefinition())) {
+          addAlternateDefinition(newOc, newDef, Definition.TYPE_UML, packageName);
+        }
+        
         addAlternateName(newOc, newName, AlternateName.TYPE_UML_CLASS ,packageName);
 
 	LogUtil.logAc(newOc, logger);
