@@ -145,7 +145,7 @@ public class UMLDefaultHandler implements UMLHandler {
     vd.setPreferredName(event.getType());
     de.setValueDomain(vd);
 
-    if(event.getDescription() != null && event.getDescription().length() > 0) {
+    if(!StringUtil.isEmpty(event.getDescription())) {
       Definition altDef = DomainObjectFactory.newDefinition();
       altDef.setType(Definition.TYPE_UML_DE);
       altDef.setDefinition(event.getDescription());

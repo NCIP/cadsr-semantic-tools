@@ -65,9 +65,9 @@ public class DECPersister extends UMLPersister {
             );
 
 	  dec.setPreferredName(
-            dec.getObjectClass().getPublicId() + "-" 
-            + dec.getObjectClass().getVersion() + ":" 
-            + dec.getProperty().getPublicId() + "-"
+            dec.getObjectClass().getPublicId() + "v" 
+            + dec.getObjectClass().getVersion() + "_" 
+            + dec.getProperty().getPublicId() + "v"
             + dec.getProperty().getVersion());
 
 	  dec.setVersion(defaults.getVersion());
@@ -86,7 +86,23 @@ public class DECPersister extends UMLPersister {
 	  }
 
 	  dec.setAudit(defaults.getAudit());
+
+          List altDefs = dec.getDefinitions();
+          List altNames = dec.getAlternateNames();
+
           newDec = dataElementConceptDAO.create(dec);
+
+          // restore altNames
+          for(Iterator it2 = altNames.iterator(); it2.hasNext();) {
+            AlternateName an = (AlternateName)it2.next();
+            dec.addAlternateName(an);
+          }
+          // restore altDefs
+          for(Iterator it2 = altDefs.iterator(); it2.hasNext();) {
+            Definition def = (Definition)it2.next();
+            dec.addDefinition(def);
+          }
+
 	  logger.info(PropertyAccessor.getProperty("created.dec"));
 
 	} else {
@@ -102,13 +118,6 @@ public class DECPersister extends UMLPersister {
           
 
 	}
-
-//         // is definition the same?
-//         // if not, then add alternate Def
-//         if((newDef != null) && (newDef.length() > 0) && !newDef.equals(newDec.getPreferredDefinition())) {
-//           addAlternateDefinition(newDec, newDef, Definition.TYPE_UML_DEC, packageName
-// );
-//         }
 
         addAlternateName(newDec, newName, AlternateName.TYPE_UML_DEC, packageName);
 

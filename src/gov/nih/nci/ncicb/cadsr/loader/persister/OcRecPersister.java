@@ -28,7 +28,7 @@ public class OcRecPersister extends UMLPersister {
     if (ocrs != null) {
       for (ListIterator it = ocrs.listIterator(); it.hasNext();) {
 	ocr = (ObjectClassRelationship) it.next();
-	ocr.setContext(defaults.getMainContext());
+	ocr.setContext(defaults.getContext());
 	ocr.setAudit(defaults.getAudit());
 	ocr.setVersion(defaults.getVersion());
 	ocr.setWorkflowStatus(defaults.getWorkflowStatus());

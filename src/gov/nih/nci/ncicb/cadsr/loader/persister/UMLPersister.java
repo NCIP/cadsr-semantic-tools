@@ -36,6 +36,8 @@ public class UMLPersister implements Persister {
 
   protected UMLDefaults defaults = UMLDefaults.getInstance();
 
+  private static final String DEF_CONCAT_CHAR = "_";
+
 //   protected static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
 
   static {
@@ -216,6 +218,7 @@ public class UMLPersister implements Persister {
     }
     
     if(!found) {
+
       Definition altDef = DomainObjectFactory.newDefinition();
       altDef.setContext(defaults.getContext());
       altDef.setDefinition(newDef);
@@ -319,7 +322,7 @@ public class UMLPersister implements Persister {
       if(sb.length() > 0)
         sb.append("\n");
       sb.append(concepts[i].getPreferredName());
-      sb.append(":");
+      sb.append(DEF_CONCAT_CHAR);
       sb.append(concepts[i].getPreferredDefinition());
     }
 

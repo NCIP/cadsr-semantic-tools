@@ -14,7 +14,7 @@ import java.util.*;
 public class DEPersister extends UMLPersister {
   private static Logger logger = Logger.getLogger(DEPersister.class.getName());
   public static String DE_PREFERRED_NAME_DELIMITER = "v";
-  public static String DE_PREFERRED_NAME_CONCAT_CHAR = ":";
+  public static String DE_PREFERRED_NAME_CONCAT_CHAR = "_";
 
   public DEPersister(ElementsLists list) {
     this.elements = list;
