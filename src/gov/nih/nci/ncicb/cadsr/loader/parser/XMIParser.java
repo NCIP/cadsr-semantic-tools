@@ -19,6 +19,11 @@ import java.io.*;
 
 import java.util.*;
 
+/**
+ * Implemetation of <code>Parser</code> for XMI files. Navigates the XMI document and sends UML Object events.
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public class XMIParser implements Parser {
   private static final String EA_CONTAINMENT = "containment";
   private static final String EA_UNSPECIFIED = "Unspecified";
