@@ -31,6 +31,7 @@ public class DEPersister extends UMLPersister {
 	try {
 	  de = (DataElement) it.next();
 
+          String packageName = getPackageName(de);
 	  de.setContext(defaults.getContext());
 
 	  for (ListIterator lit = elements.getElements(
@@ -78,7 +79,7 @@ public class DEPersister extends UMLPersister {
                       getProperty("vd.preferredName",
                                   de.getValueDomain().getPreferredName()));
 
-	  addProjectCs(de);
+          addPackageClassification(de, packageName);
 	  it.set(de);
 	} catch (PersisterException e) {
 	  logger.error("Could not persist DE: " + de.getLongName());

@@ -27,6 +27,7 @@ public class PropertyPersister extends UMLPersister {
     if (props != null) {
       for (ListIterator it = props.listIterator(); it.hasNext();) {
 	prop = (Property) it.next();
+
         Property newProp = null;
 
 	prop.setContext(defaults.getMainContext());
@@ -42,6 +43,8 @@ public class PropertyPersister extends UMLPersister {
         Concept primaryConcept = concepts[concepts.length - 1];
         String newDef = prop.getPreferredDefinition();
         String newName = prop.getLongName();
+        String packageName = getPackageName(prop);
+
 	if (l.size() == 0) {
           prop.setLongName(longNameFromConcepts(concepts));
 	  prop.setPreferredDefinition(preferredDefinitionFromConcepts(concepts));
@@ -54,16 +57,20 @@ public class PropertyPersister extends UMLPersister {
           logger.debug("property: " + prop.getLongName());
 
           try {
+            // remove for persistence
+            prop.setAcCsCsis(null);
+
             newProp = propertyDAO.create(prop, conceptCodes);
             logger.info(PropertyAccessor.getProperty("created.prop"));
             // is long_name the same?
             // if not, then add alternate Name
             if(!newName.equals(newProp.getLongName())) {
-              addAlternateName(newProp, newName);
+              addAlternateName(newProp, newName, packageName);
             }
           } catch (DAOCreateException e){
             logger.error(PropertyAccessor.getProperty("created.prop.failed", e.getMessage()));
-          } // end of try-catch
+            e.printStackTrace();
+          } 
 
 	} else {
 	  newProp = (Property) l.get(0);
@@ -71,15 +78,16 @@ public class PropertyPersister extends UMLPersister {
           // is long_name the same?
           // if not, then add alternate Name
           if(!newName.equals(newProp.getLongName())) {
-            addAlternateName(newProp, newName);
+            addAlternateName(newProp, newName, packageName);
           }
           
 	}
 
 	LogUtil.logAc(newProp, logger);
         logger.info("-- Public ID: " + newProp.getPublicId());
-	addProjectCs(newProp);
 	it.set(newProp);
+
+        addPackageClassification(newProp, packageName);
 
         // This object still reference in DEC, update long_name to real long name
         prop.setLongName(newProp.getLongName());

@@ -20,6 +20,9 @@ public class LogUtil {
    * @param logger a <code>Logger</code> value
    */
   public static void logAc(AdminComponent ac, Logger logger) {
+    if(ac == null)
+      return;
+
     logger.info(PropertyAccessor.getProperty("id", ac.getId()));
     logger.info(PropertyAccessor.getProperty("longName", ac.getLongName()));
     logger.info(PropertyAccessor.getProperty("preferredName", ac.getPreferredName()));

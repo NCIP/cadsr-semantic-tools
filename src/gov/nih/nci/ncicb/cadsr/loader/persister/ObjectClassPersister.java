@@ -75,12 +75,12 @@ public class ObjectClassPersister extends UMLPersister {
           // is definition the same?
           // if not, then add alternate Def
           if((newDef.length() > 0) && !newDef.equals(newOc.getPreferredDefinition())) {
-            addAlternateDefinition(newOc, newDef, Definition.TYPE_UML);
+            addAlternateDefinition(newOc, newDef, Definition.TYPE_UML, packageName);
           }
           // is long_name the same?
           // if not, then add alternate Name
           if(!newName.equals(newOc.getLongName())) {
-            addAlternateName(newOc, newName);
+            addAlternateName(newOc, newName, packageName);
           }
           
 	} else {
@@ -91,68 +91,71 @@ public class ObjectClassPersister extends UMLPersister {
           // is long_name the same?
           // if not, then add alternate Name
           if(!newName.equals(newOc.getLongName())) {
-            addAlternateName(newOc, newName);
+            addAlternateName(newOc, newName, packageName);
           }
 
           // is definition the same?
           // if not, then add alternate Def
           if((newDef.length() > 0) && !newDef.equals(newOc.getPreferredDefinition())) {
-            addAlternateDefinition(newOc, newDef, Definition.TYPE_UML);
+            addAlternateDefinition(newOc, newDef, Definition.TYPE_UML, packageName);
           }
 
           // is concept source the same?
           // if not, then add alternate Def
           if(!newDefSource.equals(newOc.getDefinitionSource())) {
-            addAlternateDefinition(newOc, newConceptDef, newDefSource);
+            addAlternateDefinition(newOc, newConceptDef, newDefSource, packageName);
           }
 
-	  List packages = newOc.getAcCsCsis();
+// 	  List packages = newOc.getAcCsCsis();
 
-	  if (packages != null) {
-	    for (Iterator it2 = packages.iterator();
-		 it2.hasNext() && !packageFound;) {
-	      AdminComponentClassSchemeClassSchemeItem acCsCsi = (AdminComponentClassSchemeClassSchemeItem) it2.next();
-	      ClassSchemeClassSchemeItem csCsi = acCsCsi.getCsCsi();
+// 	  if (packages != null) {
+// 	    for (Iterator it2 = packages.iterator();
+// 		 it2.hasNext() && !packageFound;) {
+// 	      AdminComponentClassSchemeClassSchemeItem acCsCsi = (AdminComponentClassSchemeClassSchemeItem) it2.next();
+// 	      ClassSchemeClassSchemeItem csCsi = acCsCsi.getCsCsi();
 
-	      if (csCsi.getCsi().getType().equals(CSI_PACKAGE_TYPE) &&
-		  csCsi.getCsi().getName().equals(packageName)) {
-		packageFound = true;
-	      }
-	    }
-	  }
+// 	      if (csCsi.getCsi().getType().equals(CSI_PACKAGE_TYPE) &&
+// 		  csCsi.getCsi().getName().equals(packageName) &&
+//                   csCsi.getCs().getId().equals(defaults.getProjectCs().getId())
+// ) {
+// 		packageFound = true;
+// 	      }
+// 	    }
+// 	  }
+
 	}
 
 	LogUtil.logAc(newOc, logger);
         logger.info("public ID: " + newOc.getPublicId());
 
-	addProjectCs(newOc);
+// 	addProjectCs(newOc);
 	it.set(newOc);
         
         oc.setLongName(newOc.getLongName());
 
-	// add CSI to hold package name
-	// !!!! TODO
-	if (!packageFound) {
-	  // see if we have the package in cache
-	  ClassSchemeClassSchemeItem packageCsCsi = (ClassSchemeClassSchemeItem) defaults.getPackageCsCsis().get(packageName);
+        addPackageClassification(newOc, packageName);
 
-	  if (packageCsCsi != null) {
-	    List ll = new ArrayList();
-	    ll.add(packageCsCsi);
-	    adminComponentDAO.addClassSchemeClassSchemeItems(newOc, ll);
-	    logger.info(PropertyAccessor
-                        .getProperty("added.package",
-                                     new String[] {
-                                       packageName, 
-                                       newOc.getLongName()}));
-	  } else {
-	    // PersistPackages should have taken care of it. 
-	    // We should not be here.
-	    logger.error(PropertyAccessor.getProperty("missing.package", new String[] {packageName, className}));
-	  }
-	} else {
-	  logger.debug("Package was found.");
-	}
+
+// 	// add CSI to hold package name
+// 	// !!!! TODO
+// 	if (!packageFound) {
+// 	  // see if we have the package in cache
+// 	  ClassSchemeClassSchemeItem packageCsCsi = (ClassSchemeClassSchemeItem) defaults.getPackageCsCsis().get(packageName);
+
+// 	  if (packageCsCsi != null) {
+// 	    List ll = new ArrayList();
+// 	    ll.add(packageCsCsi);
+// 	    adminComponentDAO.addClassSchemeClassSchemeItems(newOc, ll);
+// 	    logger.info(PropertyAccessor
+//                         .getProperty("added.package",
+//                                      new String[] {
+//                                        packageName, 
+//                                        newOc.getLongName()}));
+// 	  } else {
+// 	    // PersistPackages should have taken care of it. 
+// 	    // We should not be here.
+// 	    logger.error(PropertyAccessor.getProperty("missing.package", new String[] {packageName, className}));
+// 	  }
       }
     }
 

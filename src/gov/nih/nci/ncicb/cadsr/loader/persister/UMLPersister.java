@@ -68,31 +68,31 @@ public class UMLPersister implements Persister {
     new OcRecPersister(elements).persist();
   }
 
-  protected void addProjectCs(AdminComponent ac) throws PersisterException {
-    List l = adminComponentDAO.getClassSchemeClassSchemeItems(ac);
+//   protected void addProjectCs(AdminComponent ac) throws PersisterException {
+//     List l = adminComponentDAO.getClassSchemeClassSchemeItems(ac);
 
-    // is projectCs linked?
-    boolean found = false;
+//     // is projectCs linked?
+//     boolean found = false;
 
-    for (ListIterator it = l.listIterator(); it.hasNext();) {
-      ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it.next();
+//     for (ListIterator it = l.listIterator(); it.hasNext();) {
+//       ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it.next();
 
-      if (csCsi.getCs().getLongName().equals(defaults.getProjectCs().getLongName())) {
-	if (csCsi.getCsi().getName().equals(defaults.getDomainCsi().getName())) {
-	  found = true;
-	}
-      }
-    }
+//       if (csCsi.getCs().getLongName().equals(defaults.getProjectCs().getLongName())) {
+// 	if (csCsi.getCsi().getName().equals(defaults.getDomainCsi().getName())) {
+// 	  found = true;
+// 	}
+//       }
+//     }
 
-    List csCsis = new ArrayList();
+//     List csCsis = new ArrayList();
 
-    if (!found) {
-      logger.info(PropertyAccessor.
-                  getProperty("attach.project.classification"));
-      csCsis.add(defaults.getProjectCsCsi());
-      adminComponentDAO.addClassSchemeClassSchemeItems(ac, csCsis);
-    }
-  }
+//     if (!found) {
+//       logger.info(PropertyAccessor.
+//                   getProperty("attach.project.classification"));
+//       csCsis.add(defaults.getProjectCsCsi());
+//       adminComponentDAO.addClassSchemeClassSchemeItems(ac, csCsis);
+//     }
+//   }
 
 
 
@@ -121,10 +121,11 @@ public class UMLPersister implements Persister {
     return result;
   }
 
-  protected void addAlternateName(AdminComponent ac, String newName) {
+  protected void addAlternateName(AdminComponent ac, String newName, String packageName) {
 
     List altNames = adminComponentDAO.getAlternateNames(ac);
     boolean found = false;
+    ClassSchemeClassSchemeItem packageCsCsi = (ClassSchemeClassSchemeItem)defaults.getPackageCsCsis().get(packageName);
     for(Iterator it = altNames.iterator(); it.hasNext(); ) {
       AlternateName an = (AlternateName)it.next();
       if(an.getType().equals(AlternateName.TYPE_SYNONYM) && an.getName().equals(newName)) {
@@ -135,15 +136,21 @@ public class UMLPersister implements Persister {
         boolean csFound = false;
         for(Iterator it2 = an.getCsCsis().iterator(); it2.hasNext();) {
           ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
-          if(csCsi.getId().equals(defaults.getProjectCsCsi().getId())) {
+          System.out.println(csCsi.getCs());
+          System.out.println(csCsi.getCs().getId());
+          System.out.println(csCsi.getCsi());
+          System.out.println(csCsi.getCsi().getId());
+          System.out.println(packageCsCsi);
+          if(csCsi.getCs().getId().equals(defaults.getProjectCs().getId())
+             && csCsi.getCsi().getId().equals(packageCsCsi.getId())) {
             csFound = true;
           }
         }
         if(!csFound) {
-          classSchemeClassSchemeItemDAO.addCsCsi(an, defaults.getProjectCsCsi());
+          classSchemeClassSchemeItemDAO.addCsCsi(an, packageCsCsi);
           logger.info(
             PropertyAccessor.getProperty(
-              "linked.to.project",
+              "linked.to.package",
               "Alternate Name"
               ));
         }
@@ -164,20 +171,22 @@ public class UMLPersister implements Persister {
                       ac.getLongName()
                     }));
       
-      classSchemeClassSchemeItemDAO.addCsCsi(altName, defaults.getProjectCsCsi());
+      classSchemeClassSchemeItemDAO.addCsCsi(altName, packageCsCsi);
       logger.info(
         PropertyAccessor.getProperty(
-          "linked.to.project",
+          "linked.to.package",
           "Alternate Name"
           ));
       
     } 
   }
 
-  protected void addAlternateDefinition(AdminComponent ac, String newDef, String type) {
+  protected void addAlternateDefinition(AdminComponent ac, String newDef, String type, String packageName) {
 
     List altDefs = adminComponentDAO.getDefinitions(ac);
     boolean found = false;
+    ClassSchemeClassSchemeItem packageCsCsi = (ClassSchemeClassSchemeItem)defaults.getPackageCsCsis().get(packageName);
+
     for(Iterator it = altDefs.iterator(); it.hasNext(); ) {
       Definition def = (Definition)it.next();
       if(def.getType().equals(type) && def.getDefinition().equals(newDef)) {
@@ -188,15 +197,16 @@ public class UMLPersister implements Persister {
         boolean csFound = false;
         for(Iterator it2 = def.getCsCsis().iterator(); it2.hasNext();) {
           ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
-          if(csCsi.getId().equals(defaults.getProjectCsCsi().getId())) {
+          if(csCsi.getCs().getId().equals(defaults.getProjectCs().getId())
+             && csCsi.getCsi().getId().equals(packageCsCsi.getId())) {
             csFound = true;
           }
         }
         if(!csFound) {
-          classSchemeClassSchemeItemDAO.addCsCsi(def, defaults.getProjectCsCsi());
+          classSchemeClassSchemeItemDAO.addCsCsi(def, packageCsCsi);
           logger.info(
             PropertyAccessor.getProperty(
-              "linked.to.project",
+              "linked.to.package",
               "Alternate Definition"
               ));
         }
@@ -219,10 +229,10 @@ public class UMLPersister implements Persister {
                       ac.getLongName()
                     }));
       
-      classSchemeClassSchemeItemDAO.addCsCsi(altDef, defaults.getProjectCsCsi());
+      classSchemeClassSchemeItemDAO.addCsCsi(altDef, packageCsCsi);
       logger.info(
         PropertyAccessor.getProperty(
-          "linked.to.project",
+          "linked.to.package",
           "Alternate Definition"
           ));
       
@@ -265,24 +275,6 @@ public class UMLPersister implements Persister {
       }
     }
     return null;
-
-//     String[] codes = conceptCodes.split("-");
-    
-//     for (Iterator it = ocs.iterator(); it.hasNext();) {
-//       ObjectClass oc = (ObjectClass)it.next();
-//       if(codes.length == 1) {
-//         if(oc.getConcept() != null)
-//           if(oc.getConcept().getPreferredName().equals(conceptCodes))
-//             return oc;
-//       } else {
-//         if(oc.getConceptDerivationRule() != null)
-//           if(oc.getConceptDerivationRule().getCodeConc)
-//       }
-//       if(oc.getPreferredName().equals(conceptCode))
-//         return con;
-//     }
-//     return null;
-
   }
 
   protected DataElementConcept findDec(String longName) {
@@ -297,16 +289,6 @@ public class UMLPersister implements Persister {
     }
     return null;
   }
-
-//   protected String preferredNameFromConcepts(Concept[] concepts) {
-//     StringBuffer sb = new StringBuffer();
-//     for(int i = 0 ; i < concepts.length; i++) {
-//       if(sb.size() > 0)
-//         sb.append("-");
-//       sb.append(concepts[i].getPreferredName());
-//     }
-//     return sb.toString();
-//   }
 
   protected String longNameFromConcepts(Concept[] concepts) {
     StringBuffer sb = new StringBuffer();
@@ -333,6 +315,56 @@ public class UMLPersister implements Persister {
     }
 
     return sb.toString();
+  }
+
+  protected void addPackageClassification(AdminComponent ac, String packageName) {
+
+    List l = adminComponentDAO.getClassSchemeClassSchemeItems(ac);
+
+    // is projectCs linked?
+    boolean found = false;
+
+    for (ListIterator it = l.listIterator(); it.hasNext();) {
+      ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it.next();
+
+      if (csCsi.getCs().getId().equals(defaults.getProjectCs().getId())) {
+	if (csCsi.getCsi().getName().equals(packageName)
+            && csCsi.getCsi().getType().equals(CSI_PACKAGE_TYPE)
+            ) {
+	  found = true;
+	}
+      }
+    }
+
+    List csCsis = new ArrayList();
+
+    if (!found) {
+      logger.info(PropertyAccessor.
+                  getProperty("attach.package.classification"));
+
+      ClassSchemeClassSchemeItem packageCsCsi = (ClassSchemeClassSchemeItem) defaults.getPackageCsCsis().get(packageName);
+      
+      if (packageCsCsi != null) {
+        csCsis.add(packageCsCsi);
+
+        adminComponentDAO.addClassSchemeClassSchemeItems(ac, csCsis);
+        logger.info(PropertyAccessor
+                    .getProperty("added.package",
+                                 new String[] {
+                                   packageName, 
+                                   ac.getLongName()}));
+      } else {
+        // PersistPackages should have taken care of it. 
+        // We should not be here.
+        logger.error(PropertyAccessor.getProperty("missing.package", new String[] {packageName, ac.getLongName()}));
+      }
+      
+    }
+  }
+
+  protected String getPackageName(AdminComponent ac) {
+    return 
+      ((AdminComponentClassSchemeClassSchemeItem)ac.getAcCsCsis().get(0)).getCsCsi().getCsi().getComments();
   }
 
 }

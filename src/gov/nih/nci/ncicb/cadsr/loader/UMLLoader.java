@@ -167,7 +167,6 @@ public class UMLLoader {
       }
     }
 
-
     Persister persister = new UMLPersister(elements);
     persister.persist();
 

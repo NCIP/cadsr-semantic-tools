@@ -29,6 +29,8 @@ public class DECPersister extends UMLPersister {
         DataElementConcept newDec = null;
 	dec = (DataElementConcept) it.next();
         
+        String packageName = getPackageName(dec);
+        
         // update object class with persisted one
         dec.setObjectClass(findObjectClass(
                              dec.getObjectClass().getLongName()));
@@ -89,7 +91,7 @@ public class DECPersister extends UMLPersister {
           // is definition the same?
           // if not, then add alternate Def
           if((newDef.length() > 0) && !newDef.equals(newDec.getPreferredDefinition())) {
-            addAlternateDefinition(newDec, newDef, Definition.TYPE_UML);
+            addAlternateDefinition(newDec, newDef, Definition.TYPE_UML, getPackageName(dec));
           }
 
 
@@ -100,7 +102,7 @@ public class DECPersister extends UMLPersister {
           // is definition the same?
           // if not, then add alternate Def
           if((newDef.length() > 0) && !newDef.equals(newDec.getPreferredDefinition())) {
-            addAlternateDefinition(dec, newDef, Definition.TYPE_UML);
+            addAlternateDefinition(dec, newDef, Definition.TYPE_UML, getPackageName(dec));
           }
 
 	}
@@ -114,7 +116,8 @@ public class DECPersister extends UMLPersister {
                     .getProperty("prop.longName",
                                  newDec.getProperty().getLongName()));
 
-	addProjectCs(newDec);
+
+        addPackageClassification(newDec, packageName);
 	it.set(newDec);
         
         dec.setLongName(dec.getLongName());

@@ -40,7 +40,7 @@ public class UMLDefaults {
   private ConceptualDomain conceptualDomain;
   private ClassificationSchemeItem domainCsi;
   private ClassificationScheme projectCs;
-  private ClassSchemeClassSchemeItem projectCsCsi;
+//   private ClassSchemeClassSchemeItem projectCsCsi;
 
   private Context mainContext;
 
@@ -207,49 +207,55 @@ public class UMLDefaults {
 
       projectCs.setAudit(audit);
       projectCs.setId(classificationSchemeDAO.create(projectCs));
+
+      System.out.println("&&&&&&&&&&&&&&&&&& project ID: " + projectCs.getId());
+
       logger.info(PropertyAccessor.getProperty("created.project.cs"));
       LogUtil.logAc(projectCs, logger);
       logger.info(PropertyAccessor.getProperty("type", projectCs.getType()));
 
-      projectCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
-      projectCsCsi.setCs(projectCs);
-      projectCsCsi.setCsi(domainCsi);
-      projectCsCsi.setLabel(projectName);
-      projectCsCsi.setAudit(audit);
+//       projectCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+//       projectCsCsi.setCs(projectCs);
+//       projectCsCsi.setCsi(domainCsi);
+//       projectCsCsi.setLabel(projectName);
+//       projectCsCsi.setAudit(audit);
 
-      classificationSchemeDAO.addClassificationSchemeItem(projectCs,
-							  projectCsCsi);
-      logger.info(PropertyAccessor.getProperty("created.project.csCsi"));
-      logger.info(PropertyAccessor.getProperty("label", projectCsCsi.getLabel()));
-    } else { // is domainCsi linked?
+//       classificationSchemeDAO.addClassificationSchemeItem(projectCs,
+// 							  projectCsCsi);
+//       logger.info(PropertyAccessor.getProperty("created.project.csCsi"));
+//       logger.info(PropertyAccessor.getProperty("label", projectCsCsi.getLabel()));
+    } 
+    else { 
       logger.info(PropertyAccessor.getProperty("existed.project.cs"));
       projectCs = (ClassificationScheme) result.get(0);
 
-      List csCsis = projectCs.getCsCsis();
-      boolean found = false;
+//       List csCsis = projectCs.getCsCsis();
+//       boolean found = false;
 
-      for (ListIterator it = csCsis.listIterator(); it.hasNext();) {
-	ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it.next();
+//       for (ListIterator it = csCsis.listIterator(); it.hasNext();) {
+// 	ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it.next();
 
-	if (csCsi.getCsi().getName().equals(domainCsi.getName())) {
-	  projectCsCsi = csCsi;
-	  found = true;
-	}
-      }
+// 	if (csCsi.getCsi().getName().equals(domainCsi.getName())) {
+// 	  projectCsCsi = csCsi;
+// 	  found = true;
+// 	}
+//       }
 
-      if (!found) {
-	logger.info(PropertyAccessor
-                    .getProperty("link.project.to.domain"));
-	projectCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
-	projectCsCsi.setCs(projectCs);
-	projectCsCsi.setCsi(domainCsi);
-	projectCsCsi.setLabel(projectName);
-	projectCsCsi.setAudit(audit);
+//       if (!found) {
+// 	logger.info(PropertyAccessor
+//                     .getProperty("link.project.to.domain"));
+// 	projectCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+// 	projectCsCsi.setCs(projectCs);
+// 	projectCsCsi.setCsi(domainCsi);
+// 	projectCsCsi.setLabel(projectName);
+// 	projectCsCsi.setAudit(audit);
 
-	classificationSchemeDAO.addClassificationSchemeItem(projectCs,
-							    projectCsCsi);
-      }
+// 	classificationSchemeDAO.addClassificationSchemeItem(projectCs,
+// 							    projectCsCsi);
+//       }
+//     }
     }
+
   }
 
   /**
@@ -288,12 +294,13 @@ public class UMLDefaults {
   public ClassificationScheme getProjectCs() {
     return projectCs;
   }
-  /**
-   * @return the project CS_CSI
-   */
-  public ClassSchemeClassSchemeItem getProjectCsCsi() {
-    return projectCsCsi;
-  }
+
+//   /**
+//    * @return the project CS_CSI
+//    */
+//   public ClassSchemeClassSchemeItem getProjectCsCsi() {
+//     return projectCsCsi;
+//   }
   /**
    * @return default Audit object -- contains username.
    */

@@ -49,15 +49,26 @@ public class UMLDefaultHandler implements UMLHandler {
       oc.setPreferredDefinition("");
 
     elements.addElement(oc);
-
-    if (!packageList.contains(event.getPackageName())) {
-      ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
-      String csiName = null;
-      String pName = event.getPackageName();
-      csi.setComments(event.getPackageName());
+    
+    ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
+    String csiName = null;
+    String pName = event.getPackageName();
+    csi.setComments(pName);
+    
+    if (!packageList.contains(pName)) {
       elements.addElement(csi);
-      packageList.add(event.getPackageName());
+      packageList.add(pName);
     }
+
+    // Store package names
+    AdminComponentClassSchemeClassSchemeItem acCsCsi = DomainObjectFactory.newAdminComponentClassSchemeClassSchemeItem();
+    ClassSchemeClassSchemeItem csCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+    csCsi.setCsi(csi);
+    acCsCsi.setCsCsi(csCsi);
+    List l = new ArrayList();
+    l.add(acCsCsi);
+    oc.setAcCsCsis(l);
+
   }
 
   public void newAttribute(NewAttributeEvent event) {
@@ -118,6 +129,11 @@ public class UMLDefaultHandler implements UMLHandler {
       dec.setPreferredDefinition("");
       de.setPreferredDefinition("Please provide the appropriate definition.");
     }
+
+    // Add packages to Prop, DE and DEC.
+    prop.setAcCsCsis(oc.getAcCsCsis());
+    de.setAcCsCsis(oc.getAcCsCsis());
+    dec.setAcCsCsis(oc.getAcCsCsis());
 
     elements.addElement(de);
     elements.addElement(dec);
@@ -235,6 +251,11 @@ public class UMLDefaultHandler implements UMLHandler {
         if(dec.getObjectClass() == parentOc) {
           // We found property belonging to parent
           // Duplicate it for child.
+          Property newProp = DomainObjectFactory.newProperty();
+          newProp.setLongName(dec.getProperty().getLongName());
+          newProp.setPreferredName(dec.getProperty().getPreferredName());
+
+
           DataElementConcept newDec = DomainObjectFactory.newDataElementConcept();
           newDec.setProperty(dec.getProperty());
           newDec.setObjectClass(childOc);
@@ -249,6 +270,11 @@ public class UMLDefaultHandler implements UMLHandler {
           newDe.setLongName(newDec.getLongName() + de.getValueDomain().getPreferredName());
           newDe.setPreferredDefinition(de.getPreferredDefinition());
 
+          newDe.setAcCsCsis(parentOc.getAcCsCsis());
+          newDec.setAcCsCsis(parentOc.getAcCsCsis());
+          newProp.setAcCsCsis(parentOc.getAcCsCsis());
+
+          newElts.add(newProp);
           newElts.add(newDe);
           newElts.add(newDec);
         }

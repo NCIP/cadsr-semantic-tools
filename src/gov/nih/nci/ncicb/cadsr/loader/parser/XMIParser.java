@@ -332,8 +332,6 @@ public class XMIParser implements Parser {
 
     event.setDirection(navig);
 
-    logger.debug(event.getAClassName() + "::" + event.getALowCardinality() + "^" + event.getAHighCardinality() + "%%%" + event.getBClassName() + "::" + event.getBLowCardinality() + "^" + event.getBHighCardinality());
-
     associationEvents.add(event);
   }
 
