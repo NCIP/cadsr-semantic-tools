@@ -53,25 +53,28 @@ public class OcRecPersister extends UMLPersister {
 
 	  if (o.getLongName().equals(ocr.getSource().getLongName())) {
 	    ocr.setSource(o);
-	  } else if (o.getLongName().equals(ocr.getTarget()
+	  } 
+          if (o.getLongName().equals(ocr.getTarget()
 					    .getLongName())) {
 	    ocr.setTarget(o);
 	  }
 	}
-
-        
 
 //         logger.info(PropertyAccessor
 //                     .getProperty("created.association"));
 	LogUtil.logAc(ocr, logger);
 	logger.info(PropertyAccessor
                     .getProperty("source.role",  ocr.getSourceRole()));
+	logger.info(PropertyAccessor
+                    .getProperty("source.class",  ocr.getSource().getLongName()));
 	logger.info(PropertyAccessor.getProperty
                     ("source.cardinality", new Object[]
                       {new Integer(ocr.getSourceLowCardinality()),
                        new Integer(ocr.getSourceHighCardinality())}));
 	logger.info(PropertyAccessor
                     .getProperty("target.role",  ocr.getTargetRole()));
+	logger.info(PropertyAccessor
+                    .getProperty("target.class",  ocr.getTarget().getLongName()));
 	logger.info(PropertyAccessor.getProperty
                     ("target.cardinality", new Object[]
                       {new Integer(ocr.getTargetLowCardinality()),

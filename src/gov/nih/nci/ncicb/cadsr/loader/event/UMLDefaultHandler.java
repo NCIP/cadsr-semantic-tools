@@ -231,6 +231,13 @@ public class UMLDefaultHandler implements UMLHandler {
     ocr.setLongName(event.getRoleName());
     ocr.setType(ObjectClassRelationship.TYPE_HAS);
 
+
+//     logger.debug("Created Association :");
+//     logger.debug("event.A: " + event.getAClassName());
+//     logger.debug("event.B: " + event.getBClassName());
+//     logger.debug("Source: " + ocr.getSource().getLongName());
+//     logger.debug("Target: " + ocr.getTarget().getLongName());
+
     if(!aDone)
       logger.debug("!aDone: " + event.getAClassName() + " -- " + event.getBClassName());
 

@@ -34,7 +34,7 @@ public class PackagePersister extends UMLPersister {
 	pkg.setAudit(defaults.getAudit());
 	pkg.setType(ClassificationSchemeItem.TYPE_UML_PACKAGE);
 
-        subProject.setName(defaults.getPackageDisplay(pkg.getComments()));
+        subProject.setName(defaults.getPackageDisplay(pkg.getName()));
         // Verify is there is a sub project
         if(!subProject.getName().equals(pkg.getName())) {
           subProject.setAudit(defaults.getAudit());
@@ -48,6 +48,8 @@ public class PackagePersister extends UMLPersister {
           } else {
             subProject = (ClassificationSchemeItem) l.get(0);
           }
+        } else {
+
         }
         
 

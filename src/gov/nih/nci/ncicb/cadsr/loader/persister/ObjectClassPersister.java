@@ -31,6 +31,7 @@ public class ObjectClassPersister extends UMLPersister {
         ObjectClass newOc = null;
 
 	oc = (ObjectClass) it.next();
+        logger.debug(oc.getLongName());
 	oc.setContext(defaults.getMainContext());
 
 	String className = oc.getLongName();
@@ -49,7 +50,7 @@ public class ObjectClassPersister extends UMLPersister {
             );
         
         List l = objectClassDAO.findByConceptCodes(conceptCodes, oc.getContext(), eager);
-        
+
         Concept primaryConcept = concepts[concepts.length - 1];
 
 	boolean packageFound = false;
