@@ -1,9 +1,8 @@
 package gov.nih.nci.ncicb.cadsr.loader.event;
 
-public class NewClassEvent implements LoaderEvent {
+public class NewClassEvent extends ConceptualEvent {
 
   private String name;
-  private String conceptCode;
   private String packageName;
 
   public NewClassEvent(String name) {
@@ -12,14 +11,6 @@ public class NewClassEvent implements LoaderEvent {
 
   public String getName() {
     return name;
-  }
-
-  /**
-   * Get the ConceptCode value.
-   * @return the ConceptCode value.
-   */
-  public String getConceptCode() {
-    return conceptCode;
   }
 
   /**
@@ -39,12 +30,5 @@ public class NewClassEvent implements LoaderEvent {
   }
 
   
-  /**
-   * Set the ConceptCode value.
-   * @param newConceptCode The new ConceptCode value.
-   */
-  public void setConceptCode(String newConceptCode) {
-    this.conceptCode = newConceptCode;
-  }
   
 }
