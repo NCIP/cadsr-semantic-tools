@@ -28,7 +28,7 @@ import gov.nih.nci.ncicb.cadsr.spring.ApplicationContextFactory;
 
 import org.apache.log4j.Logger;
 
-import gov.nih.nci.ncicb.cadsr.loader.jaas.ConsoleCallbackHandler;
+import gov.nih.nci.ncicb.cadsr.jaas.ConsoleCallbackHandler;
 
 
 /**
