@@ -4,4 +4,6 @@ import java.util.EventListener;
 
 public interface NavigationListener extends EventListener {
 
+  public void navigate(NavigationEvent event);
+
 }
