@@ -157,58 +157,61 @@ public class UMLPersister implements Persister {
     } 
   }
 
-  
-//   protected void addDefinition(AdminComponent ac, String newDef) {
+  protected void addAlternateDefinition(AdminComponent ac, String newDef, String type) {
 
-//     List defs = adminComponentDAO.getDefinitions(ac);
-//     boolean found = false;
-//     for(Iterator it = defs.iterator(); it.hasNext(); ) {
-//       Definition def = (Definition)it.next();
-//       if(def.getDefinition().equals(newDef)) {
-//         found = true;
-//         logger.info(PropertyAccessor.getProperty(
-//                       "existed.definition", newDef));
+    List altDefs = adminComponentDAO.getDefinitions(ac);
+    boolean found = false;
+    for(Iterator it = altDefs.iterator(); it.hasNext(); ) {
+      Definition def = (Definition)it.next();
+      if(def.getType().equals(type) && def.getDefinition().equals(newDef)) {
+        found = true;
+        logger.info(PropertyAccessor.getProperty(
+                      "existed.altDef", newDef));
         
-//         boolean csFound = false;
-//         for(Iterator it2 = def.getCsCsis().iterator(); it2.hasNext();) {
-//           ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
-//           if(csCsi.getId().equals(defaults.getProjectCsCsi().getId())) {
-//             csFound = true;
-//           }
-//         }
-//         if(!csFound) {
-//           classSchemeClassSchemeItemDAO.addCsCsi(def, defaults.getProjectCsCsi());
-//           logger.info(
-//             PropertyAccessor.getProperty(
-//               "linked.to.project",
-//               "Definition"
-//               ));
-//         }
+        boolean csFound = false;
+        for(Iterator it2 = def.getCsCsis().iterator(); it2.hasNext();) {
+          ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
+          if(csCsi.getId().equals(defaults.getProjectCsCsi().getId())) {
+            csFound = true;
+          }
+        }
+        if(!csFound) {
+          classSchemeClassSchemeItemDAO.addCsCsi(def, defaults.getProjectCsCsi());
+          logger.info(
+            PropertyAccessor.getProperty(
+              "linked.to.project",
+              "Alternate Definition"
+              ));
+        }
         
-//       }
-//     }
+      }
+    }
     
-//     if(!found) {
-//       Definition def = DomainObjectFactory.newDefinition();
-//       def.setContext(defaults.getContext());
-//       def.setDefinition(newDef);
-//       def.setId(adminComponentDAO.addDefinition(ac, def));
-//       logger.info(PropertyAccessor.getProperty(
-//                     "added.definition", 
-//                     new String[] {
-//                       def.getDefinition(),
-//                       ac.getLongName(),
-//                       "Admin Component"
-//                     }));
+    if(!found) {
+      Definition altDef = DomainObjectFactory.newDefinition();
+      altDef.setContext(defaults.getContext());
+      altDef.setDefinition(newDef);
+      altDef.setAudit(defaults.getAudit());
+      altDef.setType(type);
+      altDef.setId(adminComponentDAO.addDefinition(ac, altDef));
+      logger.info(PropertyAccessor.getProperty(
+                    "added.altDef", 
+                    new String[] {
+                      altDef.getId(),
+                      altDef.getDefinition(),
+                      ac.getLongName()
+                    }));
       
-//       classSchemeClassSchemeItemDAO.addCsCsi(def, defaults.getProjectCsCsi());
-//       logger.info(
-//         PropertyAccessor.getProperty(
-//           "linked.to.project",
-//           "Definition"
-//           ));
+      classSchemeClassSchemeItemDAO.addCsCsi(altDef, defaults.getProjectCsCsi());
+      logger.info(
+        PropertyAccessor.getProperty(
+          "linked.to.project",
+          "Alternate Definition"
+          ));
       
-//     } 
-//   }
+    } 
+  }
+
+  
 
 }

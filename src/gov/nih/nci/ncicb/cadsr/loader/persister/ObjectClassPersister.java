@@ -48,10 +48,14 @@ public class ObjectClassPersister extends UMLPersister {
         
 
 	boolean packageFound = false;
+        String newDef = oc.getPreferredDefinition();
 
 	if (l.size() == 0) {
-	  oc.setPreferredDefinition(oc.getConcept().getPreferredDefinition());
+          // !! TODO Need decision on this
 	  oc.setPreferredName(oc.getLongName());
+
+	  oc.setPreferredDefinition(oc.getConcept().getPreferredDefinition());
+          oc.setDefinitionSource(oc.getConcept().getDefinitionSource());
 
 	  oc.setVersion(new Float(1.0f));
 	  oc.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
@@ -59,16 +63,34 @@ public class ObjectClassPersister extends UMLPersister {
 
 	  oc.setId(objectClassDAO.create(oc));
 	  logger.info(PropertyAccessor.getProperty("created.oc"));
+          // is definition the same?
+          // if not, then add alternate Def
+          if(!newDef.equals(oc.getPreferredDefinition())) {
+            addAlternateDefinition(oc, newDef, Definition.TYPE_UML);
+          }
+          
 	} else {
-          // !!! TODO Verify that next line is ok.
-          String newPrefName = oc.getLongName();
+          String newName = oc.getLongName();
+          String newDefSource = oc.getConcept().getDefinitionSource();
+          String newConceptDef = oc.getConcept().getPreferredDefinition();
 	  oc = (ObjectClass) l.get(0);
 	  logger.info(PropertyAccessor.getProperty("existed.oc"));
-
           // is long_name the same?
           // if not, then add alternate Name
-          if(!newPrefName.equals(oc.getPreferredName())) {
-            addAlternateName(oc, newPrefName);
+          if(!newName.equals(oc.getLongName())) {
+            addAlternateName(oc, newName);
+          }
+
+          // is definition the same?
+          // if not, then add alternate Def
+          if(!newDef.equals(oc.getPreferredDefinition())) {
+            addAlternateDefinition(oc, newDef, Definition.TYPE_UML);
+          }
+
+          // is concept source the same?
+          // if not, then add alternate Def
+          if(!newDefSource.equals(oc.getDefinitionSource())) {
+            addAlternateDefinition(oc, newConceptDef, newDefSource);
           }
 
 	  List packages = oc.getAcCsCsis();
@@ -113,7 +135,7 @@ public class ObjectClassPersister extends UMLPersister {
 	    logger.error(PropertyAccessor.getProperty("missing.package", new String[] {packageName, className}));
 	  }
 	} else {
-	  logger.debug("Designation was found.");
+	  logger.debug("Package was found.");
 	}
       }
     }

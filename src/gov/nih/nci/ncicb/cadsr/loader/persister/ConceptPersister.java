@@ -47,7 +47,8 @@ public class ConceptPersister extends UMLPersister {
 
             logger.debug("Concept " + c.getPreferredName() + " had different definition source. ");
             Definition def = DomainObjectFactory.newDefinition();
-            def.setDefinition(c.getDefinitionSource() + " | " + c.getPreferredDefinition());
+            def.setType(c.getDefinitionSource());
+            def.setDefinition(c.getPreferredDefinition());
             def.setAudit(defaults.getAudit());
             def.setContext(defaults.getContext());
             adminComponentDAO.addDefinition(c, def);
