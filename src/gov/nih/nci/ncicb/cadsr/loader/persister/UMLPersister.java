@@ -9,6 +9,8 @@ import gov.nih.nci.ncicb.cadsr.spring.*;
 
 import java.util.*;
 
+import org.apache.log4j.Logger;
+
 public class UMLPersister implements Persister {
 
   private ElementsLists elements = null;
@@ -27,9 +29,8 @@ public class UMLPersister implements Persister {
   private LoaderDAO loaderDAO;
 
   private HashMap params = new HashMap();
-
   
-  private String projectName, version, workflowStatus;
+  private String projectName, projectVersion, version, workflowStatus;
   private Context context;
   private ConceptualDomain conceptualDomain;
 
@@ -39,11 +40,18 @@ public class UMLPersister implements Persister {
 
   private HashMap valueDomains = new HashMap();
 
+  private Logger logger;
+
   public UMLPersister(ElementsLists list) {
+
+    System.setProperty("log4j.configuration", "uml-log4j.properties");
+    logger  = Logger.getLogger(UMLPersister.class.getName());
+
     this.elements = list;
 
     ApplicationContextFactory.init("applicationContext.xml");
 
+    logger.debug("Loading ContextDAO bean");
     System.out.println("Loading ContextDAO bean");
     contextDAO = (ContextDAO) ApplicationContextFactory.getApplicationContext().getBean("contextDAO");
 
@@ -87,7 +95,7 @@ public class UMLPersister implements Persister {
   public void persist() throws PersisterException {
 
     initParams();
-    
+
     initClassifications();
 
     persistProperties();
@@ -131,7 +139,7 @@ public class UMLPersister implements Persister {
 	  if(de.getPreferredName().length() > 30)
 	    de.setPreferredName(de.getPreferredName().substring(0, 29));
 
-	  de.setVersion(new Float(1.0f));
+	  de.setVersion(new Float(version));
 	  
 	  de.setWorkflowStatus(workflowStatus);
 
@@ -250,7 +258,7 @@ public class UMLPersister implements Persister {
 	  dec.setPreferredDefinition(dec.getLongName());
 	  dec.setPreferredName(dec.getLongName());
 
-	  dec.setVersion(new Float(1.0f));
+	  dec.setVersion(new Float(version));
 
 	  dec.setWorkflowStatus(workflowStatus);
 
@@ -312,7 +320,14 @@ public class UMLPersister implements Persister {
   
   private void initParams() throws PersisterException {
 
-    String cName = (String)params.get("contextName");
+    projectName = (String)params.get("projectName");
+//     LoaderDefault loaderDefault = loaderDAO.findDefaults(defaultsId);
+    LoaderDefault loaderDefault = loaderDAO.findByName(projectName);
+
+    if(loaderDefault == null)
+      throw new PersisterException("Defaults not found. Please create a profile first.");
+    
+    String cName = loaderDefault.getContextName();
     if(cName == null)
       throw new PersisterException("Context Name not Set.");
 
@@ -320,24 +335,30 @@ public class UMLPersister implements Persister {
     if(context == null)
       throw new PersisterException("Context: " + cName + " not found.");
 
+    version = loaderDefault.getVersion().toString();
+    projectVersion = loaderDefault.getProjectVersion().toString();
 
-    projectName = (String)params.get("projectName");
-    version = (String)params.get("version");
-    if(projectName == null || version == null)
-      throw new PersisterException("Project Name / Version not Set.");
-
-
-    workflowStatus = (String)params.get("workflowStatus");
+    workflowStatus = loaderDefault.getWorkflowStatus();
     if(workflowStatus == null)
       throw new PersisterException("WorkflowStatus not Set.");
 
     
     conceptualDomain = DomainObjectFactory.newConceptualDomain();
-    conceptualDomain.setLongName((String)params.get("conceptualDomain"));
-    conceptualDomain.setContext(context);
+    conceptualDomain.setPreferredName(loaderDefault.getCdName());
+    
+    Context cdContext = contextDAO.findByName(loaderDefault.getCdContextName());
+    if(cdContext == null)
+      throw new PersisterException("CD Context not found.");
 
-    conceptualDomain = (ConceptualDomain)conceptualDomainDAO.find(conceptualDomain).get(0);
 
+    conceptualDomain.setContext(cdContext);
+
+    try {
+      conceptualDomain = (ConceptualDomain)conceptualDomainDAO.find(conceptualDomain).get(0);
+    } catch (NullPointerException e){
+      throw new PersisterException("CD: " + conceptualDomain.getPreferredName() + " not found.");
+    } 
+    
 
   }
   
@@ -357,7 +378,7 @@ public class UMLPersister implements Persister {
 
     projectCs = DomainObjectFactory.newClassificationScheme();
     projectCs.setLongName(projectName);
-    projectCs.setVersion(new Float(version));
+    projectCs.setVersion(new Float(projectVersion));
     projectCs.setContext(context);
     ArrayList eager = new ArrayList();
     eager.add(EagerConstants.CS_CSI);
@@ -394,7 +415,8 @@ public class UMLPersister implements Persister {
 	projectCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
 	projectCsCsi.setCs(projectCs);
 	projectCsCsi.setCsi(domainCsi);
-	
+	projectCsCsi.setLabel(projectName);
+
 	classificationSchemeDAO.addClassificationSchemeItem(projectCs, projectCsCsi);
       }
       
