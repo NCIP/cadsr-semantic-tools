@@ -11,7 +11,7 @@ public class UMLElementViewPanel extends JScrollPane {
 
   private JButton addButton = new JButton("Add"),
     deleteButton = new JButton("Delete"),
-    saveButton = new JButton("Save");
+    saveButton = new JButton("Apply");
 
   public UMLElementViewPanel(Concept[] concepts) {
     initUI(concepts);

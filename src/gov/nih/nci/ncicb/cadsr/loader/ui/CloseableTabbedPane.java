@@ -17,16 +17,16 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.plaf.metal.MetalTabbedPaneUI;
  
 /**
- * A JTabbedPane which has a close ('X') icon on each tab.
+ * A JTabbedPane which has a close icon on each tab.
  *
  * To add a tab, use the method addTab(String, Component)
  *
  * To have an extra icon on each tab (e.g. like in JBuilder, showing the file
- * type) use the method addTab(String, Component, Icon). Only clicking the 'X'
+ * type) use the method addTab(String, Component, Icon). Only clicking the close icon
  * closes the tab.
  */
-public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
-  MouseMotionListener {
+public class CloseableTabbedPane extends JTabbedPane 
+  implements MouseListener, MouseMotionListener {
  
   /**
    * The <code>EventListenerList</code>.

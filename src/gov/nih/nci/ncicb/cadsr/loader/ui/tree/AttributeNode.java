@@ -12,6 +12,7 @@ public class AttributeNode extends AbstractUMLNode {
 
     fullPath = de.getDataElementConcept().getObjectClass().getLongName()
       + display;
+    userObject = de;
   }
 
   public Icon getIcon() {

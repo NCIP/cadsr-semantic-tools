@@ -3,12 +3,14 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
+
+import java.awt.Component;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.*;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.BorderLayout;
 
 import java.util.*;
 
@@ -16,7 +18,7 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 
 
 public class MainFrame extends JFrame 
-                               implements ViewChangeListener
+  implements ViewChangeListener, CloseableTabbedPaneListener
 {
 
   private JMenuBar jMenuBar1 = new JMenuBar();
@@ -37,7 +39,7 @@ public class MainFrame extends JFrame
   private JSplitPane jSplitPane1 = new JSplitPane();
   private JSplitPane jSplitPane2 = new JSplitPane();
   private JTabbedPane jTabbedPane1 = new JTabbedPane();
-  private JTabbedPane viewTabbedPane = new CloseableTabbedPane();
+  private CloseableTabbedPane viewTabbedPane = new CloseableTabbedPane();
   private JPanel jPanel1 = new JPanel();
   private JPanel mainViewPanel = new JPanel();
 
@@ -46,7 +48,7 @@ public class MainFrame extends JFrame
 
   private MainFrame _this = this;
 
-  private List<UMLElementViewPanel> viewPanels = new ArrayList<UMLElementViewPanel>();
+  private Map<String, UMLElementViewPanel> viewPanels = new HashMap<String, UMLElementViewPanel>();
 
   public MainFrame()
   {
@@ -105,6 +107,11 @@ public class MainFrame extends JFrame
 
     jTabbedPane1.addTab("Errors", new ErrorPanel(TreeBuilder.getRootNode()));
 //     logTabbedPane.addTab("jPanel1", jPanel1);
+
+    Icon closeIcon = new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("close-tab.gif"));
+    viewTabbedPane.setCloseIcons(closeIcon, closeIcon, closeIcon);
+    viewTabbedPane.addCloseableTabbedPaneListener(this);
+
     jTabbedPane1.addTab("Log", new JPanel());
     jSplitPane2.add(jTabbedPane1, JSplitPane.BOTTOM);
     jSplitPane2.add(viewTabbedPane, JSplitPane.TOP);
@@ -138,21 +145,56 @@ public class MainFrame extends JFrame
   public void viewChanged(ViewChangeEvent event) {
     if(event.getType() == ViewChangeEvent.VIEW_CONCEPTS) {
       UMLNode node = (UMLNode)event.getViewObject();
+
+      // If concept is already showing, just bring it up front
+      if(viewPanels.containsKey(node.getFullPath())) {
+        UMLElementViewPanel pa = viewPanels.get(node.getFullPath());
+        viewTabbedPane.setSelectedComponent(pa);
+        return;
+      }
+
+      String[] conceptCodes = null;
       if(node instanceof ClassNode) {
         ObjectClass oc = (ObjectClass)node.getUserObject();
-
-        String[] conceptCodes = oc.getPreferredName().split("-");
-        Concept[] concepts = new Concept[conceptCodes.length];
-        for(int i=0; i<concepts.length; 
-            concepts[i] = LookupUtil.lookupConcept(conceptCodes[i++])
-            );
+        conceptCodes = oc.getPreferredName().split("-");
         
-        UMLElementViewPanel viewPanel = new UMLElementViewPanel(concepts);
-        viewTabbedPane.addTab(node.getDisplay(), viewPanel);
-        viewTabbedPane.setSelectedComponent(viewPanel);
+      } else if(node instanceof AttributeNode) {
+        Property prop = ((DataElement)node.getUserObject()).getDataElementConcept().getProperty();
+        conceptCodes = prop.getPreferredName().split("-");
+      } 
+      
+      if(StringUtil.isEmpty(conceptCodes[0])) {
+        conceptCodes = new String[0];
       }
+
+      Concept[] concepts = new Concept[conceptCodes.length];
+
+      for(int i=0; i<concepts.length; 
+          concepts[i] = LookupUtil.lookupConcept(conceptCodes[i++])
+          );
+      if((concepts.length > 0) && (concepts[0] == null))
+        concepts = new Concept[0];
+      
+      UMLElementViewPanel viewPanel = new UMLElementViewPanel(concepts);
+
+      
+      viewTabbedPane.addTab(node.getDisplay(), viewPanel);
+      viewTabbedPane.setSelectedComponent(viewPanel);
+
+      viewPanel.setName(node.getFullPath());
+      viewPanels.put(viewPanel.getName(), viewPanel);
+      
+
     }
    
   }
 
+  public boolean closeTab(int index) {
+
+    Component c = viewTabbedPane.getComponentAt(index);
+    viewPanels.remove(c.getName());
+
+    return true;
+  }
+  
 }

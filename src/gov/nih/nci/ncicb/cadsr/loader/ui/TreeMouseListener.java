@@ -1,7 +1,8 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import javax.swing.*;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import java.awt.event.*;
 
 public class TreeMouseListener extends MouseAdapter {
@@ -26,9 +27,15 @@ public class TreeMouseListener extends MouseAdapter {
     if (e.isPopupTrigger()) {
       TreePath path = tree.getPathForLocation(e.getX(), e.getY());
       tree.setSelectionPath(path);
-      if(path != null)
-	popup.show(e.getComponent(),
-		   e.getX(), e.getY());
+      if(path != null) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
+        Object o = node.getUserObject();
+        if((o instanceof ClassNode)
+           || (o instanceof AttributeNode)
+           )
+          popup.show(e.getComponent(),
+                     e.getX(), e.getY());
+      }
     }
   
 }
