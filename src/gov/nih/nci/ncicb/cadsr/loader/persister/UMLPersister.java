@@ -141,8 +141,9 @@ public class UMLPersister implements Persister {
         boolean csFound = false;
         for(Iterator it2 = an.getCsCsis().iterator(); it2.hasNext();) {
           ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
-          if(csCsi.getCs().getId().equals(defaults.getProjectCs().getId())
-             && csCsi.getCsi().getId().equals(packageCsCsi.getId())) {
+//           if(csCsi.getCs().getId().equals(defaults.getProjectCs().getId())
+//              && csCsi.getCsi().getId().equals(packageCsCsi.getId())) {
+          if(csCsi.getId().equals(packageCsCsi.getId())) {
             csFound = true;
           }
         }
