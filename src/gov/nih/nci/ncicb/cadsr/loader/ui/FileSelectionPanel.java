@@ -39,7 +39,7 @@ public class FileSelectionPanel extends JPanel
     this.setLayout(new BorderLayout());
     
     JPanel infoPanel = new JPanel();
-    infoPanel.setLayout(new FlowLayout());
+    infoPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
     infoPanel.setBackground(Color.WHITE);
     infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
