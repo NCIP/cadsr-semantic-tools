@@ -17,6 +17,7 @@ import java.io.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.parser.*;
 import gov.nih.nci.ncicb.cadsr.loader.persister.*;
+import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 
 import java.security.*;
 import javax.security.auth.*;
@@ -76,9 +77,17 @@ public class UMLLoader {
     for(int i=0; i<filenames.length; i++) {
       logger.info("Starting file: " + filenames[i]);
 
+      UMLDefaults defaults = UMLDefaults.getInstance();
+      defaults.initParams(projectName, username);
+      defaults.initClassifications();
+
       XMIParser  parser = new XMIParser();
       parser.setListener(listener);
       parser.parse(args[0] + "/" + filenames[i]);
+
+      Validator validator = new UMLValidator(elements);
+      validator.validate();
+      
 
       synchronized(initClass) {
 	if(!initClass.isDone())
@@ -87,10 +96,11 @@ public class UMLLoader {
 	  } catch (Exception e){
 	  } // end of try-catch
       }
-      Persister persister = new UMLPersister(elements);
-      persister.setParameter("projectName", projectName);
-      persister.setParameter("username", username);
-      persister.persist();
+
+//       Persister persister = new UMLPersister(elements);
+//       persister.setParameter("projectName", projectName);
+//       persister.setParameter("username", username);
+//       persister.persist();
       
     }
 
