@@ -11,6 +11,14 @@ public class ElementsLists {
 
   private HashMap objects = new HashMap();
 
+  public void removeElement(Object o) {
+    List list = (List)objects.get(o.getClass().getName());
+    if(list == null)
+      return;
+    list.remove(o);
+    
+  }
+
   public void addElement(Object o) {
     List list = (List)objects.get(o.getClass().getName());
     if(list == null)

@@ -37,7 +37,7 @@ public class UMLLoader {
     System.out.println(filenames.length + " files to process");
     
     ElementsLists elements = new ElementsLists();
-    LoaderListener listener = new UMLListener(elements);
+    UMLListener listener = new XMIUMLListener(elements);
 
     for(int i=0; i<filenames.length; i++) {
       System.out.println("\n\n++++++++++++ Starting file: " + filenames[i]);

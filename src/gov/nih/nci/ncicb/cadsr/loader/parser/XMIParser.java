@@ -18,7 +18,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
 public class XMIParser implements Parser {
 
-  private LoaderListener listener;
+  private UMLListener listener;
 
   private MdrModelManagerFactory fact;
   private MdrModelManager mgr;
@@ -27,7 +27,7 @@ public class XMIParser implements Parser {
   private String className = "";
 
   public void setListener(LoaderListener listener) {
-    this.listener = listener;
+    this.listener = (UMLListener)listener;
   }
 
   public void parse(String filename) {
@@ -64,7 +64,7 @@ public class XMIParser implements Parser {
       packageName += "." + pack.getName(); 
     }  
 
-    ((UMLListener)listener).notification(new NewPackageEvent(packageName));
+    ((UMLListener)listener).newPackage(new NewPackageEvent(packageName));
 
     Iterator it = pack.getOwnedElement().iterator();
     while(it.hasNext()) {
@@ -95,7 +95,7 @@ public class XMIParser implements Parser {
     className = packageName + "." + clazz.getName();
 //     System.out.println("Class: " + className);
     
-    listener.notification(new NewClassEvent(className));
+    listener.newClass(new NewClassEvent(className));
 
     Iterator it = clazz.getFeature().iterator();
     while(it.hasNext()) {
@@ -115,7 +115,7 @@ public class XMIParser implements Parser {
     className = packageName + "." + interf.getName();
 //     System.out.println("Class: " + className);
     
-    listener.notification(new NewInterfaceEvent(className));
+    listener.newInterface(new NewInterfaceEvent(className));
 
     Iterator it = interf.getFeature().iterator();
     while(it.hasNext()) {
@@ -136,18 +136,18 @@ public class XMIParser implements Parser {
 
     event.setClassName(className);
     event.setType(att.getType().getName());
-    listener.notification(event);
+    listener.newAttribute(event);
   }
 
   private void doDataType(DataType dt)
   {
-    listener.notification(new NewDataTypeEvent(dt.getName()));
+    listener.newDataType(new NewDataTypeEvent(dt.getName()));
   }
 
   private void doOperation(Operation op) {
     NewOperationEvent event = new NewOperationEvent(op.getName());
     event.setClassName(className);
-    listener.notification(event);
+    listener.newOperation(event);
   }
 
   private void doStereotype(Stereotype st) {

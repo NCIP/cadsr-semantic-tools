@@ -51,8 +51,8 @@ public class UMLPersister implements Persister {
     System.out.println("Loading AdminComponentDAO bean");
     adminComponentDAO = (AdminComponentDAO) ApplicationContextFactory.getApplicationContext().getBean("adminComponentDAO");
 
-//     System.out.println("Loading DataElementConceptDAO bean");
-//     dataElementConceptDAO = (DataElementConceptDAO) ApplicationContextFactory.getApplicationContext().getBean("dataElementConceptDAO");
+    System.out.println("Loading DataElementConceptDAO bean");
+    dataElementConceptDAO = (DataElementConceptDAO) ApplicationContextFactory.getApplicationContext().getBean("dataElementConceptDAO");
 
 //     System.out.println("Loading CDDAO bean");
 //     conceptualDomainDAO = (ConceptualDomainDAO) ApplicationContextFactory.getApplicationContext().getBean("conceptualDomainDAO");
@@ -88,58 +88,73 @@ public class UMLPersister implements Persister {
     
     persistObjectClasses();
 
-    DataElement o = DomainObjectFactory.newDataElement();
+    persistDecs();
 
-    List des = (List)elements.getElements(o.getClass());
-    if(des != null) 
-      for(int i=0; i<des.size(); i++) {
-	DataElement de = (DataElement)des.get(i);
-	DataElementConcept dec = de.getDataElementConcept();
-	System.out.println("Class: " + dec.getObjectClass().getPreferredName());
-	System.out.println(" -- Attribute: " + dec.getProperty().getPreferredName() + ":" + de.getValueDomain().getPreferredName());
+//     DataElement o = DomainObjectFactory.newDataElement();
 
-	List vds = valueDomainDAO.find(de.getValueDomain());
-	System.out.println("vds -- SIZE: " + vds.size());
+//     List des = (List)elements.getElements(o.getClass());
+//     if(des != null) 
+//       for(int i=0; i<des.size(); i++) {
+// 	DataElement de = (DataElement)des.get(i);
+// 	DataElementConcept dec = de.getDataElementConcept();
+// 	System.out.println("Class: " + dec.getObjectClass().getPreferredName());
+// 	System.out.println(" -- Attribute: " + dec.getProperty().getPreferredName() + ":" + de.getValueDomain().getPreferredName());
+
+// 	List vds = valueDomainDAO.find(de.getValueDomain());
+// 	System.out.println("vds -- SIZE: " + vds.size());
 	
+
+//       }
+
+  }
+
+
+  public void persistDes() throws PersisterException {
+    DataElement de = DomainObjectFactory.newDataElement();
+    List des = (List)elements.getElements(de.getClass());
+    
+    if(des != null)
+      for(int i=0; i<des.size(); i++) {
+	de = (DataElement)des.get(i);
+
 
       }
 
   }
 
-
   // !!!! TODO 
   // EVS CONCEPT CODE.
   private void persistProperties() throws PersisterException {
+
     Property prop = DomainObjectFactory.newProperty();
     List props = (List)elements.getElements(prop.getClass());
-    
+
     if(props != null)
       for(int i=0; i<props.size(); i++) {
 	prop = (Property)props.get(i);
+
+	elements.removeElement(prop);
 	
 	prop.setContext(context);
-
+	
 	// does this property exist?
 	List l = propertyDAO.find(prop);
 	if(l.size() == 0) {
 	  // !!!!! TODO
 	  prop.setPreferredDefinition(prop.getLongName());
 	  prop.setPreferredName(prop.getLongName());
-
-
+	  
 	  prop.setVersion(new Float(1.0f));
-
+	  
 	  prop.setWorkflowStatus(workflowStatus);
-	  prop.setId(adminComponentDAO.create(prop));
+	  prop.setId(propertyDAO.create(prop));
 	} else {
 	  prop = (Property)l.get(0);
 	}	
-
+	
 	addClassificationSchemes(prop);
-	
-	
+	elements.addElement(prop);
       }
-
 
   }
 
@@ -148,16 +163,96 @@ public class UMLPersister implements Persister {
 
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     List ocs = (List)elements.getElements(oc.getClass());
+
+    System.out.println("ocs...");
     
     if(ocs != null)
       for(int i=0; i<ocs.size(); i++) {
 	oc = (ObjectClass)ocs.get(i);
+
+	elements.removeElement(oc);
 	
 	oc.setContext(context);
+
+	String className = oc.getLongName();
+	int ind = className.lastIndexOf(".");
+	String packageName = className.substring(0, ind - 1);
+	className = className.substring(ind + 1);
+	
+	oc.setLongName(className);
+	// does this oc exist?
+	List l = objectClassDAO.find(oc);
+	if(l.size() == 0) {
+	  // !!!!! TODO
+	  oc.setPreferredDefinition(oc.getLongName());
+	  oc.setPreferredName(oc.getLongName());
+
+	  oc.setVersion(new Float(1.0f));
+
+	  oc.setWorkflowStatus(workflowStatus);
+	  oc.setId(objectClassDAO.create(oc));
+	} else {
+	  oc = (ObjectClass)l.get(0);
+	}	
+
+	addClassificationSchemes(oc);
+	elements.addElement(oc);
+
+	// add designation to hold package name
+	// !!!! TODO
+	
       }
 
+  }
+
+  private void persistDecs() throws PersisterException {
+    DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
+    List decs = (List)elements.getElements(dec.getClass());
+    
+    System.out.println("decs: " + decs.size());
+
+    if(decs != null)
+      for(int i=0; i<decs.size(); i++) {
+	dec = (DataElementConcept)decs.get(i);
+	elements.removeElement(dec);
+	
+	dec.setContext(context);
+
+	// does this dec exist?
+	List l = dataElementConceptDAO.find(dec);
+	if(l.size() == 0) {
+	  // !!!!! TODO
+	  dec.setPreferredDefinition(dec.getLongName());
+	  dec.setPreferredName(dec.getLongName());
+
+
+	  dec.setVersion(new Float(1.0f));
+
+	  dec.setWorkflowStatus(workflowStatus);
+
+	  List ocs = elements.getElements(DomainObjectFactory.newObjectClass().getClass());
+	  for(int j=0; j<ocs.size(); j++) {
+	    ObjectClass o = (ObjectClass)ocs.get(j);
+	    if(o.getLongName().equals(dec.getObjectClass().getLongName()))
+	      dec.setObjectClass(o);
+	  }
+	  
+
+	  dec.setId(dataElementConceptDAO.create(dec));
+	} else {
+	  dec = (DataElementConcept)l.get(0);
+	}	
+
+	addClassificationSchemes(dec);
+	elements.addElement(dec);
+
+	// add designation to hold package name
+	// !!!! TODO
+	
+      }
 
   }
+
 
   private void addClassificationSchemes(AdminComponent ac) throws PersisterException {
 
