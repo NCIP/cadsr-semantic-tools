@@ -72,8 +72,9 @@ public class UMLLoader {
     logger.info(filenames.length + " files to process");
     
     ElementsLists elements = new ElementsLists();
+    Validator validator = new UMLValidator(elements);
     UMLListener listener = new XMIUMLListener(elements);
-
+    
     for(int i=0; i<filenames.length; i++) {
       logger.info("Starting file: " + filenames[i]);
 
@@ -85,10 +86,7 @@ public class UMLLoader {
       parser.setListener(listener);
       parser.parse(args[0] + "/" + filenames[i]);
 
-      Validator validator = new UMLValidator(elements);
-      validator.validate();
       
-
       synchronized(initClass) {
 	if(!initClass.isDone())
 	  try {
@@ -96,13 +94,14 @@ public class UMLLoader {
 	  } catch (Exception e){
 	  } // end of try-catch
       }
+    }
+
+    validator.validate();
 
 //       Persister persister = new UMLPersister(elements);
 //       persister.setParameter("projectName", projectName);
 //       persister.setParameter("username", username);
 //       persister.persist();
-      
-    }
 
   }
 
