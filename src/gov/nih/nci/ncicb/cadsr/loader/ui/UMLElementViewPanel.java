@@ -8,7 +8,7 @@ import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 
 
-public class UMLElementViewPanel extends JScrollPane
+public class UMLElementViewPanel extends JPanel
   implements ActionListener, KeyListener {
 
   private Concept[] concepts;
@@ -28,6 +28,7 @@ public class UMLElementViewPanel extends JScrollPane
 
   public void updateConcepts(Concept[] concepts) {
     this.concepts = concepts;
+    this.removeAll();
     initUI();
   }
 
@@ -40,9 +41,12 @@ public class UMLElementViewPanel extends JScrollPane
   }
 
   private void initUI() {
-    JPanel scrollPanel = new JPanel(new BorderLayout());
+    this.setLayout(new BorderLayout());
+
+//     JPanel scrollPanel = new JPanel();
 
     JPanel gridPanel = new JPanel(new GridLayout(-1, 1));
+    JScrollPane scrollPane = new JScrollPane(gridPanel);
 
     ConceptUI[] conceptUIs = new ConceptUI[concepts.length];
     JPanel[] conceptPanels = new JPanel[concepts.length];
@@ -101,11 +105,14 @@ public class UMLElementViewPanel extends JScrollPane
     buttonPanel.add(deleteButton);
     buttonPanel.add(saveButton);
 
-    scrollPanel.add(buttonPanel, BorderLayout.SOUTH);
+//     scrollPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-    scrollPanel.add(gridPanel, BorderLayout.CENTER);
+//     scrollPanel.add(gridPanel);
 
-    this.setViewportView(scrollPanel);
+//     scrollPane.setViewportView(gridPanel);
+
+    this.add(scrollPane, BorderLayout.CENTER);
+    this.add(buttonPanel, BorderLayout.SOUTH);
 
   }
 
