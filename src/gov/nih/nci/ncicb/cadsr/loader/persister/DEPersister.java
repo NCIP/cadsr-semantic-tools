@@ -38,37 +38,36 @@ public class DEPersister extends UMLPersister {
                  newDataElementConcept().getClass()).listIterator(); lit.hasNext();) {
             
 	    DataElementConcept o = (DataElementConcept) lit.next();
-	    if (o.getObjectClass().getConcept().getId()
-                .equals(de.getDataElementConcept()
-                        .getObjectClass().getConcept().getId())
-                && 
-                o.getProperty().getConcept().getId()
-                .equals(de.getDataElementConcept()
-                        .getProperty().getConcept().getId()))
-	      de.setDataElementConcept(o);
+// 	    if (o.getObjectClass().getConcept().getId()
+//                 .equals(de.getDataElementConcept()
+//                         .getObjectClass().getConcept().getId())
+//                 && 
+//                 o.getProperty().getConcept().getId()
+//                 .equals(de.getDataElementConcept()
+//                         .getProperty().getConcept().getId()))
+// 	      de.setDataElementConcept(o);
+            de.setDataElementConcept(findDec(de.getDataElementConcept().getLongName()));
+
 	  }
+
+	  de.setValueDomain(lookupValueDomain(de.getValueDomain()));
 
           de.setLongName(
             de.getDataElementConcept()
-            .getObjectClass().getConcept().getLongName()
-            + de.getDataElementConcept()
-            .getProperty().getConcept().getLongName());
-
-	  de.setValueDomain(lookupValueDomain(de.getValueDomain()));
+            .getLongName()
+            + de.getValueDomain().getPreferredName());
+          
 
 	  List l = dataElementDAO.find(de);
 
 	  if (l.size() == 0) {
-            // !!!! TODO
-	    de.setPreferredDefinition("???");
-	    de.setPreferredName(de.getLongName());
-
-	    // !!!!! TODO -- following will pass constraints
-	    if (de.getPreferredName().length() > 30) {
-	      de.setPreferredName(
-                de.getPreferredName().substring(0,29));
-	    }
-
+	    de.setPreferredName(
+              de.getDataElementConcept().getPublicId() + "-" +
+              de.getDataElementConcept().getVersion() + ":" + 
+              de.getValueDomain().getPublicId() + "-" + 
+              de.getValueDomain().getVersion()
+              );
+            
 	    de.setVersion(defaults.getVersion());
 	    de.setWorkflowStatus(defaults.getWorkflowStatus());
 

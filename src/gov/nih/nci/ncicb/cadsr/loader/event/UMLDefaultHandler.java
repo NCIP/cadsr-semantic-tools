@@ -93,8 +93,12 @@ public class UMLDefaultHandler implements UMLHandler {
     else 
       prop.setPreferredDefinition("");
 
+    // Uppercase first Char
+    String first = event.getName().substring(0, 1).toUpperCase();
+    String propName = first + event.getName().substring(1);
+
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
-    dec.setLongName(event.getClassName() + event.getName());
+    dec.setLongName(event.getClassName() + propName);
     dec.setProperty(prop);
 
     logger.debug("DEC LONG_NAME: " + dec.getLongName());
@@ -114,8 +118,9 @@ public class UMLDefaultHandler implements UMLHandler {
 
     DataElement de = DomainObjectFactory.newDataElement();
 
-    //     de.setLongName(dec.getLongName() + event.getType());
-    de.setLongName(dec.getLongName());
+    // !! TODO Verify format of type (java.lang.String or String?)
+    de.setLongName(dec.getLongName() + event.getType());
+    de.setPreferredDefinition(event.getDescription());
 
     logger.debug("DE LONG_NAME: " + de.getLongName());
 
@@ -225,8 +230,48 @@ public class UMLDefaultHandler implements UMLHandler {
       }
     }
 
-    ocr.setType(ObjectClassRelationship.TYPE_HAS);
+    ocr.setType(ObjectClassRelationship.TYPE_IS);
+
+    // Inherit all attributes
+    // Find all DECs:
+    ObjectClass parentOc = ocr.getTarget(),
+      childOc = ocr.getSource();
+    List decs = elements.getElements(DomainObjectFactory.newDataElementConcept().getClass());
+    if(decs != null)
+      for(Iterator it = decs.iterator(); it.hasNext(); ) {
+        DataElementConcept dec = (DataElementConcept)it.next();
+        if(dec.getObjectClass() == parentOc) {
+          // We found property belonging to parent
+          // Duplicate it for child.
+          DataElementConcept newDec = DomainObjectFactory.newDataElementConcept();
+          newDec.setProperty(dec.getProperty());
+          newDec.setObjectClass(childOc);
+          
+          // Uppercase first Char
+          String first = newDec.getProperty().getLongName().substring(0, 1).toUpperCase();
+          String propName = first + newDec.getProperty().getLongName().substring(1);
+          
+          newDec.setLongName(childOc.getLongName() + propName);		
+
+          // for each DEC, also create a DE.
+          List des = elements.getElements(DomainObjectFactory.newDataElement().getClass());
+          for(Iterator it2 = des.iterator(); it2.hasNext(); ) {
+            DataElement de = (DataElement)it.next();
+            if(de.getDataElementConcept() == dec) {
+              DataElement newDe = DomainObjectFactory.newDataElement();
+              newDe.setDataElementConcept(dec);
+              newDe.setValueDomain(de.getValueDomain());
+              newDe.setLongName(newDec.getLongName() + de.getValueDomain().getPreferredName());
+              elements.addElement(newDe);
+            }
+          }
+          elements.addElement(newDec);
+        }
+      }
+
+
     elements.addElement(ocr);
+
 
     logger.debug("Generalization: ");
     logger.debug("Source:");

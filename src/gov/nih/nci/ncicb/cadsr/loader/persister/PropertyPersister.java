@@ -37,8 +37,8 @@ public class PropertyPersister extends UMLPersister {
         Concept primaryConcept = findConcept(conceptCodes[0]);
         prop.setLongName(primaryConcept.getLongName());
 
+        String newDef = prop.getPreferredDefinition();
 	if (l.size() == 0) {
-	  prop.setPreferredName(prop.getLongName());
 	  prop.setPreferredDefinition(primaryConcept.getPreferredDefinition());
           prop.setDefinitionSource(primaryConcept.getDefinitionSource());
 
@@ -49,11 +49,19 @@ public class PropertyPersister extends UMLPersister {
           logger.debug("property: " + prop.getLongName());
 
           try {
-            prop.setId(propertyDAO.create(prop, conceptCodes));
+//             prop.setId(propertyDAO.create(prop, conceptCodes));
+            prop = propertyDAO.create(prop, conceptCodes);
             logger.info(PropertyAccessor.getProperty("created.prop"));
           } catch (DAOCreateException e){
             logger.error(PropertyAccessor.getProperty("created.prop.failed", e.getMessage()));
           } // end of try-catch
+
+//           // is definition the same?
+//           // if not, then add alternate Def
+//           if((newDef.length() > 0) && !newDef.equals(prop.getPreferredDefinition())) {
+//             addAlternateDefinition(prop, newDef, Definition.TYPE_UML);
+//           }
+
 	} else {
           // !!! TODO Verify that next line is ok.
           String newPrefName = prop.getLongName();
@@ -69,7 +77,7 @@ public class PropertyPersister extends UMLPersister {
 	}
 
 	LogUtil.logAc(prop, logger);
-
+        logger.info("-- Public ID: " + prop.getPublicId());
 	addProjectCs(prop);
 	it.set(prop);
       }

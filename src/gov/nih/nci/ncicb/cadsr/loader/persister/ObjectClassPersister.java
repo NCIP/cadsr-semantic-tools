@@ -53,9 +53,6 @@ public class ObjectClassPersister extends UMLPersister {
         String newDef = oc.getPreferredDefinition();
 
 	if (l.size() == 0) {
-          // !! TODO Need decision on this
-	  oc.setPreferredName(oc.getLongName());
-
 	  oc.setPreferredDefinition(primaryConcept.getPreferredDefinition());
           oc.setDefinitionSource(primaryConcept.getDefinitionSource());
 
@@ -64,7 +61,8 @@ public class ObjectClassPersister extends UMLPersister {
 	  oc.setAudit(defaults.getAudit());
 
           try {
-            oc.setId(objectClassDAO.create(oc, conceptCodes));
+//             oc.setId(objectClassDAO.create(oc, conceptCodes));
+            oc = objectClassDAO.create(oc, conceptCodes);
             logger.info(PropertyAccessor.getProperty("created.oc"));
           } catch (DAOCreateException e){
             logger.error(PropertyAccessor.getProperty("created.oc.failed", e.getMessage()));
@@ -116,6 +114,7 @@ public class ObjectClassPersister extends UMLPersister {
 	}
 
 	LogUtil.logAc(oc, logger);
+        logger.info("public ID: " + oc.getPublicId());
 
 	addProjectCs(oc);
 	it.set(oc);

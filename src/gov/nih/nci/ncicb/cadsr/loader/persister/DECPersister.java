@@ -29,32 +29,43 @@ public class DECPersister extends UMLPersister {
       for (ListIterator it = decs.listIterator(); it.hasNext();) {
 	dec = (DataElementConcept) it.next();
 
-        for (Iterator it2 = elements.getElements(DomainObjectFactory.newObjectClass().getClass()).iterator(); it2.hasNext(); ) {
-          ObjectClass o = (ObjectClass) it2.next();
-          if (o.getConcept().getId()
-              .equals(dec.getObjectClass()
-                      .getConcept().getId())) {
-            dec.setObjectClass(o);
-          }
-        }
+//         for (Iterator it2 = elements.getElements(DomainObjectFactory.newObjectClass().getClass()).iterator(); it2.hasNext(); ) {
+//           ObjectClass o = (ObjectClass) it2.next();
+//           if (o.getConcept().getId()
+//               .equals(dec.getObjectClass()
+//                       .getConcept().getId())) {
+//             dec.setObjectClass(o);
+//           }
+//         }
+        
+        // update object class with persisted one
+        dec.setObjectClass(findObjectClass(
+                             dec.getObjectClass().getLongName()));
 
-        for (Iterator it2 = elements.getElements(DomainObjectFactory.newProperty().getClass()).iterator(); it2.hasNext(); ) {
-          Property o = (Property) it2.next();
-          if (o.getConcept().getId()
-              .equals(dec.getProperty()
-                      .getConcept().getId())) {
-            dec.setProperty(o);
-          }
-        }
+//         for (Iterator it2 = elements.getElements(DomainObjectFactory.newProperty().getClass()).iterator(); it2.hasNext(); ) {
+//           Property o = (Property) it2.next();
+//           if (o.getConcept().getId()
+//               .equals(dec.getProperty()
+//                       .getConcept().getId())) {
+//             dec.setProperty(o);
+//           }
+//         }
+
+        // update object class with persisted one
+        dec.setProperty(findProperty(
+                             dec.getProperty().getLongName()));
         
 
 	dec.setContext(defaults.getContext());
 	dec.setConceptualDomain(defaults.getConceptualDomain());
 
+        
+        String first = dec.getProperty().getLongName().substring(0, 1).toUpperCase();
+        String propName = first + dec.getProperty().getLongName().substring(1);
 
         dec.setLongName(
-          dec.getObjectClass().getConcept().getLongName()
-          + dec.getProperty().getConcept().getLongName());
+          dec.getObjectClass().getLongName()
+          + propName);
 
 	logger.debug("dec name: " + dec.getLongName());
 
@@ -63,8 +74,17 @@ public class DECPersister extends UMLPersister {
 
 	if (l.size() == 0) {
 	  // !!!!! TODO
-	  dec.setPreferredDefinition("???");
-	  dec.setPreferredName(dec.getLongName());
+	  dec.setPreferredDefinition(
+            dec.getObjectClass().getPreferredDefinition() + ":" +
+            dec.getProperty().getPreferredDefinition()
+            
+            );
+
+	  dec.setPreferredName(
+            dec.getObjectClass().getPublicId() + "-" 
+            + dec.getObjectClass().getVersion() + ":" 
+            + dec.getProperty().getPublicId() + "-"
+            + dec.getProperty().getVersion());
 
 	  dec.setVersion(defaults.getVersion());
 	  dec.setWorkflowStatus(defaults.getWorkflowStatus());
@@ -82,7 +102,8 @@ public class DECPersister extends UMLPersister {
 	  }
 
 	  dec.setAudit(defaults.getAudit());
-	  dec.setId(dataElementConceptDAO.create(dec));
+// 	  dec.setId(dataElementConceptDAO.create(dec));
+          dec = dataElementConceptDAO.create(dec);
 	  logger.info(PropertyAccessor.getProperty("created.dec"));
 	} else {
 	  dec = (DataElementConcept) l.get(0);
@@ -90,6 +111,7 @@ public class DECPersister extends UMLPersister {
 	}
 
 	LogUtil.logAc(dec, logger);
+        logger.info("-- Public ID: " + dec.getPublicId());
 	logger.info(PropertyAccessor
                     .getProperty("oc.longName",
                                  dec.getObjectClass().getLongName()));

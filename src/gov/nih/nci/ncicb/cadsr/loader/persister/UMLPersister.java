@@ -16,6 +16,9 @@ import java.util.*;
 
 public class UMLPersister implements Persister {
   private static Logger logger = Logger.getLogger(UMLPersister.class.getName());
+
+  private static Map vdMapping = new HashMap();
+
   protected static AdminComponentDAO adminComponentDAO = DAOAccessor.getAdminComponentDAO();
   protected static DataElementDAO dataElementDAO = DAOAccessor.getDataElementDAO();
   protected static DataElementConceptDAO dataElementConceptDAO = DAOAccessor.getDataElementConceptDAO();
@@ -35,6 +38,17 @@ public class UMLPersister implements Persister {
   protected UMLDefaults defaults = UMLDefaults.getInstance();
 
   protected static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
+
+  static {
+    vdMapping.put("int", "java.lang.Integer");
+    vdMapping.put("float", "java.lang.Float");
+    vdMapping.put("boolean", "java.lang.Boolean");
+    vdMapping.put("short", "java.lang.Short");
+    vdMapping.put("double", "java.lang.Double");
+    vdMapping.put("char", "java.lang.Char");
+    vdMapping.put("byte", "java.lang.Byte");
+    vdMapping.put("long", "java.lang.Long");
+  }
 
   public UMLPersister() {
     
@@ -86,10 +100,14 @@ public class UMLPersister implements Persister {
 
   protected ValueDomain lookupValueDomain(ValueDomain vd)
     throws PersisterException {
+
+    // replace this name if:
+    if(vdMapping.containsKey(vd.getPreferredName().trim()))
+      vd.setPreferredName((String)vdMapping.get(vd.getPreferredName().trim()));
+
     ValueDomain result = (ValueDomain) valueDomains.get(vd.getPreferredName());
 
     if (result == null) { // not in cache -- go to db
-
       List l = valueDomainDAO.find(vd);
 
       if (l.size() == 0) {
@@ -224,24 +242,71 @@ public class UMLPersister implements Persister {
 
   }
 
-  protected ObjectClass findObjectClass(String conceptCodes) {
+  protected Property findProperty(String longName) {
+    List props = (List) elements.getElements(DomainObjectFactory.newProperty().getClass());
+    
+    for (Iterator it = props.iterator(); it.hasNext(); ) {
+      Property o = (Property) it.next();
+
+      if (o.getLongName().equals(longName)) {
+        return o;
+      }
+    }
+    return null;
+  }
+
+  protected ObjectClass findObjectClass(String longName) {
     List ocs = (List) elements.getElements(DomainObjectFactory.newObjectClass().getClass());
     
-    String[] codes = conceptCodes.split("-");
-    
-    for (Iterator it = ocs.iterator(); it.hasNext();) {
-      ObjectClass oc = (ObjectClass)it.next();
-      if(codes.length == 1) {
-        if(oc.getConcept().getPreferredName().equals(conceptCodes))
-          return oc;
-      } else {
-        if(oc.getConceptDerivationRule().)
+    for (Iterator it = ocs.iterator(); it.hasNext(); ) {
+      ObjectClass o = (ObjectClass) it.next();
+
+      if (o.getLongName().equals(longName)) {
+        return o;
       }
-      if(oc.getPreferredName().equals(conceptCode))
-        return con;
     }
     return null;
 
+//     String[] codes = conceptCodes.split("-");
+    
+//     for (Iterator it = ocs.iterator(); it.hasNext();) {
+//       ObjectClass oc = (ObjectClass)it.next();
+//       if(codes.length == 1) {
+//         if(oc.getConcept() != null)
+//           if(oc.getConcept().getPreferredName().equals(conceptCodes))
+//             return oc;
+//       } else {
+//         if(oc.getConceptDerivationRule() != null)
+//           if(oc.getConceptDerivationRule().getCodeConc)
+//       }
+//       if(oc.getPreferredName().equals(conceptCode))
+//         return con;
+//     }
+//     return null;
+
   }
+
+  protected DataElementConcept findDec(String longName) {
+    List decs = (List) elements.getElements(DomainObjectFactory.newDataElementConcept().getClass());
+    
+    for (Iterator it = decs.iterator(); it.hasNext(); ) {
+      DataElementConcept o = (DataElementConcept) it.next();
+
+      if (o.getLongName().equals(longName)) {
+        return o;
+      }
+    }
+    return null;
+  }
+
+//   protected String preferredNameFromConcepts(Concept[] concepts) {
+//     StringBuffer sb = new StringBuffer();
+//     for(int i = 0 ; i < concepts.length; i++) {
+//       if(sb.size() > 0)
+//         sb.append("-");
+//       sb.append(concepts[i].getPreferredName());
+//     }
+//     return sb.toString();
+//   }
 
 }
