@@ -1,5 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
@@ -154,7 +156,7 @@ public class MainFrame extends JFrame
         return;
       }
 
-      String[] conceptCodes = null;
+/*      String[] conceptCodes = null;
       if(node instanceof ClassNode) {
         ObjectClass oc = (ObjectClass)node.getUserObject();
         conceptCodes = oc.getPreferredName().split("-");
@@ -175,11 +177,12 @@ public class MainFrame extends JFrame
           );
       if((concepts.length > 0) && (concepts[0] == null))
         concepts = new Concept[0];
-      
+*/      
 
       if((event.getInNewTab() == true) || (viewPanels.size() == 0)) {
-        UMLElementViewPanel viewPanel = new UMLElementViewPanel(concepts);
+        UMLElementViewPanel viewPanel = new UMLElementViewPanel(node);
         
+        viewPanel.addReviewListener(navigationPanel);
         
         viewTabbedPane.addTab(node.getDisplay(), viewPanel);
         viewTabbedPane.setSelectedComponent(viewPanel);
@@ -194,7 +197,7 @@ public class MainFrame extends JFrame
         viewTabbedPane.setTitleAt(viewTabbedPane.getSelectedIndex(), node.getDisplay());
 
         viewPanel.setName(node.getFullPath());
-        viewPanel.updateConcepts(concepts);
+        viewPanel.updateNode(node);
         viewPanels.put(viewPanel.getName(), viewPanel);
       }
 
