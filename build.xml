@@ -10,6 +10,7 @@
   <property name="src.dir" value="src"/>
   <property name="class.dir" value="./classes"/>
   <property name="lib.dir" value="./lib"/>
+  <property name="dist.dir" value="./dist" />
   <property name="config.dir" value="properties"/>
   <property name="docs.dir" value="./javadoc" />
   <property name="images.dir" value="./images" />
@@ -72,6 +73,8 @@
       debug="on"
       srcdir="${src.dir}"
       deprecation="false"
+      fork="yes"
+      executable="${javac}"
       >
       <!--
            <compilerarg value="-Xlint"/>
@@ -88,10 +91,32 @@
         <include name="jaas.config"/>
       </fileset>
       <fileset dir="${images.dir}">
+        <include name="*.png"/>
         <include name="*.jpg"/>
         <include name="*.gif"/>
       </fileset>
     </copy>
+  </target>
+
+  <target name="dist" depends="prepare">
+    <mkdir dir="${dist.dir}"/>
+    <jar destfile="${dist.dir}/uml-loader.jar"
+      manifest="MANIFEST.MF">
+      <fileset dir="${class.dir}">
+        <!--
+        <exclude name="*.png"/>
+        <exclude name="*.jpg"/>
+        <exclude name="*.gif"/>
+-->
+      </fileset>
+    </jar>
+    <jar destfile="${dist.dir}/images.jar">
+      <fileset dir="${class.dir}">
+        <include name="*.png"/>
+        <include name="*.jpg"/>
+        <include name="*.gif"/>
+      </fileset>
+    </jar>
   </target>
 
   <target name="doc">
@@ -133,15 +158,25 @@
   <target name="gui" depends="prepare">
     <java classname="gov.nih.nci.ncicb.cadsr.loader.UMLLoaderGUI" classpathref="proj.class.path" 
       fork="yes"
-      jvm="/home/ludetc/dev/jdk1.5.0/bin/java"
+      jvm="${java}"
       maxmemory="512m"
       >
+      <!--
       <jvmarg value="-Djava.security.auth.login.config=classes/jaas.config"/>
+      -->
       <arg value="${dir}"/>
       <arg value="${projectName}"/>
       <arg value="${projectVersion}"/>
     </java>
   </target>
 
+  <target name="test-ui" depends="prepare">
+    <java classname="gov.nih.nci.ncicb.cadsr.loader.ui.${testClass}" classpathref="proj.class.path" 
+      fork="yes"
+      jvm="${java}"
+      maxmemory="512m"
+      >
+    </java>    
+  </target>
 
 </project>
