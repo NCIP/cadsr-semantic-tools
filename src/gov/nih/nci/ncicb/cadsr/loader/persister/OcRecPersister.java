@@ -119,12 +119,12 @@ public class OcRecPersister extends UMLPersister {
           logger.info(PropertyAccessor.getProperty("existed.association"));
           ocr = (ObjectClassRelationship)l.get(0);
         } else {
-          ocr.setPreferredName(
-            ocr.getSource().getPublicId() + "-" +
-            ocr.getSource().getVersion() + ":" + 
-            ocr.getTarget().getPublicId() + "-" + 
-            ocr.getTarget().getVersion()
-            );
+//           ocr.setPreferredName(
+//             ocr.getSource().getPublicId() + "-" +
+//             ocr.getSource().getVersion() + ":" + 
+//             ocr.getTarget().getPublicId() + "-" + 
+//             ocr.getTarget().getVersion()
+//             );
 
           ocr.setId(objectClassRelationshipDAO.create(ocr));
           // 	  addProjectCs(ocr);
