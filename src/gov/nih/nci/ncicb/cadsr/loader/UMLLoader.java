@@ -5,10 +5,6 @@ import java.util.*;
 import org.omg.uml.foundation.core.*;
 import org.omg.uml.foundation.extensionmechanisms.*;
 
-import uml.MdrModelManager;
-import uml.MdrModelManagerFactory;
-import uml.MdrModelManagerFactoryImpl;
-
 import org.omg.uml.modelmanagement.Model;
 import org.omg.uml.modelmanagement.UmlPackage;
 
