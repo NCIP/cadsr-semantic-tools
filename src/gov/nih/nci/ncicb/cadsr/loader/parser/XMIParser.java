@@ -132,7 +132,9 @@ public class XMIParser implements Parser {
   }
 
   private void doAttribute(Attribute att) {
-    listener.notification(new NewAttributeEvent(att.getName(), className));
+    NewAttributeEvent event = new NewAttributeEvent(att.getName());
+    event.setClassName(className);
+    listener.notification(event);
   }
 
   private void doDataType(DataType dt)
@@ -141,7 +143,9 @@ public class XMIParser implements Parser {
   }
 
   private void doOperation(Operation op) {
-    listener.notification(new NewOperationEvent(op.getName(), className));
+    NewOperationEvent event = new NewOperationEvent(op.getName());
+    event.setClassName(className);
+    listener.notification(event);
   }
 
   private void doStereotype(Stereotype st) {
@@ -149,19 +153,14 @@ public class XMIParser implements Parser {
   }
 
   private void doAssociation(UmlAssociation assoc) {
-    System.out.println("*** Association: " + assoc.getName());
+    System.out.println("-- Association: " + assoc.getName());
     Iterator it = assoc.getConnection().iterator();
     while(it.hasNext()) {
       Object o = it.next();
-      System.out.println("*** " +  o.getClass());
       if(o instanceof AssociationEnd) {
 	AssociationEnd end = (AssociationEnd)o;
 	Classifier classif = end.getType();
-	Iterator it2 = classif.getParticipant().iterator();
-	while(it2.hasNext()) {
-	  Object p = it2.next();
-	  System.out.println("*** Participant: " + p.getClass());
-	}
+	System.out.println("----" + classif.getName());
       }
     }
   }

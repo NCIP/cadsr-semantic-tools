@@ -5,9 +5,8 @@ public class NewOperationEvent implements LoaderEvent {
   private String name;
   private String className;
 
-  public NewOperationEvent(String name, String className) {
+  public NewOperationEvent(String name) {
     this.name = name;
-    this.className = className;
   }
 
   public String getName() {
@@ -18,4 +17,7 @@ public class NewOperationEvent implements LoaderEvent {
     return className;
   }
   
+  public void setClassName(String className) {
+    this.className = className;
+  }
 }

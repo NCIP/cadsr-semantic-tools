@@ -5,9 +5,8 @@ public class NewAttributeEvent implements LoaderEvent {
   private String name;
   private String className;
 
-  public NewAttributeEvent(String name, String className) {
+  public NewAttributeEvent(String name) {
     this.name = name;
-    this.className = className;
   }
 
   public String getName() {
@@ -16,6 +15,10 @@ public class NewAttributeEvent implements LoaderEvent {
   
   public String getClassName() {
     return className;
+  }
+
+  public void setClassName(String className) {
+    this.className = className;
   }
 
 }

@@ -16,6 +16,7 @@ import java.io.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.parser.*;
+import gov.nih.nci.ncicb.cadsr.loader.persister.*;
 
 public class UMLLoader {
 
@@ -38,6 +39,11 @@ public class UMLLoader {
       XMIParser  parser = new XMIParser();
       parser.setListener(listener);
       parser.parse(args[0] + "/" + filenames[i]);
+
+      UMLPersister persister = new UMLPersister(elements);
+      persister.setContextName("TEST");
+      persister.persist();
+      
     }
 
   }

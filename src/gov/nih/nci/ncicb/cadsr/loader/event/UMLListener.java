@@ -2,6 +2,8 @@ package gov.nih.nci.ncicb.cadsr.loader.event;
 
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
+import gov.nih.nci.ncicb.cadsr.model.*;
+
 public class UMLListener implements LoaderListener {
 
   private ElementsLists elements;
@@ -43,6 +45,7 @@ public class UMLListener implements LoaderListener {
   }
   private void newEvent(NewClassEvent event) {
     System.out.println("Class: " + event.getName());
+    ObjectClass oc = new ObjectClass();
   }
   private void newEvent(NewAttributeEvent event) {
     System.out.println("Attribute: " + event.getClassName() + "." + event.getName());
