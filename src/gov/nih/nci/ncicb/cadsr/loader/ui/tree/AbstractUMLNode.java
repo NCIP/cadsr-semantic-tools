@@ -15,6 +15,8 @@ public abstract class AbstractUMLNode implements UMLNode {
   // No complex ordering, we want to see elements
   // just the way they were inserted.
   private Set<UMLNode> children = new LinkedHashSet();
+  
+  private Set<ValidationNode> validationNodes = new LinkedHashSet();
 
   private UMLNode parent;
 
@@ -47,6 +49,18 @@ public abstract class AbstractUMLNode implements UMLNode {
   public Set<UMLNode> getChildren() {
     return children;
   }
+
+  public Set<ValidationNode> getValidationNodes() 
+  {
+    return validationNodes;
+  }
+
+  public void addValidationNode(ValidationNode child) 
+  {
+    validationNodes.add(child);
+    child.setParent(this);
+  }
+
 
   public void addChild(UMLNode child) {
     children.add(child);
