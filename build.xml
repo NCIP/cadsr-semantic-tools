@@ -10,9 +10,30 @@
   <path id="proj.class.path">
     <pathelement location="${class.dir}"/>
     <fileset dir="${lib.dir}">
-      <include name="**/*.jar"/>
+      <include name="*.jar"/>
     </fileset>
   </path>
+  
+  <taskdef name="jalopy"
+    classname="de.hunsicker.jalopy.plugin.ant.AntPlugin">
+    <classpath>
+      <fileset dir="${lib.dir}/jalopy">
+        <include name="*.jar" />
+      </fileset>
+    </classpath>
+  </taskdef>
+
+  <target name="format" depends="compile">
+    <jalopy fileformat="auto"
+            history="file"
+            loglevel="WARN"
+            threads="2"
+      classpathref="proj.class.path">
+      <fileset dir="${src.dir}">
+        <include name="**/*.java" />
+      </fileset>
+    </jalopy>
+  </target>
 
   <target name="clean">
     <delete dir="${class.dir}" failonerror="true" />
