@@ -4,6 +4,11 @@ package gov.nih.nci.ncicb.cadsr.jaas;
 import java.security.*;
 import java.io.*;
 
+/**
+ * Implementation of Principal
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public class LoaderPrincipal implements Principal, java.io.Serializable {
 
     private String name;
@@ -13,7 +18,7 @@ public class LoaderPrincipal implements Principal, java.io.Serializable {
     }
 
     /**
-     * Create a <code>RdbmsPrincipal</code> using a
+     * Create a <code>LoaderPrincipal</code> using a
      * <code>String</code> representation of the
      * user name.
      *
@@ -28,18 +33,18 @@ public class LoaderPrincipal implements Principal, java.io.Serializable {
 
     /**
      * Compares the specified Object with this
-     * <code>RdbmsPrincipal</code>
+     * <code>Principal</code>
      * for equality.  Returns true if the given object is also a
-     * <code>RdbmsPrincipal</code> and the two
-     * RdbmsPrincipals have the same name.
+     * <code>Principal</code> and the two
+     * Principals have the same name.
      *
      * <p>
      *
      * @param o Object to be compared for equality with this
-     *		<code>RdbmsPrincipal</code>.
+     *		<code>Principal</code>.
      *
      * @return true if the specified Object is equal equal to this
-     *		<code>RdbmsPrincipal</code>.
+     *		<code>Principal</code>.
      */
     public boolean equals(Object o) {
 
@@ -60,11 +65,11 @@ public class LoaderPrincipal implements Principal, java.io.Serializable {
     }
 
     /**
-     * Return a hash code for this <code>RdbmsPrincipal</code>.
+     * Return a hash code for this <code>Principal</code>.
      *
      * <p>
      *
-     * @return a hash code for this <code>RdbmsPrincipal</code>.
+     * @return a hash code for this <code>Principal</code>.
      */
     public int hashCode() {
         return name.hashCode();
@@ -72,12 +77,12 @@ public class LoaderPrincipal implements Principal, java.io.Serializable {
 
     /**
      * Return a string representation of this
-     * <code>RdbmsPrincipal</code>.
+     * <code>Principal</code>.
      *
      * <p>
      *
      * @return a string representation of this
-     *		<code>RdbmsPrincipal</code>.
+     *		<code>Principal</code>.
      */
     public String toString() {
         return name;
@@ -85,12 +90,12 @@ public class LoaderPrincipal implements Principal, java.io.Serializable {
 
     /**
      * Return the user name for this
-     * <code>RdbmsPrincipal</code>.
+     * <code>Principal</code>.
      *
      * <p>
      *
      * @return the user name for this
-     *		<code>RdbmsPrincipal</code>
+     *		<code>Principal</code>
      */
     public String getName() {
         return name;

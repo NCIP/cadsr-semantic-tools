@@ -4,6 +4,11 @@ import java.io.*;
 
 import javax.security.auth.callback.*;
 
+/**
+ * Simple CallbackHandler that queries the standard input. This is appropriate for console mode only.
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public class ConsoleCallbackHandler implements CallbackHandler {
 
   public ConsoleCallbackHandler() {

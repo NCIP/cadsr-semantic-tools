@@ -14,6 +14,14 @@ import javax.security.auth.callback.*;
 
 import org.apache.log4j.Logger;
 
+/**
+ * This LoginModule verifies user/password against a database user.<br/>
+ * This module requires 2 initialization parameters: <ul>
+ * <li>dataSource: Datasource name
+ * <li>dataSourceProvider: implementation class of DataSourceprovider </ul>
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public class DBModule implements LoginModule {
   private CallbackHandler callbackHandler;
   private Subject  subject;
