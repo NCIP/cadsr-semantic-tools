@@ -74,6 +74,11 @@ public class UMLLoader {
     t.setPriority(Thread.MAX_PRIORITY);
     t.start();
 
+    try {
+      Thread.currentThread().sleep(500);
+    } catch (Exception e){
+    } // end of try-catch
+
     String[] filenames = new File(args[0]).list(new FilenameFilter() {
 	public boolean accept(File dir, String name) {
 	  return name.endsWith(".xmi");

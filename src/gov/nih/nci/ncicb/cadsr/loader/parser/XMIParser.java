@@ -129,7 +129,7 @@ public class XMIParser implements Parser {
 
   private void doClass(UmlClass clazz) {
     UMLDefaults defaults = UMLDefaults.getInstance();
-    String pName = clazz.getNamespace().getName();
+    String pName = getPackageName(clazz);
 
     className = clazz.getName();
 
@@ -141,6 +141,9 @@ public class XMIParser implements Parser {
     event.setPackageName(pName);
 
     setConceptInfo(clazz, event);
+
+    logger.debug("CLASS: " + className);
+    logger.debug("CLASS PACKAGE: " + getPackageName(clazz));
 
     if(isInPackageFilter(pName)) {
       listener.newClass(event);
@@ -248,8 +251,9 @@ public class XMIParser implements Parser {
         }
 
         Classifier classif = end.getType();
-        if(!isInPackageFilter(classif.getNamespace().getName())) {
-          logger.info(PropertyAccessor.getProperty("skip.association", classif.getName()));
+        if(!isInPackageFilter(getPackageName(classif))) {
+          logger.info(PropertyAccessor.getProperty("skip.association", classif.getNamespace().getName()));
+          logger.debug("classif name: " + classif.getName());
           return;
         }
 
@@ -263,8 +267,7 @@ public class XMIParser implements Parser {
           event.setAHighCardinality(high);
         }
 
-        event.setAClassName(
-          classif.getNamespace().getName() + "." + classif.getName());
+        event.setAClassName(getPackageName(classif) + "." + classif.getName());
         event.setARole(end.getName());
 
       }
@@ -282,8 +285,9 @@ public class XMIParser implements Parser {
         }
 
         Classifier classif = end.getType();
-        if(!isInPackageFilter(classif.getNamespace().getName())) {
+        if(!isInPackageFilter(getPackageName(classif))) {
           logger.info(PropertyAccessor.getProperty("skip.association", classif.getName()));
+          logger.debug("classif name: " + classif.getNamespace().getName());
           return;
         }
 
@@ -298,8 +302,7 @@ public class XMIParser implements Parser {
           event.setBHighCardinality(high);
         }
 
-        event.setBClassName(
-          classif.getNamespace().getName() + "." + classif.getName());
+        event.setBClassName(getPackageName(classif) + "." + classif.getName());
         event.setBRole(end.getName());
       }
     }
@@ -372,4 +375,24 @@ public class XMIParser implements Parser {
     Map packageFilter = UMLDefaults.getInstance().getPackageFilter();
     return (packageFilter.size() == 0) || (packageFilter.containsKey(pName));
   }
+
+  private String getPackageName(ModelElement elt) {
+    StringBuffer pack = new StringBuffer();
+    String s = null;
+    do {
+      s = null;
+      if (elt.getNamespace() != null) {
+        s = elt.getNamespace().getName(); 
+        if(!s.startsWith("EA ")) {
+          if(pack.length() > 0)
+            pack.insert(0, '.');
+          pack.insert(0, s);
+        }
+        elt = elt.getNamespace();
+      }
+    } while (s != null);
+    
+    return pack.toString();
+  }
+    
 }

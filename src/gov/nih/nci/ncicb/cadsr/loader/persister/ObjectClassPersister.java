@@ -99,7 +99,7 @@ public class ObjectClassPersister extends UMLPersister {
 	  } else {
 	    // PersistPackages should have taken care of it. 
 	    // We should not be here.
-	    logger.error(PropertyAccessor.getProperty("missing.package", packageName));
+	    logger.error(PropertyAccessor.getProperty("missing.package", new String[] {packageName, className}));
 	  }
 	} else {
 	  logger.debug("Designation was found.");

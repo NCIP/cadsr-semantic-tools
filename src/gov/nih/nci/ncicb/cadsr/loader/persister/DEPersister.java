@@ -39,8 +39,9 @@ public class DEPersister extends UMLPersister {
 	    de.setLongName(de.getLongName().substring(ind + 1));
 	  }
 
-	  List decs = elements.getElements(DomainObjectFactory.newDataElementConcept()
-					   .getClass());
+	  List decs = elements.getElements(
+            DomainObjectFactory.
+            newDataElementConcept().getClass());
 
 	  for (ListIterator lit = decs.listIterator(); lit.hasNext();) {
 	    DataElementConcept o = (DataElementConcept) lit.next();
@@ -56,13 +57,13 @@ public class DEPersister extends UMLPersister {
 	  List l = dataElementDAO.find(de);
 
 	  if (l.size() == 0) {
-	    de.setPreferredDefinition(de.getLongName());
+	    de.setPreferredDefinition("???");
 	    de.setPreferredName(de.getLongName());
 
 	    // !!!!! TODO -- following will pass constraints
 	    if (de.getPreferredName().length() > 30) {
-	      de.setPreferredName(de.getPreferredName().substring(0,
-								  29));
+	      de.setPreferredName(
+                de.getPreferredName().substring(0,29));
 	    }
 
 	    de.setVersion(defaults.getVersion());

@@ -44,7 +44,13 @@ public class UMLDefaultHandler implements UMLHandler {
 
     if (!packageList.contains(event.getPackageName())) {
       ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
-      csi.setName(event.getPackageName());
+      String csiName = null;
+      String pName = event.getPackageName();
+      if(pName.length() > 20) {
+        csi.setName(pName.substring(pName.length() - 20));
+      } else 
+        csi.setName(pName);
+      csi.setComment(event.getPackageName());
       elements.addElement(csi);
       packageList.add(event.getPackageName());
     }
@@ -158,6 +164,15 @@ public class UMLDefaultHandler implements UMLHandler {
     ocr.setType(ObjectClassRelationship.TYPE_HAS);
     elements.addElement(ocr);
 
+    if(ocr.getSource() == null || ocr.getTarget() == null) {
+      logger.error(PropertyAccessor.getProperty(
+                     "association.missing.end", 
+                     new String[] {event.getAClassName(),
+                                   event.getBClassName()}));
+    } else {
+      elements.addElement(ocr);
+    }
+    
     //         logger.debug("Association: ");
     //         logger.debug("Source:");
     //         logger.debug("-- " + ocr.getSourceRole());

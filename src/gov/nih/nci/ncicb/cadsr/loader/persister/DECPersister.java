@@ -45,7 +45,7 @@ public class DECPersister extends UMLPersister {
 
 	if (l.size() == 0) {
 	  // !!!!! TODO
-	  dec.setPreferredDefinition(dec.getLongName());
+	  dec.setPreferredDefinition("???");
 	  dec.setPreferredName(dec.getLongName());
 
 	  dec.setVersion(defaults.getVersion());
