@@ -71,7 +71,6 @@ public class UMLPersister implements Persister {
 
   }
 
-
   private ElementsLists elements = null;
   private Map params = new HashMap();
   
@@ -89,8 +88,6 @@ public class UMLPersister implements Persister {
 
   private Map valueDomains = new HashMap();
 
-
-
   private Map packageCsCsis = new HashMap();
 
   private static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
@@ -106,21 +103,14 @@ public class UMLPersister implements Persister {
   }
 
   public void persist() throws PersisterException {
-
     initParams();
-
     initClassifications();
 
     persistPackages();
-
     persistProperties();
-    
     persistObjectClasses();
-
     persistDecs();
-
     persistDes();
-
     persistOcRecs();
   }
 
@@ -129,7 +119,6 @@ public class UMLPersister implements Persister {
     List packages = (List)elements.getElements(pkg.getClass());
     if(packages != null)
       for(ListIterator it = packages.listIterator(); it.hasNext();) {
-
 	pkg = (ClassificationSchemeItem)it.next();
 	pkg.setAudit(audit);
 	pkg.setType(CSI_PACKAGE_TYPE);
@@ -146,16 +135,13 @@ public class UMLPersister implements Persister {
 	List csCsis = projectCs.getCsCsis();
 	boolean found = false;
 	ClassSchemeClassSchemeItem packageCsCsi = null;
-	for(ListIterator it2 = csCsis.listIterator(); it2.hasNext(); ) 
-	  {
-	    ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
-	    if(csCsi.getCsi().getType().equals(CSI_PACKAGE_TYPE) && csCsi.getCsi().getName().equals(pkg.getName())) {
-	      {
-		packageCsCsi = csCsi;
-		found = true;
-	      }
-	    }
+	for(ListIterator it2 = csCsis.listIterator(); it2.hasNext(); ) {
+	  ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
+	  if(csCsi.getCsi().getType().equals(CSI_PACKAGE_TYPE) && csCsi.getCsi().getName().equals(pkg.getName())) {
+	      packageCsCsi = csCsi;
+	      found = true;
 	  }
+	}
 	if(!found) {
 	  logger.info("Package " + pkg.getName() + " was not linked to Project CS -- linking it now.");
 	  packageCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
@@ -173,7 +159,7 @@ public class UMLPersister implements Persister {
 
       }
   }
-
+  
   private void persistOcRecs() throws PersisterException {
 
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
@@ -505,11 +491,8 @@ public class UMLPersister implements Persister {
 
 	// add designation to hold package name
 	// !!!! TODO
-	
       }
-
   }
-
 
   private void addProjectCs(AdminComponent ac) throws PersisterException {
     List l = adminComponentDAO.getClassSchemeClassSchemeItems(ac);
