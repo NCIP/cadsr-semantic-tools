@@ -2,26 +2,38 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 
 
-public class UMLElementViewPanel extends JScrollPane {
+public class UMLElementViewPanel extends JScrollPane
+  implements ActionListener {
 
-  private JButton addButton = new JButton("Add"),
-    deleteButton = new JButton("Delete"),
-    saveButton = new JButton("Apply");
+  private Concept[] concepts;
+
+  private static final String ADD = "ADD",
+    DELETE = "DELETE",
+    SAVE = "SAVE";
+
+  private JButton addButton, deleteButton, saveButton;
 
   public UMLElementViewPanel(Concept[] concepts) {
-    initUI(concepts);
+    this.concepts = concepts;
+    initUI();
+  }
+
+  public void updateConcepts(Concept[] concepts) {
+    this.concepts = concepts;
+    initUI();
   }
 
   public Concept[] getConcepts() {
     return null;
   }
 
-  private void initUI(Concept[] concepts) {
+  private void initUI() {
     JPanel scrollPanel = new JPanel(new BorderLayout());
 
     JPanel gridPanel = new JPanel(new GridLayout(-1, 1));
@@ -80,6 +92,22 @@ public class UMLElementViewPanel extends JScrollPane {
       gridPanel.add(conceptPanels[i]);
     }
 
+
+    addButton = new JButton("Add");
+    deleteButton = new JButton("Remove");
+    saveButton = new JButton("Apply");
+
+    addButton.setActionCommand(ADD);
+    deleteButton.setActionCommand(DELETE);
+    saveButton.setActionCommand(SAVE);
+
+    addButton.addActionListener(this);
+    deleteButton.addActionListener(this);
+    saveButton.addActionListener(this);
+
+    if(concepts.length == 0)
+      deleteButton.setEnabled(false);
+
     JPanel buttonPanel = new JPanel();
     buttonPanel.add(addButton);
     buttonPanel.add(deleteButton);
@@ -91,8 +119,33 @@ public class UMLElementViewPanel extends JScrollPane {
 
     this.setViewportView(scrollPanel);
 
-    
+  }
 
+  public void actionPerformed(ActionEvent evt) {
+    JButton button = (JButton)evt.getSource();
+    if(button.getActionCommand().equals(SAVE)) {
+      
+    } else if(button.getActionCommand().equals(ADD)) {
+      Concept[] newConcepts = new Concept[concepts.length + 1];
+      for(int i = 0; i<concepts.length; i++) {
+        newConcepts[i] = concepts[i];
+      }
+      Concept concept = DomainObjectFactory.newConcept();
+      concept.setPreferredName("");
+      concept.setLongName("");
+      concept.setDefinitionSource("");
+      concept.setPreferredDefinition("");
+      newConcepts[newConcepts.length - 1] = concept;
+      concepts = newConcepts;
+      initUI();
+    } else if(button.getActionCommand().equals(DELETE)) {
+      Concept[] newConcepts = new Concept[concepts.length - 1];
+      for(int i = 0; i<newConcepts.length; i++) {
+        newConcepts[i] = concepts[i];
+      }
+      concepts = newConcepts;
+      initUI();
+    }  
   }
 
   public static void main(String[] args) {
@@ -116,7 +169,6 @@ public class UMLElementViewPanel extends JScrollPane {
 
   }
 
-
 }
 
 class ConceptUI {
@@ -137,7 +189,7 @@ class ConceptUI {
   public ConceptUI(Concept concept) {
     initUI(concept);
   }
-  
+
   private void initUI(Concept concept) {
     def.setFont(new Font("Serif", Font.ITALIC, 16));
     def.setLineWrap(true);
@@ -153,4 +205,5 @@ class ConceptUI {
     def.setText(concept.getPreferredDefinition());
     defSource.setText(concept.getDefinitionSource());
   }
+
 }
