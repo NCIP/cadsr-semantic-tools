@@ -18,19 +18,9 @@ public class ErrorPanel extends JPanel {
   }
 
   private void initUI(java.util.List list) {
-    //String rootOfTree = "Errors";
-    
-    //TreePath root = new TreePath(rootOfTree);
-    
     rootNode = new DefaultMutableTreeNode("Root");
 
     buildTree(list);
-
-    //DefaultMutableTreeNode errorNode = new DefaultMutableTreeNode("Error");
-    //rootNode.add(errorNode);
-    
-    //DefaultMutableTreeNode firstError = new DefaultMutableTreeNode("Error #1");
-    //errorNode.add(firstError);
 
     //create tree and make root not visible
     tree = new JTree(rootNode);
@@ -50,8 +40,6 @@ public class ErrorPanel extends JPanel {
     
 
     this.setLayout(new BorderLayout());
-
-    //this.add(tree, BorderLayout.CENTER);
 
     JScrollPane scrollPane = new JScrollPane(tree);
     this.setPreferredSize(new Dimension(450, 110));
@@ -86,37 +74,42 @@ public class ErrorPanel extends JPanel {
     JFrame runFrame = new JFrame("Test JFrame FOR ErrorPanel");
     runFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     runFrame.setSize(100,100);
-    //JScrollPane scrollPane = new JScrollPane(runFrame);
-    //runFrame.getContentPane().add(scrollPane, BorderLayout.CENTER); 
-    //setPreferredSize(new Dimension(110, 110));
 
-    ValidationError error1 = new ValidationError("Error", "Concept Not Found");
-    ValidationError error2 = new ValidationError("Error", "Code not Found");
-    ValidationError error3 = new ValidationError("Error", "Element not Found");
-    ValidationError error4 = new ValidationError("Error", "File not Found");
-
-    ValidationError warning1 = 
-      new ValidationError("Warning", "Incorrect type ");
-    ValidationError warning2 = 
-      new ValidationError("Warning", "File not of proper type ");
-    ValidationError warning3 = new ValidationError("Warning", "Unexpected type ");
-   
-    java.util.List listofErrors = new ArrayList();
-    listofErrors.add(error1);
-    listofErrors.add(error2);
-    listofErrors.add(error3);
-    listofErrors.add(error4);
-
-    listofErrors.add(warning1);
-    listofErrors.add(warning2);
-    listofErrors.add(warning3);
-
-    JPanel errorPanel = new ErrorPanel(listofErrors);
+    JPanel errorPanel = new ErrorPanel(DummyErrorPanelData.getData());
 
     runFrame.getContentPane().add(BorderLayout.CENTER, errorPanel);
     //errorPanel.setLayout(new BorderLayout());
     //runFrame.add(errorPanel);
 
     runFrame.show();
+  }
+
+}
+
+class DummyErrorPanelData {
+  static java.util.List<ValidationError> getData() {
+    ValidationError error1 = new ValidationError("Error", "Concept Not Found");
+    ValidationError error2 = new ValidationError("Error", "Code not Found");
+    ValidationError error3 = new ValidationError("Error", "Element not Found");
+    ValidationError error4 = new ValidationError("Error", "File not Found");
+      
+    ValidationError warning1 = 
+      new ValidationError("Warning", "Incorrect type ");
+    ValidationError warning2 = 
+      new ValidationError("Warning", "File not of proper type ");
+    ValidationError warning3 = new ValidationError("Warning", "Unexpected type ");
+      
+    java.util.List listofErrors = new ArrayList();
+    listofErrors.add(error1);
+    listofErrors.add(error2);
+    listofErrors.add(error3);
+    listofErrors.add(error4);
+      
+    listofErrors.add(warning1);
+    listofErrors.add(warning2);
+    listofErrors.add(warning3);
+      
+    return listofErrors;
+      
   }
 }
