@@ -33,16 +33,15 @@ public class ClassNode extends AbstractUMLNode
   {
       reviewed = currentStatus;
       
-      boolean changeIcon = false;
+      boolean changeIcon = true;
       
       // iterate over children
       // if all children are reviewed then review the class
       for(UMLNode l : getChildren())
       {
         AttributeNode next = (AttributeNode) l;
-        if(next.isReviewed())
-          changeIcon = true;
-        else {
+        if(!next.isReviewed()) 
+        {
           changeIcon = false;
           break;
         }
@@ -55,7 +54,6 @@ public class ClassNode extends AbstractUMLNode
       else
         setIcon(DEFAULT_ICON);
 
-      
   }
   
   public boolean isReviewed() 
