@@ -24,6 +24,8 @@ public class UMLPersister implements Persister {
   private ClassificationSchemeDAO classificationSchemeDAO;
   private ClassificationSchemeItemDAO classificationSchemeItemDAO;
 
+  private LoaderDAO loaderDAO;
+
   private HashMap params = new HashMap();
 
   
@@ -31,9 +33,9 @@ public class UMLPersister implements Persister {
   private Context context;
   private ConceptualDomain conceptualDomain;
 
-  private ClassificationSchemeItem projectCsi, versionCsi;
-  private ClassificationScheme domainCs;
-  private ClassSchemeClassSchemeItem projectCsCsi, versionCsCsi;
+  private ClassificationSchemeItem domainCsi;
+  private ClassificationScheme projectCs;
+  private ClassSchemeClassSchemeItem projectCsCsi;
 
   private HashMap valueDomains = new HashMap();
 
@@ -41,7 +43,6 @@ public class UMLPersister implements Persister {
     this.elements = list;
 
     ApplicationContextFactory.init("applicationContext.xml");
-
 
     System.out.println("Loading ContextDAO bean");
     contextDAO = (ContextDAO) ApplicationContextFactory.getApplicationContext().getBean("contextDAO");
@@ -73,6 +74,9 @@ public class UMLPersister implements Persister {
 
     System.out.println("Loading CSIDAO bean");
     classificationSchemeItemDAO = (ClassificationSchemeItemDAO) ApplicationContextFactory.getApplicationContext().getBean("classificationSchemeItemDAO");
+
+    System.out.println("Loading LoaderDAO bean");
+    loaderDAO = (LoaderDAO) ApplicationContextFactory.getApplicationContext().getBean("loaderDAO");
 
   }
 
@@ -107,6 +111,10 @@ public class UMLPersister implements Persister {
 	
 	de.setContext(context);
 
+	int ind = de.getLongName().lastIndexOf(".");
+	if(ind > 0)
+	  de.setLongName(de.getLongName().substring(ind+1));
+
 	List decs = elements.getElements(DomainObjectFactory.newDataElementConcept().getClass());
 	for(ListIterator lit=decs.listIterator(); lit.hasNext();) {
 	  DataElementConcept o = (DataElementConcept)lit.next();
@@ -123,20 +131,15 @@ public class UMLPersister implements Persister {
 	  if(de.getPreferredName().length() > 30)
 	    de.setPreferredName(de.getPreferredName().substring(0, 29));
 
-
 	  de.setVersion(new Float(1.0f));
 	  
 	  de.setWorkflowStatus(workflowStatus);
-
-	  System.out.println("prefName: " + de.getPreferredName());
-	  System.out.println("version: " + de.getVersion());
-	  System.out.println("context: " + de.getContext().getName());
 
 	  de.setId(dataElementDAO.create(de));
 	} else {
 	  de = (DataElement)l.get(0);
 	}	
-	
+
 	addClassificationSchemes(de);
 	it.set(de);
 
@@ -287,33 +290,23 @@ public class UMLPersister implements Persister {
     // Add Classification Schemes
     List l = adminComponentDAO.getClassSchemeClassSchemeItems(ac);
     
-    // are projectCsi and versionCsi linked?
-    boolean pfound = false, vfound = false;
-    
-    for(int i=0; i<l.size(); i++) {
-      Object o = l.get(i);
-      ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)l.get(i);
+    // is projectCs linked?
+    boolean found = false;
 
-      if(csCsi.getCs().getLongName().equals(domainCs.getLongName()))
-	if(csCsi.getCsi().getName().equals(projectCsi.getName()))
-	  pfound = true;
-	else if(csCsi.getCsi().getName().equals(versionCsi.getName()))
-	  vfound = true;
+    for(ListIterator it = l.listIterator(); it.hasNext();) {
+      ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it.next();
+
+      if(csCsi.getCs().getLongName().equals(projectCs.getLongName()))
+	if(csCsi.getCsi().getName().equals(domainCsi.getName()))
+	  found = true;
       
-	}
-    
-    l = new ArrayList();
-    if(!pfound) {
-      l.add(projectCsCsi);
+     
+    } 
+    List csCsis = new ArrayList();
+    if(!found) {
+      csCsis.add(projectCsCsi);
+      adminComponentDAO.addClassSchemeClassSchemeItems(ac, csCsis);
     }
-    
-    if(!vfound) {
-	  l.add(versionCsCsi);
-    }
-	
-    if(l.size() > 0)
-      adminComponentDAO.addClassSchemeClassSchemeItems(ac, l);
-    
     
   }
   
@@ -349,73 +342,110 @@ public class UMLPersister implements Persister {
   }
   
   private void initClassifications() throws PersisterException {
-    domainCs = DomainObjectFactory.newClassificationScheme();
-    domainCs.setLongName("essai-UML");
+
+    domainCsi = DomainObjectFactory.newClassificationSchemeItem();
+    domainCsi.setName("Essai-Domain Model");
+    // !!!! TODO
+    domainCsi.setType("TEST");
+//     ArrayList eager = new ArrayList();
+//     eager.add(EagerConstants.CS_CSI);
+    List result = classificationSchemeItemDAO.find(domainCsi);
+    if(result.size() == 0)
+      throw new PersisterException("Classification Scheme Item: " + domainCsi.getName() + " does not exist on DB.");
+    domainCsi = (ClassificationSchemeItem)result.get(0);
+
+
+    projectCs = DomainObjectFactory.newClassificationScheme();
+    projectCs.setLongName(projectName);
+    projectCs.setVersion(new Float(version));
+    projectCs.setContext(context);
     ArrayList eager = new ArrayList();
     eager.add(EagerConstants.CS_CSI);
-    List result = classificationSchemeDAO.find(domainCs, eager);
-
-    if(result.size() == 0)
-      throw new PersisterException("Classification Scheme: " + domainCs.getLongName() + " does not exist on DB.");
-
-    domainCs = (ClassificationScheme)result.get(0);
+    result = classificationSchemeDAO.find(projectCs, eager);
     
-    List csCsis = domainCs.getCsCsis();
-    for(int i=0; i<csCsis.size(); i++) {
-      ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)csCsis.get(i);
-      if(csCsi.getCsi().getName().equals(projectName)) {
-	projectCsCsi = csCsi;
-	projectCsi = projectCsCsi.getCsi();
-      }
-    }    
+    if(result.size() == 0) { // need to add projectName CS
+      projectCs.setPreferredName(projectName);
+      projectCs.setWorkflowStatus(workflowStatus);
+      projectCs.setPreferredDefinition("Un essai de CS. Nom du projet.");
+      projectCs.setType("TEST");
+      projectCs.setLabelType(ClassificationScheme.LABEL_TYPE_ALPHA);
 
-
-    if(projectCsCsi == null) { // need to add projectName CSI
-      ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
-      csi.setName(projectName);
-      csi.setType("TEST");
-
-      ClassSchemeClassSchemeItem csCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
-      csCsi.setCs(domainCs);
-      csCsi.setCsi(csi);
-      csCsi.setLabel(projectName);
-
-      csCsi.setId((String)classificationSchemeDAO.addClassificationSchemeItem(domainCs, csCsi));
-
-      List list = classificationSchemeItemDAO.find(csi);
-      projectCsi = (ClassificationSchemeItem)list.get(0);
+      projectCs.setId(classificationSchemeDAO.create(projectCs));
+      projectCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+      projectCsCsi.setCs(projectCs);
+      projectCsCsi.setCsi(domainCsi);
+      projectCsCsi.setLabel(projectName);
       
-      projectCsCsi = csCsi;
-
-    }
-
-
-    for(int i=0; i<csCsis.size(); i++) {      
-      ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)csCsis.get(i);
-      if(csCsi.getCsi().getName().equals(projectName + "-" + version)) {
-	versionCsCsi = csCsi;
-	versionCsi = versionCsCsi.getCsi();
+      classificationSchemeDAO.addClassificationSchemeItem(projectCs, projectCsCsi);
+    } else { // is domainCsi linked?
+      projectCs = (ClassificationScheme)result.get(0);
+      List csCsis = projectCs.getCsCsis();
+      boolean found = false;
+      for(ListIterator it = csCsis.listIterator(); it.hasNext(); ) 
+	{
+	  ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it.next();
+	  if(csCsi.getCsi().getName().equals(domainCsi.getName())) 
+	    {
+	      projectCsCsi = csCsi;
+	      found = true;
+	    }
+	}
+      if(!found) {
+	projectCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+	projectCsCsi.setCs(projectCs);
+	projectCsCsi.setCsi(domainCsi);
+	
+	classificationSchemeDAO.addClassificationSchemeItem(projectCs, projectCsCsi);
       }
-    }
-    if(versionCsCsi == null) { // need to add version CSI
-      ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
-      csi.setName(projectName + "-" + version);
-      csi.setType("TEST");
-
-      ClassSchemeClassSchemeItem csCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
-      csCsi.setCs(domainCs);
-      csCsi.setCsi(csi);
-      csCsi.setLabel(csi.getName());
       
-      csCsi.setId((String)classificationSchemeDAO.addClassificationSchemeItem(domainCs, csCsi));
 
-      List list = classificationSchemeItemDAO.find(csi);
-      versionCsi = (ClassificationSchemeItem)list.get(0);
+//     if(projectCsCsi == null) { // need to add projectName CSI
+//       ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
+//       csi.setName(projectName);
+//       csi.setType("TEST");
 
-      versionCsCsi = csCsi;
+//       ClassSchemeClassSchemeItem csCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+//       csCsi.setCs(domainCs);
+//       csCsi.setCsi(csi);
+//       csCsi.setLabel(projectName);
+
+//       csCsi.setId((String)classificationSchemeDAO.addClassificationSchemeItem(domainCs, csCsi));
+
+//       List list = classificationSchemeItemDAO.find(csi);
+//       projectCsi = (ClassificationSchemeItem)list.get(0);
+      
+//       projectCsCsi = csCsi;
+
+//     }
+
+
+//     for(int i=0; i<csCsis.size(); i++) {      
+//       ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)csCsis.get(i);
+//       if(csCsi.getCsi().getName().equals(projectName + "-" + version)) {
+// 	versionCsCsi = csCsi;
+// 	versionCsi = versionCsCsi.getCsi();
+//       }
+//     }
+//     if(versionCsCsi == null) { // need to add version CSI
+//       ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
+//       csi.setName(projectName + "-" + version);
+//       csi.setType("TEST");
+
+//       ClassSchemeClassSchemeItem csCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+//       csCsi.setCs(domainCs);
+//       csCsi.setCsi(csi);
+//       csCsi.setLabel(csi.getName());
+      
+//       csCsi.setId((String)classificationSchemeDAO.addClassificationSchemeItem(domainCs, csCsi));
+
+//       List list = classificationSchemeItemDAO.find(csi);
+//       versionCsi = (ClassificationSchemeItem)list.get(0);
+
+//       versionCsCsi = csCsi;
+
+//     }
 
     }
-
   }
   
   private ValueDomain lookupValueDomain(ValueDomain vd) throws PersisterException {
