@@ -19,8 +19,9 @@ import java.io.*;
 
 import java.util.*;
 
+import static gov.nih.nci.ncicb.cadsr.loader.event.ConceptualEvent.*;
+
 public class XMIParser implements Parser {
-  private static final String TV_CONCEPT = "EVS_CONCEPT";
   private static final String EA_CONTAINMENT = "containment";
   private static final String EA_UNSPECIFIED = "Unspecified";
   private UMLListener listener;
@@ -136,11 +137,7 @@ public class XMIParser implements Parser {
     NewClassEvent event = new NewClassEvent(className);
     event.setPackageName(pName);
 
-    TaggedValue tv = mgr.getTaggedValue(clazz, TV_CONCEPT);
-
-    if (tv != null) {
-      event.setConceptCode(tv.getValue());
-    }
+    setConceptInfo(clazz, event);
 
     Map packageFilter = defaults.getPackageFilter();
 
@@ -210,10 +207,9 @@ public class XMIParser implements Parser {
     NewAttributeEvent event = new NewAttributeEvent(att.getName());
     event.setClassName(className);
     event.setType(att.getType().getName());
-    TaggedValue tv = mgr.getTaggedValue(att, TV_CONCEPT);
-    if (tv != null) {
-      event.setConceptCode(tv.getValue());
-    }
+    
+    setConceptInfo(att, event);
+
     listener.newAttribute(event);
   }
 
@@ -340,5 +336,44 @@ public class XMIParser implements Parser {
     for (Iterator it = generalizationEvents.iterator(); it.hasNext();) {
       listener.newGeneralization((NewGeneralizationEvent) it.next());
     }
+  }
+
+  private void setConceptInfo(ModelElement elt, ConceptualEvent event) {
+
+    TaggedValue tv = mgr.getTaggedValue(elt, TV_CONCEPT_CODE);
+    if (tv != null) {
+      event.setConceptCode(tv.getValue());
+    }
+
+    tv = mgr.getTaggedValue(elt, TV_CONCEPT_SOURCE);
+    if (tv != null) {
+      event.setConceptSource(tv.getValue());
+    }
+
+    tv = mgr.getTaggedValue(elt, TV_CONCEPT_DEFINITION);
+    if (tv != null) {
+      event.setConceptDefinition(tv.getValue());
+    }
+
+    tv = mgr.getTaggedValue(elt, TV_CONCEPT_DEFINITION_SOURCE);
+    if (tv != null) {
+      event.setConceptDefinitionSource(tv.getValue());
+    }
+    
+    tv = mgr.getTaggedValue(elt, TV_CONCEPT_PREFERRED_NAME);
+    if (tv != null) {
+      event.setConceptPreferredName(tv.getValue());
+    }
+
+    tv = mgr.getTaggedValue(elt, TV_NCI_CONCEPT_CODE);
+    if (tv != null) {
+      event.setNciConceptCode(tv.getValue());
+    }
+
+    tv = mgr.getTaggedValue(elt, TV_NCI_CONCEPT_DEFINITION);
+    if (tv != null) {
+      event.setNciConceptDefinition(tv.getValue());
+    }
+    
   }
 }
