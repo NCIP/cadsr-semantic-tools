@@ -147,10 +147,67 @@ public class UMLPersister implements Persister {
                     }));
       
       classSchemeClassSchemeItemDAO.addCsCsi(altName, defaults.getProjectCsCsi());
+      logger.info(
+        PropertyAccessor.getProperty(
+          "linked.to.project",
+          "Alternate Name"
+          ));
       
     } 
-    
-    
   }
+
   
+//   protected void addDefinition(AdminComponent ac, String newDef) {
+
+//     List defs = adminComponentDAO.getDefinitions(ac);
+//     boolean found = false;
+//     for(Iterator it = defs.iterator(); it.hasNext(); ) {
+//       Definition def = (Definition)it.next();
+//       if(def.getDefinition().equals(newDef)) {
+//         found = true;
+//         logger.info(PropertyAccessor.getProperty(
+//                       "existed.definition", newDef));
+        
+//         boolean csFound = false;
+//         for(Iterator it2 = def.getCsCsis().iterator(); it2.hasNext();) {
+//           ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
+//           if(csCsi.getId().equals(defaults.getProjectCsCsi().getId())) {
+//             csFound = true;
+//           }
+//         }
+//         if(!csFound) {
+//           classSchemeClassSchemeItemDAO.addCsCsi(def, defaults.getProjectCsCsi());
+//           logger.info(
+//             PropertyAccessor.getProperty(
+//               "linked.to.project",
+//               "Definition"
+//               ));
+//         }
+        
+//       }
+//     }
+    
+//     if(!found) {
+//       Definition def = DomainObjectFactory.newDefinition();
+//       def.setContext(defaults.getContext());
+//       def.setDefinition(newDef);
+//       def.setId(adminComponentDAO.addDefinition(ac, def));
+//       logger.info(PropertyAccessor.getProperty(
+//                     "added.definition", 
+//                     new String[] {
+//                       def.getDefinition(),
+//                       ac.getLongName(),
+//                       "Admin Component"
+//                     }));
+      
+//       classSchemeClassSchemeItemDAO.addCsCsi(def, defaults.getProjectCsCsi());
+//       logger.info(
+//         PropertyAccessor.getProperty(
+//           "linked.to.project",
+//           "Definition"
+//           ));
+      
+//     } 
+//   }
+
 }

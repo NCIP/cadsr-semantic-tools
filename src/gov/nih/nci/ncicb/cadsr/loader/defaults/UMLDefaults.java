@@ -26,7 +26,6 @@ public class UMLDefaults {
 
   private static UMLDefaults singleton = new UMLDefaults();
 
-  private LoaderDAO loaderDAO = DAOAccessor.getLoaderDAO();
   private ContextDAO contextDAO = DAOAccessor.getContextDAO();
   private ConceptualDomainDAO conceptualDomainDAO = DAOAccessor.getConceptualDomainDAO();
   private ClassificationSchemeDAO classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
@@ -34,7 +33,7 @@ public class UMLDefaults {
   private ClassSchemeClassSchemeItemDAO classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
 
   private String projectName;
-  private String projectVersion;
+  private Float projectVersion;
   private String workflowStatus;
   private Float version;
   private Context context;
@@ -70,15 +69,16 @@ public class UMLDefaults {
    * @param username the authenticated username
    * @exception PersisterException if an error occurs
    */
-  public void initParams(String projectName, String username) throws PersisterException {
+  public void initParams(String projectName, Float projectVersion, String username) throws PersisterException {
 
     audit = DomainObjectFactory.newAudit();
     audit.setCreatedBy(username);
     
     this.projectName = projectName;
+    this.projectVersion = projectVersion;
 
-    // !!!! TODO Use version Too
-    LoaderDefault loaderDefault = loaderDAO.findByName(projectName);
+    LoaderDefault loaderDefault = new DBDefaultsLoader().loadDefaults(projectName, projectVersion);
+//     LoaderDefault loaderDefault = loaderDAO.findByName(projectName);
     
     if (loaderDefault == null) {
       throw new PersisterException(
@@ -98,7 +98,6 @@ public class UMLDefaults {
     }
     
     version = new Float(loaderDefault.getVersion().toString());
-    projectVersion = loaderDefault.getProjectVersion().toString();
     
     workflowStatus = loaderDefault.getWorkflowStatus();
     
@@ -126,25 +125,29 @@ public class UMLDefaults {
     }
 
     logger.info(PropertyAccessor.getProperty("listOfPackages"));
-    String[] pkgs = loaderDefault.getPackageFilter().split(",");
-    for(int i=0; i<pkgs.length; i++) {
-      String s = pkgs[i].trim();
-      int ind = s.indexOf(">");
-
-      String alias = null; 
-      String pkg = null;
-      if(ind > 0) {
-        alias = s.substring(1, ind).trim();
-        pkg = s.substring(ind+1).trim();
-      } else {
-        alias = pkg = s;
+    String filt = loaderDefault.getPackageFilter();
+    if(filt != null) {
+      String[] pkgs = filt.split(",");
+      for(int i=0; i<pkgs.length; i++) {
+        String s = pkgs[i].trim();
+        int ind = s.indexOf(">");
+        
+        String alias = null; 
+        String pkg = null;
+        if(ind > 0) {
+          alias = s.substring(1, ind).trim();
+          pkg = s.substring(ind+1).trim();
+        } else {
+          alias = pkg = s;
+        }
+        
+        packageFilter.put(pkg, alias);
+        logger.info(PropertyAccessor.getProperty("packageAlias", new String[] {pkg, alias}));
       }
-      
-      packageFilter.put(pkg, alias);
-      logger.info(PropertyAccessor.getProperty("packageAlias", new String[] {pkg, alias}));
+      logger.info(PropertyAccessor.getProperty("endOfList"));
+    } else {
+      logger.info(PropertyAccessor.getProperty("no.package.filter"));
     }
-    logger.info(PropertyAccessor.getProperty("endOfList"));
-
   }
 
   /**
@@ -172,7 +175,7 @@ public class UMLDefaults {
 
     projectCs = DomainObjectFactory.newClassificationScheme();
     projectCs.setLongName(projectName);
-    projectCs.setVersion(new Float(projectVersion));
+    projectCs.setVersion(projectVersion);
     projectCs.setContext(context);
 
     ArrayList eager = new ArrayList();

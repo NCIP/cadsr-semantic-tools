@@ -39,6 +39,11 @@ public class XMIParser implements Parser {
   private List generalizationEvents = new ArrayList();
   private List associationEvents = new ArrayList();
 
+  private String[] bannedClassNames = null;
+  {
+    bannedClassNames = PropertyAccessor.getProperty("banned.classNames").split(",");
+  }
+
   public void setEventHandler(LoaderHandler handler) {
     this.listener = (UMLHandler) handler;
   }
@@ -144,6 +149,11 @@ public class XMIParser implements Parser {
 
     logger.debug("CLASS: " + className);
     logger.debug("CLASS PACKAGE: " + getPackageName(clazz));
+
+    if(isClassBanned(className)) {
+      logger.info(PropertyAccessor.getProperty("class.filtered", className));
+      return;
+    }
 
     if(isInPackageFilter(pName)) {
       listener.newClass(event);
@@ -393,6 +403,13 @@ public class XMIParser implements Parser {
     } while (s != null);
     
     return pack.toString();
+  }
+
+  private boolean isClassBanned(String className) {
+    for(int i=0; i<bannedClassNames.length; i++) {
+      if(className.indexOf(bannedClassNames[i]) > -1) return true;
+    }
+    return false;
   }
     
 }

@@ -15,8 +15,9 @@ public class UMLValidator implements Validator {
     this.elements = elements;
     
     validators = new ArrayList();
-    validators.add(new ConceptCodeValidator(elements));
-  }
+    validators.add(new ConceptCodeValidator(elements)); 
+    validators.add(new AssociationValidator(elements));
+ }
 
   /**
    * returns a list of Validation errors.

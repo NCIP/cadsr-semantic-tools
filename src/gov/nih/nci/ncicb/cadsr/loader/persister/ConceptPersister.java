@@ -51,7 +51,7 @@ public class ConceptPersister extends UMLPersister {
             def.setAudit(defaults.getAudit());
             def.setContext(defaults.getContext());
             adminComponentDAO.addDefinition(c, def);
-            logger.info(PropertyAccessor.getProperty("added.altDef", new String[]{c.getPreferredName(), def.getDefinition()}));
+            logger.info(PropertyAccessor.getProperty("added.altDef", new String[]{c.getPreferredName(), def.getDefinition(), "Concept"}));
           } else {
             // Do nothing, this is the common case where the concept existed and had the same def source.
           }

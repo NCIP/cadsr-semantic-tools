@@ -81,7 +81,7 @@ public class DBModule implements LoginModule {
       }
     catch(Exception e)
       {
-        e.printStackTrace();
+        logger.debug("Error while logging.", e);
       }
     if(!success)
       throw new LoginException("Authentication failed: Password does not match");

@@ -57,6 +57,11 @@ public class UMLLoader {
    */
   public static void main(String[] args) throws Exception {
 
+    if(args.length != 3) {
+      System.err.println(PropertyAccessor.getProperty("usage"));
+      System.exit(1);
+    }
+
     new UMLLoader().run(args);
   }
 
@@ -106,6 +111,14 @@ public class UMLLoader {
     }
     
     String projectName = args[1];
+
+    Float projectVersion = null;
+    try {
+      projectVersion = new Float(args[2]);
+    } catch (NumberFormatException ex) {
+      System.err.println("Parameter projectVersion must be a number");
+      System.exit(1);
+    }
     
     logger.info(PropertyAccessor.getProperty("nbOfFiles", filenames.length));
     
@@ -125,7 +138,7 @@ public class UMLLoader {
       logger.info(PropertyAccessor.getProperty("startingFile", filenames[i]));
 
       UMLDefaults defaults = UMLDefaults.getInstance();
-      defaults.initParams(projectName, username);
+      defaults.initParams(projectName, projectVersion, username);
       defaults.initClassifications();
 
       XMIParser  parser = new XMIParser();
@@ -142,8 +155,12 @@ public class UMLLoader {
         // !!! TODO choose error, warning, etc ...
         logger.error(error.getSeverity() + ": " + error.getMessage());
       }
-      // !! TODO: Offer to continue anyway
-      System.exit(1);
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+      System.out.print(PropertyAccessor.getProperty("validation.continue"));
+      String answ = br.readLine();
+      if(!answ.equals("y")) {
+        System.exit(1);
+      }
     }
 
 

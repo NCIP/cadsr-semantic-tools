@@ -164,14 +164,14 @@ public class UMLDefaultHandler implements UMLHandler {
     ocr.setType(ObjectClassRelationship.TYPE_HAS);
     elements.addElement(ocr);
 
-    if(ocr.getSource() == null || ocr.getTarget() == null) {
-      logger.error(PropertyAccessor.getProperty(
-                     "association.missing.end", 
-                     new String[] {event.getAClassName(),
-                                   event.getBClassName()}));
-    } else {
-      elements.addElement(ocr);
-    }
+//     if(ocr.getSource() == null || ocr.getTarget() == null) {
+//       logger.error(PropertyAccessor.getProperty(
+//                      "association.missing.end", 
+//                      new String[] {event.getAClassName(),
+//                                    event.getBClassName()}));
+//     } else {
+//       elements.addElement(ocr);
+//     }
     
     //         logger.debug("Association: ");
     //         logger.debug("Source:");
