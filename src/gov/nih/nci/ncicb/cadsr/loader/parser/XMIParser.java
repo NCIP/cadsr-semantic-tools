@@ -178,7 +178,6 @@ public class XMIParser implements Parser {
 
     while (it.hasNext()) {
       Object o = it.next();
-
       if (o instanceof Attribute) {
         doAttribute((Attribute) o);
       }
@@ -195,16 +194,12 @@ public class XMIParser implements Parser {
 
   private void doAttribute(Attribute att) {
     NewAttributeEvent event = new NewAttributeEvent(att.getName());
-
     event.setClassName(className);
     event.setType(att.getType().getName());
-
     TaggedValue tv = mgr.getTaggedValue(att, TV_CONCEPT);
-
     if (tv != null) {
       event.setConceptCode(tv.getValue());
     }
-
     listener.newAttribute(event);
   }
 
