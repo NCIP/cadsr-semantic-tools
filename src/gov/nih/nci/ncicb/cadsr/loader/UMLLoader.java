@@ -142,7 +142,7 @@ public class UMLLoader {
 
       UMLDefaults defaults = UMLDefaults.getInstance();
       defaults.initParams(projectName, projectVersion, username);
-      defaults.initClassifications();
+//       defaults.initClassifications();
 
       XMIParser  parser = new XMIParser();
       parser.setEventHandler(listener);

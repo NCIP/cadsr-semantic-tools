@@ -97,62 +97,8 @@ public class UMLLoaderGUI
       e.printStackTrace();
     }
 
-    InitClass initClass = new InitClass();
-    Thread t = new Thread(initClass);
-    /* high priority because:
-     * If the user is fast at entering its user name
-     * (namely, username / password is provided automatically)
-     * Then it's possible for the login module to want to access
-     *      spring before it's initialized. 
-     * Would not happen in normal run, but in dev runs, it may.
-     * This seems to have absolutely no effect (on linux at least). Will investigate later. 
-     */
-    t.setPriority(Thread.MAX_PRIORITY);
-    t.start();
-
     new UMLLoaderGUI();
   }
-
-//   private String doLogin() {
-//     String username = null;
-//     try {
-//       SwingCallbackHandler handler = new SwingCallbackHandler();
-//       putToCenter(handler);
-      
-//       handler.show();
-      
-//       LoginContext lc = new LoginContext("UML_Loader", handler);
-      
-//       while(!handler.isDone()) {
-//         try {
-//           Thread.currentThread().sleep(100);
-//         } catch (InterruptedException e) {
-
-//         } // end of try-catch
-//       }
-
-//       lc.login();
-//       boolean loginSuccess = true;
-      
-//       Subject subject = lc.getSubject();
-      
-//       Iterator it = subject.getPrincipals().iterator();
-//       while (it.hasNext()) {
-// 	username = it.next().toString();
-// 	logger.debug(PropertyAccessor.getProperty("authenticated", username));
-//       }
-//     } catch (Exception ex) {
-//       Icon lockIcon = new ImageIcon(this.getClass().getResource("/security_lock.jpg"));
-//       JOptionPane.showMessageDialog((Component)null, "Incorrect Username / password", "Login Failed", JOptionPane.ERROR_MESSAGE, lockIcon);
-//       logger.error(PropertyAccessor.getProperty("login.fail",ex.getMessage()));
-//       System.exit(1);
-//     }
-    
-//     System.out.println("Done with Login");
-
-//     return username;
-    
-//   }
 
   private void putToCenter(Component comp) {
     comp.setLocation((screenSize.width - comp.getSize().width) / 2, (screenSize.height - comp.getSize().height) / 2);
