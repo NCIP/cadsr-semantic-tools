@@ -1,5 +1,11 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
+import java.awt.event.ItemEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -9,7 +15,7 @@ import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 
 
 public class UMLElementViewPanel extends JPanel
-  implements ActionListener, KeyListener {
+  implements ActionListener, KeyListener, ItemListener {
 
   private Concept[] concepts;
 
@@ -22,7 +28,9 @@ public class UMLElementViewPanel extends JPanel
     SAVE = "SAVE";
 
   private JButton addButton, deleteButton, saveButton;
-
+  private JCheckBox reviewButton;
+  private List reviewListeners;
+  
   public UMLElementViewPanel(Concept[] concepts) {
     this.concepts = concepts;
     initUI();
@@ -47,6 +55,7 @@ public class UMLElementViewPanel extends JPanel
 
 //     JPanel scrollPanel = new JPanel();
 
+    reviewListeners = new ArrayList();
     JPanel gridPanel = new JPanel(new GridLayout(-1, 1));
     JScrollPane scrollPane = new JScrollPane(gridPanel);
 
@@ -71,10 +80,13 @@ public class UMLElementViewPanel extends JPanel
       insertInBag(mainPanel, conceptUIs[i].labels[2], 0, 2);
       insertInBag(mainPanel, conceptUIs[i].labels[3], 0, 3);
 
-      insertInBag(mainPanel, conceptUIs[i].code, 1, 0);
-      insertInBag(mainPanel, conceptUIs[i].name, 1, 1);
-      insertInBag(mainPanel, conceptUIs[i].defScrollPane, 1, 2);
-      insertInBag(mainPanel, conceptUIs[i].defSource, 1, 3);
+      insertInBag(mainPanel, conceptUIs[i].code, 1, 0, 2, 1);
+      insertInBag(mainPanel, conceptUIs[i].name, 1, 1, 2, 1);
+      insertInBag(mainPanel, conceptUIs[i].defScrollPane, 1, 2, 2, 1);
+      insertInBag(mainPanel, conceptUIs[i].defSource, 1, 3,1, 1);
+
+      JButton evsButton = new JButton("Evs Link");
+      insertInBag(mainPanel, evsButton, 2, 3);
 
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
       gridPanel.add(conceptPanels[i]);
@@ -84,10 +96,12 @@ public class UMLElementViewPanel extends JPanel
       conceptUIs[i].defSource.addKeyListener(this);
     }
 
+    
 
     addButton = new JButton("Add");
     deleteButton = new JButton("Remove");
     saveButton = new JButton("Apply");
+    reviewButton = new JCheckBox("Reviewed");
 
     addButton.setActionCommand(ADD);
     deleteButton.setActionCommand(DELETE);
@@ -96,7 +110,8 @@ public class UMLElementViewPanel extends JPanel
     addButton.addActionListener(this);
     deleteButton.addActionListener(this);
     saveButton.addActionListener(this);
-
+    reviewButton.addItemListener(this);
+    
     if(concepts.length < 2)
       deleteButton.setEnabled(false);
 
@@ -106,6 +121,7 @@ public class UMLElementViewPanel extends JPanel
     buttonPanel.add(addButton);
     buttonPanel.add(deleteButton);
     buttonPanel.add(saveButton);
+    buttonPanel.add(reviewButton);
 
 //     scrollPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -163,7 +179,27 @@ public class UMLElementViewPanel extends JPanel
       saveButton.setEnabled(false);
     } 
   }
+  
+  public void itemStateChanged(ItemEvent e) {
+    if(e.getStateChange() == ItemEvent.SELECTED) {
+      System.out.println(e.getSource());
+      ReviewEvent event = new ReviewEvent();
+      event.setUserObject(e);
+      fireReviewEvent(event);
+    }
+  }
+  
+  public void fireReviewEvent(ReviewEvent event) {
+    for(Iterator it = reviewListeners.iterator(); it.hasNext();) {
+      ((ReviewListener) it.next()).reviewChanged(event);
+    }
+    }
+  
 
+  public void addReviewListener(ReviewListener listener) {
+    reviewListeners.add(listener);
+  }
+  
   public static void main(String[] args) {
     JFrame frame = new JFrame();
     frame.setLayout(new BorderLayout());
@@ -187,15 +223,15 @@ public class UMLElementViewPanel extends JPanel
 
   private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
 
-    insertInBag(bagComp, comp, x, y, 0.0, 0.0);
+    insertInBag(bagComp, comp, x, y, 1, 1);
 
   }
 
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, double width, double height) {
+  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
     JPanel p = new JPanel();
     p.add(comp);
 
-    bagComp.add(p, new GridBagConstraints(x, y, 1, 1, width, height, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
 
 }
