@@ -26,24 +26,32 @@ public class ValidationPanel extends JPanel {
 
   private void initUI() {
 
-    JPanel textPanel = new JPanel();
-    textPanel.setLayout(new FlowLayout());
+    JPanel infoPanel = new JPanel();
+    infoPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
     
-    textPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("validated.jpg"))));
+    infoPanel.setBackground(Color.WHITE);
+    infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("xmi.gif"))), FlowLayout.LEFT);
+//     infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("validated.jpg"))));
 
-    JLabel textLabel = new JLabel("You may choose to run Validation now, or manually run validation later");
+    JLabel textLabel = new JLabel("<html>You may choose to run Validation now, <br> or manually run validation later</html>");
 
-    textPanel.add(textLabel);
+    infoPanel.add(textLabel);
+
+    
 
     validateCheckBox = new JCheckBox("Yes, Please run Validation now");
     validateCheckBox.setSelected(true);
 
     JPanel buttonPanel = new JPanel();
-    buttonPanel.setLayout(new GridLayout(1, 1));
+    buttonPanel.setLayout(new GridLayout(0, 1));
+    buttonPanel.add
+      (new JLabel("<html>Validation will help you identify the items that have missing concepts <br> If this is the first you will be tagging the xmi document, you may want to leave this checked off</html>"));
+                    
     buttonPanel.add(validateCheckBox);
 
     this.setLayout(new BorderLayout());
-    this.add(textPanel, BorderLayout.NORTH);
+    this.add(infoPanel, BorderLayout.NORTH);
     this.add(buttonPanel, BorderLayout.CENTER);
 
   }

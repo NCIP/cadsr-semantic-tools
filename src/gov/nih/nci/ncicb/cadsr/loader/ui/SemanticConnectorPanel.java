@@ -40,14 +40,16 @@ public class SemanticConnectorPanel extends JPanel
 
   private void initUI() {
 
-    JPanel textPanel = new JPanel();
-    textPanel.setLayout(new FlowLayout());
+    JPanel infoPanel = new JPanel();
+    infoPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
     
-    textPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("chain.jpg"))));
+    infoPanel.setBackground(Color.WHITE);
+    infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("xmi.gif"))), FlowLayout.LEFT);
+    
+    JLabel textLabel = new JLabel("<html>Do you want to run Semantic Connector <br> on the file you selected?</html>");
 
-    JLabel textLabel = new JLabel("Do you want to run Semantic Connector on the file you selected?");
-
-    textPanel.add(textLabel);
+    infoPanel.add(textLabel);
 
     ButtonGroup group = new ButtonGroup();
     
@@ -60,7 +62,11 @@ public class SemanticConnectorPanel extends JPanel
     group.add(noButton);
 
     JPanel buttonPanel = new JPanel();
-    buttonPanel.setLayout(new GridLayout(2, 1));
+    buttonPanel.setLayout(new GridLayout(0, 1));
+
+    buttonPanel.add
+      (new JLabel("Semantic Connector will tag the XMI document with concepts."));
+
     buttonPanel.add(yesButton);
     buttonPanel.add(noButton);
 
@@ -75,7 +81,7 @@ public class SemanticConnectorPanel extends JPanel
     }
 
     this.setLayout(new BorderLayout());
-    this.add(textPanel, BorderLayout.NORTH);
+    this.add(infoPanel, BorderLayout.NORTH);
     this.add(buttonPanel, BorderLayout.CENTER);
     this.add(progressPanel, BorderLayout.SOUTH);
 
