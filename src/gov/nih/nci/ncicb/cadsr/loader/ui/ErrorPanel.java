@@ -17,27 +17,24 @@ public class ErrorPanel extends JPanel {
     initUI(list);
   }
 
-  private void initUI(java.util.List list) {
+  private void initUI(java.util.List<ValidationError> list) {
     rootNode = new DefaultMutableTreeNode("Root");
-
+    
     buildTree(list);
-
+    
     //create tree and make root not visible
     tree = new JTree(rootNode);
     tree.setRootVisible(false);
     tree.setShowsRootHandles(true);
     
     ImageIcon leafIcon = new ImageIcon(this.getClass().getResource("/red-dot.jpg"));
-
-    if (leafIcon != null) {
-    DefaultTreeCellRenderer renderer = 
-	new DefaultTreeCellRenderer();
-    renderer.setLeafIcon(leafIcon);
-    tree.setCellRenderer(renderer);
-    }
-
-   
     
+    if (leafIcon != null) {
+      DefaultTreeCellRenderer renderer = 
+	new DefaultTreeCellRenderer();
+      renderer.setLeafIcon(leafIcon);
+      tree.setCellRenderer(renderer);
+    }
 
     this.setLayout(new BorderLayout());
 
@@ -47,7 +44,7 @@ public class ErrorPanel extends JPanel {
 
   }
   
-  public void buildTree(java.util.List errorList) {
+  public void buildTree(java.util.List<ValidationError> errorList) {
     DefaultMutableTreeNode errorNode = 
       new DefaultMutableTreeNode(ValidationError.SEVERITY_ERROR);
     DefaultMutableTreeNode warningNode = 
@@ -56,8 +53,7 @@ public class ErrorPanel extends JPanel {
     rootNode.add(errorNode);
     rootNode.add(warningNode);
    
-    for(Iterator it = errorList.iterator(); it.hasNext();) {
-      ValidationError err = (ValidationError)it.next();
+    for(ValidationError err : errorList) {
       if(err.getSeverity() == errorNode.toString()) {
 	DefaultMutableTreeNode node = new DefaultMutableTreeNode(err.getMessage());
 	errorNode.add(node);
