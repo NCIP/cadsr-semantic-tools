@@ -154,9 +154,9 @@ public class XMIUMLListener implements UMLListener {
     }
 
     if (event.getDirection().equals("AB")) {
-      ocr.setDirection(ObjectClassRelationship.DIRECTION_SINGLE);
-    } else {
       ocr.setDirection(ObjectClassRelationship.DIRECTION_BOTH);
+    } else {
+      ocr.setDirection(ObjectClassRelationship.DIRECTION_SINGLE);
     }
 
     ocr.setLongName(event.getRoleName());

@@ -234,17 +234,27 @@ public class XMIParser implements Parser {
           navig += 'A';
         }
 
+        TaggedValue tv = mgr.getTaggedValue(end, EA_CONTAINMENT);
+        if(tv != null) {
+          logger.debug("******** END: Tagged VALUE: " + tv.getValue());
+        }
+
+
         Classifier classif = end.getType();
-        event.setACardinality(cardinality(end));
+
+        Collection range = end.getMultiplicity().getRange();
+        for (Iterator it2 = range.iterator(); it2.hasNext();) {
+          MultiplicityRange mr = (MultiplicityRange) it2.next();
+          int low = mr.getLower();
+          int high = mr.getUpper();
+          event.setALowCardinality(low);
+          event.setAHighCardinality(high);
+        }
+
         event.setAClassName(
           classif.getNamespace().getName() + "." + classif.getName());
         event.setARole(end.getName());
 
-        TaggedValue tv = mgr.getTaggedValue(end, EA_CONTAINMENT);
-
-        if (tv != null) {
-          logger.debug("containment: " + tv.getValue());
-        }
       }
     }
 
@@ -259,19 +269,18 @@ public class XMIParser implements Parser {
           navig += 'B';
         }
 
-        // This for EA only. EA has direction called "unspecified". We want to treat that as bi-directional. EA stores 'Unspecified' as a tagged valued.
-        TaggedValue tv = mgr.getTaggedValue(end, EA_CONTAINMENT);
-
-        if ((tv != null) && (tv.getValue().equals(EA_UNSPECIFIED))) {
-          navig = "AB";
-        }
-
-        if (tv != null) {
-          logger.debug("containment: " + tv.getValue());
-        }
-
         Classifier classif = end.getType();
-        event.setBCardinality(cardinality(end));
+        Collection range = end.getMultiplicity().getRange();
+        for (Iterator it2 = range.iterator(); it2.hasNext();) {
+          MultiplicityRange mr = (MultiplicityRange) it2.next();
+          int low = mr.getLower();
+          int high = mr.getUpper();
+          logger.debug("B-LOW: " + low);
+          logger.debug("B-HIGH: " + high);
+          event.setBLowCardinality(low);
+          event.setBHighCardinality(high);
+        }
+
         event.setBClassName(
           classif.getNamespace().getName() + "." + classif.getName());
         event.setBRole(end.getName());

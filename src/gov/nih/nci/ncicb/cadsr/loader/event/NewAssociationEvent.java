@@ -5,8 +5,10 @@ public class NewAssociationEvent implements LoaderEvent {
   private String aClassName;
   private String bClassName;
   private String roleName;
-  private String aCardinality;
-  private String bCardinality;
+  private int aHighCardinality;
+  private int bHighCardinality;
+  private int aLowCardinality;
+  private int bLowCardinality;
   private String aRole;
   private String bRole;
   private String direction;
@@ -39,19 +41,35 @@ public class NewAssociationEvent implements LoaderEvent {
 
 
   /**
-   * Get the ACardinality value.
-   * @return the ACardinality value.
+   * Get the ALowCardinality value.
+   * @return the ALowCardinality value.
    */
-  public String getACardinality() {
-    return aCardinality;
+  public int getALowCardinality() {
+    return aLowCardinality;
   }
 
   /**
-   * Get the BCardinality value.
-   * @return the BCardinality value.
+   * Get the BLowCardinality value.
+   * @return the BLowCardinality value.
    */
-  public String getBCardinality() {
-    return bCardinality;
+  public int getBLowCardinality() {
+    return bLowCardinality;
+  }
+
+  /**
+   * Get the AHighCardinality value.
+   * @return the AHighCardinality value.
+   */
+  public int getAHighCardinality() {
+    return aHighCardinality;
+  }
+
+  /**
+   * Get the BHighCardinality value.
+   * @return the BHighCardinality value.
+   */
+  public int getBHighCardinality() {
+    return bHighCardinality;
   }
 
   /**
@@ -108,20 +126,37 @@ public class NewAssociationEvent implements LoaderEvent {
   
 
   /**
-   * Set the BCardinality value.
-   * @param newBCardinality The new BCardinality value.
+   * Set the BLowCardinality value.
+   * @param newBLowCardinality The new BLowCardinality value.
    */
-  public void setBCardinality(String newBCardinality) {
-    this.bCardinality = newBCardinality;
+  public void setBLowCardinality(int newBLowCardinality) {
+    this.bLowCardinality = newBLowCardinality;
   }
 
   
   /**
-   * Set the ACardinality value.
-   * @param newACardinality The new ACardinality value.
+   * Set the ALowCardinality value.
+   * @param newALowCardinality The new ALowCardinality value.
    */
-  public void setACardinality(String newACardinality) {
-    this.aCardinality = newACardinality;
+  public void setALowCardinality(int newALowCardinality) {
+    this.aLowCardinality = newALowCardinality;
+  }
+
+  /**
+   * Set the BHighCardinality value.
+   * @param newBHighCardinality The new BHighCardinality value.
+   */
+  public void setBHighCardinality(int newBHighCardinality) {
+    this.bHighCardinality = newBHighCardinality;
+  }
+
+  
+  /**
+   * Set the AHighCardinality value.
+   * @param newAHighCardinality The new AHighCardinality value.
+   */
+  public void setAHighCardinality(int newAHighCardinality) {
+    this.aHighCardinality = newAHighCardinality;
   }
 
   
