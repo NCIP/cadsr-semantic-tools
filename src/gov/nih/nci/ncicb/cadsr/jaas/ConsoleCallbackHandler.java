@@ -1,4 +1,4 @@
-package gov.nih.nci.ncicb.cadsr.loader.jaas;
+package gov.nih.nci.ncicb.cadsr.jaas;
 
 import java.io.*;
 
