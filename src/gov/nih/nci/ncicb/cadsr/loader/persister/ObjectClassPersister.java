@@ -38,17 +38,16 @@ public class ObjectClassPersister extends UMLPersister {
 	packageName = className.substring(0, ind);
 	className = className.substring(ind + 1);
 
-	oc.setLongName(oc.getConcept().getLongName());
 
 	// does this oc exist?
 	List eager = new ArrayList();
 	eager.add(EagerConstants.AC_CS_CSI);
 
         String[] conceptCodes = oc.getPreferredName().split("-");
+        Concept primaryConcept = findConcept(conceptCodes[0]);
+	oc.setLongName(primaryConcept.getLongName());
 
         List l = objectClassDAO.findByConceptCodes(conceptCodes, eager);
-
-        Concept primaryConcept = findConcept(conceptCodes[0]);
         
 	boolean packageFound = false;
         String newDef = oc.getPreferredDefinition();
@@ -72,7 +71,7 @@ public class ObjectClassPersister extends UMLPersister {
           } // end of try-catch
           // is definition the same?
           // if not, then add alternate Def
-          if(!newDef.equals(oc.getPreferredDefinition())) {
+          if((newDef.length() > 0) && !newDef.equals(oc.getPreferredDefinition())) {
             addAlternateDefinition(oc, newDef, Definition.TYPE_UML);
           }
           
@@ -90,7 +89,7 @@ public class ObjectClassPersister extends UMLPersister {
 
           // is definition the same?
           // if not, then add alternate Def
-          if(!newDef.equals(oc.getPreferredDefinition())) {
+          if((newDef.length() > 0) && !newDef.equals(oc.getPreferredDefinition())) {
             addAlternateDefinition(oc, newDef, Definition.TYPE_UML);
           }
 

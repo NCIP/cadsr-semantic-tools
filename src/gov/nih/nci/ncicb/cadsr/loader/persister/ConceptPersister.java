@@ -16,7 +16,6 @@ public class ConceptPersister extends UMLPersister {
 
   public ConceptPersister(ElementsLists list) {
     this.elements = list;
-    defaults = UMLDefaults.getInstance();
   }
 
   public void persist() {

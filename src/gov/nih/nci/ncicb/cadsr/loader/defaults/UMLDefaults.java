@@ -126,11 +126,11 @@ public class UMLDefaults {
 				   conceptualDomain.getPreferredName() + " not found.");
     }
 
-    Context mainContext = contextDAO.findByName(PropertyAccessor.getProperty("context.main.name"));
+    mainContext = contextDAO.findByName(PropertyAccessor.getProperty("context.main.name"));
     if (mainContext == null) {
       logger.error(PropertyAccessor.getProperty("context.not.found", PropertyAccessor.getProperty("context.main.name")));
       System.exit(1);
-    }
+    } 
 
     logger.info(PropertyAccessor.getProperty("listOfPackages"));
     String filt = loaderDefault.getPackageFilter();

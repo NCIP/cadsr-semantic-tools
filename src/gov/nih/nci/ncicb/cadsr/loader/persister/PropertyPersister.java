@@ -34,9 +34,8 @@ public class PropertyPersister extends UMLPersister {
         String[] conceptCodes = prop.getPreferredName().split("-");
         List l = propertyDAO.findByConceptCodes(conceptCodes);
 
-        prop.setLongName(prop.getConcept().getLongName());
-
         Concept primaryConcept = findConcept(conceptCodes[0]);
+        prop.setLongName(primaryConcept.getLongName());
 
 	if (l.size() == 0) {
 	  prop.setPreferredName(prop.getLongName());

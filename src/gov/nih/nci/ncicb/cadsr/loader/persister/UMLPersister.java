@@ -224,4 +224,24 @@ public class UMLPersister implements Persister {
 
   }
 
+  protected ObjectClass findObjectClass(String conceptCodes) {
+    List ocs = (List) elements.getElements(DomainObjectFactory.newObjectClass().getClass());
+    
+    String[] codes = conceptCodes.split("-");
+    
+    for (Iterator it = ocs.iterator(); it.hasNext();) {
+      ObjectClass oc = (ObjectClass)it.next();
+      if(codes.length == 1) {
+        if(oc.getConcept().getPreferredName().equals(conceptCodes))
+          return oc;
+      } else {
+        if(oc.getConceptDerivationRule().)
+      }
+      if(oc.getPreferredName().equals(conceptCode))
+        return con;
+    }
+    return null;
+
+  }
+
 }

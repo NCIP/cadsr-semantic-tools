@@ -25,7 +25,7 @@ public class ConceptCodeValidator implements Validator {
     if(ocs != null)
       for(Iterator it = ocs.iterator(); it.hasNext(); ) {
         ObjectClass o = (ObjectClass)it.next();
-        if(o.getConcept().getPreferredName() == null) {
+        if(o.getPreferredName() == null) {
           errors.add(new ValidationError(SEVERITY_ERROR, "Class: " + o.getLongName() + " has no concept code."));
         }
       }
@@ -35,7 +35,7 @@ public class ConceptCodeValidator implements Validator {
     if(props != null)
       for(Iterator it = props.iterator(); it.hasNext(); ) {
         Property o = (Property)it.next();
-        if(o.getConcept().getPreferredName() == null) {
+        if(o.getPreferredName() == null) {
           errors.add(new ValidationError(SEVERITY_ERROR, "Attribute: " + o.getLongName() + " has no concept code."));
         }
       }

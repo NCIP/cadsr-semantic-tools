@@ -52,8 +52,9 @@ public class UMLDefaultHandler implements UMLHandler {
     oc.setLongName(event.getName());
     if(event.getDescription() != null && event.getDescription().length() > 0)
       oc.setPreferredDefinition(event.getDescription());
-//     else 
-//       oc.setPreferredDefinition(concept.getPreferredDefinition());
+    else 
+      oc.setPreferredDefinition("");
+
     elements.addElement(oc);
 
     if (!packageList.contains(event.getPackageName())) {
@@ -89,6 +90,8 @@ public class UMLDefaultHandler implements UMLHandler {
 
     if(event.getDescription() != null && event.getDescription().length() > 0)
       prop.setPreferredDefinition(event.getDescription());
+    else 
+      prop.setPreferredDefinition("");
 
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
     dec.setLongName(event.getClassName() + event.getName());
