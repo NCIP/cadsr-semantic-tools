@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Excel Loader" default="compile" basedir=".">
+  <property file="build.properties"/>
+  <property name="src.dir" value="src"/>
+  <property name="class.dir" value="./classes"/>
+  <property name="lib.dir" value="./lib"/>
+  <property name="config.dir" value="config/property"/>
+
+
+  <path id="proj.class.path">
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+    <pathelement location="${class.dir}"/>
+  </path>
+
+  <target name="clean">
+    <delete dir="${class.dir}" failonerror="true" />
+    <mkdir dir="${class.dir}"/>
+  </target>
+
+
+  <target name="compile">
+    <javac
+      destdir="${class.dir}"
+      debug="on"
+      srcdir="${src.dir}"
+      deprecation="false"
+      >
+      <classpath refid="proj.class.path"/>
+    </javac>
+  </target>
+
+  <target name="prepare"
+    depends="compile">
+    <copy todir="${class.dir}">
+      <fileset dir="${config.dir}">
+        <include name="*.properties"/>
+      </fileset>
+    </copy>
+  </target>
+
+
+  <target name="run" depends="compile">
+    <java classname="gov.nih.nci.ncicb.cadsr.loader.UMLLoader" classpathref="proj.class.path" 
+      fork="yes" 
+      maxmemory="512m"
+      >
+      <arg value="${dir}"/>
+    </java>
+  </target>
+
+
+</project>
