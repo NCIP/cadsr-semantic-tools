@@ -15,6 +15,7 @@
     </fileset>
   </path>
   
+  <!--
   <taskdef name="jalopy"
     classname="de.hunsicker.jalopy.plugin.ant.AntPlugin">
     <classpath>
@@ -23,6 +24,7 @@
       </fileset>
     </classpath>
   </taskdef>
+-->
 
   <target name="format" depends="compile">
     <jalopy fileformat="auto"
