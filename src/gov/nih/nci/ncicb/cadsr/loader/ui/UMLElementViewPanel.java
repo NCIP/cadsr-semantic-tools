@@ -17,11 +17,11 @@ import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.*;
 
 public class UMLElementViewPanel extends JPanel
-  implements ActionListener, KeyListener, ItemListener {
+  implements ActionListener, KeyListener
+             , ItemListener, CaretListener {
 
   private Concept[] concepts;
   private ConceptUI[] conceptUIs;
@@ -140,6 +140,10 @@ public class UMLElementViewPanel extends JPanel
       conceptUIs[i].code.addKeyListener(this);
       conceptUIs[i].name.addKeyListener(this);
       conceptUIs[i].defSource.addKeyListener(this);
+
+      conceptUIs[i].code.addCaretListener(this);
+      conceptUIs[i].name.addCaretListener(this);
+      conceptUIs[i].defSource.addCaretListener(this);
       
     }
 
@@ -200,9 +204,9 @@ public class UMLElementViewPanel extends JPanel
   
   private void setButtonState(AbstractButton button)  {
     for(int i=0; i < conceptUIs.length; i++) {
-      if(conceptUIs[i].code.getText().equals("")
-         | conceptUIs[i].name.getText().equals("")
-         | conceptUIs[i].defSource.getText().equals("")) {
+      if(conceptUIs[i].code.getText().trim().equals("")
+         | conceptUIs[i].name.getText().trim().equals("")
+         | conceptUIs[i].defSource.getText().trim().equals("")) {
         button.setEnabled(false);
         return;
       }
@@ -211,9 +215,12 @@ public class UMLElementViewPanel extends JPanel
         button.setEnabled(true);
     }
   }
+
+  public void caretUpdate(CaretEvent evt) {
+    setButtonState(reviewButton);
+  }
   
   public void keyTyped(KeyEvent evt) {
-    setButtonState(reviewButton);
     saveButton.setEnabled(true);
   }
 
