@@ -1,10 +1,10 @@
 package gov.nih.nci.ncicb.cadsr.loader.parser;
 
-import gov.nih.nci.ncicb.cadsr.loader.event.LoaderListener;
+import gov.nih.nci.ncicb.cadsr.loader.event.LoaderHandler;
 
 
 /**
- * <code>Parser</code> goes through a file and sends events to the listener.
+ * <code>Parser</code> goes through a file and sends events to the handler.
  *
  * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
  */
@@ -14,7 +14,7 @@ public interface Parser {
    *
    * @param listener a <code>LoaderListener</code> value
    */
-  public void setListener(LoaderListener listener);
+  public void setEventHandler(LoaderHandler handler);
 
   /**
    * main parse method.

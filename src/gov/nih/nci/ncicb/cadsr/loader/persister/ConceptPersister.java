@@ -4,7 +4,8 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import org.apache.log4j.Logger;
-import gov.nih.nci.ncicb.cadsr.loader.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
 import java.util.*;
 
@@ -36,10 +37,10 @@ public class ConceptPersister extends UMLPersister {
 	  c.setWorkflowStatus(defaults.getWorkflowStatus());
 	  c.setAudit(defaults.getAudit());
           c.setId(conceptDAO.create(c));
-          logger.info("Created Concept: ");
+          logger.info(PropertyAccessor.getProperty("created.concept"));
           LogUtil.logAc(c, logger);
         } else { // concept exist: See if we need to add alternate def.
-          logger.info("Concept " + c.getPreferredName() + " already exists");
+          logger.info(PropertyAccessor.getProperty("existed.concept", c.getPreferredName()));
           Concept c2 = (Concept)l.get(0);
           c.setId(c2.getId());
           if(!c.getDefinitionSource().equalsIgnoreCase(c2.getDefinitionSource())) { // Add alt def.
@@ -50,7 +51,7 @@ public class ConceptPersister extends UMLPersister {
             def.setAudit(defaults.getAudit());
             def.setContext(defaults.getContext());
             adminComponentDAO.addDefinition(c, def);
-            logger.info("Added new Alternate Definition for Concept " + c.getPreferredName() + " : " + def.getDefinition());
+            logger.info(PropertyAccessor.getProperty("added.altDef", new String[]{c.getPreferredName(), def.getDefinition()}));
           } else {
             // Do nothing, this is the common case where the concept existed and had the same def source.
           }

@@ -4,7 +4,9 @@ import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
-import gov.nih.nci.ncicb.cadsr.loader.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -55,16 +57,22 @@ public class OcRecPersister extends UMLPersister {
 	}
 
 	LogUtil.logAc(ocr, logger);
-	logger.info("-- Source Role: " + ocr.getSourceRole());
-	logger.info("-- Source Cardinality: " +
-                    ocr.getSourceLowCardinality() + "-" +
-		    ocr.getSourceHighCardinality());
-	logger.info("-- Target Role: " + ocr.getTargetRole());
-	logger.info("-- Target Cardinality: " +
-                    ocr.getTargetLowCardinality() + "-" +
-		    ocr.getTargetHighCardinality());
-	logger.info("-- Direction: " + ocr.getDirection());
-	logger.info("-- Type: " + ocr.getType());
+	logger.info(PropertyAccessor
+                    .getProperty("source.role",  ocr.getSourceRole()));
+	logger.info(PropertyAccessor.getProperty
+                    ("source.cardinality", new Object[]
+                      {new Integer(ocr.getSourceLowCardinality()),
+                       new Integer(ocr.getSourceHighCardinality())}));
+	logger.info(PropertyAccessor
+                    .getProperty("target.role",  ocr.getTargetRole()));
+	logger.info(PropertyAccessor.getProperty
+                    ("target.cardinality", new Object[]
+                      {new Integer(ocr.getTargetLowCardinality()),
+                       new Integer(ocr.getTargetHighCardinality())}));
+	logger.info(PropertyAccessor.getProperty
+                    ("direction", ocr.getDirection()));
+	logger.info(PropertyAccessor.getProperty
+                    ("type", ocr.getType()));
 
 	// check if association already exists
 	ObjectClassRelationship ocr2 = DomainObjectFactory.newObjectClassRelationship();
@@ -98,11 +106,11 @@ public class OcRecPersister extends UMLPersister {
 	}
 
 	if (found) {
-	  logger.info("Association already existed.");
+	  logger.info(PropertyAccessor.getProperty("existed.association"));
 	} else {
 	  ocr.setId(objectClassRelationshipDAO.create(ocr));
 	  addProjectCs(ocr);
-	  logger.info("Created Association");
+	  logger.info(PropertyAccessor.getProperty("created.association"));
 	}
 
 	// !!! TODO also add package name

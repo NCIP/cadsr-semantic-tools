@@ -1,9 +1,10 @@
 package gov.nih.nci.ncicb.cadsr.loader.persister;
 
-import gov.nih.nci.ncicb.cadsr.loader.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
 import org.apache.log4j.Logger;
 
@@ -70,15 +71,16 @@ public class DEPersister extends UMLPersister {
 	    de.setAudit(defaults.getAudit());
 	    logger.debug("Creating DE: " + de.getLongName());
 	    de.setId(dataElementDAO.create(de));
-	    logger.info("Created DataElement:  ");
+	    logger.info(PropertyAccessor.getProperty("created.de"));
 	  } else {
 	    de = (DataElement) l.get(0);
-	    logger.info("DataElement Existed: ");
+	    logger.info(PropertyAccessor.getProperty("existed.de"));
 	  }
 
 	  LogUtil.logAc(de, logger);
-	  logger.info("-- Value Domain (Preferred_Name): " +
-		      de.getValueDomain().getPreferredName());
+	  logger.info(PropertyAccessor.
+                      getProperty("vd.preferredName",
+                                  de.getValueDomain().getPreferredName()));
 
 	  addProjectCs(de);
 	  it.set(de);

@@ -2,8 +2,9 @@ package gov.nih.nci.ncicb.cadsr.loader.persister;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
 
-
 import org.apache.log4j.Logger;
+
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
 /**
  * Basic logging utility class
@@ -19,12 +20,12 @@ public class LogUtil {
    * @param logger a <code>Logger</code> value
    */
   public static void logAc(AdminComponent ac, Logger logger) {
-    logger.info("-- ID: " + ac.getId());
-    logger.info("-- Long_Name: " + ac.getLongName());
-    logger.info("-- Preferred_Name: " + ac.getPreferredName());
-    logger.info("-- Version: " + ac.getVersion());
-    logger.info("-- Workflow Status: " + ac.getWorkflowStatus());
-    logger.info("-- Preferred_Definition: " + ac.getPreferredDefinition());
+    logger.info(PropertyAccessor.getProperty("id", ac.getId()));
+    logger.info(PropertyAccessor.getProperty("longName", ac.getLongName()));
+    logger.info(PropertyAccessor.getProperty("preferredName", ac.getPreferredName()));
+    logger.info(PropertyAccessor.getProperty("version", new Float[] {ac.getVersion()}));
+    logger.info(PropertyAccessor.getProperty("workflowStatus", ac.getWorkflowStatus()));
+    logger.info(PropertyAccessor.getProperty("preferredDefinition", ac.getPreferredDefinition()));
   }
 
 }

@@ -1,9 +1,10 @@
 package gov.nih.nci.ncicb.cadsr.loader.persister;
 
-import gov.nih.nci.ncicb.cadsr.loader.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
 import org.apache.log4j.Logger;
 
@@ -76,17 +77,19 @@ public class DECPersister extends UMLPersister {
 
 	  dec.setAudit(defaults.getAudit());
 	  dec.setId(dataElementConceptDAO.create(dec));
-	  logger.info("Created DataElementConcept: ");
+	  logger.info(PropertyAccessor.getProperty("created.dec"));
 	} else {
 	  dec = (DataElementConcept) l.get(0);
-	  logger.info("DataElementConcept Existed: ");
+	  logger.info(PropertyAccessor.getProperty("existed.dec"));
 	}
 
 	LogUtil.logAc(dec, logger);
-	logger.info("-- Object Class (long_name): " +
-                    dec.getObjectClass().getLongName());
-	logger.info("-- Property (long_name): " +
-                    dec.getProperty().getLongName());
+	logger.info(PropertyAccessor
+                    .getProperty("oc.longName",
+                                 dec.getObjectClass().getLongName()));
+	logger.info(PropertyAccessor
+                    .getProperty("prop.longName",
+                                 dec.getProperty().getLongName()));
 
 	addProjectCs(dec);
 	it.set(dec);

@@ -4,7 +4,8 @@ import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
-import gov.nih.nci.ncicb.cadsr.loader.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -58,10 +59,10 @@ public class ObjectClassPersister extends UMLPersister {
 	  oc.setAudit(defaults.getAudit());
 
 	  oc.setId(objectClassDAO.create(oc));
-	  logger.info("Created Object Class: ");
+	  logger.info(PropertyAccessor.getProperty("created.oc"));
 	} else {
 	  oc = (ObjectClass) l.get(0);
-	  logger.info("Object Class Existed: ");
+	  logger.info(PropertyAccessor.getProperty("existed.oc"));
 
 	  List packages = oc.getAcCsCsis();
 
@@ -94,11 +95,11 @@ public class ObjectClassPersister extends UMLPersister {
 	    List ll = new ArrayList();
 	    ll.add(packageCsCsi);
 	    adminComponentDAO.addClassSchemeClassSchemeItems(oc, ll);
-	    logger.info("Added CS package: " + packageName);
+	    logger.info(PropertyAccessor.getProperty("added.package",packageName));
 	  } else {
 	    // PersistPackages should have taken care of it. 
 	    // We should not be here.
-	    logger.error("Missing Package: " + packageName);
+	    logger.error(PropertyAccessor.getProperty("missing.package", packageName));
 	  }
 	} else {
 	  logger.debug("Designation was found.");

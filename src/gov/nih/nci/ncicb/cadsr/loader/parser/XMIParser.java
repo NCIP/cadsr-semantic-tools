@@ -1,7 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.parser;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
-import gov.nih.nci.ncicb.cadsr.loader.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
 import org.apache.log4j.Logger;
 
@@ -10,6 +10,8 @@ import org.omg.uml.foundation.datatypes.MultiplicityRange;
 import org.omg.uml.foundation.extensionmechanisms.*;
 import org.omg.uml.modelmanagement.Model;
 import org.omg.uml.modelmanagement.UmlPackage;
+
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
 import uml.MdrModelManager;
 import uml.MdrModelManagerFactory;
@@ -27,7 +29,7 @@ import java.util.*;
 public class XMIParser implements Parser {
   private static final String EA_CONTAINMENT = "containment";
   private static final String EA_UNSPECIFIED = "Unspecified";
-  private UMLListener listener;
+  private UMLHandler listener;
   private MdrModelManagerFactory fact;
   private MdrModelManager mgr;
   private String packageName = "";
@@ -37,8 +39,8 @@ public class XMIParser implements Parser {
   private List generalizationEvents = new ArrayList();
   private List associationEvents = new ArrayList();
 
-  public void setListener(LoaderListener listener) {
-    this.listener = (UMLListener) listener;
+  public void setEventHandler(LoaderHandler handler) {
+    this.listener = (UMLHandler) handler;
   }
 
   public void parse(String filename) {
@@ -87,9 +89,9 @@ public class XMIParser implements Parser {
     }
 
     if(isInPackageFilter(packageName)) {
-      ((UMLListener) listener).newPackage(new NewPackageEvent(packageName));
+      listener.newPackage(new NewPackageEvent(packageName));
     } else {
-      logger.info("Skipping package: " + packageName);
+      logger.info(PropertyAccessor.getProperty("skip.package", packageName));
     }
 
     Iterator it = pack.getOwnedElement().iterator();
@@ -143,7 +145,7 @@ public class XMIParser implements Parser {
     if(isInPackageFilter(pName)) {
       listener.newClass(event);
     } else {
-      logger.info("Class : " + className + " filtered by package");
+      logger.info(PropertyAccessor.getProperty("class.filtered", className));
       return;
     }
 
@@ -247,7 +249,7 @@ public class XMIParser implements Parser {
 
         Classifier classif = end.getType();
         if(!isInPackageFilter(classif.getNamespace().getName())) {
-          logger.info("Association with: " + classif.getName() + " skipped by filter ");
+          logger.info(PropertyAccessor.getProperty("skip.association", classif.getName()));
           return;
         }
 
@@ -281,7 +283,7 @@ public class XMIParser implements Parser {
 
         Classifier classif = end.getType();
         if(!isInPackageFilter(classif.getNamespace().getName())) {
-          logger.info("Association with: " + classif.getName() + " skipped by filter ");
+          logger.info(PropertyAccessor.getProperty("skip.association", classif.getName()));
           return;
         }
 

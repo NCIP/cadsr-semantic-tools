@@ -3,9 +3,10 @@ package gov.nih.nci.ncicb.cadsr.loader.persister;
 import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
 import org.apache.log4j.Logger;
-import gov.nih.nci.ncicb.cadsr.loader.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
 import java.util.*;
 
@@ -19,8 +20,6 @@ public class PropertyPersister extends UMLPersister {
     defaults = UMLDefaults.getInstance();
   }
 
-  // !!!! TODO 
-  // EVS CONCEPT CODE.
   public void persist() throws PersisterException {
     Property prop = DomainObjectFactory.newProperty();
     List props = (List) elements.getElements(prop.getClass());
@@ -46,10 +45,10 @@ public class PropertyPersister extends UMLPersister {
           logger.debug("property: " + prop.getLongName());
 
 	  prop.setId(propertyDAO.create(prop));
-	  logger.info("Created Property: ");
+	  logger.info(PropertyAccessor.getProperty("created.prop"));
 	} else {
 	  prop = (Property) l.get(0);
-	  logger.info("Property Existed: ");
+	  logger.info(PropertyAccessor.getProperty("existed.prop"));
 	}
 
 	LogUtil.logAc(prop, logger);

@@ -4,7 +4,8 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import org.apache.log4j.Logger;
-import gov.nih.nci.ncicb.cadsr.loader.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
 import java.util.*;
 
@@ -59,9 +60,10 @@ public class PackagePersister extends UMLPersister {
         }
 
 	if (!found) {
-	  logger.info("Package " + pkg.getName() +
-		      " was not linked to Project CS -- linking it now.");
-	  packageCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+	  logger.info(
+            PropertyAccessor
+            .getProperty("link.package.to.project", pkg.getName()));
+          packageCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
 	  packageCsCsi.setCs(defaults.getProjectCs());
 	  packageCsCsi.setCsi(pkg);
 	  packageCsCsi.setLabel(pkg.getName());
@@ -69,7 +71,7 @@ public class PackagePersister extends UMLPersister {
 
 	  classificationSchemeDAO.addClassificationSchemeItem(defaults.getProjectCs(),
 							      packageCsCsi);
-	  logger.info("Added Package CS_CSI");
+	  logger.info(PropertyAccessor.getProperty("added.package"));
 	}
 
 	// Put CS_CSI in cache so OCs can use it

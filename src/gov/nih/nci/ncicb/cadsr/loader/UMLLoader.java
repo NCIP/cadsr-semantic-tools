@@ -18,13 +18,16 @@ import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.parser.*;
 import gov.nih.nci.ncicb.cadsr.loader.persister.*;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
+import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
 import java.security.*;
 import javax.security.auth.*;
 import javax.security.auth.login.*;
 import javax.security.auth.callback.CallbackHandler;
 
-import gov.nih.nci.ncicb.cadsr.spring.ApplicationContextFactory;
 
 import org.apache.log4j.Logger;
 
@@ -53,7 +56,6 @@ public class UMLLoader {
    * @exception Exception if an error occurs
    */
   public static void main(String[] args) throws Exception {
-    ApplicationContextFactory.init("applicationContext.xml");
 
     new UMLLoader().run(args);
   }
@@ -61,6 +63,15 @@ public class UMLLoader {
   private void run(String[] args) throws Exception {
     InitClass initClass = new InitClass(this);
     Thread t = new Thread(initClass);
+    /* high priority because:
+     * If the user is fast at entering its user name
+     * (namely, username / password is provided automatically)
+     * Then it's possible for the login module to want to access
+     *      spring before it's initialized. 
+     * Would not happen in normal run, but in dev runs, it may.
+     * This seems to have absolutely no effect (on linux at least). Will investigate later. 
+     */
+    t.setPriority(Thread.MAX_PRIORITY);
     t.start();
 
     String[] filenames = new File(args[0]).list(new FilenameFilter() {
@@ -82,40 +93,40 @@ public class UMLLoader {
       Iterator it = subject.getPrincipals().iterator();
       while (it.hasNext()) {
 	username = it.next().toString();
-	logger.debug("Authenticated username: " + username);
+	logger.debug(PropertyAccessor.getProperty("authenticated", username));
       }
     } catch (Exception ex) {
-      logger.error("Failed to login: " + ex.getMessage());
+      logger.error(PropertyAccessor.getProperty("login.fail",ex.getMessage()));
       System.exit(1);
     }
     
     String projectName = args[1];
     
-    logger.info(filenames.length + " files to process");
+    logger.info(PropertyAccessor.getProperty("nbOfFiles", filenames.length));
     
     ElementsLists elements = new ElementsLists();
     Validator validator = new UMLValidator(elements);
-    UMLListener listener = new XMIUMLListener(elements);
+    UMLHandler listener = new UMLDefaultHandler(elements);
+
+    synchronized(initClass) {
+      if(!initClass.isDone())
+        try {
+          wait();
+        } catch (Exception e){
+        } // end of try-catch
+    }
     
     for(int i=0; i<filenames.length; i++) {
-      logger.info("Starting file: " + filenames[i]);
+      logger.info(PropertyAccessor.getProperty("startingFile", filenames[i]));
 
       UMLDefaults defaults = UMLDefaults.getInstance();
       defaults.initParams(projectName, username);
       defaults.initClassifications();
 
       XMIParser  parser = new XMIParser();
-      parser.setListener(listener);
+      parser.setEventHandler(listener);
       parser.parse(args[0] + "/" + filenames[i]);
-
       
-      synchronized(initClass) {
-	if(!initClass.isDone())
-	  try {
-	    wait();
-	  } catch (Exception e){
-	  } // end of try-catch
-      }
     }
 
     List errors = validator.validate();
@@ -132,8 +143,6 @@ public class UMLLoader {
 
 
     Persister persister = new UMLPersister(elements);
-    persister.setParameter("projectName", projectName);
-    persister.setParameter("username", username);
     persister.persist();
 
   }
@@ -151,7 +160,7 @@ public class UMLLoader {
     }
     
     public void run() {
-      UMLPersister p = new UMLPersister(null);
+      DAOAccessor p = new DAOAccessor();
       synchronized (this) {
 	done = true;
 	notifyAll();

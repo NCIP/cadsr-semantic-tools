@@ -14,11 +14,4 @@ public interface Persister {
    */
   public void persist() throws PersisterException ;
 
-  /**
-   * Allows to set a parameter to the persister.
-   *
-   * @param key a <code>String</code> value
-   * @param value an <code>Object</code> value
-   */
-  public void setParameter(String key, Object value);
 }

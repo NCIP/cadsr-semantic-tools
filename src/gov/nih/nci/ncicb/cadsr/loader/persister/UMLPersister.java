@@ -5,7 +5,9 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.spring.*;
 
-import gov.nih.nci.ncicb.cadsr.loader.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
 import org.apache.log4j.Logger;
 
@@ -14,65 +16,20 @@ import java.util.*;
 
 public class UMLPersister implements Persister {
   private static Logger logger = Logger.getLogger(UMLPersister.class.getName());
-  protected static AdminComponentDAO adminComponentDAO;
-  protected static DataElementDAO dataElementDAO;
-  protected static DataElementConceptDAO dataElementConceptDAO;
-  protected static ValueDomainDAO valueDomainDAO;
-  protected static PropertyDAO propertyDAO;
-  protected static ObjectClassDAO objectClassDAO;
-  protected static ObjectClassRelationshipDAO objectClassRelationshipDAO;
-  protected static ClassificationSchemeDAO classificationSchemeDAO;
-  protected static ClassificationSchemeItemDAO classificationSchemeItemDAO;
-  protected static ConceptDAO conceptDAO;
-
-  static {
-    //     logger.debug("Loading DataElementDAO bean");
-    dataElementDAO = (DataElementDAO) ApplicationContextFactory.getApplicationContext()
-      .getBean("dataElementDAO");
-
-    //     logger.debug("Loading AdminComponentDAO bean");
-    adminComponentDAO = (AdminComponentDAO) ApplicationContextFactory.getApplicationContext()
-      .getBean("adminComponentDAO");
-
-    //     logger.debug("Loading DataElementConceptDAO bean");
-    dataElementConceptDAO = (DataElementConceptDAO) ApplicationContextFactory.getApplicationContext()
-      .getBean("dataElementConceptDAO");
-
-
-    //     logger.debug("Loading VDDAO bean");
-    valueDomainDAO = (ValueDomainDAO) ApplicationContextFactory.getApplicationContext()
-      .getBean("valueDomainDAO");
-
-    //     logger.debug("Loading PropertyDAO bean");
-    propertyDAO = (PropertyDAO) ApplicationContextFactory.getApplicationContext()
-      .getBean("propertyDAO");
-
-    //     logger.debug("Loading ObjectClassDAO bean");
-    objectClassDAO = (ObjectClassDAO) ApplicationContextFactory.getApplicationContext()
-      .getBean("objectClassDAO");
-
-    //     logger.debug("Loading ObjectClassRelationshipDAO bean");
-    objectClassRelationshipDAO = (ObjectClassRelationshipDAO) ApplicationContextFactory.getApplicationContext()
-      .getBean("objectClassRelationshipDAO");
-
-    //     logger.debug("Loading CSDAO bean");
-    classificationSchemeDAO = (ClassificationSchemeDAO) ApplicationContextFactory.getApplicationContext()
-      .getBean("classificationSchemeDAO");
-
-    //     logger.debug("Loading CSIDAO bean");
-    classificationSchemeItemDAO = (ClassificationSchemeItemDAO) ApplicationContextFactory.getApplicationContext()
-      .getBean("classificationSchemeItemDAO");
-
-
-    //     logger.debug("Loading ConceptDAO bean");
-    conceptDAO = (ConceptDAO) ApplicationContextFactory.getApplicationContext()
-      .getBean("conceptDAO");
-  }
+  protected static AdminComponentDAO adminComponentDAO = DAOAccessor.getAdminComponentDAO();
+  protected static DataElementDAO dataElementDAO = DAOAccessor.getDataElementDAO();
+  protected static DataElementConceptDAO dataElementConceptDAO = DAOAccessor.getDataElementConceptDAO();
+  protected static ValueDomainDAO valueDomainDAO = DAOAccessor.getValueDomainDAO();
+  protected static PropertyDAO propertyDAO = DAOAccessor.getPropertyDAO();
+  protected static ObjectClassDAO objectClassDAO = DAOAccessor.getObjectClassDAO();
+  protected static ObjectClassRelationshipDAO objectClassRelationshipDAO = DAOAccessor.getObjectClassRelationshipDAO();
+  protected static ClassificationSchemeDAO classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
+  protected static ClassificationSchemeItemDAO classificationSchemeItemDAO = DAOAccessor.getClassificationSchemeItemDAO();
+  protected static ConceptDAO conceptDAO = DAOAccessor.getConceptDAO();
 
   protected static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
   protected ElementsLists elements = null;
 
-  protected Map params = new HashMap();
   private Map valueDomains = new HashMap();
 
   protected UMLDefaults defaults = UMLDefaults.getInstance();
@@ -83,10 +40,6 @@ public class UMLPersister implements Persister {
 
   public UMLPersister(ElementsLists list) {
     this.elements = list;
-  }
-
-  public void setParameter(String key, Object value) {
-    params.put(key, value);
   }
 
   public void persist() throws PersisterException {
@@ -119,8 +72,8 @@ public class UMLPersister implements Persister {
     List csCsis = new ArrayList();
 
     if (!found) {
-      logger.info(
-	"Project Classification was not found. Attaching it now.");
+      logger.info(PropertyAccessor.
+                  getProperty("attach.project.classification"));
       csCsis.add(defaults.getProjectCsCsi());
       adminComponentDAO.addClassSchemeClassSchemeItems(ac, csCsis);
     }
