@@ -56,6 +56,8 @@ public class OcRecPersister extends UMLPersister {
 	  }
 	}
 
+//         logger.info(PropertyAccessor
+//                     .getProperty("created.association"));
 	LogUtil.logAc(ocr, logger);
 	logger.info(PropertyAccessor
                     .getProperty("source.role",  ocr.getSourceRole()));

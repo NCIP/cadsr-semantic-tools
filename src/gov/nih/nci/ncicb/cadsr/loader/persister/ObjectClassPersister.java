@@ -38,7 +38,7 @@ public class ObjectClassPersister extends UMLPersister {
 	packageName = className.substring(0, ind);
 	className = className.substring(ind + 1);
 
-	oc.setLongName(className);
+	oc.setLongName(oc.getConcept().getLongName());
 
 	// does this oc exist?
 	List eager = new ArrayList();
@@ -50,8 +50,7 @@ public class ObjectClassPersister extends UMLPersister {
 	boolean packageFound = false;
 
 	if (l.size() == 0) {
-	  // !!!!! TODO
-	  oc.setPreferredDefinition(oc.getLongName());
+	  oc.setPreferredDefinition(oc.getConcept().getPreferredDefinition());
 	  oc.setPreferredName(oc.getLongName());
 
 	  oc.setVersion(new Float(1.0f));

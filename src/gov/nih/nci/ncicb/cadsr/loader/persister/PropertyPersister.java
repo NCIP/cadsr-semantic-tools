@@ -30,13 +30,14 @@ public class PropertyPersister extends UMLPersister {
 
 	prop.setContext(defaults.getContext());
 
+        prop.setLongName(prop.getConcept().getLongName());
+
 	// does this property exist?
 	List l = propertyDAO.findByConceptCode(prop.getConcept().getPreferredName());
 
 	if (l.size() == 0) {
-	  // !!!!! TODO
-	  prop.setPreferredDefinition(prop.getLongName());
 	  prop.setPreferredName(prop.getLongName());
+	  prop.setPreferredDefinition(prop.getConcept().getPreferredDefinition());
 
 	  prop.setVersion(new Float(1.0f));
 	  prop.setWorkflowStatus(defaults.getWorkflowStatus());

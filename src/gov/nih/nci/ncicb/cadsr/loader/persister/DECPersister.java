@@ -52,8 +52,8 @@ public class DECPersister extends UMLPersister {
 	dec.setConceptualDomain(defaults.getConceptualDomain());
 
         dec.setLongName(
-          dec.getObjectClass().getConcept().getPreferredName()
-          + dec.getProperty().getConcept().getPreferredName());
+          dec.getObjectClass().getConcept().getLongName()
+          + dec.getProperty().getConcept().getLongName());
 
 	logger.debug("dec name: " + dec.getLongName());
 

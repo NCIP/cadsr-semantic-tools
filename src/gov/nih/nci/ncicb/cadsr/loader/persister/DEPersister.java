@@ -50,9 +50,9 @@ public class DEPersister extends UMLPersister {
 
           de.setLongName(
             de.getDataElementConcept()
-            .getObjectClass().getConcept().getPreferredName()
+            .getObjectClass().getConcept().getLongName()
             + de.getDataElementConcept()
-            .getProperty().getConcept().getPreferredName());
+            .getProperty().getConcept().getLongName());
 
 	  de.setValueDomain(lookupValueDomain(de.getValueDomain()));
 
