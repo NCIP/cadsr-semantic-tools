@@ -41,18 +41,23 @@ public class ConceptPersister extends UMLPersister {
           LogUtil.logAc(c, logger);
         } else { // concept exist: See if we need to add alternate def.
           logger.info(PropertyAccessor.getProperty("existed.concept", c.getPreferredName()));
-          Concept c2 = (Concept)l.get(0);
-          c.setId(c2.getId());
-          if(!c.getDefinitionSource().equalsIgnoreCase(c2.getDefinitionSource())) { // Add alt def.
+
+          String newSource = c.getDefinitionSource();
+          String newDef = c.getPreferredDefinition();
+          c = (Concept)l.get(0);
+          
+//           Concept c2 = (Concept)l.get(0);
+//           c.setId(c2.getId());
+          if(!newSource.equalsIgnoreCase(c.getDefinitionSource())) { // Add alt def.
 
             logger.debug("Concept " + c.getPreferredName() + " had different definition source. ");
             Definition def = DomainObjectFactory.newDefinition();
-            def.setType(c.getDefinitionSource());
-            def.setDefinition(c.getPreferredDefinition());
+            def.setType(newSource);
+            def.setDefinition(newDef);
             def.setAudit(defaults.getAudit());
             def.setContext(defaults.getContext());
             adminComponentDAO.addDefinition(c, def);
-            logger.info(PropertyAccessor.getProperty("added.altDef", new String[]{c.getPreferredName(), def.getDefinition(), "Concept"}));
+            logger.info(PropertyAccessor.getProperty("added.altDef", new String[]{c.getPreferredName(), newDef, "Concept"}));
           } else {
             // Do nothing, this is the common case where the concept existed and had the same def source.
           }
