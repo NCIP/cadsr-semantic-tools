@@ -8,6 +8,10 @@ package gov.nih.nci.ncicb.cadsr.loader.validator;
  */
 public class ValidationError {
 
+  public static final String SEVERITY_ERROR = "Error";
+  public static final String SEVERITY_WARNING = "Warning";
+  public static final String SEVERITY_FATAL = "Fatal";
+
   private String severity;
   private String message;
 

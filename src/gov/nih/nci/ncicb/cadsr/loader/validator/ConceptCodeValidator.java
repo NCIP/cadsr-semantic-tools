@@ -22,12 +22,20 @@ public class ConceptCodeValidator implements Validator {
   public List validate() {
     List errors = new ArrayList();
     
+    List conceptErrors = (List)elements.getElements(ConceptError.class);
+    if(conceptErrors != null) 
+      for(Iterator it = conceptErrors.iterator(); it.hasNext(); ) {
+        ConceptError o = (ConceptError)it.next();
+        errors.add(o);
+      }
+    
+
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     List ocs = (List)elements.getElements(oc.getClass());
     if(ocs != null)
       for(Iterator it = ocs.iterator(); it.hasNext(); ) {
         ObjectClass o = (ObjectClass)it.next();
-        if(o.getPreferredName() == null) {
+        if(o.getPreferredName() == null || o.getPreferredName().length() < 4) {
           errors.add(new ValidationError(SEVERITY_ERROR, "Class: " + o.getLongName() + " has no concept code."));
         }
       }
@@ -37,7 +45,7 @@ public class ConceptCodeValidator implements Validator {
     if(props != null)
       for(Iterator it = props.iterator(); it.hasNext(); ) {
         Property o = (Property)it.next();
-        if(o.getPreferredName() == null) {
+        if(o.getPreferredName() == null || o.getPreferredName().length() < 4) {
           errors.add(new ValidationError(SEVERITY_ERROR, "Attribute: " + o.getLongName() + " has no concept code."));
         }
       }
@@ -49,8 +57,9 @@ public class ConceptCodeValidator implements Validator {
       for(Iterator it = concepts.iterator(); it.hasNext(); ) {
         Concept o = (Concept)it.next();
         if(o.getPreferredName() == null) {
-          errors.add(new ValidationError(SEVERITY_ERROR, 
-                                         PropertyAccessor.getProperty("validation.concept.missing")));
+          // capture this above. Dont need any more.
+//           errors.add(new ValidationError(SEVERITY_ERROR, 
+//                                          PropertyAccessor.getProperty("validation.concept.missing")));
         } else {
           if(o.getLongName() == null)
             errors.add(new ValidationError(SEVERITY_ERROR,

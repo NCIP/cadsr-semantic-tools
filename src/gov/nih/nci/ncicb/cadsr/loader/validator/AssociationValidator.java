@@ -36,7 +36,7 @@ public class AssociationValidator implements Validator {
         it.remove();
         continue;
       }
-      if(ocr.getType().equals(ObjectClassRelationship.TYPE_HAS) && (ocr.getSourceRole() == null || ocr.getTargetRole() == null || ocr.getSourceRole().length() == 0 || ocr.getTargetRole().length() == 0)) {
+      if(!areRoleNamesValid(ocr)) {
         errors.add(new ValidationError
                    (SEVERITY_ERROR, PropertyAccessor.getProperty(
                       "association.missing.role", 
@@ -48,6 +48,21 @@ public class AssociationValidator implements Validator {
     }
     
     return errors;
+  }
+
+  private boolean areRoleNamesValid(ObjectClassRelationship ocr) {
+    return !(
+      ocr.getType().equals(ObjectClassRelationship.TYPE_HAS)
+      && 
+      (ocr.getTargetRole() == null 
+       || ocr.getTargetRole().length() == 0
+       || 
+       (ocr.getDirection().equals(ObjectClassRelationship.DIRECTION_BOTH) && (
+          ocr.getSourceRole().length() == 0 
+          ||ocr.getSourceRole() == null )
+        )
+       )
+      );
   }
 
 }

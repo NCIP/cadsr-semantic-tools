@@ -9,6 +9,9 @@ import java.util.List;
  */
 public interface Validator {
 
+  /*
+   * These do not belong here and should be removed.
+  */
   public static final String SEVERITY_ERROR = "Error";
   public static final String SEVERITY_WARNING = "Warning";
   public static final String SEVERITY_FATAL = "Fatal";

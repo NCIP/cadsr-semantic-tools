@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import java.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.validator.ConceptError;
+
 /**
  * This class implements UMLHandler specifically to handle UML events and convert them into caDSR objects.<br/> The handler's responsibility is to transform events received into cadsr domain objects, and store those objects in the Elements List.
  *
@@ -36,6 +38,8 @@ public class UMLDefaultHandler implements UMLHandler {
     logger.debug("Class: " + event.getName());
     
     List concepts = createConcepts(event);
+
+    verifyConcepts(event.getName(), concepts);
 
     ObjectClass oc = DomainObjectFactory.newObjectClass();
 
@@ -76,6 +80,8 @@ public class UMLDefaultHandler implements UMLHandler {
                  event.getName());
 
     List concepts = createConcepts(event);
+
+    verifyConcepts(event.getClassName() + "." + event.getName(), concepts);
 
     Property prop = DomainObjectFactory.newProperty();
 
@@ -345,4 +351,16 @@ public class UMLDefaultHandler implements UMLHandler {
     }
     return sb.toString();
   }
+
+  private void verifyConcepts(String eltName, List concepts) {
+    for(Iterator it = concepts.iterator(); it.hasNext(); ) {
+      Concept concept = (Concept)it.next();
+      if(StringUtil.isEmpty(concept.getPreferredName())) {
+        elements.addElement(new ConceptError(
+                       ConceptError.SEVERITY_ERROR,
+                       PropertyAccessor.getProperty("validation.concept.missing.for", eltName)));
+      }
+    }
+  }
+
 }
