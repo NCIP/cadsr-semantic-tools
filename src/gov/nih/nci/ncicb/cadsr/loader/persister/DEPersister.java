@@ -85,7 +85,6 @@ public class DEPersister extends UMLPersister {
             if (
               (newDef.length() > 0) &&
                   !newDef.equals(newDe.getPreferredDefinition())) {
-              System.out.println("Adding Alt Def");
               addAlternateDefinition(
                 newDe, newDef, Definition.TYPE_UML_DE, packageName);
             }
