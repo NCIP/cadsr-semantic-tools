@@ -40,6 +40,25 @@ public class UMLValidator implements Validator {
         }
       }
 
+
+    Concept con = DomainObjectFactory.newConcept();
+    List concepts = elements.getElements(con.getClass());
+    if(concepts != null) {
+      for(Iterator it = concepts.iterator(); it.hasNext(); ) {
+        Concept o = (Concept)it.next();
+        if(o.getPreferredName() == null) {
+          errors.add(new ValidationError(SEVERITY_ERROR, "A Concept is missing its PreferredName."));
+        } else {
+          if(o.getLongName() == null)
+            errors.add(new ValidationError(SEVERITY_ERROR, "Concept: " + o.getPreferredName() + " is missing Long Name."));
+          if(o.getPreferredDefinition() == null)
+            errors.add(new ValidationError(SEVERITY_ERROR, "Concept: " + o.getPreferredName() + " is missing Preferred Definition."));
+          if(o.getDefinitionSource() == null)
+            errors.add(new ValidationError(SEVERITY_ERROR, "Concept: " + o.getPreferredName() + " is missing Definition Source."));
+        }
+      }
+    }
+
     return errors;
   }
 

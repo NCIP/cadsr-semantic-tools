@@ -81,12 +81,10 @@ public class XMIParser implements Parser {
       packageName += ("." + pack.getName());
     }
 
-    Map packageFilter = defaults.getPackageFilter();
-
-    if((packageFilter.size() == 0) || (packageFilter.containsKey(packageName))) {
+    if(isInPackageFilter(packageName)) {
       ((UMLListener) listener).newPackage(new NewPackageEvent(packageName));
     } else {
-      logger.debug("Skipping package: " + packageName);
+      logger.info("Skipping package: " + packageName);
     }
 
     Iterator it = pack.getOwnedElement().iterator();
@@ -137,12 +135,11 @@ public class XMIParser implements Parser {
 
     setConceptInfo(clazz, event);
 
-    Map packageFilter = defaults.getPackageFilter();
-
-    if((packageFilter.size() == 0) || (packageFilter.containsKey(pName))) {
+    if(isInPackageFilter(pName)) {
       listener.newClass(event);
     } else {
-      logger.debug("Class : " + className + " filtered by package");
+      logger.info("Class : " + className + " filtered by package");
+      return;
     }
 
     for (Iterator it = clazz.getFeature().iterator(); it.hasNext();) {
@@ -237,19 +234,18 @@ public class XMIParser implements Parser {
 
       if (o instanceof AssociationEnd) {
         AssociationEnd end = (AssociationEnd) o;
-        logger.debug("end A is navigable: " + end.isNavigable());
+//         logger.debug("end A is navigable: " + end.isNavigable());
 
         if (end.isNavigable()) {
           navig += 'A';
         }
 
-        TaggedValue tv = mgr.getTaggedValue(end, EA_CONTAINMENT);
-        if(tv != null) {
-          logger.debug("******** END: Tagged VALUE: " + tv.getValue());
+        Classifier classif = end.getType();
+        if(!isInPackageFilter(classif.getNamespace().getName())) {
+          logger.info("Association with: " + classif.getName() + " skipped by filter ");
+          return;
         }
 
-
-        Classifier classif = end.getType();
 
         Collection range = end.getMultiplicity().getRange();
         for (Iterator it2 = range.iterator(); it2.hasNext();) {
@@ -272,13 +268,18 @@ public class XMIParser implements Parser {
 
       if (o instanceof AssociationEnd) {
         AssociationEnd end = (AssociationEnd) o;
-        logger.debug("end B is navigable: " + end.isNavigable());
+//         logger.debug("end B is navigable: " + end.isNavigable());
 
         if (end.isNavigable()) {
           navig += 'B';
         }
 
         Classifier classif = end.getType();
+        if(!isInPackageFilter(classif.getNamespace().getName())) {
+          logger.info("Association with: " + classif.getName() + " skipped by filter ");
+          return;
+        }
+
         Collection range = end.getMultiplicity().getRange();
         for (Iterator it2 = range.iterator(); it2.hasNext();) {
           MultiplicityRange mr = (MultiplicityRange) it2.next();
@@ -343,11 +344,6 @@ public class XMIParser implements Parser {
       event.setConceptCode(tv.getValue());
     }
 
-//     tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_SOURCE);
-//     if (tv != null) {
-//       event.setConceptSource(tv.getValue());
-//     }
-
     tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_DEFINITION);
     if (tv != null) {
       event.setConceptDefinition(tv.getValue());
@@ -363,15 +359,10 @@ public class XMIParser implements Parser {
       event.setConceptPreferredName(tv.getValue());
     }
 
-//     tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_NCI_CONCEPT_CODE);
-//     if (tv != null) {
-//       event.setNciConceptCode(tv.getValue());
-//     }
+  }
 
-//     tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_NCI_CONCEPT_DEFINITION);
-//     if (tv != null) {
-//       event.setNciConceptDefinition(tv.getValue());
-//     }
-    
+  private boolean isInPackageFilter(String pName) {
+    Map packageFilter = UMLDefaults.getInstance().getPackageFilter();
+    return (packageFilter.size() == 0) || (packageFilter.containsKey(pName));
   }
 }

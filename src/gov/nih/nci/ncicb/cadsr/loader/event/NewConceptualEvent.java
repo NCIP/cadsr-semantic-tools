@@ -8,16 +8,6 @@ public class NewConceptualEvent implements LoaderEvent {
   public static final String TV_CONCEPT_CODE = "ConceptCode";
 
   /**
-   * Tagged Value name for Concept Source
-   */
-//   public static final String TV_CONCEPT_SOURCE = "ConceptSource";
-
-  /**
-   * Tagged Value name for NCI Concept Code
-   */
-//   public static final String TV_NCI_CONCEPT_CODE = "NCIConceptCode";
-
-  /**
    * Tagged Value name for Concept Preferred Name
    */
   public static final String TV_CONCEPT_PREFERRED_NAME = "ConceptPreferredName";
@@ -32,34 +22,10 @@ public class NewConceptualEvent implements LoaderEvent {
    */
   public static final String TV_CONCEPT_DEFINITION_SOURCE = "ConceptDefinitionSource";
 
-  /**
-   * Tagged Value name for NCI Concept Definition
-   */
-//   public static final String TV_NCI_CONCEPT_DEFINITION = "NCIConceptDefinition";
-
   private String code;
-//   private String nciCode;
-//   private String source;
   private String definition;
   private String preferredName;
   private String definitionSource;
-//   private String nciDefinition;
-
-//   /**
-//    * Get the NciDefinition value.
-//    * @return the NciDefinition value.
-//    */
-//   public String getNciConceptDefinition() {
-//     return nciDefinition;
-//   }
-
-//   /**
-//    * Set the NciDefinition value.
-//    * @param newNciDefinition The new NciDefinition value.
-//    */
-//   public void setNciConceptDefinition(String newNciDefinition) {
-//     this.nciDefinition = newNciDefinition;
-//   }
 
   
   /**
