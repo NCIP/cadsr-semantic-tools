@@ -27,7 +27,7 @@ public class ValidationPanel extends JPanel {
   private void initUI() {
 
     JPanel infoPanel = new JPanel();
-    infoPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    infoPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
     
     infoPanel.setBackground(Color.WHITE);
     infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -46,7 +46,7 @@ public class ValidationPanel extends JPanel {
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new GridLayout(0, 1));
     buttonPanel.add
-      (new JLabel("<html>Validation will help you identify the items that have missing concepts <br> If this is the first you will be tagging the xmi document, you may want to leave this checked off</html>"));
+      (new JLabel("<html>Validation will help you identify the items that have missing concepts <br> If this is the first you will be tagging the xmi document,<br> you may want to leave this checked off</html>"));
                     
     buttonPanel.add(validateCheckBox);
 
