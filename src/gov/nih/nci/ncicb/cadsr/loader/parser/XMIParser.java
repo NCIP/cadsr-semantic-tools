@@ -41,7 +41,6 @@ public class XMIParser implements Parser {
     try {
       fact = new MdrModelManagerFactoryImpl();
       mgr = fact.readModel("", filename);
-
       Model model = mgr.getModel();
       Iterator it = model.getOwnedElement().iterator();
 
