@@ -38,6 +38,8 @@ public class XMIParser implements Parser {
   private List generalizationEvents = new ArrayList();
   private List associationEvents = new ArrayList();
 
+  private ProgressListener progressListener = null;
+
   private String[] bannedClassNames = null;
   {
     bannedClassNames = PropertyAccessor.getProperty("banned.classNames").split(",");
@@ -147,6 +149,10 @@ public class XMIParser implements Parser {
     if (pName != null) {
       className = pName + "." + className;
     }
+
+    ProgressEvent evt = new ProgressEvent();
+    evt.setMessage("Parsing " + className);
+    fireProgressEvent(evt);
 
     NewClassEvent event = new NewClassEvent(className.trim());
     event.setPackageName(pName);
@@ -448,5 +454,13 @@ public class XMIParser implements Parser {
     }
     return false;
   }
-    
+
+  private void fireProgressEvent(ProgressEvent evt) {
+    if(progressListener != null)
+      progressListener.newProgressEvent(evt);
+  }
+
+  public void addProgressListener(ProgressListener listener) {
+    progressListener = listener;
+  }
 }
