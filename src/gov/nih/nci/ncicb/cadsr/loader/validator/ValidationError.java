@@ -1,5 +1,11 @@
 package gov.nih.nci.ncicb.cadsr.loader.validator;
 
+/**
+ * Contains severity and message for a Validation Error. 
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ * @version 1.0
+ */
 public class ValidationError {
 
   private String severity;

@@ -2,6 +2,11 @@ package gov.nih.nci.ncicb.cadsr.loader.persister;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
 
+/**
+ * Utility method to build the definition of an OCR.
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public class OCRDefinitionBuilder  {
 
   public String buildDefinition(ObjectClassRelationship ocr) {
