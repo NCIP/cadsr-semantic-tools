@@ -38,7 +38,6 @@ public class UMLDefaults {
   private Float version;
   private Context context;
   private ConceptualDomain conceptualDomain;
-  private ClassificationSchemeItem domainCsi;
   private ClassificationScheme projectCs;
 //   private ClassSchemeClassSchemeItem projectCsCsi;
 
@@ -170,34 +169,17 @@ public class UMLDefaults {
    * @exception PersisterException if an error occurs
    */
   public void initClassifications() throws PersisterException {
-    domainCsi = DomainObjectFactory.newClassificationSchemeItem();
-
-    // !!!! TODO
-    domainCsi.setName("Essai-Domain Model");
-
-    // !!!! TODO
-    domainCsi.setType("TEST");
-
-    List result = classificationSchemeItemDAO.find(domainCsi);
-
-    if (result.size() == 0) {
-      throw new PersisterException("Classification Scheme Item: " +
-				   domainCsi.getName() + " does not exist on DB.");
-    }
-
-    domainCsi = (ClassificationSchemeItem) result.get(0);
-
     projectCs = DomainObjectFactory.newClassificationScheme();
-    projectCs.setLongName(projectName);
+    projectCs.setPreferredName(projectName);
     projectCs.setVersion(projectVersion);
     projectCs.setContext(context);
 
     ArrayList eager = new ArrayList();
     eager.add(EagerConstants.CS_CSI);
-    result = classificationSchemeDAO.find(projectCs, eager);
+    List result = classificationSchemeDAO.find(projectCs, eager);
 
     if (result.size() == 0) { // need to add projectName CS
-      projectCs.setPreferredName(projectName);
+      projectCs.setLongName(projectName);
       projectCs.setWorkflowStatus(projectCs.WF_STATUS_DRAFT_NEW);
 
       // !!! TODO
@@ -246,12 +228,6 @@ public class UMLDefaults {
    */
   public ConceptualDomain getConceptualDomain() {
     return conceptualDomain;
-  }
-  /**
-   * @return the domainCsi
-   */
-  public ClassificationSchemeItem getDomainCsi() {
-    return domainCsi;
   }
   /**
    * @return the project CS
