@@ -191,7 +191,7 @@ public class UMLElementViewPanel extends JPanel
 
   }
 
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, float width, float height) {
+  private void insertInBag(JPanel bagComp, Component comp, int x, int y, double width, double height) {
     JPanel p = new JPanel();
     p.add(comp);
 
