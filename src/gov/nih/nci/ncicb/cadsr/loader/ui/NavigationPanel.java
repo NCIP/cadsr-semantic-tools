@@ -49,7 +49,12 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
   }
 
   public void reviewChanged(ReviewEvent event) {
-    
+    ReviewableUMLNode node = (ReviewableUMLNode)event.getUserObject();
+    node.setReviewed(event.isReviewed());
+
+    tree.repaint();
+
+    System.out.println("repainted");
   }
   
   private void initUI() throws Exception
