@@ -109,7 +109,7 @@ public class UMLPersister implements Persister {
 
   // !!!! TODO 
   // EVS CONCEPT CODE.
-  private void persistProperties() {
+  private void persistProperties() throws PersisterException {
     Property prop = DomainObjectFactory.newProperty();
     List props = (List)elements.getElements(prop.getClass());
     
@@ -134,35 +134,9 @@ public class UMLPersister implements Persister {
 	} else {
 	  prop = (Property)l.get(0);
 	}	
+
+	addClassificationSchemes(prop);
 	
-	// Add Classification Schemes
-	l = adminComponentDAO.getClassSchemeClassSchemeItems(prop);
-
-	// are projectCsi and versionCsi linked?
-	boolean pfound = false, vfound = false;
-
-	for(int j=0; i<l.size(); i++) {
-	  ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)l.get(j);
-	  if(csCsi.getCs().getLongName().equals(domainCs.getLongName()))
-	    if(csCsi.getCsi().getName().equals(projectCsi.getName()))
-	      pfound = true;
-	    else if(csCsi.getCsi().getName().equals(versionCsi.getName()))
-	      vfound = true;
-	  
-	}
-
-	l = new ArrayList();
-	if(!pfound) {
-	  l.add(projectCsCsi);
-	}
-
-	if(!vfound) {
-	  l.add(versionCsCsi);
-	}
-	
-	if(l.size() > 0)
-	  adminComponentDAO.addClassSchemeClassSchemeItems(prop, l);
-
 	
       }
 
@@ -185,6 +159,41 @@ public class UMLPersister implements Persister {
 
   }
 
+  private void addClassificationSchemes(AdminComponent ac) throws PersisterException {
+
+    // Add Classification Schemes
+    List l = adminComponentDAO.getClassSchemeClassSchemeItems(ac);
+    
+    // are projectCsi and versionCsi linked?
+    boolean pfound = false, vfound = false;
+    
+    for(int i=0; i<l.size(); i++) {
+      Object o = l.get(i);
+      ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)l.get(i);
+
+      if(csCsi.getCs().getLongName().equals(domainCs.getLongName()))
+	if(csCsi.getCsi().getName().equals(projectCsi.getName()))
+	  pfound = true;
+	else if(csCsi.getCsi().getName().equals(versionCsi.getName()))
+	  vfound = true;
+      
+	}
+    
+    l = new ArrayList();
+    if(!pfound) {
+      l.add(projectCsCsi);
+    }
+    
+    if(!vfound) {
+	  l.add(versionCsCsi);
+    }
+	
+    if(l.size() > 0)
+      adminComponentDAO.addClassSchemeClassSchemeItems(ac, l);
+    
+    
+  }
+  
   private void initParams() throws PersisterException {
 
     String cName = (String)params.get("contextName");
@@ -221,14 +230,16 @@ public class UMLPersister implements Persister {
 
     domainCs = (ClassificationScheme)result.get(0);
     
-    
     List csCsis = domainCs.getCsCsis();
     for(int i=0; i<csCsis.size(); i++) {
       ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)csCsis.get(i);
       if(csCsi.getCsi().getName().equals(projectName)) {
 	projectCsCsi = csCsi;
+	projectCsi = projectCsCsi.getCsi();
       }
     }    
+
+
     if(projectCsCsi == null) { // need to add projectName CSI
       ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
       csi.setName(projectName);
@@ -251,8 +262,10 @@ public class UMLPersister implements Persister {
 
     for(int i=0; i<csCsis.size(); i++) {      
       ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)csCsis.get(i);
-      if(csCsi.getCsi().getName().equals(projectName + "-" + version))
+      if(csCsi.getCsi().getName().equals(projectName + "-" + version)) {
 	versionCsCsi = csCsi;
+	versionCsi = versionCsCsi.getCsi();
+      }
     }
     if(versionCsCsi == null) { // need to add version CSI
       ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
