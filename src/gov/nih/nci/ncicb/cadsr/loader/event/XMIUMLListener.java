@@ -8,14 +8,20 @@ import org.apache.log4j.Logger;
 import java.util.*;
 
 
+/**
+ * This class implements UMLListener specifically to handle events coming from an XMI Parser.<br/> The listener's responsibility is to transform events received into cadsr domain objects, and store those objects in the Elements List.
+ *
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public class XMIUMLListener implements UMLListener {
-    private ElementsLists elements;
-    private Logger logger = Logger.getLogger(XMIUMLListener.class.getName());
-    private List packageList = new ArrayList();
-
-    public XMIUMLListener(ElementsLists elements) {
-      this.elements = elements;
-    }
+  private ElementsLists elements;
+  private Logger logger = Logger.getLogger(XMIUMLListener.class.getName());
+  private List packageList = new ArrayList();
+  
+  public XMIUMLListener(ElementsLists elements) {
+    this.elements = elements;
+  }
 
   public void newPackage(NewPackageEvent event) {
     logger.debug("Package: " + event.getName());

@@ -1,5 +1,10 @@
 package gov.nih.nci.ncicb.cadsr.loader.event;
 
+/**
+ * Used by UMLLoader's parser to indicate a new UML Class event.
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public class NewClassEvent extends NewConceptualEvent {
 
   private String name;

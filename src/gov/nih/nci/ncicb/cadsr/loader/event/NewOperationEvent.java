@@ -1,5 +1,10 @@
 package gov.nih.nci.ncicb.cadsr.loader.event;
 
+/**
+ * Not Used.
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public class NewOperationEvent implements LoaderEvent {
 
   private String name;

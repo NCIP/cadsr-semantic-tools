@@ -6,6 +6,11 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 
 import java.util.List;
 
+/**
+ * Listeners for UML Loader should implement this interface
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public interface UMLListener extends LoaderListener {
 
   public void newPackage(NewPackageEvent event);
