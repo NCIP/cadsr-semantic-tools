@@ -4,6 +4,8 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
@@ -15,6 +17,8 @@ import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 
 
 
@@ -33,11 +37,16 @@ public class UMLElementViewPanel extends JPanel
 
   private static final String ADD = "ADD",
     DELETE = "DELETE",
-    SAVE = "SAVE";
+    SAVE = "SAVE", 
+    PREVIOUS = "PREVIOUS",
+    NEXT = "NEXT";
 
   private JButton addButton, deleteButton, saveButton;
+  private JButton previousButton, nextButton;
   private JCheckBox reviewButton;
   private List<ReviewListener> reviewListeners = new ArrayList();
+  private List<NavigationListener> navigationListeners = new ArrayList();
+  
   
 //  public UMLElementViewPanel(Concept[] concepts) {
 //    this.concepts = concepts;
@@ -149,17 +158,23 @@ public class UMLElementViewPanel extends JPanel
     deleteButton = new JButton("Remove");
     saveButton = new JButton("Apply");
     reviewButton = new JCheckBox("Reviewed");
+    previousButton = new JButton("Previous");
+    nextButton = new JButton("Next");
     
     reviewButton.setSelected(((ReviewableUMLNode)node).isReviewed());
 
     addButton.setActionCommand(ADD);
     deleteButton.setActionCommand(DELETE);
     saveButton.setActionCommand(SAVE);
+    previousButton.setActionCommand(PREVIOUS);
+    nextButton.setActionCommand(NEXT);
 
     addButton.addActionListener(this);
     deleteButton.addActionListener(this);
     saveButton.addActionListener(this);
     reviewButton.addItemListener(this);
+    previousButton.addActionListener(this);
+    nextButton.addActionListener(this);
     
     if(concepts.length < 2)
       deleteButton.setEnabled(false);
@@ -171,6 +186,8 @@ public class UMLElementViewPanel extends JPanel
     buttonPanel.add(deleteButton);
     buttonPanel.add(saveButton);
     buttonPanel.add(reviewButton);
+    buttonPanel.add(previousButton);
+    buttonPanel.add(nextButton);
 
 //     scrollPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -226,7 +243,26 @@ public class UMLElementViewPanel extends JPanel
       initUI();
     } else if(button.getActionCommand().equals(SAVE)) {
       saveButton.setEnabled(false);
-    } 
+    }
+      else if(button.getActionCommand().equals(PREVIOUS)) {
+        NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_PREVIOUS);
+        fireNavigationEvent(event);
+      }
+      else if(button.getActionCommand().equals(NEXT)) {
+        NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_NEXT);
+        fireNavigationEvent(event);
+      }
+  }
+  
+  public void fireNavigationEvent(NavigationEvent event) 
+  {
+    for(NavigationListener l : navigationListeners)
+      l.navigate(event);
+  }
+  
+  public void addNavigationListener(NavigationListener listener) 
+  {
+    navigationListeners.add(listener);
   }
   
   public void itemStateChanged(ItemEvent e) {
