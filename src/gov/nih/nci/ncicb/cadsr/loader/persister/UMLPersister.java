@@ -35,6 +35,7 @@ public class UMLPersister implements Persister {
   private ClassificationScheme domainCs;
   private ClassSchemeClassSchemeItem projectCsCsi, versionCsCsi;
 
+  private HashMap valueDomains = new HashMap();
 
   public UMLPersister(ElementsLists list) {
     this.elements = list;
@@ -46,8 +47,8 @@ public class UMLPersister implements Persister {
     contextDAO = (ContextDAO) ApplicationContextFactory.getApplicationContext().getBean("contextDAO");
 
 
-//     System.out.println("Loading DataElementDAO bean");
-//     dataElementDAO = (DataElementDAO) ApplicationContextFactory.getApplicationContext().getBean("dataElementDAO");
+    System.out.println("Loading DataElementDAO bean");
+    dataElementDAO = (DataElementDAO) ApplicationContextFactory.getApplicationContext().getBean("dataElementDAO");
 
     System.out.println("Loading AdminComponentDAO bean");
     adminComponentDAO = (AdminComponentDAO) ApplicationContextFactory.getApplicationContext().getBean("adminComponentDAO");
@@ -91,6 +92,8 @@ public class UMLPersister implements Persister {
 
     persistDecs();
 
+    persistDes();
+
   }
 
 
@@ -99,12 +102,45 @@ public class UMLPersister implements Persister {
     List des = (List)elements.getElements(de.getClass());
     
     if(des != null)
-      for(int i=0; i<des.size(); i++) {
-	de = (DataElement)des.get(i);
+      for(ListIterator it=des.listIterator(); it.hasNext(); ) {
+	de = (DataElement)it.next();
+	
+	de.setContext(context);
 
+	List decs = elements.getElements(DomainObjectFactory.newDataElementConcept().getClass());
+	for(ListIterator lit=decs.listIterator(); lit.hasNext();) {
+	  DataElementConcept o = (DataElementConcept)lit.next();
+	  if(o.getLongName().equals(de.getDataElementConcept().getLongName()))
+	    de.setDataElementConcept(o);
+	}
+
+	de.setValueDomain(lookupValueDomain(de.getValueDomain()));
+	List l = dataElementDAO.find(de);
+	if(l.size() == 0) {
+	  de.setPreferredDefinition(de.getLongName());
+	  de.setPreferredName(de.getLongName());
+	  // !!!!! TODO -- following will pass constraints
+	  if(de.getPreferredName().length() > 30)
+	    de.setPreferredName(de.getPreferredName().substring(0, 29));
+
+
+	  de.setVersion(new Float(1.0f));
+	  
+	  de.setWorkflowStatus(workflowStatus);
+
+	  System.out.println("prefName: " + de.getPreferredName());
+	  System.out.println("version: " + de.getVersion());
+	  System.out.println("context: " + de.getContext().getName());
+
+	  de.setId(dataElementDAO.create(de));
+	} else {
+	  de = (DataElement)l.get(0);
+	}	
+	
+	addClassificationSchemes(de);
+	it.set(de);
 
       }
-
   }
 
   // !!!! TODO 
@@ -381,5 +417,18 @@ public class UMLPersister implements Persister {
     }
 
   }
+  
+  private ValueDomain lookupValueDomain(ValueDomain vd) throws PersisterException {
+    ValueDomain result = (ValueDomain)valueDomains.get(vd.getPreferredName());
 
+    if(result == null) { // not in cache -- go to db
+      result = (ValueDomain)valueDomainDAO.find(vd).get(0);
+      valueDomains.put(result.getPreferredName(), result);
+    }
+
+    return result;
+
+  }
+
+  
 }
