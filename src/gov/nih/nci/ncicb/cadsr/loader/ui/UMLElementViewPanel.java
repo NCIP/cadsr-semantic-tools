@@ -9,9 +9,11 @@ import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 
 
 public class UMLElementViewPanel extends JScrollPane
-  implements ActionListener {
+  implements ActionListener, KeyListener {
 
   private Concept[] concepts;
+
+  private boolean unsavedChanges = false;
 
   private static final String ADD = "ADD",
     DELETE = "DELETE",
@@ -31,6 +33,10 @@ public class UMLElementViewPanel extends JScrollPane
 
   public Concept[] getConcepts() {
     return null;
+  }
+
+  public boolean haveUnsavedChanges() {
+    return unsavedChanges;
   }
 
   private void initUI() {
@@ -90,6 +96,11 @@ public class UMLElementViewPanel extends JScrollPane
       conceptPanels[i].add(leftPanel, BorderLayout.WEST);
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
       gridPanel.add(conceptPanels[i]);
+
+
+      conceptUIs[i].code.addKeyListener(this);
+      conceptUIs[i].name.addKeyListener(this);
+      conceptUIs[i].defSource.addKeyListener(this);
     }
 
 
@@ -108,6 +119,8 @@ public class UMLElementViewPanel extends JScrollPane
     if(concepts.length == 0)
       deleteButton.setEnabled(false);
 
+    saveButton.setEnabled(false);
+
     JPanel buttonPanel = new JPanel();
     buttonPanel.add(addButton);
     buttonPanel.add(deleteButton);
@@ -121,6 +134,19 @@ public class UMLElementViewPanel extends JScrollPane
 
   }
 
+  public void keyTyped(KeyEvent evt) {
+    System.out.println("typed");
+    saveButton.setEnabled(true);
+  }
+  public void keyPressed(KeyEvent evt) {
+    System.out.println("pressed");
+  }
+  public void keyReleased(KeyEvent evt) {
+    System.out.println("released");
+  }
+
+  
+  
   public void actionPerformed(ActionEvent evt) {
     JButton button = (JButton)evt.getSource();
     if(button.getActionCommand().equals(SAVE)) {
@@ -145,7 +171,9 @@ public class UMLElementViewPanel extends JScrollPane
       }
       concepts = newConcepts;
       initUI();
-    }  
+    } else if(button.getActionCommand().equals(SAVE)) {
+      saveButton.setEnabled(false);
+    } 
   }
 
   public static void main(String[] args) {
