@@ -44,9 +44,12 @@ public class ObjectClassPersister extends UMLPersister {
 	List eager = new ArrayList();
 	eager.add(EagerConstants.AC_CS_CSI);
 
-	List l = objectClassDAO.findByConceptCode(oc.getConcept().getPreferredName(), eager);
-        
+        String[] conceptCodes = oc.getPreferredName().split("-");
 
+        List l = objectClassDAO.findByConceptCodes(conceptCodes, eager);
+
+        Concept primaryConcept = findConcept(conceptCodes[0]);
+        
 	boolean packageFound = false;
         String newDef = oc.getPreferredDefinition();
 
@@ -54,15 +57,19 @@ public class ObjectClassPersister extends UMLPersister {
           // !! TODO Need decision on this
 	  oc.setPreferredName(oc.getLongName());
 
-	  oc.setPreferredDefinition(oc.getConcept().getPreferredDefinition());
-          oc.setDefinitionSource(oc.getConcept().getDefinitionSource());
+	  oc.setPreferredDefinition(primaryConcept.getPreferredDefinition());
+          oc.setDefinitionSource(primaryConcept.getDefinitionSource());
 
 	  oc.setVersion(new Float(1.0f));
 	  oc.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
 	  oc.setAudit(defaults.getAudit());
 
-	  oc.setId(objectClassDAO.create(oc));
-	  logger.info(PropertyAccessor.getProperty("created.oc"));
+          try {
+            oc.setId(objectClassDAO.create(oc, conceptCodes));
+            logger.info(PropertyAccessor.getProperty("created.oc"));
+          } catch (DAOCreateException e){
+            logger.error(PropertyAccessor.getProperty("created.oc.failed", e.getMessage()));
+          } // end of try-catch
           // is definition the same?
           // if not, then add alternate Def
           if(!newDef.equals(oc.getPreferredDefinition())) {
@@ -71,8 +78,8 @@ public class ObjectClassPersister extends UMLPersister {
           
 	} else {
           String newName = oc.getLongName();
-          String newDefSource = oc.getConcept().getDefinitionSource();
-          String newConceptDef = oc.getConcept().getPreferredDefinition();
+          String newDefSource = primaryConcept.getDefinitionSource();
+          String newConceptDef = primaryConcept.getPreferredDefinition();
 	  oc = (ObjectClass) l.get(0);
 	  logger.info(PropertyAccessor.getProperty("existed.oc"));
           // is long_name the same?

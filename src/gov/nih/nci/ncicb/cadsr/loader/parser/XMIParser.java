@@ -151,7 +151,7 @@ public class XMIParser implements Parser {
     NewClassEvent event = new NewClassEvent(className);
     event.setPackageName(pName);
 
-    setConceptInfo(clazz, event);
+    setConceptInfo(clazz, event, NewConceptEvent.TYPE_CLASS);
 
     logger.debug("CLASS: " + className);
     logger.debug("CLASS PACKAGE: " + getPackageName(clazz));
@@ -233,7 +233,7 @@ public class XMIParser implements Parser {
     event.setClassName(className);
     event.setType(att.getType().getName());
     
-    setConceptInfo(att, event);
+    setConceptInfo(att, event, NewConceptEvent.TYPE_PROPERTY);
 
     listener.newAttribute(event);
   }
@@ -367,27 +367,45 @@ public class XMIParser implements Parser {
     }
   }
 
-  private void setConceptInfo(ModelElement elt, NewConceptualEvent event) {
+  private void setConceptInfo(ModelElement elt, NewConceptualEvent event, String type) {
+    NewConceptEvent concept = new NewConceptEvent();
+    setConceptInfo(elt, concept, type, "", 0);
 
-    TaggedValue tv = UML13Utils.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_CODE);
-    if (tv != null) {
-      event.setConceptCode(tv.getValue());
+    event.addConcept(concept);
+    
+    concept = new NewConceptEvent();
+    for(int i=1;setConceptInfo(elt, concept, type, NewConceptEvent.TV_QUALIFIER, i); i++) {
+      event.addConcept(concept);
+      concept = new NewConceptEvent();
     }
 
-    tv = UML13Utils.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_DEFINITION);
+  }
+
+  private boolean setConceptInfo(ModelElement elt, NewConceptEvent event, String type, String pre, int n) {
+
+    TaggedValue tv = UML13Utils.getTaggedValue(elt, type + pre + NewConceptEvent.TV_CONCEPT_CODE + ((n>0)?""+n:""));
+    if (tv != null) {
+      event.setConceptCode(tv.getValue());
+    } else 
+      return false;
+
+    tv = UML13Utils.getTaggedValue(elt, type + pre + NewConceptEvent.TV_CONCEPT_DEFINITION + ((n>0)?""+n:""));
     if (tv != null) {
       event.setConceptDefinition(tv.getValue());
     }
 
-    tv = UML13Utils.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_DEFINITION_SOURCE);
+    tv = UML13Utils.getTaggedValue(elt, type + pre + NewConceptEvent.TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:""));
     if (tv != null) {
       event.setConceptDefinitionSource(tv.getValue());
     }
     
-    tv = UML13Utils.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_PREFERRED_NAME);
+    tv = UML13Utils.getTaggedValue(elt, type + pre + NewConceptEvent.TV_CONCEPT_PREFERRED_NAME + ((n>0)?""+n:""));
     if (tv != null) {
       event.setConceptPreferredName(tv.getValue());
     }
+
+    event.setOrder(n);
+    return true;
 
   }
 

@@ -30,14 +30,18 @@ public class PropertyPersister extends UMLPersister {
 
 	prop.setContext(defaults.getMainContext());
 
+
+        String[] conceptCodes = prop.getPreferredName().split("-");
+        List l = propertyDAO.findByConceptCodes(conceptCodes);
+
         prop.setLongName(prop.getConcept().getLongName());
 
-	// does this property exist?
-	List l = propertyDAO.findByConceptCode(prop.getConcept().getPreferredName());
+        Concept primaryConcept = findConcept(conceptCodes[0]);
 
 	if (l.size() == 0) {
 	  prop.setPreferredName(prop.getLongName());
-	  prop.setPreferredDefinition(prop.getConcept().getPreferredDefinition());
+	  prop.setPreferredDefinition(primaryConcept.getPreferredDefinition());
+          prop.setDefinitionSource(primaryConcept.getDefinitionSource());
 
 	  prop.setVersion(new Float(1.0f));
 	  prop.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
@@ -45,8 +49,12 @@ public class PropertyPersister extends UMLPersister {
 
           logger.debug("property: " + prop.getLongName());
 
-	  prop.setId(propertyDAO.create(prop));
-	  logger.info(PropertyAccessor.getProperty("created.prop"));
+          try {
+            prop.setId(propertyDAO.create(prop, conceptCodes));
+            logger.info(PropertyAccessor.getProperty("created.prop"));
+          } catch (DAOCreateException e){
+            logger.error(PropertyAccessor.getProperty("created.prop.failed", e.getMessage()));
+          } // end of try-catch
 	} else {
           // !!! TODO Verify that next line is ok.
           String newPrefName = prop.getLongName();

@@ -35,15 +35,25 @@ public class UMLDefaultHandler implements UMLHandler {
   public void newClass(NewClassEvent event) {
     logger.debug("Class: " + event.getName());
     
-    Concept concept = newConcept(event);
-    
+    List concepts = createConcepts(event);
+
     ObjectClass oc = DomainObjectFactory.newObjectClass();
-    oc.setConcept(concept);
+
+    // store concept codes in preferredName
+    String prefName = "";
+    for(Iterator it = concepts.iterator(); it.hasNext(); ) {
+      Concept con = (Concept)it.next();
+      if(prefName.length() > 0)
+        prefName = prefName + "-";
+      prefName = prefName + con.getPreferredName();
+    }
+    oc.setPreferredName(prefName);
+
     oc.setLongName(event.getName());
     if(event.getDescription() != null && event.getDescription().length() > 0)
       oc.setPreferredDefinition(event.getDescription());
-    else 
-      oc.setPreferredDefinition(concept.getPreferredDefinition());
+//     else 
+//       oc.setPreferredDefinition(concept.getPreferredDefinition());
     elements.addElement(oc);
 
     if (!packageList.contains(event.getPackageName())) {
@@ -60,13 +70,25 @@ public class UMLDefaultHandler implements UMLHandler {
     logger.debug("Attribute: " + event.getClassName() + "." +
                  event.getName());
 
-    Concept concept = newConcept(event);
+    List concepts = createConcepts(event);
 
     Property prop = DomainObjectFactory.newProperty();
 
+    // store concept codes in preferredName
+    String prefName = "";
+    for(Iterator it = concepts.iterator(); it.hasNext(); ) {
+      Concept con = (Concept)it.next();
+      if(prefName.length() > 0)
+        prefName = prefName + "-";
+      prefName = prefName + con.getPreferredName();
+    }
+    prop.setPreferredName(prefName);
+
     //     prop.setPreferredName(event.getName());
     prop.setLongName(event.getName());
-    prop.setConcept(concept);
+
+    if(event.getDescription() != null && event.getDescription().length() > 0)
+      prop.setPreferredDefinition(event.getDescription());
 
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
     dec.setLongName(event.getClassName() + event.getName());
@@ -210,7 +232,7 @@ public class UMLDefaultHandler implements UMLHandler {
     logger.debug("-- " + ocr.getTarget().getLongName());
   }
 
-  private Concept newConcept(NewConceptualEvent event) {
+  private Concept newConcept(NewConceptEvent event) {
     Concept concept = DomainObjectFactory.newConcept();
 
     concept.setPreferredName(event.getConceptCode());
@@ -220,6 +242,16 @@ public class UMLDefaultHandler implements UMLHandler {
 
     elements.addElement(concept);
     return concept;
-    
+  }
+
+  private List createConcepts(NewConceptualEvent event) {
+    List concepts = new ArrayList();
+    List conEvs = event.getConcepts();
+    for(Iterator it = conEvs.iterator(); it.hasNext(); ) {
+      NewConceptEvent conEv = (NewConceptEvent)it.next();
+      concepts.add(newConcept(conEv));
+    }
+
+    return concepts;
   }
 }

@@ -212,6 +212,16 @@ public class UMLPersister implements Persister {
     } 
   }
 
-  
+  protected Concept findConcept(String conceptCode) {
+    List concepts = (List) elements.getElements(DomainObjectFactory.newConcept().getClass());
+
+    for (Iterator it = concepts.iterator(); it.hasNext();) {
+      Concept con = (Concept)it.next();
+      if(con.getPreferredName().equals(conceptCode))
+        return con;
+    }
+    return null;
+
+  }
 
 }
