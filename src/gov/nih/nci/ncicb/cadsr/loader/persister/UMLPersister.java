@@ -241,7 +241,7 @@ public class UMLPersister implements Persister {
     } 
   }
 
-  protected Concept findConcept(String conceptCode) {
+  protected Concept lookupConcept(String conceptCode) {
     List concepts = (List) elements.getElements(DomainObjectFactory.newConcept().getClass());
 
     for (Iterator it = concepts.iterator(); it.hasNext();) {
@@ -253,7 +253,7 @@ public class UMLPersister implements Persister {
 
   }
 
-  protected Property findProperty(String preferredName) {
+  protected Property lookupProperty(String preferredName) {
     List props = (List) elements.getElements(DomainObjectFactory.newProperty().getClass());
     
     for (Iterator it = props.iterator(); it.hasNext(); ) {
@@ -266,7 +266,7 @@ public class UMLPersister implements Persister {
     return null;
   }
 
-  protected ObjectClass findObjectClass(String preferredName) {
+  protected ObjectClass lookupObjectClass(String preferredName) {
     List ocs = (List) elements.getElements(DomainObjectFactory.newObjectClass().getClass());
     
     for (Iterator it = ocs.iterator(); it.hasNext(); ) {
@@ -279,7 +279,7 @@ public class UMLPersister implements Persister {
     return null;
   }
 
-  protected DataElementConcept findDec(String id) {
+  protected DataElementConcept lookupDec(String id) {
     List decs = (List) elements.getElements(DomainObjectFactory.newDataElementConcept().getClass());
     
     for (Iterator it = decs.iterator(); it.hasNext(); ) {

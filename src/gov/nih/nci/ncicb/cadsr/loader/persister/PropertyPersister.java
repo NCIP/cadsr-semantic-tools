@@ -37,7 +37,7 @@ public class PropertyPersister extends UMLPersister {
 
         Concept[] concepts = new Concept[conceptCodes.length];
         for(int i=0; i<concepts.length; 
-            concepts[i] = findConcept(conceptCodes[i++])
+            concepts[i] = lookupConcept(conceptCodes[i++])
             );
 
         Concept primaryConcept = concepts[concepts.length - 1];

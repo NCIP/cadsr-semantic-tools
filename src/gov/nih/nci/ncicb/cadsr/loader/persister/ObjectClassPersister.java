@@ -45,7 +45,7 @@ public class ObjectClassPersister extends UMLPersister {
         String[] conceptCodes = oc.getPreferredName().split("-");
         Concept[] concepts = new Concept[conceptCodes.length];
         for(int i=0; i<concepts.length; 
-            concepts[i] = findConcept(conceptCodes[i++])
+            concepts[i] = lookupConcept(conceptCodes[i++])
             );
         
         List l = objectClassDAO.findByConceptCodes(conceptCodes, oc.getContext(), eager);

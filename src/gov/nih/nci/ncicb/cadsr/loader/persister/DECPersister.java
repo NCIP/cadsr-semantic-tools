@@ -32,12 +32,12 @@ public class DECPersister extends UMLPersister {
         String packageName = getPackageName(dec);
         
         // update object class with persisted one
-        dec.setObjectClass(findObjectClass(
+        dec.setObjectClass(lookupObjectClass(
                              dec.getObjectClass().getPreferredName()));
         newDec.setObjectClass(dec.getObjectClass());
 
         // update object class with persisted one
-        dec.setProperty(findProperty(
+        dec.setProperty(lookupProperty(
                              dec.getProperty().getPreferredName()));
         newDec.setProperty(dec.getProperty());
         

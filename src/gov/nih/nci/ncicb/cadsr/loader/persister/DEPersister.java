@@ -34,7 +34,7 @@ public class DEPersister extends UMLPersister {
 
           String packageName = getPackageName(de);
 
-          de.setDataElementConcept(findDec(de.getDataElementConcept().getId()));
+          de.setDataElementConcept(lookupDec(de.getDataElementConcept().getId()));
           newDe.setDataElementConcept(de.getDataElementConcept());
 
 	  de.setValueDomain(lookupValueDomain(de.getValueDomain()));
