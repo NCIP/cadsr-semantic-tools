@@ -5,13 +5,15 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 
 import java.awt.BorderLayout;
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreePath;
 
 import java.util.*;
 
-public class NavigationPanel extends JPanel 
+public class NavigationPanel extends JPanel implements ActionListener
 {
   private JTree tree;;
 
@@ -45,10 +47,36 @@ public class NavigationPanel extends JPanel
     tree.setShowsRootHandles(true);
 
     tree.setCellRenderer(new UMLTreeCellRenderer());
-
+   
     this.setLayout(new BorderLayout());
     this.add(tree, BorderLayout.CENTER);
+    
+    buildPopupMenu();
   }
+
+  public void actionPerformed(ActionEvent event) {
+    System.out.println("menuItem is selected");
+    DefaultMutableTreeNode dmtn, node;
+    
+    TreePath path = tree.getSelectionPath();
+    dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
+    
+    System.out.println((((UMLNode)dmtn.getUserObject()).getDisplay()));
+
+  }
+
+
+  public void buildPopupMenu() {
+    JMenuItem menuItem = new JMenuItem("A test item");
+    JPopupMenu popup = new JPopupMenu();
+    menuItem.addActionListener(this);
+    popup.add(menuItem);
+    
+    MouseListener popupListener = new TreeMouseListener(popup,tree);
+    tree.addMouseListener(popupListener);
+   
+  } 
+
 
   private DefaultMutableTreeNode buildTree() {
     
@@ -65,14 +93,6 @@ public class NavigationPanel extends JPanel
     for(UMLNode child : children) {
       DefaultMutableTreeNode newNode = 
         new DefaultMutableTreeNode(child);
-
-//       if (child.getIcon() != null) {
-//         DefaultTreeCellRenderer renderer = 
-//           new DefaultTreeCellRenderer();
-//         renderer.setLeafIcon(child.getIcon());
-//         tree.setCellRenderer(renderer);
-//       }
-
 
       if(!(child instanceof ValidationNode))
         node.add(newNode);
