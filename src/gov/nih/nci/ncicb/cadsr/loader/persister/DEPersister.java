@@ -35,6 +35,7 @@ public class DEPersister extends UMLPersister {
 
 	  int ind = de.getLongName().lastIndexOf(".");
 
+
 	  if (ind > 0) {
 	    de.setLongName(de.getLongName().substring(ind + 1));
 	  }

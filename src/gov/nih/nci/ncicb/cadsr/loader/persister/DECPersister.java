@@ -32,6 +32,8 @@ public class DECPersister extends UMLPersister {
 	dec.setContext(defaults.getContext());
 	dec.setConceptualDomain(defaults.getConceptualDomain());
 
+        logger.debug("DEC -- OBJECT CLASS: " + dec.getObjectClass().getLongName());
+
 	int ind = dec.getLongName().lastIndexOf(".");
 
 	if (ind > 0) {
