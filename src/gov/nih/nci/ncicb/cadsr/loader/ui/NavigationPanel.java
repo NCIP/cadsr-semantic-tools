@@ -1,7 +1,7 @@
-package mypackage1;
+package gov.nih.nci.ncicb.cadsr.loader.ui;
+
 import java.awt.BorderLayout;
-import javax.swing.JPanel;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class NavigationPanel extends JPanel 
