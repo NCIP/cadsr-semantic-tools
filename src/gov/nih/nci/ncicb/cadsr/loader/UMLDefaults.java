@@ -124,21 +124,25 @@ public class UMLDefaults {
 				   conceptualDomain.getPreferredName() + " not found.");
     }
 
+    logger.info("List of packages that will be processed:");
     String[] pkgs = loaderDefault.getPackageFilter().split(",");
     for(int i=0; i<pkgs.length; i++) {
-      int ind = pkgs[i].indexOf(">");
+      String s = pkgs[i].trim();
+      int ind = s.indexOf(">");
 
       String alias = null; 
       String pkg = null;
       if(ind > 0) {
-        alias = pkgs[i].substring(1, ind).trim();
-        pkg = pkgs[i].substring(ind+1).trim();
+        alias = s.substring(1, ind).trim();
+        pkg = s.substring(ind+1).trim();
       } else {
-        alias = pkg = pkgs[i];
+        alias = pkg = s;
       }
       
       packageFilter.put(pkg, alias);
+      logger.info("Package: " + pkg + " -- Alias: " + alias);
     }
+    logger.info("End of package list.");
 
   }
 
