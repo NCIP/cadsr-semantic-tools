@@ -12,6 +12,8 @@ import gov.nih.nci.ncicb.cadsr.loader.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.parser.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
+
 import java.io.File;
 
 /**
@@ -88,7 +90,6 @@ public class WizardController implements ActionListener {
                   evt.setStatus(100);
                   evt.setMessage("Done");
                   thisDesc.newProgressEvent(evt);
-                  System.out.println("*** DONE");
                 } catch (Exception e){
                   ProgressEvent evt = new ProgressEvent();
                   evt.setStatus(-1);
@@ -128,6 +129,9 @@ public class WizardController implements ActionListener {
                 parser.setEventHandler(listener);
                 parser.addProgressListener(thisDesc);
                 parser.parse(filename);
+                
+                new TreeBuilder().buildTree(elements);
+                
                 return null;
               }
             };

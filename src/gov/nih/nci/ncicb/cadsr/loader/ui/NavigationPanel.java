@@ -2,6 +2,8 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
+
 import java.awt.BorderLayout;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -11,6 +13,8 @@ import java.util.*;
 public class NavigationPanel extends JPanel 
 {
   private JTree tree;;
+
+  private UMLNode rootNode = TreeBuilder.getRootNode(); 
 
   private Set<NavigationListener> navListeners = new HashSet<NavigationListener>();
 
@@ -47,7 +51,7 @@ public class NavigationPanel extends JPanel
   {
     try
     {
-      jbInit();
+      initUI();
     }
     catch(Exception e)
     {
@@ -60,7 +64,7 @@ public class NavigationPanel extends JPanel
     navListeners.add(l);
   }
   
-  private void jbInit() throws Exception
+  private void initUI() throws Exception
   {
     DefaultMutableTreeNode top = buildTree();
       
@@ -72,23 +76,26 @@ public class NavigationPanel extends JPanel
 
   private DefaultMutableTreeNode buildTree() {
     
-    DefaultMutableTreeNode node = new DefaultMutableTreeNode((String)treeValues[0]);
+//     DefaultMutableTreeNode node = new DefaultMutableTreeNode((String)treeValues[0]);
 
-    return doNode(node, (Object[])treeValues[1]);
+//     return doNode(node, (Object[])treeValues[1]);
+
+     DefaultMutableTreeNode node = new DefaultMutableTreeNode(rootNode);
+
+     return doNode(node, rootNode);
+    
 
   }
 
-  private DefaultMutableTreeNode doNode(DefaultMutableTreeNode node, Object[] values) {
-    
-    DefaultMutableTreeNode newNode = null;
-    for(int i = 0; i < values.length; i++) {
-      Object o = values[i];
-      if (o instanceof String) {
-        newNode = new DefaultMutableTreeNode((String)o);
-        node.add(newNode);
-      } else {
-        doNode(newNode, (Object[])o);
-      }
+  private DefaultMutableTreeNode doNode(DefaultMutableTreeNode node, UMLNode parentNode) {
+
+    Set<UMLNode> children = parentNode.getChildren();
+    for(UMLNode child : children) {
+      DefaultMutableTreeNode newNode = 
+        new DefaultMutableTreeNode(child);
+
+      node.add(newNode);
+      doNode(newNode, child);
     }
 
     return node;

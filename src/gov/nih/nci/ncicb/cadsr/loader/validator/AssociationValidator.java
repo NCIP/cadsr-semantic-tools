@@ -18,36 +18,40 @@ public class AssociationValidator implements Validator {
   /**
    * returns a list of Validation errors.
    */
-  public List validate() {
-    List errors = new ArrayList();
+  public ValidationItems validate() {
+    ValidationItems items = ValidationItems.getInstance();
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
     List ocrs = elements.getElements(ocr.getClass());
     if(ocrs == null) {
-      return errors;
+      return items;
     }
     for(Iterator it = ocrs.iterator(); it.hasNext(); ) {
       ocr = (ObjectClassRelationship)it.next();
       if(ocr.getSource() == null || ocr.getTarget() == null) {
-        errors.add(new ValidationError
-                   (SEVERITY_ERROR, PropertyAccessor.getProperty(
+        items.addItem(new ValidationError
+                   (PropertyAccessor.getProperty(
                       "association.missing.end", 
                       new String[] {ocr.getSourceRole(),
-                                    ocr.getTargetRole()})));
+                                    ocr.getTargetRole()}), 
+                    ocr
+                    ));
         it.remove();
         continue;
       }
       if(!areRoleNamesValid(ocr)) {
-        errors.add(new ValidationError
-                   (SEVERITY_ERROR, PropertyAccessor.getProperty(
+        items.addItem(new ValidationError
+                   (PropertyAccessor.getProperty(
                       "association.missing.role", 
                       new String[] {ocr.getSource().getLongName(),
-                                    ocr.getTarget().getLongName()})));
+                                    ocr.getTarget().getLongName()}),
+                    ocr)); 
+                   ;
         it.remove();
         continue;
       }
     }
     
-    return errors;
+    return items;
   }
 
   private boolean areRoleNamesValid(ObjectClassRelationship ocr) {

@@ -19,16 +19,15 @@ public class ConceptCodeValidator implements Validator {
   /**
    * returns a list of Validation errors.
    */
-  public List validate() {
-    List errors = new ArrayList();
+  public ValidationItems validate() {
+    ValidationItems items = ValidationItems.getInstance();
     
-    List conceptErrors = (List)elements.getElements(ConceptError.class);
-    if(conceptErrors != null) 
-      for(Iterator it = conceptErrors.iterator(); it.hasNext(); ) {
-        ConceptError o = (ConceptError)it.next();
-        errors.add(o);
-      }
-    
+//     List conceptErrors = (List)elements.getElements(ConceptError.class);
+//     if(conceptErrors != null) 
+//       for(Iterator it = conceptErrors.iterator(); it.hasNext(); ) {
+//         ConceptError o = (ConceptError)it.next();
+//         errors.add(o);
+//       }
 
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     List ocs = (List)elements.getElements(oc.getClass());
@@ -36,7 +35,7 @@ public class ConceptCodeValidator implements Validator {
       for(Iterator it = ocs.iterator(); it.hasNext(); ) {
         ObjectClass o = (ObjectClass)it.next();
         if(o.getPreferredName() == null || o.getPreferredName().length() < 4) {
-          errors.add(new ValidationError(SEVERITY_ERROR, "Class: " + o.getLongName() + " has no concept code."));
+          items.addItem(new ValidationError("Class: " + o.getLongName() + " has no concept code.", o));
         }
       }
 
@@ -46,7 +45,7 @@ public class ConceptCodeValidator implements Validator {
       for(Iterator it = props.iterator(); it.hasNext(); ) {
         Property o = (Property)it.next();
         if(o.getPreferredName() == null || o.getPreferredName().length() < 4) {
-          errors.add(new ValidationError(SEVERITY_ERROR, "Attribute: " + o.getLongName() + " has no concept code."));
+          items.addItem(new ValidationError("Attribute: " + o.getLongName() + " has no concept code.", o));
         }
       }
 
@@ -62,21 +61,16 @@ public class ConceptCodeValidator implements Validator {
 //                                          PropertyAccessor.getProperty("validation.concept.missing")));
         } else {
           if(o.getLongName() == null)
-            errors.add(new ValidationError(SEVERITY_ERROR,
-                                           PropertyAccessor.getProperty("validation.concept.missing.longName", o.getPreferredName())));
+            items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.longName", o.getPreferredName()), o));
           if(o.getPreferredDefinition() == null)
-            errors.add(
-              new ValidationError(SEVERITY_ERROR,
-                                  PropertyAccessor.getProperty("validation.concept.missing.definition", o.getPreferredName())));
+            items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.definition", o.getPreferredName()), o));
           if(o.getDefinitionSource() == null)
-            errors.add(
-              new ValidationError(SEVERITY_ERROR,
-                                  PropertyAccessor.getProperty("validation.concept.missing.source", o.getPreferredName())));
+            items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.source", o.getPreferredName()), o));
         }
       }
     }
 
-    return errors;
+    return items;
   }
 
 }

@@ -25,8 +25,6 @@ public class MainFrame extends JFrame
   private JSplitPane jSplitPane1 = new JSplitPane();
   private JSplitPane jSplitPane2 = new JSplitPane();
   private JTabbedPane jTabbedPane1 = new JTabbedPane();
-  private JTabbedPane errorTabbedPane = new JTabbedPane();
-  private JTabbedPane logTabbedPane = new JTabbedPane();
   private JPanel jPanel1 = new JPanel();
   private JPanel mainViewPanel = new JPanel();
 
@@ -83,11 +81,9 @@ public class MainFrame extends JFrame
     jMenu3.add(jMenuItem6);
     jMenuBar1.add(jMenu3);
 
-    errorTabbedPane.add(new ErrorPanel(DummyErrorPanelData.getData()));
-
-    jTabbedPane1.addTab("Errors", errorTabbedPane);
-    logTabbedPane.addTab("jPanel1", jPanel1);
-    jTabbedPane1.addTab("Log", logTabbedPane);
+    jTabbedPane1.addTab("Errors", new ErrorPanel(DummyErrorPanelData.getData()));
+//     logTabbedPane.addTab("jPanel1", jPanel1);
+    jTabbedPane1.addTab("Log", new JPanel());
     jSplitPane2.add(jTabbedPane1, JSplitPane.BOTTOM);
     jSplitPane2.add(mainViewPanel, JSplitPane.TOP);
     jSplitPane1.add(jSplitPane2, JSplitPane.RIGHT);
