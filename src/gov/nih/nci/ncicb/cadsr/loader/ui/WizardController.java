@@ -150,7 +150,6 @@ public class WizardController implements ActionListener {
                   
                   UMLDefaults defaults = UMLDefaults.getInstance();
                   defaults.initParams(filename);
-                  defaults.initClassifications();
 
                   parser.parse(filename);
                   
