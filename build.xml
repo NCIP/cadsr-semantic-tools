@@ -5,6 +5,7 @@
   <property name="class.dir" value="./classes"/>
   <property name="lib.dir" value="./lib"/>
   <property name="config.dir" value="properties"/>
+  <property name="docs.dir" value="./javadoc" />
 
 
   <path id="proj.class.path">
@@ -48,6 +49,9 @@
       srcdir="${src.dir}"
       deprecation="false"
       >
+      <!--
+           <compilerarg value="-Xlint"/>
+      -->
       <classpath refid="proj.class.path"/>
     </javac>
   </target>
@@ -62,6 +66,28 @@
     </copy>
   </target>
 
+  <target name="doc">
+    <mkdir dir="${docs.dir}"/>
+    <mkdir dir="${docs.dir}/api"/>
+    <javadoc
+      destdir="${docs.dir}/api"
+      author="true"
+      version="true"
+      use="true"
+      windowtitle="UML Loader">
+
+      <packageset dir="src" defaultexcludes="no">
+        <include name="gov/nih/nci/ncicb/cadsr/**/*" />
+        <include name="gov/nih/nci/ncicb/cadsr/**/*" />
+      </packageset>
+
+      <doctitle><![CDATA[<h1>UML Loader</h1>]]></doctitle>
+      <bottom><![CDATA[<i>~~--~~</i>]]></bottom>
+      <tag name="todo" scope="all" description="To do:" />
+      <link href="http://java.sun.com/products/jdk/1.4/docs/api/" />
+      <link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/>
+    </javadoc>
+  </target>
 
   <target name="run" depends="prepare">
     <java classname="gov.nih.nci.ncicb.cadsr.loader.UMLLoader" classpathref="proj.class.path" 
@@ -72,6 +98,7 @@
       <jvmarg value="-Djava.security.auth.login.config=classes/jaas.config"/>
       <arg value="${dir}"/>
       <arg value="${projectName}"/>
+      <arg value="${projectVersion}"/>
     </java>
   </target>
 
