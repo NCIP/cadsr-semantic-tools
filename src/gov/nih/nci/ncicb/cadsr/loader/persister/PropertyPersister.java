@@ -73,10 +73,11 @@ public class PropertyPersister extends UMLPersister {
           
 	}
 
-        addAlternateName(newProp, newName, AlternateName.TYPE_UML_ATTRIBUTE, packageName);
-
 	LogUtil.logAc(newProp, logger);
         logger.info("-- Public ID: " + newProp.getPublicId());
+
+        addAlternateName(newProp, newName, AlternateName.TYPE_UML_ATTRIBUTE, packageName);
+
 	it.set(newProp);
 
         addPackageClassification(newProp, packageName);

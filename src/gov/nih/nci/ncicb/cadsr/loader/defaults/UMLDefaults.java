@@ -238,12 +238,13 @@ public class UMLDefaults {
     return projectCs;
   }
 
-//   /**
-//    * @return the project CS_CSI
-//    */
-//   public ClassSchemeClassSchemeItem getProjectCsCsi() {
-//     return projectCsCsi;
-//   }
+  public void refreshProjectCs() {
+    ArrayList eager = new ArrayList();
+    eager.add(EagerConstants.CS_CSI);
+    projectCs = (ClassificationScheme)(classificationSchemeDAO.find(projectCs, eager).get(0));
+    
+  }
+  
   /**
    * @return default Audit object -- contains username.
    */

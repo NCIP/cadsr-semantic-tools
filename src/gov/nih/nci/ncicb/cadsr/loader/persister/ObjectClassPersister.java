@@ -89,6 +89,9 @@ public class ObjectClassPersister extends UMLPersister {
 
 	}
 
+	LogUtil.logAc(newOc, logger);
+        logger.info("public ID: " + newOc.getPublicId());
+
         // is definition the same?
         // if not, then add alternate Def
         if((newDef.length() > 0) && !newDef.equals(newOc.getPreferredDefinition())) {
@@ -97,8 +100,6 @@ public class ObjectClassPersister extends UMLPersister {
         
         addAlternateName(newOc, newName, AlternateName.TYPE_UML_CLASS ,packageName);
 
-	LogUtil.logAc(newOc, logger);
-        logger.info("public ID: " + newOc.getPublicId());
 
 // 	addProjectCs(newOc);
 	it.set(newOc);

@@ -73,6 +73,7 @@ public class PackagePersister extends UMLPersister {
 
 	  packageCsCsi.setId(classificationSchemeDAO.addClassificationSchemeItem(defaults.getProjectCs(),
                                                                                  packageCsCsi));
+          defaults.refreshProjectCs();
 	  logger.info(PropertyAccessor.getProperty("added.package"));
 	}
 
