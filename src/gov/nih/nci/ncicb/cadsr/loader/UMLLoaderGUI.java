@@ -43,7 +43,7 @@ public class UMLLoaderGUI
     Frame f = new Frame();
     Wizard wizard = new Wizard(f);
 
-    wizard.getDialog().setTitle("Test Wizard Dialog");
+    wizard.getDialog().setTitle("UML Loader");
     
     WizardPanelDescriptor lpDesc = new LoginPanelDescriptor();
     wizard.registerWizardPanel(LoginPanelDescriptor.IDENTIFIER, lpDesc);
@@ -64,7 +64,7 @@ public class UMLLoaderGUI
     
     wizard.setCurrentPanel(LoginPanelDescriptor.IDENTIFIER);
     int wizResult = wizard.showModalDialog();
-    
+
     if(wizResult != 0) {
       System.exit(0);
     }

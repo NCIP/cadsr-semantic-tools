@@ -11,6 +11,7 @@ import javax.security.auth.login.*;
 import gov.nih.nci.ncicb.cadsr.loader.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.parser.*;
+import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
 
@@ -76,15 +77,27 @@ public class WizardController implements ActionListener {
           final SwingWorker worker = new SwingWorker() {
               public Object construct() {
                 try {
-                  ProgressEvent evt = new ProgressEvent();
-                  evt.setMessage("Sending credentials...");
-                  thisDesc.newProgressEvent(evt);
+                  boolean workOffline = (Boolean)UserSelections.getInstance()
+                    .getProperty("WORK_OFFLINE");
+                  
+                  ProgressEvent evt = null;
 
-                  LoginContext lc = new LoginContext("UML_Loader", panel);    
-                  lc.login();
-                  username = panel.getUsername();
-                  panel.setErrorMessage("");
-
+                  if(!workOffline) {
+                    evt = new ProgressEvent();
+                    evt.setMessage("Sending credentials...");
+                    thisDesc.newProgressEvent(evt);
+                    
+                    LoginContext lc = new LoginContext("UML_Loader", panel);    
+                    lc.login();
+                    username = panel.getUsername();
+                    panel.setErrorMessage("");
+                  } else {
+                    try {
+                      Thread.currentThread().sleep(100);
+                    } catch (Exception e){
+                    } // end of try-catch
+                  }
+                  
                   evt = new ProgressEvent();
                   evt.setGoal(100);
                   evt.setStatus(100);
@@ -93,6 +106,7 @@ public class WizardController implements ActionListener {
                 } catch (Exception e){
                   ProgressEvent evt = new ProgressEvent();
                   evt.setStatus(-1);
+                  evt.setGoal(-1);
                   evt.setMessage("Failed");
                   thisDesc.newProgressEvent(evt);
 
@@ -115,8 +129,6 @@ public class WizardController implements ActionListener {
           SemanticConnectorPanel panel = 
             (SemanticConnectorPanel)descriptor.getPanelComponent();
 
-          System.out.println(nextPanelDescriptor.getClass());
-
           final ProgressSemanticConnectorPanelDescriptor thisDesc =
             (ProgressSemanticConnectorPanelDescriptor)model
             .getPanelDescriptor(nextPanelDescriptor);
@@ -130,6 +142,9 @@ public class WizardController implements ActionListener {
                 parser.addProgressListener(thisDesc);
                 parser.parse(filename);
                 
+                Validator validator = new UMLValidator(elements);
+                validator.validate();
+
                 new TreeBuilder().buildTree(elements);
                 
                 return null;

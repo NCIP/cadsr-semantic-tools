@@ -62,8 +62,9 @@ public class ConceptCodeValidator implements Validator {
         } else {
           if(o.getLongName() == null)
             items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.longName", o.getPreferredName()), o));
-          if(o.getPreferredDefinition() == null)
+          if(o.getPreferredDefinition() == null) {
             items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.definition", o.getPreferredName()), o));
+          }
           if(o.getDefinitionSource() == null)
             items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.source", o.getPreferredName()), o));
         }

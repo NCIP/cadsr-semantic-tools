@@ -18,35 +18,6 @@ public class NavigationPanel extends JPanel
 
   private Set<NavigationListener> navListeners = new HashSet<NavigationListener>();
 
-  private Object[] treeValues = 
-  {
-    "caCore 3.0", 
-    new Object[] {
-      "CSM", 
-      new Object[] {
-        "Group",
-        new Object[] {
-          "groupName", "groupDescription"
-        },
-        "User",
-        new Object[] {
-          "userName", "userDescription"
-        }
-      },
-      "caDSR",
-      new Object[] {
-        "DataElementConcept", 
-        new Object[] {
-          "oc", "property"
-        },
-        "DataElement",
-        new Object[] {
-          "valueDomain", "dec"
-        }
-      }
-    }
-  };
-
   public NavigationPanel()
   {
     try
@@ -69,6 +40,8 @@ public class NavigationPanel extends JPanel
     DefaultMutableTreeNode top = buildTree();
       
     tree = new JTree(top);
+    tree.setRootVisible(false);
+    tree.setShowsRootHandles(true);
 
     this.setLayout(new BorderLayout());
     this.add(tree, BorderLayout.CENTER);
@@ -76,10 +49,6 @@ public class NavigationPanel extends JPanel
 
   private DefaultMutableTreeNode buildTree() {
     
-//     DefaultMutableTreeNode node = new DefaultMutableTreeNode((String)treeValues[0]);
-
-//     return doNode(node, (Object[])treeValues[1]);
-
      DefaultMutableTreeNode node = new DefaultMutableTreeNode(rootNode);
 
      return doNode(node, rootNode);
@@ -94,7 +63,8 @@ public class NavigationPanel extends JPanel
       DefaultMutableTreeNode newNode = 
         new DefaultMutableTreeNode(child);
 
-      node.add(newNode);
+      if(!(child instanceof ValidationNode))
+        node.add(newNode);
       doNode(newNode, child);
     }
 

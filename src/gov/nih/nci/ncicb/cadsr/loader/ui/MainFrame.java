@@ -1,4 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
+
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -81,7 +83,7 @@ public class MainFrame extends JFrame
     jMenu3.add(jMenuItem6);
     jMenuBar1.add(jMenu3);
 
-    jTabbedPane1.addTab("Errors", new ErrorPanel(DummyErrorPanelData.getData()));
+    jTabbedPane1.addTab("Errors", new ErrorPanel(TreeBuilder.getRootNode()));
 //     logTabbedPane.addTab("jPanel1", jPanel1);
     jTabbedPane1.addTab("Log", new JPanel());
     jSplitPane2.add(jTabbedPane1, JSplitPane.BOTTOM);

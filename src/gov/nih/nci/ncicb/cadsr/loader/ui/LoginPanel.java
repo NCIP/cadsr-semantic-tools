@@ -12,13 +12,16 @@ import javax.security.auth.callback.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
+import java.beans.*;
+
 /**
  * Callback handler for Swing based apps
  *
  * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
  */
 public class LoginPanel extends JPanel 
-  implements CallbackHandler, ProgressListener
+  implements CallbackHandler, ProgressListener,
+             ActionListener
 {
 
   private JLabel errorLabel;
@@ -26,11 +29,15 @@ public class LoginPanel extends JPanel
   private JTextField userField;
   private JPasswordField pwdField;
 
-  final static int GAP = 30;  
+  private JCheckBox offLineCB;
+
+  final static int GAP = 20;  
 
   private ProgressPanel progressPanel;
   private boolean isProgress = false;
   private int goal;
+
+  private PropertyChangeListener propListener;
 
   public LoginPanel() {
     initUI();
@@ -43,6 +50,14 @@ public class LoginPanel extends JPanel
     initUI();
   }
 
+  public void addPropertyChangeListener(PropertyChangeListener l) {
+    propListener = l;
+
+    if(propListener != null) {
+      propListener.propertyChange(new PropertyChangeEvent(offLineCB, "WORK_OFFLINE", !offLineCB.isSelected(), offLineCB.isSelected()));
+    }
+  }
+
   public void newProgressEvent(ProgressEvent evt) {
     progressPanel.newProgressEvent(evt);
   }
@@ -50,7 +65,7 @@ public class LoginPanel extends JPanel
   public String getUsername() {
     return userField.getName();
   }
-  
+
   public void setErrorMessage(String msg) {
     errorLabel.setText(msg);
   }
@@ -78,15 +93,18 @@ public class LoginPanel extends JPanel
 
     JPanel mainPanel = new JPanel();
     mainPanel.setLayout(new SpringLayout());
-//     this.setLayout(new BorderLayout());
     
     JLabel userLabel = new JLabel("Username: ", JLabel.TRAILING), 
-      pwdLabel = new JLabel("Password: ", JLabel.TRAILING);
+      pwdLabel = new JLabel("Password: ", JLabel.TRAILING),
+      offLineLabel = new JLabel("Work Offline");
       
     errorLabel = new JLabel("", JLabel.TRAILING);
     
     userField = new JTextField(12);
     pwdField = new JPasswordField(12);
+
+    offLineCB = new JCheckBox();
+    offLineCB.addActionListener(this);
 
     // TEMP
     userField.setText("LADINO");
@@ -96,6 +114,7 @@ public class LoginPanel extends JPanel
     pwdLabel.setLabelFor(pwdField);
 
     progressPanel = new ProgressPanel(goal);
+//     progressPanel.setSize(0, 30);
 
     if(isProgress) {
       progressPanel.setVisible(true);
@@ -113,15 +132,32 @@ public class LoginPanel extends JPanel
     mainPanel.add(userField);
     mainPanel.add(pwdLabel);
     mainPanel.add(pwdField);
+    mainPanel.add(offLineLabel);
+    mainPanel.add(offLineCB);
 
     SpringUtilities.makeCompactGrid(mainPanel,
-                                    3, 2,
+                                    4, 2,
                                     GAP, GAP, //init x,y
                                     GAP, GAP/2);//xpad, ypad
 
     this.add(mainPanel, BorderLayout.CENTER);
     this.add(progressPanel, BorderLayout.SOUTH);
 
+  }
+
+  public void actionPerformed(ActionEvent evt) {
+    if(offLineCB.isSelected()) {
+      userField.setEnabled(false);
+      pwdField.setEnabled(false);
+    } else {
+      userField.setEnabled(true);
+      pwdField.setEnabled(true);
+    }
+    
+    if(propListener != null) {
+      propListener.propertyChange(new PropertyChangeEvent(offLineCB, "WORK_OFFLINE", !offLineCB.isSelected(), offLineCB.isSelected()));
+    }
+    
   }
 
 }
