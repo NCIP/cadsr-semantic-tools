@@ -162,8 +162,9 @@ public class XMIParser implements Parser {
     }
 
     TaggedValue tv = UML13Utils.getTaggedValue(clazz, NewConceptualEvent.TV_DOCUMENTATION);
-    if(tv != null)
+    if(tv != null) {
       event.setDescription(tv.getValue());
+    }
 
     if(isInPackageFilter(pName)) {
       listener.newClass(event);
@@ -238,9 +239,10 @@ public class XMIParser implements Parser {
     event.setClassName(className);
     event.setType(att.getType().getName());
 
-    TaggedValue tv = UML13Utils.getTaggedValue(att, NewConceptualEvent.TV_DOCUMENTATION);
-    if(tv != null)
+    TaggedValue tv = UML13Utils.getTaggedValue(att, NewConceptualEvent.TV_DESCRIPTION);
+    if(tv != null) {
       event.setDescription(tv.getValue());
+    }
 
     setConceptInfo(att, event, NewConceptEvent.TYPE_PROPERTY);
 

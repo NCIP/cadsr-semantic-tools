@@ -114,7 +114,7 @@ public class UMLDefaultHandler implements UMLHandler {
     DataElement de = DomainObjectFactory.newDataElement();
 
     de.setLongName(dec.getLongName() + event.getType());
-    de.setPreferredDefinition(event.getDescription());
+//     de.setPreferredDefinition(event.getDescription());
 
     logger.debug("DE LONG_NAME: " + de.getLongName());
 
@@ -139,13 +139,15 @@ public class UMLDefaultHandler implements UMLHandler {
     de.setValueDomain(vd);
 
     if(event.getDescription() != null && event.getDescription().length() > 0) {
-      prop.setPreferredDefinition(event.getDescription());
-      dec.setPreferredDefinition(event.getDescription());
-      de.setPreferredDefinition(event.getDescription());
-    } else {
-      prop.setPreferredDefinition("");
-      dec.setPreferredDefinition("");
-      de.setPreferredDefinition("Please provide the appropriate definition.");
+      Definition altDef = DomainObjectFactory.newDefinition();
+      altDef.setType(Definition.TYPE_UML_DE);
+      altDef.setDefinition(event.getDescription());
+      de.addDefinition(altDef);
+
+      altDef = DomainObjectFactory.newDefinition();
+      altDef.setType(Definition.TYPE_UML_DEC);
+      altDef.setDefinition(event.getDescription());
+      dec.addDefinition(altDef);
     }
 
     // Add packages to Prop, DE and DEC.
@@ -259,7 +261,11 @@ public class UMLDefaultHandler implements UMLHandler {
           DataElementConcept newDec = DomainObjectFactory.newDataElementConcept();
           newDec.setProperty(dec.getProperty());
           newDec.setObjectClass(childOc);
-          newDec.setPreferredDefinition(dec.getPreferredDefinition());
+          for(Iterator it2 = dec.getDefinitions().iterator();
+              it2.hasNext();) {
+            Definition def = (Definition)it2.next();
+            newDec.addDefinition(def);
+          }
           
           String propName = newDec.getProperty().getLongName();
           
@@ -271,10 +277,14 @@ public class UMLDefaultHandler implements UMLHandler {
           newDe.setDataElementConcept(newDec);
           newDe.setValueDomain(de.getValueDomain());
           newDe.setLongName(newDec.getLongName() + de.getValueDomain().getPreferredName());
-          newDe.setPreferredDefinition(de.getPreferredDefinition());
 
-          List altNames = de.getAlternateNames();
-          for(Iterator it2 = altNames.iterator(); it2.hasNext();) {
+          for(Iterator it2 = de.getDefinitions().iterator();
+              it2.hasNext();) {
+            Definition def = (Definition)it2.next();
+            newDe.addDefinition(def);
+          }
+
+          for(Iterator it2 = de.getAlternateNames().iterator(); it2.hasNext();) {
             AlternateName an = (AlternateName)it2.next();
             newDe.addAlternateName(an);
           }

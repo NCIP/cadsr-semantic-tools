@@ -42,7 +42,7 @@ public class DEPersister extends UMLPersister {
           de.setValueDomain(lookupValueDomain(de.getValueDomain()));
           newDe.setValueDomain(de.getValueDomain());
 
-          String newDef = de.getPreferredDefinition();
+//           String newDef = de.getPreferredDefinition();
 
           List l = dataElementDAO.find(newDe);
           //Did Extract Method refactoring
@@ -57,14 +57,25 @@ public class DEPersister extends UMLPersister {
             de.setVersion(defaults.getVersion());
             de.setWorkflowStatus(defaults.getWorkflowStatus());
 
-            newDe.setAudit(defaults.getAudit());
+            de.setPreferredDefinition(
+              de.getDataElementConcept().getPreferredDefinition() + 
+              de.getValueDomain().getPreferredDefinition()
+              );
+
+            de.setAudit(defaults.getAudit());
             logger.debug("Creating DE: " + de.getLongName());
             List altNames = de.getAlternateNames();
+            List altDefs = de.getDefinitions();
             newDe = dataElementDAO.create(de);
             // restore altNames
             for(Iterator it2 = altNames.iterator(); it2.hasNext();) {
               AlternateName an = (AlternateName)it2.next();
               de.addAlternateName(an);
+            }
+            // restore altDefs
+            for(Iterator it2 = altDefs.iterator(); it2.hasNext();) {
+              Definition def = (Definition)it2.next();
+              de.addDefinition(def);
             }
 
             logger.info(PropertyAccessor.getProperty("created.de"));
@@ -76,18 +87,12 @@ public class DEPersister extends UMLPersister {
             /* if DE alreay exists, check context
              * If context is different, add Used_by alt_name
              */
-            if (newDe.getContext().getId() != defaults.getContext().getId()) {
+            if (!newDe.getContext().getId().equals(defaults.getContext().getId())) {
               addAlternateName(
                 newDe, defaults.getContext().getName(), AlternateName.TYPE_USED_BY,
                 null);
             }
 
-            if (
-              (newDef.length() > 0) &&
-                  !newDef.equals(newDe.getPreferredDefinition())) {
-              addAlternateDefinition(
-                newDe, newDef, Definition.TYPE_UML_DE, packageName);
-            }
           }
 
           LogUtil.logAc(newDe, logger);
@@ -97,14 +102,22 @@ public class DEPersister extends UMLPersister {
 
           addPackageClassification(newDe, packageName);
 
-          List ans = de.getAlternateNames();
-          for(Iterator it2 = ans.iterator(); it2.hasNext(); ) {
+          for(Iterator it2 = de.getAlternateNames().iterator(); it2.hasNext(); ) {
             AlternateName altName = (AlternateName)it2.next();
             
             addAlternateName(
               newDe, altName.getName(),
               altName.getType(), packageName);
           }
+
+          for(Iterator it2 = de.getDefinitions().iterator(); it2.hasNext(); ) {
+            Definition def = (Definition)it2.next();
+            System.out.println("&&&&&&&&&&&& saving definition: " + def.getDefinition() + " -- " + def.getType());
+            addAlternateDefinition(
+              newDe, def.getDefinition(), 
+              def.getType(), packageName);
+          }
+
           it.set(newDe);
         }
         catch (PersisterException e) {

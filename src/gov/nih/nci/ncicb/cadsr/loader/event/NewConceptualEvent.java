@@ -13,7 +13,8 @@ public class NewConceptualEvent implements LoaderEvent {
   /**
    * Tagged Value name for Documentation
    */
-  public static final String TV_DOCUMENTATION = "description";
+  public static final String TV_DOCUMENTATION = "documentation";
+  public static final String TV_DESCRIPTION = "description";
 
 
   private String description;

@@ -162,6 +162,7 @@ public class UMLPersister implements Persister {
     if(!found) {
       AlternateName altName = DomainObjectFactory.newAlternateName();
       altName.setContext(defaults.getContext());
+      altName.setAudit(defaults.getAudit());
       altName.setName(newName);
       altName.setType(type);
       altName.setId(adminComponentDAO.addAlternateName(ac, altName));
@@ -200,8 +201,7 @@ public class UMLPersister implements Persister {
         boolean csFound = false;
         for(Iterator it2 = def.getCsCsis().iterator(); it2.hasNext();) {
           ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
-          if(csCsi.getCs().getId().equals(defaults.getProjectCs().getId())
-             && csCsi.getCsi().getId().equals(packageCsCsi.getId())) {
+          if(csCsi.getId().equals(packageCsCsi.getId())) {
             csFound = true;
           }
         }

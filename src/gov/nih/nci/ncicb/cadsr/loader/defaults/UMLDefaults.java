@@ -32,7 +32,7 @@ public class UMLDefaults {
   private ClassificationSchemeItemDAO classificationSchemeItemDAO = DAOAccessor.getClassificationSchemeItemDAO();
   private ClassSchemeClassSchemeItemDAO classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
 
-  private String projectName;
+  private String projectName, projectLongName, projectDescription;
   private Float projectVersion;
   private String workflowStatus;
   private Float version;
@@ -108,6 +108,9 @@ public class UMLDefaults {
       throw new PersisterException("WorkflowStatus not Set.");
     }
     
+    projectLongName = loaderDefault.getProjectLongName();
+    projectDescription = loaderDefault.getProjectDescription();
+
     conceptualDomain = DomainObjectFactory.newConceptualDomain();
     conceptualDomain.setPreferredName(loaderDefault.getCdName());
     
@@ -179,11 +182,10 @@ public class UMLDefaults {
     List result = classificationSchemeDAO.find(projectCs, eager);
 
     if (result.size() == 0) { // need to add projectName CS
-      projectCs.setLongName(projectName);
+      projectCs.setLongName(projectLongName);
       projectCs.setWorkflowStatus(projectCs.WF_STATUS_DRAFT_NEW);
 
-      // !!! TODO
-      projectCs.setPreferredDefinition("Un essai de CS. Nom du projet.");
+      projectCs.setPreferredDefinition(projectDescription);
 
       // !!! TODO
       projectCs.setType("Project");

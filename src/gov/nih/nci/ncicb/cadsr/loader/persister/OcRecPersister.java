@@ -33,8 +33,6 @@ public class OcRecPersister extends UMLPersister {
 	ocr.setVersion(defaults.getVersion());
 	ocr.setWorkflowStatus(defaults.getWorkflowStatus());
 
-        System.out.println("******** ocr.source.id: " + ocr.getSource().getId());
-
         String sourcePackage = getPackageName(ocr.getSource());
         String targetPackage = getPackageName(ocr.getTarget());
 
@@ -60,6 +58,8 @@ public class OcRecPersister extends UMLPersister {
 	    ocr.setTarget(o);
 	  }
 	}
+
+        
 
 //         logger.info(PropertyAccessor
 //                     .getProperty("created.association"));
@@ -116,6 +116,13 @@ public class OcRecPersister extends UMLPersister {
           logger.info(PropertyAccessor.getProperty("existed.association"));
           ocr = (ObjectClassRelationship)l.get(0);
         } else {
+          ocr.setPreferredName(
+            ocr.getSource().getPublicId() + "-" +
+            ocr.getSource().getVersion() + ":" + 
+            ocr.getTarget().getPublicId() + "-" + 
+            ocr.getTarget().getVersion()
+            );
+
           ocr.setId(objectClassRelationshipDAO.create(ocr));
           // 	  addProjectCs(ocr);
 	  logger.info(PropertyAccessor.getProperty("created.association"));

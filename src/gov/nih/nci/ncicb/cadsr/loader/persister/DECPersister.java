@@ -49,7 +49,7 @@ public class DECPersister extends UMLPersister {
 	// does this dec exist?
 	List l = dataElementConceptDAO.find(newDec);
 
-        String newDef = dec.getPreferredDefinition();
+//         String newDef = dec.getPreferredDefinition();
 	if (l.size() == 0) {
           dec.setConceptualDomain(defaults.getConceptualDomain());
           dec.setContext(defaults.getContext());
@@ -96,23 +96,28 @@ public class DECPersister extends UMLPersister {
           /* if DEC alreay exists, check context
            * If context is different, add Used_by alt_name
            */
-          if(newDec.getContext().getId() != defaults.getContext().getId()) {
+          if(!newDec.getContext().getId().equals(defaults.getContext().getId())) {
             addAlternateName(newDec, defaults.getContext().getName(), AlternateName.TYPE_USED_BY, null);
           }
           
 
 	}
 
-        // is definition the same?
-        // if not, then add alternate Def
-        
-        if((newDef.length() > 0) && !newDef.equals(newDec.getPreferredDefinition())) {
-          System.out.println("Adding Alt Def");
-          addAlternateDefinition(newDec, newDef, Definition.TYPE_UML_DEC, packageName
-);
-        }
+//         // is definition the same?
+//         // if not, then add alternate Def
+//         if((newDef != null) && (newDef.length() > 0) && !newDef.equals(newDec.getPreferredDefinition())) {
+//           addAlternateDefinition(newDec, newDef, Definition.TYPE_UML_DEC, packageName
+// );
+//         }
 
         addAlternateName(newDec, newName, AlternateName.TYPE_UML_DEC, packageName);
+
+        for(Iterator it2 = dec.getDefinitions().iterator(); it2.hasNext(); ) {
+          Definition def = (Definition)it2.next();
+          addAlternateDefinition(
+            newDec, def.getDefinition(), 
+            def.getType(), packageName);
+        }
 
 	LogUtil.logAc(newDec, logger);
         logger.info("-- Public ID: " + newDec.getPublicId());
