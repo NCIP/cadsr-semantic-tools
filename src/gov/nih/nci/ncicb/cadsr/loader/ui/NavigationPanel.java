@@ -2,6 +2,9 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
+
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 
 import java.awt.BorderLayout;
@@ -13,7 +16,7 @@ import javax.swing.tree.TreePath;
 
 import java.util.*;
 
-public class NavigationPanel extends JPanel implements ActionListener, MouseListener
+public class NavigationPanel extends JPanel implements ActionListener, MouseListener, ReviewListener
 {
   private JTree tree;
   private JPopupMenu popup;
@@ -43,6 +46,10 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
 
   public void addNavigationListener(NavigationListener l) {
     navListeners.add(l);
+  }
+
+  public void reviewChanged(ReviewEvent event) {
+    
   }
   
   private void initUI() throws Exception
