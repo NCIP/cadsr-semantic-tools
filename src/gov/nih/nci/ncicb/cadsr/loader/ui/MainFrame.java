@@ -161,6 +161,7 @@ public class MainFrame extends JFrame
         UMLElementViewPanel viewPanel = new UMLElementViewPanel(node);
         
         viewPanel.addReviewListener(navigationPanel);
+        viewPanel.addNavigationListener(navigationPanel);
         
         viewTabbedPane.addTab(node.getDisplay(), viewPanel);
         viewTabbedPane.setSelectedComponent(viewPanel);
