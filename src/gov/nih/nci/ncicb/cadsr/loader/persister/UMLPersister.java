@@ -324,6 +324,22 @@ public class UMLPersister implements Persister {
 
   }
 
+  protected boolean isSameDefinition(String def, Concept[] concepts) {
+    if((def == null) || def.length() == 0)
+      return true;
+
+    StringBuffer sb = new StringBuffer();
+    
+    for(int i=0; i < concepts.length; i++) {
+      if(sb.length() > 0)
+        sb.append("\n");
+      sb.append(concepts[i].getPreferredDefinition());
+    }
+
+    return def.equals(sb.toString());
+    
+  }
+
   protected String preferredDefinitionFromConcepts(Concept[] concepts) {
     StringBuffer sb = new StringBuffer();
     

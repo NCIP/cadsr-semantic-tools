@@ -61,14 +61,14 @@ public class ConceptCodeValidator implements Validator {
 //           errors.add(new ValidationError(SEVERITY_ERROR, 
 //                                          PropertyAccessor.getProperty("validation.concept.missing")));
         } else {
-          if(o.getLongName() == null)
+          if(StringUtil.isEmpty(o.getLongName()))
             errors.add(new ValidationError(SEVERITY_ERROR,
                                            PropertyAccessor.getProperty("validation.concept.missing.longName", o.getPreferredName())));
-          if(o.getPreferredDefinition() == null)
+          if(StringUtil.isEmpty(o.getPreferredDefinition()))
             errors.add(
               new ValidationError(SEVERITY_ERROR,
                                   PropertyAccessor.getProperty("validation.concept.missing.definition", o.getPreferredName())));
-          if(o.getDefinitionSource() == null)
+          if(StringUtil.isEmpty(o.getDefinitionSource()))
             errors.add(
               new ValidationError(SEVERITY_ERROR,
                                   PropertyAccessor.getProperty("validation.concept.missing.source", o.getPreferredName())));

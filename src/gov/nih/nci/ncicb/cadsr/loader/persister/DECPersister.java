@@ -87,8 +87,8 @@ public class DECPersister extends UMLPersister {
 
 	  dec.setAudit(defaults.getAudit());
 
-          List altDefs = dec.getDefinitions();
-          List altNames = dec.getAlternateNames();
+          List altDefs = new ArrayList(dec.getDefinitions());
+          List altNames = new ArrayList(dec.getAlternateNames());
 
           newDec = dataElementConceptDAO.create(dec);
 

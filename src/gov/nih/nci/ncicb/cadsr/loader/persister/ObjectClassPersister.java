@@ -95,7 +95,8 @@ public class ObjectClassPersister extends UMLPersister {
 
         // is definition the same?
         // if not, then add alternate Def
-        if((newDef.length() > 0) && !newDef.equals(newOc.getPreferredDefinition())) {
+        if(!isSameDefinition(newDef, concepts)) {
+//         if((newDef.length() > 0) && !newDef.equals(newOc.getPreferredDefinition())) {
           addAlternateDefinition(newOc, newDef, Definition.TYPE_UML_CLASS, packageName);
         }
         

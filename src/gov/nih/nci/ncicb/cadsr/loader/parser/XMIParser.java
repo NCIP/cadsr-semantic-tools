@@ -93,9 +93,11 @@ public class XMIParser implements Parser {
     UMLDefaults defaults = UMLDefaults.getInstance();
 
     if (packageName.length() == 0) {
+      //       if(pack.getName().indexOf(" ") == -1)
       packageName = pack.getName();
     }
     else {
+      //       if(pack.getName().indexOf(" ") == -1)
       packageName += ("." + pack.getName());
     }
 
@@ -300,8 +302,16 @@ public class XMIParser implements Parser {
 
         event.setAClassName(getPackageName(classif) + "." + classif.getName());
         event.setARole(end.getName());
-
+        if(event.getAClassName() == null) {
+          logger.debug("AClassName: NULL");
+          return;
+        } else {
+          logger.debug("AClassName: " + event.getAClassName());
+        }
       }
+    } else {
+      logger.debug("Association has one missing END");
+      return;
     }
 
     if (it.hasNext()) {
@@ -333,11 +343,17 @@ public class XMIParser implements Parser {
 
         event.setBClassName(getPackageName(classif) + "." + classif.getName());
         event.setBRole(end.getName());
+        if(event.getBClassName() == null)
+          return;
       }
+    } else {
+      logger.debug("Association has one missing END");
+      return;
     }
 
     event.setDirection(navig);
 
+    logger.debug("Adding association. AClassName: " + event.getAClassName());
     associationEvents.add(event);
   }
 
@@ -430,7 +446,8 @@ public class XMIParser implements Parser {
       s = null;
       if (elt.getNamespace() != null) {
         s = elt.getNamespace().getName(); 
-        if(!s.startsWith("EA ")) {
+        if(s.indexOf(" ") == -1) {
+//         if(!s.startsWith("EA ")) {
           if(pack.length() > 0)
             pack.insert(0, '.');
           pack.insert(0, s);

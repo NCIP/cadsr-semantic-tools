@@ -58,15 +58,16 @@ public class DEPersister extends UMLPersister {
             de.setWorkflowStatus(defaults.getWorkflowStatus());
 
             de.setPreferredDefinition(
-              de.getDataElementConcept().getPreferredDefinition() + 
+              de.getDataElementConcept().getPreferredDefinition() + "\n" +
               de.getValueDomain().getPreferredDefinition()
               );
 
             de.setAudit(defaults.getAudit());
             logger.debug("Creating DE: " + de.getLongName());
-            List altNames = de.getAlternateNames();
-            List altDefs = de.getDefinitions();
+            List altNames = new ArrayList(de.getAlternateNames());
+            List altDefs = new ArrayList(de.getDefinitions());
             newDe = dataElementDAO.create(de);
+
             // restore altNames
             for(Iterator it2 = altNames.iterator(); it2.hasNext();) {
               AlternateName an = (AlternateName)it2.next();
