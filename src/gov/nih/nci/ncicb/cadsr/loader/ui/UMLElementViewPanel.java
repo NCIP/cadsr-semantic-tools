@@ -143,7 +143,7 @@ public class UMLElementViewPanel extends JPanel
 
       JButton evsButton = new JButton("Evs Link");
       insertInBag(mainPanel, evsButton, 2, 3);
-
+      
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
       gridPanel.add(conceptPanels[i]);
 
@@ -181,7 +181,15 @@ public class UMLElementViewPanel extends JPanel
 
     saveButton.setEnabled(false);
 
+//    GridBagLayout gridbag = new GridBagLayout();
     JPanel buttonPanel = new JPanel();
+//    GridBagConstraints c = new GridBagConstraints();
+//    c.weightx = 1.0;
+    
+//    insertInBag(buttonPanel,addButton,0,0);
+//    insertInBag(buttonPanel,deleteButton,1,0,2,1);
+//    insertInBag(buttonPanel,saveButton,2,3,2,1);
+//    insertInBag(buttonPanel,reviewButton,0,2);
     buttonPanel.add(addButton);
     buttonPanel.add(deleteButton);
     buttonPanel.add(saveButton);
@@ -276,7 +284,13 @@ public class UMLElementViewPanel extends JPanel
       
       fireReviewEvent(event);
       
-
+      //if item is reviewed go to next item in the tree
+      if(e.getStateChange() == ItemEvent.SELECTED) 
+      {
+        NavigationEvent goToNext = new NavigationEvent(NavigationEvent.NAVIGATE_NEXT);
+        fireNavigationEvent(goToNext);
+      }
+        
     }
   }
   
