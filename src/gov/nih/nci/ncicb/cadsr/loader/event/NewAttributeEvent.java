@@ -1,6 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.event;
 
-public class NewAttributeEvent extends ConceptualEvent {
+public class NewAttributeEvent extends NewConceptualEvent {
 
   private String name;
   private String className;
