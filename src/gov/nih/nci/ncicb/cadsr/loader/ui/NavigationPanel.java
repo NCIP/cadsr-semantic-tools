@@ -6,12 +6,14 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 
 import java.awt.BorderLayout;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import java.util.*;
@@ -64,6 +66,9 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
     tree = new JTree(top);
     tree.setRootVisible(false);
     tree.setShowsRootHandles(true);
+
+    //Traverse Tree expanding all nodes
+    TreeUtil.expandAll(tree, new TreePath(top));
 
     tree.setCellRenderer(new UMLTreeCellRenderer());
    
@@ -187,12 +192,11 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
 
 
   private DefaultMutableTreeNode buildTree() {
-    
+  
      DefaultMutableTreeNode node = new DefaultMutableTreeNode(rootNode);
-
+          
      return doNode(node, rootNode);
     
-
   }
 
   private DefaultMutableTreeNode doNode(DefaultMutableTreeNode node, UMLNode parentNode) {
@@ -203,14 +207,12 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
         new DefaultMutableTreeNode(child);
 
       if(!(child instanceof ValidationNode))
-        node.add(newNode);
+        node.add(newNode);  
       doNode(newNode, child);
     }
 
     return node;
     
   }
-
-  
 
 }
