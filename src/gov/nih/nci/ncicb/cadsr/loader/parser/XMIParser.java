@@ -133,7 +133,9 @@ public class XMIParser implements Parser {
 
   private void doAttribute(Attribute att) {
     NewAttributeEvent event = new NewAttributeEvent(att.getName());
+
     event.setClassName(className);
+    event.setType(att.getType().getName());
     listener.notification(event);
   }
 

@@ -27,6 +27,11 @@ public class UMLLoader {
 	  return name.endsWith(".xmi");
 	}
       });
+
+
+    String contextName = args[1];
+    String projectName = args[2];
+    String version = args[3];
     
     System.out.println(filenames.length + " files to process");
     
@@ -40,8 +45,10 @@ public class UMLLoader {
       parser.setListener(listener);
       parser.parse(args[0] + "/" + filenames[i]);
 
-      UMLPersister persister = new UMLPersister(elements);
-      persister.setContextName("TEST");
+      Persister persister = new UMLPersister(elements);
+      persister.setParameter("contextName", contextName);
+      persister.setParameter("projectName", projectName);
+      persister.setParameter("version", version);
       persister.persist();
       
     }
