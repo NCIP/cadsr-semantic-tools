@@ -90,7 +90,8 @@ public class UMLLoader {
       filenames = new String[0];
     
     if(filenames.length == 0) {
-      logger.info("no.files");
+      logger.info(PropertyAccessor.getProperty("no.files"));
+      System.exit(0);
     }
 
     LoginContext lc = new LoginContext("UML_Loader", new ConsoleCallbackHandler());
