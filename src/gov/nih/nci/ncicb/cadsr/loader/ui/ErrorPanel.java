@@ -37,7 +37,7 @@ public class ErrorPanel extends JPanel
     tree.setShowsRootHandles(true);
 
     //Traverse Tree expanding all nodes
-    TreeUtil.expandAll(tree, new TreePath(node));
+    TreeUtil.expandAll(tree, node);
     
     tree.setCellRenderer(new UMLTreeCellRenderer());
     tree.addMouseListener(this);
