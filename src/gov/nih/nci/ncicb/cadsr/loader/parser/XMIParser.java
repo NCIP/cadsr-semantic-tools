@@ -57,11 +57,11 @@ public class XMIParser implements Parser {
       fireProgressEvent(evt);
 
       ModelAccess access = new UML13ModelAccess();
-      access.readModel("file:" + filename, "EA Model");
+       access.readModel("file:" + filename, "EA Model");
+      
       uml.UmlPackage umlExtent = (uml.UmlPackage) access.getOutermostExtent();
 
       Model model = UML13Utils.getModel(umlExtent, "EA Model");      
-
 //       fact = new MdrModelManagerFactoryImpl();
 //       mgr = fact.readModel("", filename);
 //       Model model = mgr.getModel();
@@ -92,7 +92,7 @@ public class XMIParser implements Parser {
     }
     catch (Exception e) {
       logger.fatal("Could not parse: " + filename);
-      e.printStackTrace();
+      logger.fatal(e);
     } // end of try-catch
   }
 

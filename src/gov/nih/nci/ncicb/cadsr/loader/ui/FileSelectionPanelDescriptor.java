@@ -22,11 +22,11 @@ public class FileSelectionPanelDescriptor
   }
   
   public Object getBackPanelDescriptor() {
-    return LoginPanelDescriptor.IDENTIFIER;
+    return null;
+//     return LoginPanelDescriptor.IDENTIFIER;
   }  
   
   public void actionPerformed(ActionEvent evt) {
-    System.out.println("*** EVENT");
     String path = panel.getSelection();
     File f = new File(path);
     getWizardModel().setNextButtonEnabled(new Boolean(f.exists()));

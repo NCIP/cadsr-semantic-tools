@@ -21,6 +21,8 @@ public class NavigationPanel extends JPanel implements ActionListener
 
   private Set<NavigationListener> navListeners = new HashSet<NavigationListener>();
 
+  private ViewChangeListener vcl;
+
   public NavigationPanel()
   {
     try
@@ -32,6 +34,11 @@ public class NavigationPanel extends JPanel implements ActionListener
       e.printStackTrace();
     }
 
+  }
+
+  public void addViewChangeListener(ViewChangeListener l) {
+    // replace by list
+    vcl = l;
   }
 
   public void addNavigationListener(NavigationListener l) {
@@ -55,22 +62,42 @@ public class NavigationPanel extends JPanel implements ActionListener
   }
 
   public void actionPerformed(ActionEvent event) {
-    System.out.println("menuItem is selected");
     DefaultMutableTreeNode dmtn, node;
     
     TreePath path = tree.getSelectionPath();
     dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
-    
-    System.out.println((((UMLNode)dmtn.getUserObject()).getDisplay()));
 
+    if(event.getSource() instanceof JMenuItem) {
+      JMenuItem menuItem = (JMenuItem)event.getSource();
+      
+      ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
+      evt.setViewObject(dmtn.getUserObject());
+
+      if(menuItem.getActionCommand().equals("OPEN_NEW_TAB"))
+        evt.setInNewTab(true);
+      else 
+        evt.setInNewTab(false);
+
+      vcl.viewChanged(evt);
+
+    }
   }
 
 
   public void buildPopupMenu() {
-    JMenuItem menuItem = new JMenuItem("A test item");
+    JMenuItem newTabItem = new JMenuItem("Open in New Tab");
+    JMenuItem openItem = new JMenuItem("Open");
+
+    newTabItem.setActionCommand("OPEN_NEW_TAB");
+    openItem.setActionCommand("OPEN");
+
     JPopupMenu popup = new JPopupMenu();
-    menuItem.addActionListener(this);
-    popup.add(menuItem);
+
+    newTabItem.addActionListener(this);
+    openItem.addActionListener(this);
+
+    popup.add(openItem);
+    popup.add(newTabItem);
     
     MouseListener popupListener = new TreeMouseListener(popup,tree);
     tree.addMouseListener(popupListener);
@@ -101,10 +128,6 @@ public class NavigationPanel extends JPanel implements ActionListener
 
     return node;
     
-  }
-
-  private void attachMenu() {
-
   }
 
 }

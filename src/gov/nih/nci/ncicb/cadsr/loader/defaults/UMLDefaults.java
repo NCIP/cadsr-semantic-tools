@@ -69,20 +69,30 @@ public class UMLDefaults {
    * @param username the authenticated username
    * @exception PersisterException if an error occurs
    */
+
+  public void initParams(String filename) throws PersisterException  {
+    LoaderDefault loaderDefault = new AttachedFileDefaultsLoader().loadDefaults(filename);
+    initParams(loaderDefault);
+  }
+
   public void initParams(String projectName, Float projectVersion, String username) throws PersisterException {
+    LoaderDefault loaderDefault = new DBDefaultsLoader().loadDefaults(projectName, projectVersion);
+
+    initParams(loaderDefault);
+
+  }
+
+  private void initParams(LoaderDefault loaderDefault) throws PersisterException {
 
     audit = DomainObjectFactory.newAudit();
-    audit.setCreatedBy(username);
-    
-    this.projectName = projectName;
-    this.projectVersion = projectVersion;
 
-    LoaderDefault loaderDefault = new DBDefaultsLoader().loadDefaults(projectName, projectVersion);
-    
     if (loaderDefault == null) {
       throw new PersisterException(
 	"Defaults not found. Please create a profile first.");
     }
+
+    this.projectName = loaderDefault.getProjectName();
+    this.projectVersion = loaderDefault.getProjectVersion();
     
     String cName = loaderDefault.getContextName();
     
@@ -278,5 +288,9 @@ public class UMLDefaults {
   public Context getMainContext() {
     return mainContext;
   }
-  
+ 
+  public void setUsername(String username) {
+    audit.setCreatedBy(username);
+  }
+ 
 }

@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 import javax.swing.Icon;
 
-public class AbstractUMLNode implements UMLNode {
+public abstract class AbstractUMLNode implements UMLNode {
 
   protected String fullPath;
 
@@ -15,6 +15,8 @@ public class AbstractUMLNode implements UMLNode {
   private Set<UMLNode> children = new HashSet();
 
   private UMLNode parent;
+
+  protected Object userObject;
 
   public String getDisplay() {
     return display;
@@ -59,6 +61,10 @@ public class AbstractUMLNode implements UMLNode {
 
   public void setParent(UMLNode parent) {
     this.parent = parent;
+  }
+  
+  public Object getUserObject() {
+    return userObject;
   }
 
 }

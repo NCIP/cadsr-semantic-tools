@@ -50,7 +50,7 @@ public class FileSelectionPanel extends JPanel
     
     browseButton = new JButton("Browse");
     filePathField = new JTextField(30);
-    filePathField.setText("/home/ludetc/dev/umlclassdiagramloader/2.0.0/data/gene_fixed.xmi");
+    filePathField.setText("/home/ludetc/dev/umlloader-gui/2.0.0/data/gene_fixed.xmi");
     JPanel browsePanel = new JPanel();
     browsePanel.setLayout(new FlowLayout());
     browsePanel.add(filePathField);

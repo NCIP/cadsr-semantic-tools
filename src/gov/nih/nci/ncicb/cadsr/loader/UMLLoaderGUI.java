@@ -22,11 +22,6 @@ import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
-import java.security.*;
-import javax.security.auth.*;
-import javax.security.auth.login.*;
-import javax.security.auth.callback.CallbackHandler;
-
 import org.apache.log4j.Logger;
 
 import gov.nih.nci.ncicb.cadsr.jaas.SwingCallbackHandler;
@@ -34,22 +29,25 @@ import gov.nih.nci.ncicb.cadsr.jaas.SwingCallbackHandler;
 public class UMLLoaderGUI 
 {
 
-  private static Logger logger = Logger.getLogger(UMLLoader.class.getName());
+  private static Logger logger = Logger.getLogger(UMLLoaderGUI.class.getName());
   private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
 
   public UMLLoaderGUI()
   {
+
+    System.setProperty("java.security.auth.login.config", Thread.currentThread().getContextClassLoader().getResource("jaas.config").toExternalForm());
+
     Frame f = new Frame();
     Wizard wizard = new Wizard(f);
 
     wizard.getDialog().setTitle("UML Loader");
     
-    WizardPanelDescriptor lpDesc = new LoginPanelDescriptor();
-    wizard.registerWizardPanel(LoginPanelDescriptor.IDENTIFIER, lpDesc);
+//     WizardPanelDescriptor lpDesc = new LoginPanelDescriptor();
+//     wizard.registerWizardPanel(LoginPanelDescriptor.IDENTIFIER, lpDesc);
 
-    WizardPanelDescriptor plpDesc = new ProgressLoginPanelDescriptor();
-    wizard.registerWizardPanel(ProgressLoginPanelDescriptor.IDENTIFIER, plpDesc);
+//     WizardPanelDescriptor plpDesc = new ProgressLoginPanelDescriptor();
+//     wizard.registerWizardPanel(ProgressLoginPanelDescriptor.IDENTIFIER, plpDesc);
 
     WizardPanelDescriptor descriptor2 = new FileSelectionPanelDescriptor();
     wizard.registerWizardPanel(FileSelectionPanelDescriptor.IDENTIFIER, descriptor2);
@@ -62,7 +60,7 @@ public class UMLLoaderGUI
     wizard.registerWizardPanel(ProgressSemanticConnectorPanelDescriptor.IDENTIFIER, descriptor4);
 
     
-    wizard.setCurrentPanel(LoginPanelDescriptor.IDENTIFIER);
+    wizard.setCurrentPanel(FileSelectionPanelDescriptor.IDENTIFIER);
     int wizResult = wizard.showModalDialog();
 
     if(wizResult != 0) {
@@ -112,46 +110,46 @@ public class UMLLoaderGUI
     new UMLLoaderGUI();
   }
 
-  private String doLogin() {
-    String username = null;
-    try {
-      SwingCallbackHandler handler = new SwingCallbackHandler();
-      putToCenter(handler);
+//   private String doLogin() {
+//     String username = null;
+//     try {
+//       SwingCallbackHandler handler = new SwingCallbackHandler();
+//       putToCenter(handler);
       
-      handler.show();
+//       handler.show();
       
-      LoginContext lc = new LoginContext("UML_Loader", handler);
+//       LoginContext lc = new LoginContext("UML_Loader", handler);
       
-      while(!handler.isDone()) {
-        try {
-          Thread.currentThread().sleep(100);
-        } catch (InterruptedException e) {
+//       while(!handler.isDone()) {
+//         try {
+//           Thread.currentThread().sleep(100);
+//         } catch (InterruptedException e) {
 
-        } // end of try-catch
-      }
+//         } // end of try-catch
+//       }
 
-      lc.login();
-      boolean loginSuccess = true;
+//       lc.login();
+//       boolean loginSuccess = true;
       
-      Subject subject = lc.getSubject();
+//       Subject subject = lc.getSubject();
       
-      Iterator it = subject.getPrincipals().iterator();
-      while (it.hasNext()) {
-	username = it.next().toString();
-	logger.debug(PropertyAccessor.getProperty("authenticated", username));
-      }
-    } catch (Exception ex) {
-      Icon lockIcon = new ImageIcon(this.getClass().getResource("/security_lock.jpg"));
-      JOptionPane.showMessageDialog((Component)null, "Incorrect Username / password", "Login Failed", JOptionPane.ERROR_MESSAGE, lockIcon);
-      logger.error(PropertyAccessor.getProperty("login.fail",ex.getMessage()));
-      System.exit(1);
-    }
+//       Iterator it = subject.getPrincipals().iterator();
+//       while (it.hasNext()) {
+// 	username = it.next().toString();
+// 	logger.debug(PropertyAccessor.getProperty("authenticated", username));
+//       }
+//     } catch (Exception ex) {
+//       Icon lockIcon = new ImageIcon(this.getClass().getResource("/security_lock.jpg"));
+//       JOptionPane.showMessageDialog((Component)null, "Incorrect Username / password", "Login Failed", JOptionPane.ERROR_MESSAGE, lockIcon);
+//       logger.error(PropertyAccessor.getProperty("login.fail",ex.getMessage()));
+//       System.exit(1);
+//     }
     
-    System.out.println("Done with Login");
+//     System.out.println("Done with Login");
 
-    return username;
+//     return username;
     
-  }
+//   }
 
   private void putToCenter(Component comp) {
     comp.setLocation((screenSize.width - comp.getSize().width) / 2, (screenSize.height - comp.getSize().height) / 2);

@@ -15,8 +15,9 @@ public class ProgressSemanticConnectorPanelDescriptor
     
   public void newProgressEvent(ProgressEvent evt) {
     panel.newProgressEvent(evt);
-    if(evt.getGoal() == evt.getStatus()) {
+    if((evt.getGoal() > 0) && (evt.getGoal() == evt.getStatus())) {
       getWizardModel().setNextButtonEnabled(Boolean.TRUE);
+      getWizardModel().setBackButtonEnabled(Boolean.TRUE);
     }
   }
 
@@ -29,6 +30,7 @@ public class ProgressSemanticConnectorPanelDescriptor
  
   public void aboutToDisplayPanel() {
     getWizardModel().setNextButtonEnabled(Boolean.FALSE);
+    getWizardModel().setBackButtonEnabled(Boolean.FALSE);
   }
  
   public Object getNextPanelDescriptor() {

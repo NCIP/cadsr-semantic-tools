@@ -126,9 +126,8 @@ public class UMLLoader {
     
     logger.info(PropertyAccessor.getProperty("nbOfFiles", filenames.length));
     
-    ElementsLists elements = new ElementsLists();
-    Validator validator = new UMLValidator(elements);
-    UMLHandler listener = new UMLDefaultHandler(elements);
+    Validator validator = new UMLValidator(ElementsLists.getInstance());
+    UMLHandler listener = new UMLDefaultHandler(ElementsLists.getInstance());
 
     synchronized(initClass) {
       if(!initClass.isDone())
@@ -184,7 +183,7 @@ public class UMLLoader {
       }
     }
 
-    Persister persister = new UMLPersister(elements);
+    Persister persister = new UMLPersister(ElementsLists.getInstance());
     persister.persist();
 
   }

@@ -11,6 +11,8 @@ public class ClassNode extends AbstractUMLNode {
     fullPath = oc.getLongName();
     int ind = fullPath.lastIndexOf(".");
     display = fullPath.substring(ind + 1);
+    
+    userObject = oc;
   }
 
   public Icon getIcon() {

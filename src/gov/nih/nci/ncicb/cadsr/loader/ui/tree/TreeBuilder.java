@@ -53,15 +53,24 @@ public class TreeBuilder {
     List<ClassificationSchemeItem> packages = (List<ClassificationSchemeItem>) elements.getElements(pkg.getClass());
     
     for(ClassificationSchemeItem pack : packages) {
+      System.out.println("1 package");
+      System.out.println(pack.getName());
+      System.out.println(pack.getComments());
+      System.out.println(pack.getType());
+
       String alias = defaults.getPackageDisplay(pack.getName()); 
      
-      if(alias.equals(pack.getName())) {
+      System.out.println("alias: " + alias);
+
+//       if(alias.equals(pack.getName())) {
         UMLNode node = new PackageNode(pack.getName(), alias);
         parentNode.addChild(node);
+
+        System.out.println("added " + node.getDisplay());
         
         doClasses(node);
         System.out.println("--- " + node.getDisplay());
-      }
+//       }
     }
   }
 

@@ -2,10 +2,12 @@ package gov.nih.nci.ncicb.cadsr.loader.persister;
 
 import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
+
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
+
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -45,7 +47,7 @@ public class ObjectClassPersister extends UMLPersister {
         String[] conceptCodes = oc.getPreferredName().split("-");
         Concept[] concepts = new Concept[conceptCodes.length];
         for(int i=0; i<concepts.length; 
-            concepts[i] = lookupConcept(conceptCodes[i++])
+            concepts[i] = LookupUtil.lookupConcept(conceptCodes[i++])
             );
         
         List l = objectClassDAO.findByConceptCodes(conceptCodes, oc.getContext(), eager);

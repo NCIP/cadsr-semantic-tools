@@ -26,8 +26,7 @@ public class ErrorPanel extends JPanel {
     firstRun(rootNode);
 
     DefaultMutableTreeNode node = buildTree(rootNode);
-    System.out.println("The node in initUI");
-    System.out.println(node.getFirstChild());
+
     //create tree and make root not visible
     tree = new JTree(node);
     tree.setRootVisible(false);

@@ -2,8 +2,9 @@ package gov.nih.nci.ncicb.cadsr.loader.persister;
 
 import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
+
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import org.apache.log4j.Logger;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
@@ -37,7 +38,7 @@ public class PropertyPersister extends UMLPersister {
 
         Concept[] concepts = new Concept[conceptCodes.length];
         for(int i=0; i<concepts.length; 
-            concepts[i] = lookupConcept(conceptCodes[i++])
+            concepts[i] = LookupUtil.lookupConcept(conceptCodes[i++])
             );
 
         Concept primaryConcept = concepts[concepts.length - 1];
