@@ -51,6 +51,7 @@
       <arg value="${projectName}"/>
       <arg value="${versionNum}"/>
       <arg value="${workflowStatus}"/>
+      <arg value="${conceptualDomain}"/>
     </java>
   </target>
 
