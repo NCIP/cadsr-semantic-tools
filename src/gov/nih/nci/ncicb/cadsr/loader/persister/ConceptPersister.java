@@ -40,6 +40,8 @@ public class ConceptPersister extends UMLPersister {
           LogUtil.logAc(c, logger);
         } else { // concept exist: See if we need to add alternate def.
           // !! TODO
+          Concept con = (Concept)l.get(0);
+          c.setId(con.getId());
         }
       }
     }
