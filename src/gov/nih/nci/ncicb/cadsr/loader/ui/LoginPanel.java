@@ -124,7 +124,8 @@ public class LoginPanel extends JPanel
       progressPanel.setVisible(false);
     }
     
-    ImageIcon icon = new ImageIcon(mainPanel.getClass().getResource("/security_lock.jpg"));
+    // System class loader will not find resources in jar files loaded by JNLP
+    ImageIcon icon = new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("security_lock.jpg"));
     
     mainPanel.add(new JLabel(icon));
     mainPanel.add(errorLabel);

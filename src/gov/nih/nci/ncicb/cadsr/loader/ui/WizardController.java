@@ -104,6 +104,9 @@ public class WizardController implements ActionListener {
                   evt.setMessage("Done");
                   thisDesc.newProgressEvent(evt);
                 } catch (Exception e){
+                  JOptionPane.showMessageDialog(panel, e.getMessage());
+
+
                   ProgressEvent evt = new ProgressEvent();
                   evt.setStatus(-1);
                   evt.setGoal(-1);

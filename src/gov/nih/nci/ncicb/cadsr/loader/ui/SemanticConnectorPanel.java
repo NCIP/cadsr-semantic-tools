@@ -43,7 +43,7 @@ public class SemanticConnectorPanel extends JPanel
     JPanel textPanel = new JPanel();
     textPanel.setLayout(new FlowLayout());
     
-    textPanel.add(new JLabel(new ImageIcon(this.getClass().getResource("/new-work.gif"))));
+    textPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("new-work.gif"))));
 
     JLabel textLabel = new JLabel("Do you want to run Semantic Connector on the file you selected?");
 

@@ -13,7 +13,7 @@ public class ValidationNode extends AbstractUMLNode {
   }
 
   public Icon getIcon() {
-    return new ImageIcon(this.getClass().getResource("/tree-error.gif"));
+    return new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("red-dot.jpg"));
   }
 
 }

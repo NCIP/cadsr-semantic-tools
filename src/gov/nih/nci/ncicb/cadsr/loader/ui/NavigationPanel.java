@@ -7,6 +7,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import java.awt.BorderLayout;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 import java.util.*;
 
@@ -43,6 +44,8 @@ public class NavigationPanel extends JPanel
     tree.setRootVisible(false);
     tree.setShowsRootHandles(true);
 
+    tree.setCellRenderer(new UMLTreeCellRenderer());
+
     this.setLayout(new BorderLayout());
     this.add(tree, BorderLayout.CENTER);
   }
@@ -62,6 +65,14 @@ public class NavigationPanel extends JPanel
     for(UMLNode child : children) {
       DefaultMutableTreeNode newNode = 
         new DefaultMutableTreeNode(child);
+
+//       if (child.getIcon() != null) {
+//         DefaultTreeCellRenderer renderer = 
+//           new DefaultTreeCellRenderer();
+//         renderer.setLeafIcon(child.getIcon());
+//         tree.setCellRenderer(renderer);
+//       }
+
 
       if(!(child instanceof ValidationNode))
         node.add(newNode);

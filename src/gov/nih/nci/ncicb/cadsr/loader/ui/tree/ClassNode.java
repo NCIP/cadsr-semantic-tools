@@ -14,7 +14,7 @@ public class ClassNode extends AbstractUMLNode {
   }
 
   public Icon getIcon() {
-    return new ImageIcon(this.getClass().getResource("/tree-class.gif"));
+    return new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-class.gif"));
 
   }
 
