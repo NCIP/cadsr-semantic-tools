@@ -20,10 +20,6 @@ import java.awt.event.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
-
-
-
-
 public class UMLElementViewPanel extends JPanel
   implements ActionListener, KeyListener, ItemListener {
 
@@ -48,11 +44,6 @@ public class UMLElementViewPanel extends JPanel
   private List<ReviewListener> reviewListeners = new ArrayList();
   private List<NavigationListener> navigationListeners = new ArrayList();
   
-  
-//  public UMLElementViewPanel(Concept[] concepts) {
-//    this.concepts = concepts;
-//    initUI();
-//  }
   
   public UMLElementViewPanel(UMLNode node) 
   {
@@ -111,8 +102,6 @@ public class UMLElementViewPanel extends JPanel
   private void initUI() {
     this.setLayout(new BorderLayout());
 
-//     JPanel scrollPanel = new JPanel();
-
     JPanel gridPanel = new JPanel(new GridLayout(-1, 1));
     JScrollPane scrollPane = new JScrollPane(gridPanel);
 
@@ -153,8 +142,6 @@ public class UMLElementViewPanel extends JPanel
       conceptUIs[i].defSource.addKeyListener(this);
       
     }
-
-    //System.out.println("Code is: " + conceptUIs[1]);
 
     addButton = new JButton("Add");
     deleteButton = new JButton("Remove");
@@ -211,23 +198,21 @@ public class UMLElementViewPanel extends JPanel
 
   }
   
-  private void setButtonState(AbstractButton button)
-  {
-  	for(int i=0; i < conceptUIs.length; i++)
-  	{
-  	  if(conceptUIs[i].code.getText().equals("")
-        | conceptUIs[i].name.getText().equals("")
-        | conceptUIs[i].defSource.getText().equals("")) 
-  	    button.setEnabled(false);
-
-  	  else
-  	    button.setEnabled(true);
-  	}
+  private void setButtonState(AbstractButton button)  {
+    for(int i=0; i < conceptUIs.length; i++) {
+      if(conceptUIs[i].code.getText().equals("")
+         | conceptUIs[i].name.getText().equals("")
+         | conceptUIs[i].defSource.getText().equals("")) {
+        button.setEnabled(false);
+        return;
+      }
+      
+      else
+        button.setEnabled(true);
+    }
   }
   
   public void keyTyped(KeyEvent evt) {
-    
-    
     setButtonState(reviewButton);
     saveButton.setEnabled(true);
   }
