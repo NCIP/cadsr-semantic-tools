@@ -48,6 +48,7 @@ public class PackagePersister extends UMLPersister {
 	boolean found = false;
 	ClassSchemeClassSchemeItem packageCsCsi = null;
 
+
         if(csCsis != null && csCsis.size() > 0) {
           for (ListIterator it2 = csCsis.listIterator(); it2.hasNext();) {
             ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it2.next();
