@@ -54,10 +54,20 @@ public class FileSelectionPanel extends JPanel
     filePathField = new JTextField(30);
     filePathField.setText("/home/ludetc/dev/umlloader-gui/2.0.0/data/gene_fixed.xmi");
     JPanel browsePanel = new JPanel();
-    browsePanel.setLayout(new FlowLayout());
-    browsePanel.add(filePathField);
-    browsePanel.add(browseButton);
+
+    browsePanel.setLayout(new GridBagLayout());
+
+    insertInBag(browsePanel, 
+                new JLabel("Click browse to search for an XMI file"), 0, 0, 2, 1);
+
+    insertInBag(browsePanel, filePathField, 0, 1);
+    insertInBag(browsePanel, browseButton, 1, 1);
+
+//     browsePanel.add(filePathField);
+//     browsePanel.add(browseButton);
     
+    browsePanel.setPreferredSize(new Dimension(400, 200));
+
     this.add(browsePanel, BorderLayout.CENTER);
 
     browseButton.addActionListener(new ActionListener() {
@@ -84,5 +94,19 @@ public class FileSelectionPanel extends JPanel
         }
       });
   }
+
+  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
+
+    insertInBag(bagComp, comp, x, y, 1, 1);
+
+  }
+
+  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
+    JPanel p = new JPanel();
+    p.add(comp);
+
+    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+  }
+
 
 }
