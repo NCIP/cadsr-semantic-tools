@@ -69,34 +69,7 @@ public class ObjectClassPersister extends UMLPersister {
           // is long_name the same?
           // if not, then add alternate Name
           if(!newPrefName.equals(oc.getPreferredName())) {
-
-            List altNames = adminComponentDAO.getAlternateNames(oc);
-            boolean found = false;
-            for(Iterator it2 = altNames.iterator(); it2.hasNext(); ) {
-              AlternateName an = (AlternateName)it2.next();
-              if(an.getType().equals(AlternateName.TYPE_SYNONYM) && an.getName().equals(newPrefName)) {
-                found = true;
-                logger.info(PropertyAccessor.getProperty(
-                              "existed.altName", newPrefName));
-                
-              }
-            }
-            
-            if(!found) {
-              AlternateName altName = DomainObjectFactory.newAlternateName();
-              altName.setContext(defaults.getContext());
-              altName.setName(newPrefName);
-              altName.setType(AlternateName.TYPE_SYNONYM);
-              //             altName.addCsCsi(defaults.getProjectCsCsi());
-              adminComponentDAO.addAlternateName(oc, altName);
-              logger.info(PropertyAccessor.getProperty(
-                            "added.altName", 
-                            new String[] {
-                              altName.getName(),
-                              "Object Class",
-                              oc.getLongName()
-                            }));
-            } 
+            addAlternateName(oc, newPrefName);
           }
 
 	  List packages = oc.getAcCsCsis();
@@ -130,7 +103,11 @@ public class ObjectClassPersister extends UMLPersister {
 	    List ll = new ArrayList();
 	    ll.add(packageCsCsi);
 	    adminComponentDAO.addClassSchemeClassSchemeItems(oc, ll);
-	    logger.info(PropertyAccessor.getProperty("added.package",packageName));
+	    logger.info(PropertyAccessor
+                        .getProperty("added.package",
+                                     new String[] {
+                                       packageName, 
+                                       oc.getLongName()}));
 	  } else {
 	    // PersistPackages should have taken care of it. 
 	    // We should not be here.

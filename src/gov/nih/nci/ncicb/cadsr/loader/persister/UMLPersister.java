@@ -25,6 +25,7 @@ public class UMLPersister implements Persister {
   protected static ObjectClassRelationshipDAO objectClassRelationshipDAO = DAOAccessor.getObjectClassRelationshipDAO();
   protected static ClassificationSchemeDAO classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
   protected static ClassificationSchemeItemDAO classificationSchemeItemDAO = DAOAccessor.getClassificationSchemeItemDAO();
+  protected static ClassSchemeClassSchemeItemDAO classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
   protected static ConceptDAO conceptDAO = DAOAccessor.getConceptDAO();
 
   protected static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
@@ -101,4 +102,55 @@ public class UMLPersister implements Persister {
 
     return result;
   }
+
+  protected void addAlternateName(AdminComponent ac, String newName) {
+
+    List altNames = adminComponentDAO.getAlternateNames(ac);
+    boolean found = false;
+    for(Iterator it = altNames.iterator(); it.hasNext(); ) {
+      AlternateName an = (AlternateName)it.next();
+      if(an.getType().equals(AlternateName.TYPE_SYNONYM) && an.getName().equals(newName)) {
+        found = true;
+        logger.info(PropertyAccessor.getProperty(
+                      "existed.altName", newName));
+        
+        boolean csFound = false;
+        for(Iterator it2 = an.getCsCsis().iterator(); it2.hasNext();) {
+          ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
+          if(csCsi.getId().equals(defaults.getProjectCsCsi().getId())) {
+            csFound = true;
+          }
+        }
+        if(!csFound) {
+          classSchemeClassSchemeItemDAO.addCsCsi(an, defaults.getProjectCsCsi());
+          logger.info(
+            PropertyAccessor.getProperty(
+              "linked.to.project",
+              "Alternate Name"
+              ));
+        }
+        
+      }
+    }
+    
+    if(!found) {
+      AlternateName altName = DomainObjectFactory.newAlternateName();
+      altName.setContext(defaults.getContext());
+      altName.setName(newName);
+      altName.setType(AlternateName.TYPE_SYNONYM);
+      altName.setId(adminComponentDAO.addAlternateName(ac, altName));
+      logger.info(PropertyAccessor.getProperty(
+                    "added.altName", 
+                    new String[] {
+                      altName.getName(),
+                      ac.getLongName()
+                    }));
+      
+      classSchemeClassSchemeItemDAO.addCsCsi(altName, defaults.getProjectCsCsi());
+      
+    } 
+    
+    
+  }
+  
 }

@@ -14,6 +14,7 @@ public class DAOAccessor {
   private static ObjectClassRelationshipDAO objectClassRelationshipDAO;
   private static ClassificationSchemeDAO classificationSchemeDAO;
   private static ClassificationSchemeItemDAO classificationSchemeItemDAO;
+  private static ClassSchemeClassSchemeItemDAO classSchemeClassSchemeItemDAO;
   private static ConceptDAO conceptDAO;
   private static LoaderDAO loaderDAO;
   private static ContextDAO contextDAO;
@@ -59,6 +60,9 @@ public class DAOAccessor {
     classificationSchemeItemDAO = (ClassificationSchemeItemDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("classificationSchemeItemDAO");
 
+    //     logger.debug("Loading CSIDAO bean");
+    classSchemeClassSchemeItemDAO = (ClassSchemeClassSchemeItemDAO) ApplicationContextFactory.getApplicationContext()
+      .getBean("classSchemeClassSchemeItemDAO");
 
     //     logger.debug("Loading ConceptDAO bean");
     conceptDAO = (ConceptDAO) ApplicationContextFactory.getApplicationContext()
@@ -112,6 +116,10 @@ public class DAOAccessor {
 
   public static ClassificationSchemeItemDAO getClassificationSchemeItemDAO() {
     return classificationSchemeItemDAO;
+  }
+
+  public static ClassSchemeClassSchemeItemDAO getClassSchemeClassSchemeItemDAO() {
+    return classSchemeClassSchemeItemDAO;
   }
 
   public static ConceptDAO getConceptDAO() {

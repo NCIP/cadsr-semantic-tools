@@ -29,16 +29,31 @@ public class DECPersister extends UMLPersister {
       for (ListIterator it = decs.listIterator(); it.hasNext();) {
 	dec = (DataElementConcept) it.next();
 
+        for (Iterator it2 = elements.getElements(DomainObjectFactory.newObjectClass().getClass()).iterator(); it2.hasNext(); ) {
+          ObjectClass o = (ObjectClass) it2.next();
+          if (o.getConcept().getId()
+              .equals(dec.getObjectClass()
+                      .getConcept().getId())) {
+            dec.setObjectClass(o);
+          }
+        }
+
+        for (Iterator it2 = elements.getElements(DomainObjectFactory.newProperty().getClass()).iterator(); it2.hasNext(); ) {
+          Property o = (Property) it2.next();
+          if (o.getConcept().getId()
+              .equals(dec.getProperty()
+                      .getConcept().getId())) {
+            dec.setProperty(o);
+          }
+        }
+        
+
 	dec.setContext(defaults.getContext());
 	dec.setConceptualDomain(defaults.getConceptualDomain());
 
-        logger.debug("DEC -- OBJECT CLASS: " + dec.getObjectClass().getLongName());
-
-	int ind = dec.getLongName().lastIndexOf(".");
-
-	if (ind > 0) {
-	  dec.setLongName(dec.getLongName().substring(ind + 1));
-	}
+        dec.setLongName(
+          dec.getObjectClass().getConcept().getPreferredName()
+          + dec.getProperty().getConcept().getPreferredName());
 
 	logger.debug("dec name: " + dec.getLongName());
 
@@ -52,18 +67,6 @@ public class DECPersister extends UMLPersister {
 
 	  dec.setVersion(defaults.getVersion());
 	  dec.setWorkflowStatus(defaults.getWorkflowStatus());
-
-	  List ocs = elements.getElements(DomainObjectFactory.newObjectClass()
-					  .getClass());
-
-	  for (int j = 0; j < ocs.size(); j++) {
-	    ObjectClass o = (ObjectClass) ocs.get(j);
-
-	    if (o.getLongName().equals(dec.getObjectClass()
-				       .getLongName())) {
-	      dec.setObjectClass(o);
-	    }
-	  }
 
 	  List props = elements.getElements(DomainObjectFactory.newProperty()
 					    .getClass());

@@ -31,6 +31,7 @@ public class UMLDefaults {
   private ConceptualDomainDAO conceptualDomainDAO = DAOAccessor.getConceptualDomainDAO();
   private ClassificationSchemeDAO classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
   private ClassificationSchemeItemDAO classificationSchemeItemDAO = DAOAccessor.getClassificationSchemeItemDAO();
+  private ClassSchemeClassSchemeItemDAO classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
 
   private String projectName;
   private String projectVersion;

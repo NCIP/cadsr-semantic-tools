@@ -47,8 +47,17 @@ public class PropertyPersister extends UMLPersister {
 	  prop.setId(propertyDAO.create(prop));
 	  logger.info(PropertyAccessor.getProperty("created.prop"));
 	} else {
+          // !!! TODO Verify that next line is ok.
+          String newPrefName = prop.getLongName();
 	  prop = (Property) l.get(0);
 	  logger.info(PropertyAccessor.getProperty("existed.prop"));
+          // is long_name the same?
+          // if not, then add alternate Name
+          if(!newPrefName.equals(prop.getPreferredName())) {
+            addAlternateName(prop, newPrefName);
+          }
+          
+
 	}
 
 	LogUtil.logAc(prop, logger);

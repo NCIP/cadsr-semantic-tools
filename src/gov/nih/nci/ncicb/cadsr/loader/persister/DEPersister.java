@@ -33,31 +33,33 @@ public class DEPersister extends UMLPersister {
 
 	  de.setContext(defaults.getContext());
 
-	  int ind = de.getLongName().lastIndexOf(".");
-
-
-	  if (ind > 0) {
-	    de.setLongName(de.getLongName().substring(ind + 1));
-	  }
-
-	  List decs = elements.getElements(
-            DomainObjectFactory.
-            newDataElementConcept().getClass());
-
-	  for (ListIterator lit = decs.listIterator(); lit.hasNext();) {
+	  for (ListIterator lit = elements.getElements(
+                 DomainObjectFactory.
+                 newDataElementConcept().getClass()).listIterator(); lit.hasNext();) {
+            
 	    DataElementConcept o = (DataElementConcept) lit.next();
-
-	    if (o.getLongName().equals(de.getDataElementConcept()
-				       .getLongName())) {
+	    if (o.getObjectClass().getConcept().getId()
+                .equals(de.getDataElementConcept()
+                        .getObjectClass().getConcept().getId())
+                && 
+                o.getProperty().getConcept().getId()
+                .equals(de.getDataElementConcept()
+                        .getProperty().getConcept().getId()))
 	      de.setDataElementConcept(o);
-	    }
 	  }
+
+          de.setLongName(
+            de.getDataElementConcept()
+            .getObjectClass().getConcept().getPreferredName()
+            + de.getDataElementConcept()
+            .getProperty().getConcept().getPreferredName());
 
 	  de.setValueDomain(lookupValueDomain(de.getValueDomain()));
 
 	  List l = dataElementDAO.find(de);
 
 	  if (l.size() == 0) {
+            // !!!! TODO
 	    de.setPreferredDefinition("???");
 	    de.setPreferredName(de.getLongName());
 
