@@ -57,15 +57,10 @@ public class TreeBuilder {
     
     for(ClassificationSchemeItem pack : packages) {
       String alias = defaults.getPackageDisplay(pack.getName()); 
-//       if(alias.equals(pack.getName())) {
         UMLNode node = new PackageNode(pack.getName(), alias);
         parentNode.addChild(node);
 
-        System.out.println("added " + node.getDisplay());
-        
         doClasses(node);
-        System.out.println("--- " + node.getDisplay());
-//       }
     }
   }
 
@@ -83,13 +78,12 @@ public class TreeBuilder {
       if(packageName.equals(parentNode.getFullPath())) {
         UMLNode node = new ClassNode(o);
         parentNode.addChild(node);
-        System.out.println("--- " + node.getDisplay());
         doAttributes(node);
 
         List<ValidationItem> items = findValidationItems(o);
         for(ValidationItem item : items) {
-          UMLNode vNode = new ValidationNode(item);
-          node.addChild(vNode);
+          ValidationNode vNode = new ValidationNode(item);
+          node.addValidationNode(vNode);
         }
       }
     }
@@ -105,7 +99,6 @@ public class TreeBuilder {
       if(de.getDataElementConcept().getObjectClass().getLongName()
          .equals(parentNode.getFullPath())) {
         UMLNode node = new AttributeNode(de);
-        System.out.println("--- --- " + node.getDisplay());
         parentNode.addChild(node);
       }
     }
