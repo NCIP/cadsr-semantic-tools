@@ -1,5 +1,10 @@
 package gov.nih.nci.ncicb.cadsr.loader.event;
 
+/**
+ * Event indication a new Attribute was found. Used by UMLLoader
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public class NewAttributeEvent extends NewConceptualEvent {
 
   private String name;

@@ -1,5 +1,10 @@
 package gov.nih.nci.ncicb.cadsr.loader.event;
 
+/**
+ * Event indicating a new Association was found by the parser.
+ * 
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public class NewAssociationEvent implements LoaderEvent {
 
   private String aClassName;

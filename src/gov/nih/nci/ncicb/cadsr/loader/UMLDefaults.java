@@ -12,6 +12,13 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 
+/**
+ * <code>UMLDefaults</code> is a placeholder for UMLLoader's defaults.
+ * <br/> Implements the Singleton pattern.
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ * @version 1.0
+ */
 public class UMLDefaults {
   private static Logger logger = Logger.getLogger(UMLDefaults.class.getName());
 
@@ -64,11 +71,22 @@ public class UMLDefaults {
 
   }
 
+  /**
+   *
+   * @return the singleton
+   */
   public static UMLDefaults getInstance() {
     return singleton;
   }
 
-//   public void initParams(Map p) throws PersisterException {
+  
+  /**
+   * Called by the main class to initialize defaults.
+   *
+   * @param projectName the project name
+   * @param username the authenticated username
+   * @exception PersisterException if an error occurs
+   */
   public void initParams(String projectName, String username) throws PersisterException {
 
     audit = DomainObjectFactory.newAudit();
@@ -146,6 +164,11 @@ public class UMLDefaults {
 
   }
 
+  /**
+   * Creates or loads classifications and CSI that will be used.
+   *
+   * @exception PersisterException if an error occurs
+   */
   public void initClassifications() throws PersisterException {
     domainCsi = DomainObjectFactory.newClassificationSchemeItem();
 
@@ -231,35 +254,64 @@ public class UMLDefaults {
     }
   }
 
-//   private String projectName;
-//   private String projectVersion;
+  /**
+   * @return default workflow status
+   */
   public String getWorkflowStatus() {
     return workflowStatus;
   }
+  /**
+   * @return default context
+   */
   public Context getContext() {
     return context;
   }
+  /**
+   * @return default version
+   */
   public Float getVersion() {
     return version;
   }
+  /**
+   * @return default CD
+   */
   public ConceptualDomain getConceptualDomain() {
     return conceptualDomain;
   }
+  /**
+   * @return the domainCsi
+   */
   public ClassificationSchemeItem getDomainCsi() {
     return domainCsi;
   }
+  /**
+   * @return the project CS
+   */
   public ClassificationScheme getProjectCs() {
     return projectCs;
   }
+  /**
+   * @return the project CS_CSI
+   */
   public ClassSchemeClassSchemeItem getProjectCsCsi() {
     return projectCsCsi;
   }
+  /**
+   * @return default Audit object -- contains username.
+   */
   public Audit getAudit() {
     return audit;
   }
+  /**
+   * @return package cs_csi
+   */
   public Map getPackageCsCsis() {
     return packageCsCsis;
   }
+  /**
+   * The package filter contains a list of packages that will be loaded by UML Loader. If empty, all packages are to be loaded.
+   * @return the package filter.
+   */
   public Map getPackageFilter() {
     return packageFilter;
   }

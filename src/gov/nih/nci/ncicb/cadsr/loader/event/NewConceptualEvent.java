@@ -1,5 +1,10 @@
 package gov.nih.nci.ncicb.cadsr.loader.event;
 
+/**
+ * Events with a concept should extend this event
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public class NewConceptualEvent implements LoaderEvent {
 
   /**

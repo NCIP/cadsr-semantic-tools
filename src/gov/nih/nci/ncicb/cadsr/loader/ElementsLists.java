@@ -5,12 +5,24 @@ import java.util.*;
 
 import org.apache.log4j.Logger;
 
+/**
+ * List of cadsr objects to be persisted.<br/>
+ *
+ * The UMLListener feeds this list. The UMLPersister consumes this list.
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
 public class ElementsLists {
 
   private HashMap objects = new HashMap();
 
   private Logger logger = Logger.getLogger(ElementsLists.class.getName());
 
+  /**
+   * remove an element from this list.
+   *
+   * @param o an <code>Object</code> 
+   */
   public void removeElement(Object o) {
     List list = (List)objects.get(o.getClass().getName());
     if(list == null)
@@ -19,19 +31,27 @@ public class ElementsLists {
     
   }
 
+  /**
+   * Add an element to this list.
+   *
+   * @param o an <code>Object</code>
+   */
   public void addElement(Object o) {
     List list = (List)objects.get(o.getClass().getName());
     if(list == null)
       list = new ArrayList();
 
-//     logger.debug("creating key: " + o.getClass().getName());
-
     list.add(o);
     objects.put(o.getClass().getName(), list);
   }
 
+  /**
+   * Get the list of elements with for a particular class type.
+   *
+   * @param type The class of the list of objects to return.
+   * @return a <code>List</code> of objects of class <code>type<code>
+   */
   public List getElements(Class type) {
-//     logger.debug("looking up: " + type.getName());
     return (List)objects.get(type.getName());
   }
 
