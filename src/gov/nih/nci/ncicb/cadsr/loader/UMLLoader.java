@@ -32,6 +32,7 @@ public class UMLLoader {
     String contextName = args[1];
     String projectName = args[2];
     String version = args[3];
+    String workflowStatus = args[4];
     
     System.out.println(filenames.length + " files to process");
     
@@ -49,6 +50,7 @@ public class UMLLoader {
       persister.setParameter("contextName", contextName);
       persister.setParameter("projectName", projectName);
       persister.setParameter("version", version);
+      persister.setParameter("workflowStatus", workflowStatus);
       persister.persist();
       
     }

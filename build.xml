@@ -47,6 +47,10 @@
       maxmemory="512m"
       >
       <arg value="${dir}"/>
+      <arg value="${contextName}"/>
+      <arg value="${projectName}"/>
+      <arg value="${versionNum}"/>
+      <arg value="${workflowStatus}"/>
     </java>
   </target>
 

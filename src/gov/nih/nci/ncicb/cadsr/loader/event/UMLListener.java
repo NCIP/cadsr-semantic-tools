@@ -56,6 +56,7 @@ public class UMLListener implements LoaderListener {
 
     Property prop = DomainObjectFactory.newProperty();
     prop.setPreferredName(event.getName());
+    prop.setLongName(event.getName());
 
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
     dec.setPreferredName(event.getClassName() + event.getName());
@@ -83,6 +84,7 @@ public class UMLListener implements LoaderListener {
 
     elements.addElement(de);
 
+    elements.addElement(prop);
     
   }
   private void newEvent(NewInterfaceEvent event) {

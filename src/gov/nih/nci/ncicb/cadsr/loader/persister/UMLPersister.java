@@ -22,10 +22,18 @@ public class UMLPersister implements Persister {
   private PropertyDAO propertyDAO;
   private ObjectClassDAO objectClassDAO;
   private ClassificationSchemeDAO classificationSchemeDAO;
+  private ClassificationSchemeItemDAO classificationSchemeItemDAO;
 
   private HashMap params = new HashMap();
 
   
+  private String projectName, version, workflowStatus;
+  private Context context;
+
+  private ClassificationSchemeItem projectCsi, versionCsi;
+  private ClassificationScheme domainCs;
+  private ClassSchemeClassSchemeItem projectCsCsi, versionCsCsi;
+
 
   public UMLPersister(ElementsLists list) {
     this.elements = list;
@@ -40,8 +48,8 @@ public class UMLPersister implements Persister {
 //     System.out.println("Loading DataElementDAO bean");
 //     dataElementDAO = (DataElementDAO) ApplicationContextFactory.getApplicationContext().getBean("dataElementDAO");
 
-//     System.out.println("Loading AdminComponentDAO bean");
-//     adminComponentDAO = (AdminComponentDAO) ApplicationContextFactory.getApplicationContext().getBean("adminComponentDAO");
+    System.out.println("Loading AdminComponentDAO bean");
+    adminComponentDAO = (AdminComponentDAO) ApplicationContextFactory.getApplicationContext().getBean("adminComponentDAO");
 
 //     System.out.println("Loading DataElementConceptDAO bean");
 //     dataElementConceptDAO = (DataElementConceptDAO) ApplicationContextFactory.getApplicationContext().getBean("dataElementConceptDAO");
@@ -61,6 +69,9 @@ public class UMLPersister implements Persister {
     System.out.println("Loading CSDAO bean");
     classificationSchemeDAO = (ClassificationSchemeDAO) ApplicationContextFactory.getApplicationContext().getBean("classificationSchemeDAO");
 
+    System.out.println("Loading CSIDAO bean");
+    classificationSchemeItemDAO = (ClassificationSchemeItemDAO) ApplicationContextFactory.getApplicationContext().getBean("classificationSchemeItemDAO");
+
   }
 
   public void setParameter(String key, Object value) {
@@ -69,107 +80,13 @@ public class UMLPersister implements Persister {
 
   public void persist() throws PersisterException {
 
+    initParams();
     
-    String cName = (String)params.get("contextName");
-    if(cName == null)
-      throw new PersisterException("Context Name not Set.");
+    initClassifications();
 
-    Context context = contextDAO.findByName(cName);
-    if(context == null)
-      throw new PersisterException("Context: " + cName + " not found.");
-
-
-    String projectName = (String)params.get("projectName");
-    String version = (String)params.get("version");
-    if(projectName == null || version == null)
-      throw new PersisterException("Project Name / Version not Set.");
-
-
-//     String workflowStatus = (String)params.get("workflowStatus");
-//     if(workflowStatus == null)
-//       throw new PersisterException("WorkflowStatus not Set.");
-
-
+    persistProperties();
     
-    ClassificationScheme domainCS = DomainObjectFactory.newClassificationScheme();
-    domainCS.setLongName("essai-UML");
-    ArrayList eager = new ArrayList();
-    eager.add(EagerConstants.CS_CSI);
-    List result = classificationSchemeDAO.find(domainCS, eager);
-
-    if(result.size() == 0)
-      throw new PersisterException("Classification Scheme: " + domainCS.getLongName() + " does not exist on DB.");
-
-    domainCS = (ClassificationScheme)result.get(0);
-    
-    
-    List csCsis = domainCS.getCsCsis();
-    boolean found = false;
-    for(int i=0; i<csCsis.size(); i++) {
-      ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)csCsis.get(i);
-      if(csCsi.getCsi().getName().equals(projectName))
-	found = true;
-    }    
-    if(!found) { // need to add projectName CSI
-      ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
-      csi.setName(projectName);
-      csi.setType("TEST");
-
-      ClassSchemeClassSchemeItem csCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
-      csCsi.setCs(domainCS);
-      csCsi.setCsi(csi);
-      csCsi.setLabel(projectName);
-
-      ArrayList list = new ArrayList();
-      list.add(csCsi);
-      classificationSchemeDAO.addClassificationSchemeItems(domainCS, list);
-
-      System.out.println("Added CSI to domainCS");
-    }
-    
-
-
-
-    found = false;
-    for(int i=0; i<csCsis.size(); i++) {      
-      ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)csCsis.get(i);
-      if(csCsi.getCsi().getName().equals(version))
-	found = true;
-    }
-    if(!found) { // need to add version CSI
-      ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
-      csi.setName(projectName + "_" + version);
-      csi.setType("TEST");
-
-      ClassSchemeClassSchemeItem csCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
-      csCsi.setCs(domainCS);
-      csCsi.setCsi(csi);
-      csCsi.setLabel(version);
-      
-      ArrayList list = new ArrayList();
-      list.add(csCsi);
-      classificationSchemeDAO.addClassificationSchemeItems(domainCS, list);
-    }
-    
-    
-    
-    
-
-
-
-    // persist OC
-//     List ocs = (List)elements.getElements(ObjectClass.class);
-//     if(ocs != null)
-//       for(int i=0; i<ocs.size(); i++) {
-// 	ObjectClass oc = (ObjectClass)ocs.get(0);
-    
-
-// 	System.out.println("Found Object Class: " + oc.getPreferredName());
-// 	// Does this OC exist?
-	
-	
-//       }
-    
+    persistObjectClasses();
 
     DataElement o = DomainObjectFactory.newDataElement();
 
@@ -189,5 +106,173 @@ public class UMLPersister implements Persister {
 
   }
 
+
+  // !!!! TODO 
+  // EVS CONCEPT CODE.
+  private void persistProperties() {
+    Property prop = DomainObjectFactory.newProperty();
+    List props = (List)elements.getElements(prop.getClass());
+    
+    if(props != null)
+      for(int i=0; i<props.size(); i++) {
+	prop = (Property)props.get(i);
+	
+	prop.setContext(context);
+
+	// does this property exist?
+	List l = propertyDAO.find(prop);
+	if(l.size() == 0) {
+	  // !!!!! TODO
+	  prop.setPreferredDefinition(prop.getLongName());
+	  prop.setPreferredName(prop.getLongName());
+
+
+	  prop.setVersion(new Float(1.0f));
+
+	  prop.setWorkflowStatus(workflowStatus);
+	  prop.setId(adminComponentDAO.create(prop));
+	} else {
+	  prop = (Property)l.get(0);
+	}	
+	
+	// Add Classification Schemes
+	l = adminComponentDAO.getClassSchemeClassSchemeItems(prop);
+
+	// are projectCsi and versionCsi linked?
+	boolean pfound = false, vfound = false;
+
+	for(int j=0; i<l.size(); i++) {
+	  ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)l.get(j);
+	  if(csCsi.getCs().getLongName().equals(domainCs.getLongName()))
+	    if(csCsi.getCsi().getName().equals(projectCsi.getName()))
+	      pfound = true;
+	    else if(csCsi.getCsi().getName().equals(versionCsi.getName()))
+	      vfound = true;
+	  
+	}
+
+	l = new ArrayList();
+	if(!pfound) {
+	  l.add(projectCsCsi);
+	}
+
+	if(!vfound) {
+	  l.add(versionCsCsi);
+	}
+	
+	if(l.size() > 0)
+	  adminComponentDAO.addClassSchemeClassSchemeItems(prop, l);
+
+	
+      }
+
+
+  }
+
   
+  private void persistObjectClasses() throws PersisterException {
+
+    ObjectClass oc = DomainObjectFactory.newObjectClass();
+    List ocs = (List)elements.getElements(oc.getClass());
+    
+    if(ocs != null)
+      for(int i=0; i<ocs.size(); i++) {
+	oc = (ObjectClass)ocs.get(i);
+	
+	oc.setContext(context);
+      }
+
+
+  }
+
+  private void initParams() throws PersisterException {
+
+    String cName = (String)params.get("contextName");
+    if(cName == null)
+      throw new PersisterException("Context Name not Set.");
+
+    context = contextDAO.findByName(cName);
+    if(context == null)
+      throw new PersisterException("Context: " + cName + " not found.");
+
+
+    projectName = (String)params.get("projectName");
+    version = (String)params.get("version");
+    if(projectName == null || version == null)
+      throw new PersisterException("Project Name / Version not Set.");
+
+
+    workflowStatus = (String)params.get("workflowStatus");
+    if(workflowStatus == null)
+      throw new PersisterException("WorkflowStatus not Set.");
+
+
+  }
+  
+  private void initClassifications() throws PersisterException {
+    domainCs = DomainObjectFactory.newClassificationScheme();
+    domainCs.setLongName("essai-UML");
+    ArrayList eager = new ArrayList();
+    eager.add(EagerConstants.CS_CSI);
+    List result = classificationSchemeDAO.find(domainCs, eager);
+
+    if(result.size() == 0)
+      throw new PersisterException("Classification Scheme: " + domainCs.getLongName() + " does not exist on DB.");
+
+    domainCs = (ClassificationScheme)result.get(0);
+    
+    
+    List csCsis = domainCs.getCsCsis();
+    for(int i=0; i<csCsis.size(); i++) {
+      ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)csCsis.get(i);
+      if(csCsi.getCsi().getName().equals(projectName)) {
+	projectCsCsi = csCsi;
+      }
+    }    
+    if(projectCsCsi == null) { // need to add projectName CSI
+      ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
+      csi.setName(projectName);
+      csi.setType("TEST");
+
+      ClassSchemeClassSchemeItem csCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+      csCsi.setCs(domainCs);
+      csCsi.setCsi(csi);
+      csCsi.setLabel(projectName);
+
+      csCsi.setId((String)classificationSchemeDAO.addClassificationSchemeItem(domainCs, csCsi));
+
+      List list = classificationSchemeItemDAO.find(csi);
+      projectCsi = (ClassificationSchemeItem)list.get(0);
+      
+      projectCsCsi = csCsi;
+
+    }
+
+
+    for(int i=0; i<csCsis.size(); i++) {      
+      ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)csCsis.get(i);
+      if(csCsi.getCsi().getName().equals(projectName + "-" + version))
+	versionCsCsi = csCsi;
+    }
+    if(versionCsCsi == null) { // need to add version CSI
+      ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
+      csi.setName(projectName + "-" + version);
+      csi.setType("TEST");
+
+      ClassSchemeClassSchemeItem csCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+      csCsi.setCs(domainCs);
+      csCsi.setCsi(csi);
+      csCsi.setLabel(csi.getName());
+      
+      csCsi.setId((String)classificationSchemeDAO.addClassificationSchemeItem(domainCs, csCsi));
+
+      List list = classificationSchemeItemDAO.find(csi);
+      versionCsi = (ClassificationSchemeItem)list.get(0);
+
+      versionCsCsi = csCsi;
+
+    }
+
+  }
+
 }
