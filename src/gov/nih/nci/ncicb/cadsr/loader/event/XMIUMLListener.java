@@ -48,19 +48,13 @@ public class XMIUMLListener implements UMLListener {
     logger.debug("Attribute: " + event.getClassName() + "." +
                  event.getName());
 
-    String conceptCode = event.getConceptCode();
-
-    if (conceptCode == null) {
-      logger.warn("Attribute: " + event.getClassName() + "." +
-                  event.getName() + " has no concept code");
-    } else {
-      logger.debug("tagged value: " + conceptCode);
-    }
+    Concept concept = newConcept(event);
 
     Property prop = DomainObjectFactory.newProperty();
 
     //     prop.setPreferredName(event.getName());
     prop.setLongName(event.getName());
+    prop.setConcept(concept);
 
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
     dec.setLongName(event.getClassName() + event.getName());
@@ -198,14 +192,9 @@ public class XMIUMLListener implements UMLListener {
   private Concept newConcept(NewConceptualEvent event) {
     Concept concept = DomainObjectFactory.newConcept();
 
-    if(event.getNciConceptCode() != null) {
-      concept.setPreferredName(event.getNciConceptCode());
-      concept.setPreferredDefinition(event.getNciConceptDefinition());
-    } else {
-      concept.setPreferredName(event.getConceptCode());
-      concept.setPreferredDefinition(event.getConceptDefinition());
-    }
-    concept.setDefinitionSource(event.getConceptSource());
+    concept.setPreferredName(event.getConceptCode());
+    concept.setPreferredDefinition(event.getConceptDefinition());
+    concept.setDefinitionSource(event.getConceptDefinitionSource());
     concept.setLongName(event.getConceptPreferredName());
 
     elements.addElement(concept);

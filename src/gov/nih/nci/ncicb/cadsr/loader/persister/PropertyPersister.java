@@ -32,7 +32,7 @@ public class PropertyPersister extends UMLPersister {
 	prop.setContext(defaults.getContext());
 
 	// does this property exist?
-	List l = propertyDAO.find(prop);
+	List l = propertyDAO.findByConceptCode(prop.getConcept().getPreferredName());
 
 	if (l.size() == 0) {
 	  // !!!!! TODO
@@ -42,6 +42,8 @@ public class PropertyPersister extends UMLPersister {
 	  prop.setVersion(new Float(1.0f));
 	  prop.setWorkflowStatus(defaults.getWorkflowStatus());
 	  prop.setAudit(defaults.getAudit());
+
+          logger.debug("property: " + prop.getLongName());
 
 	  prop.setId(propertyDAO.create(prop));
 	  logger.info("Created Property: ");

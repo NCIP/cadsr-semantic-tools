@@ -39,9 +39,21 @@ public class ConceptPersister extends UMLPersister {
           logger.info("Created Concept: ");
           LogUtil.logAc(c, logger);
         } else { // concept exist: See if we need to add alternate def.
-          // !! TODO
-          Concept con = (Concept)l.get(0);
-          c.setId(con.getId());
+          logger.info("Concept " + c.getPreferredName() + " already exists");
+          Concept c2 = (Concept)l.get(0);
+          c.setId(c2.getId());
+          if(!c.getDefinitionSource().equalsIgnoreCase(c2.getDefinitionSource())) { // Add alt def.
+
+            logger.debug("Concept " + c.getPreferredName() + " had different definition source. ");
+            Definition def = DomainObjectFactory.newDefinition();
+            def.setDefinition(c.getDefinitionSource() + " | " + c.getPreferredDefinition());
+            def.setAudit(defaults.getAudit());
+            def.setContext(defaults.getContext());
+            adminComponentDAO.addDefinition(c, def);
+            logger.info("Added new Alternate Definition for Concept " + c.getPreferredName() + " : " + def.getDefinition());
+          } else {
+            // Do nothing, this is the common case where the concept existed and had the same def source.
+          }
         }
       }
     }

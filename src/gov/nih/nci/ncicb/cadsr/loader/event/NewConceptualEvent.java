@@ -10,12 +10,12 @@ public class NewConceptualEvent implements LoaderEvent {
   /**
    * Tagged Value name for Concept Source
    */
-  public static final String TV_CONCEPT_SOURCE = "ConceptSource";
+//   public static final String TV_CONCEPT_SOURCE = "ConceptSource";
 
   /**
    * Tagged Value name for NCI Concept Code
    */
-  public static final String TV_NCI_CONCEPT_CODE = "NCIConceptCode";
+//   public static final String TV_NCI_CONCEPT_CODE = "NCIConceptCode";
 
   /**
    * Tagged Value name for Concept Preferred Name
@@ -35,31 +35,31 @@ public class NewConceptualEvent implements LoaderEvent {
   /**
    * Tagged Value name for NCI Concept Definition
    */
-  public static final String TV_NCI_CONCEPT_DEFINITION = "NCIConceptDefinition";
+//   public static final String TV_NCI_CONCEPT_DEFINITION = "NCIConceptDefinition";
 
   private String code;
-  private String nciCode;
-  private String source;
+//   private String nciCode;
+//   private String source;
   private String definition;
   private String preferredName;
   private String definitionSource;
-  private String nciDefinition;
+//   private String nciDefinition;
 
-  /**
-   * Get the NciDefinition value.
-   * @return the NciDefinition value.
-   */
-  public String getNciConceptDefinition() {
-    return nciDefinition;
-  }
+//   /**
+//    * Get the NciDefinition value.
+//    * @return the NciDefinition value.
+//    */
+//   public String getNciConceptDefinition() {
+//     return nciDefinition;
+//   }
 
-  /**
-   * Set the NciDefinition value.
-   * @param newNciDefinition The new NciDefinition value.
-   */
-  public void setNciConceptDefinition(String newNciDefinition) {
-    this.nciDefinition = newNciDefinition;
-  }
+//   /**
+//    * Set the NciDefinition value.
+//    * @param newNciDefinition The new NciDefinition value.
+//    */
+//   public void setNciConceptDefinition(String newNciDefinition) {
+//     this.nciDefinition = newNciDefinition;
+//   }
 
   
   /**
@@ -114,38 +114,38 @@ public class NewConceptualEvent implements LoaderEvent {
   }
 
   
-  /**
-   * Get the Source value.
-   * @return the Source value.
-   */
-  public String getConceptSource() {
-    return source;
-  }
+//   /**
+//    * Get the Source value.
+//    * @return the Source value.
+//    */
+//   public String getConceptSource() {
+//     return source;
+//   }
 
-  /**
-   * Set the Source value.
-   * @param newSource The new Source value.
-   */
-  public void setConceptSource(String newSource) {
-    this.source = newSource;
-  }
+//   /**
+//    * Set the Source value.
+//    * @param newSource The new Source value.
+//    */
+//   public void setConceptSource(String newSource) {
+//     this.source = newSource;
+//   }
 
   
-  /**
-   * Get the NciCode value.
-   * @return the NciCode value.
-   */
-  public String getNciConceptCode() {
-    return nciCode;
-  }
+//   /**
+//    * Get the NciCode value.
+//    * @return the NciCode value.
+//    */
+//   public String getNciConceptCode() {
+//     return nciCode;
+//   }
 
-  /**
-   * Set the NciCode value.
-   * @param newNciCode The new NciCode value.
-   */
-  public void setNciConceptCode(String newNciCode) {
-    this.nciCode = newNciCode;
-  }
+//   /**
+//    * Set the NciCode value.
+//    * @param newNciCode The new NciCode value.
+//    */
+//   public void setNciConceptCode(String newNciCode) {
+//     this.nciCode = newNciCode;
+//   }
 
   
   /**

@@ -108,6 +108,7 @@ public class UMLLoader {
         // !!! TODO choose error, warning, etc ...
         logger.error(error.getSeverity() + ": " + error.getMessage());
       }
+      // !! TODO: Offer to continue anyway
       System.exit(1);
     }
 

@@ -343,10 +343,10 @@ public class XMIParser implements Parser {
       event.setConceptCode(tv.getValue());
     }
 
-    tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_SOURCE);
-    if (tv != null) {
-      event.setConceptSource(tv.getValue());
-    }
+//     tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_SOURCE);
+//     if (tv != null) {
+//       event.setConceptSource(tv.getValue());
+//     }
 
     tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_DEFINITION);
     if (tv != null) {
@@ -363,15 +363,15 @@ public class XMIParser implements Parser {
       event.setConceptPreferredName(tv.getValue());
     }
 
-    tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_NCI_CONCEPT_CODE);
-    if (tv != null) {
-      event.setNciConceptCode(tv.getValue());
-    }
+//     tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_NCI_CONCEPT_CODE);
+//     if (tv != null) {
+//       event.setNciConceptCode(tv.getValue());
+//     }
 
-    tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_NCI_CONCEPT_DEFINITION);
-    if (tv != null) {
-      event.setNciConceptDefinition(tv.getValue());
-    }
+//     tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_NCI_CONCEPT_DEFINITION);
+//     if (tv != null) {
+//       event.setNciConceptDefinition(tv.getValue());
+//     }
     
   }
 }
