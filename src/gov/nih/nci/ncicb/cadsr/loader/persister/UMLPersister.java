@@ -115,11 +115,9 @@ public class UMLPersister implements Persister {
     List props = (List)elements.getElements(prop.getClass());
 
     if(props != null)
-      for(int i=0; i<props.size(); i++) {
-	prop = (Property)props.get(i);
+      for(ListIterator it=props.listIterator(); it.hasNext();) {
+	prop = (Property)it.next();
 
-	elements.removeElement(prop);
-	
 	prop.setContext(context);
 	
 	// does this property exist?
@@ -138,7 +136,7 @@ public class UMLPersister implements Persister {
 	}	
 	
 	addClassificationSchemes(prop);
-	elements.addElement(prop);
+	it.set(prop);
       }
 
   }
@@ -152,11 +150,8 @@ public class UMLPersister implements Persister {
     System.out.println("ocs...");
     
     if(ocs != null)
-      for(int i=0; i<ocs.size(); i++) {
-	oc = (ObjectClass)ocs.get(i);
-
-	elements.removeElement(oc);
-	
+      for(ListIterator it=ocs.listIterator(); it.hasNext(); ) {
+	oc = (ObjectClass)it.next();
 	oc.setContext(context);
 
 	String className = oc.getLongName();
@@ -181,7 +176,7 @@ public class UMLPersister implements Persister {
 	}	
 
 	addClassificationSchemes(oc);
-	elements.addElement(oc);
+	it.set(oc);
 
 	// add designation to hold package name
 	// !!!! TODO
@@ -197,9 +192,8 @@ public class UMLPersister implements Persister {
     System.out.println("decs: " + decs.size());
 
     if(decs != null)
-      for(int i=0; i<decs.size(); i++) {
-	dec = (DataElementConcept)decs.get(i);
-	elements.removeElement(dec);
+      for(ListIterator it=decs.listIterator(); it.hasNext(); ) {
+	dec = (DataElementConcept)it.next();
 	
 	dec.setContext(context);
 	dec.setConceptualDomain(conceptualDomain);
@@ -216,7 +210,6 @@ public class UMLPersister implements Persister {
 	  // !!!!! TODO
 	  dec.setPreferredDefinition(dec.getLongName());
 	  dec.setPreferredName(dec.getLongName());
-
 
 	  dec.setVersion(new Float(1.0f));
 
@@ -243,7 +236,7 @@ public class UMLPersister implements Persister {
 	}	
 
 	addClassificationSchemes(dec);
-	elements.addElement(dec);
+	it.set(dec);
 
 	// add designation to hold package name
 	// !!!! TODO
