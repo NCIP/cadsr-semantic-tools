@@ -13,10 +13,10 @@ import javax.swing.tree.TreePath;
 
 import java.util.*;
 
-public class NavigationPanel extends JPanel implements ActionListener
+public class NavigationPanel extends JPanel implements ActionListener, MouseListener
 {
-  private JTree tree;;
-
+  private JTree tree;
+  private JPopupMenu popup;
   private UMLNode rootNode = TreeBuilder.getRootNode(); 
 
   private Set<NavigationListener> navListeners = new HashSet<NavigationListener>();
@@ -83,15 +83,53 @@ public class NavigationPanel extends JPanel implements ActionListener
     }
   }
 
+  public void mousePressed(MouseEvent e) {
+    doMouseEvent(e);
+  }
+  public void mouseExited(MouseEvent e) {
+  }
+  public void mouseClicked(MouseEvent e) {
+  }
+  public void mouseEntered(MouseEvent e) {
+  }
+  
+  public void mouseReleased(MouseEvent e) {
+    doMouseEvent(e);
+  }
+  
+  private void doMouseEvent(MouseEvent e) {
+    if (e.isPopupTrigger()) {
+      TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+      tree.setSelectionPath(path);
+      if(path != null) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
+        Object o = node.getUserObject();
+        if((o instanceof ClassNode)
+           || (o instanceof AttributeNode)
+           )
+          popup.show(e.getComponent(),
+                     e.getX(), e.getY());
+      }
+    } else if(e.getButton() == MouseEvent.BUTTON1) {
+      TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+      DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
 
-  public void buildPopupMenu() {
+      ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
+      evt.setViewObject(dmtn.getUserObject());
+      evt.setInNewTab(false);
+      vcl.viewChanged(evt);
+      
+    }
+   }
+
+  private void buildPopupMenu() {
     JMenuItem newTabItem = new JMenuItem("Open in New Tab");
     JMenuItem openItem = new JMenuItem("Open");
 
     newTabItem.setActionCommand("OPEN_NEW_TAB");
     openItem.setActionCommand("OPEN");
 
-    JPopupMenu popup = new JPopupMenu();
+    popup = new JPopupMenu();
 
     newTabItem.addActionListener(this);
     openItem.addActionListener(this);
@@ -99,10 +137,11 @@ public class NavigationPanel extends JPanel implements ActionListener
     popup.add(openItem);
     popup.add(newTabItem);
     
-    MouseListener popupListener = new TreeMouseListener(popup,tree);
-    tree.addMouseListener(popupListener);
+    tree.addMouseListener(this);
    
   } 
+
+
 
 
   private DefaultMutableTreeNode buildTree() {
@@ -129,5 +168,7 @@ public class NavigationPanel extends JPanel implements ActionListener
     return node;
     
   }
+
+  
 
 }
