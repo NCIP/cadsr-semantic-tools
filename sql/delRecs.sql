@@ -13,7 +13,9 @@ where upper(created_by) = 'LADINO'
 
 prompt DELETING DESIGNATIONS
 delete from designations 
-where detl_name = 'SYNONYM' 
+where 
+(detl_name = 'SYNONYM' 
+or detl_name like 'UML ')
 and ac_idseq in 
 (select oc_idseq from Object_classes_ext
 where upper(created_by) = 'LADINO'
@@ -33,6 +35,12 @@ where ac_idseq in
 where upper(created_by) = 'LADINO'
 UNION 
 select prop_idseq from properties_ext
+where upper(created_by) = 'LADINO'
+UNION 
+select dec_idseq from data_element_concepts
+where upper(created_by) = 'LADINO'
+UNION 
+select de_idseq from data_elements
 where upper(created_by) = 'LADINO'
 );
 

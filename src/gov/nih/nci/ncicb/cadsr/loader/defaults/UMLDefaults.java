@@ -154,7 +154,9 @@ public class UMLDefaults {
         }
         
         packageFilter.put(pkg, alias);
-        logger.info(PropertyAccessor.getProperty("packageAlias", new String[] {pkg, alias}));
+        
+        if(defaultPackage == null)
+          logger.info(PropertyAccessor.getProperty("packageAlias", new String[] {pkg, alias}));
       }
       logger.info(PropertyAccessor.getProperty("endOfList"));
     } else {
@@ -196,64 +198,27 @@ public class UMLDefaults {
 
     if (result.size() == 0) { // need to add projectName CS
       projectCs.setPreferredName(projectName);
-      projectCs.setWorkflowStatus(workflowStatus);
+      projectCs.setWorkflowStatus(projectCs.WF_STATUS_DRAFT_NEW);
 
       // !!! TODO
       projectCs.setPreferredDefinition("Un essai de CS. Nom du projet.");
 
       // !!! TODO
-      projectCs.setType("TEST");
+      projectCs.setType("Project");
       projectCs.setLabelType(ClassificationScheme.LABEL_TYPE_ALPHA);
 
       projectCs.setAudit(audit);
       projectCs.setId(classificationSchemeDAO.create(projectCs));
 
-      System.out.println("&&&&&&&&&&&&&&&&&& project ID: " + projectCs.getId());
-
       logger.info(PropertyAccessor.getProperty("created.project.cs"));
       LogUtil.logAc(projectCs, logger);
       logger.info(PropertyAccessor.getProperty("type", projectCs.getType()));
 
-//       projectCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
-//       projectCsCsi.setCs(projectCs);
-//       projectCsCsi.setCsi(domainCsi);
-//       projectCsCsi.setLabel(projectName);
-//       projectCsCsi.setAudit(audit);
-
-//       classificationSchemeDAO.addClassificationSchemeItem(projectCs,
-// 							  projectCsCsi);
-//       logger.info(PropertyAccessor.getProperty("created.project.csCsi"));
-//       logger.info(PropertyAccessor.getProperty("label", projectCsCsi.getLabel()));
     } 
     else { 
       logger.info(PropertyAccessor.getProperty("existed.project.cs"));
       projectCs = (ClassificationScheme) result.get(0);
 
-//       List csCsis = projectCs.getCsCsis();
-//       boolean found = false;
-
-//       for (ListIterator it = csCsis.listIterator(); it.hasNext();) {
-// 	ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it.next();
-
-// 	if (csCsi.getCsi().getName().equals(domainCsi.getName())) {
-// 	  projectCsCsi = csCsi;
-// 	  found = true;
-// 	}
-//       }
-
-//       if (!found) {
-// 	logger.info(PropertyAccessor
-//                     .getProperty("link.project.to.domain"));
-// 	projectCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
-// 	projectCsCsi.setCs(projectCs);
-// 	projectCsCsi.setCsi(domainCsi);
-// 	projectCsCsi.setLabel(projectName);
-// 	projectCsCsi.setAudit(audit);
-
-// 	classificationSchemeDAO.addClassificationSchemeItem(projectCs,
-// 							    projectCsCsi);
-//       }
-//     }
     }
 
   }
@@ -319,6 +284,10 @@ public class UMLDefaults {
    */
   public Map getPackageFilter() {
     return packageFilter;
+  }
+
+  public String getDefaultPackageAlias() {
+    return defaultPackage;
   }
 
   public String getPackageDisplay(String packageName) {

@@ -87,8 +87,12 @@ public class UMLDefaultHandler implements UMLHandler {
 
     String propName = StringUtil.upperFirst(event.getName());
 
+    String className = event.getClassName();
+    int ind = className.lastIndexOf(".");
+    className = className.substring(ind + 1);
+
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
-    dec.setLongName(event.getClassName() + propName);
+    dec.setLongName(className + ":" + propName);
     dec.setProperty(prop);
 
     logger.debug("DEC LONG_NAME: " + dec.getLongName());
@@ -199,24 +203,6 @@ public class UMLDefaultHandler implements UMLHandler {
     ocr.setType(ObjectClassRelationship.TYPE_HAS);
     elements.addElement(ocr);
 
-//     if(ocr.getSource() == null || ocr.getTarget() == null) {
-//       logger.error(PropertyAccessor.getProperty(
-//                      "association.missing.end", 
-//                      new String[] {event.getAClassName(),
-//                                    event.getBClassName()}));
-//     } else {
-//       elements.addElement(ocr);
-//     }
-    
-    //         logger.debug("Association: ");
-    //         logger.debug("Source:");
-    //         logger.debug("-- " + ocr.getSourceRole());
-    //         logger.debug("-- " + ocr.getSource().getLongName());
-    //         logger.debug("-- " + ocr.getSourceCardinality());
-    //         logger.debug("Target: ");
-    //         logger.debug("-- " + ocr.getTargetRole());
-    //         logger.debug("-- " + ocr.getTarget().getLongName());
-    //         logger.debug("-- " + ocr.getTargetCardinality());
   }
 
   public void newGeneralization(NewGeneralizationEvent event) {
@@ -263,7 +249,10 @@ public class UMLDefaultHandler implements UMLHandler {
           
           String propName = StringUtil.upperFirst(newDec.getProperty().getLongName());
           
-          newDec.setLongName(childOc.getLongName() + propName);		
+          String className = childOc.getLongName();
+          int ind = className.lastIndexOf(".");
+          className = className.substring(ind + 1);
+          newDec.setLongName(className + ":" + propName);		
           DataElement newDe = DomainObjectFactory.newDataElement();
           newDe.setDataElementConcept(dec);
           newDe.setValueDomain(de.getValueDomain());

@@ -33,7 +33,7 @@ public class PropertyPersister extends UMLPersister {
 	prop.setContext(defaults.getMainContext());
 
         String[] conceptCodes = prop.getPreferredName().split("-");
-        List l = propertyDAO.findByConceptCodes(conceptCodes);
+        List l = propertyDAO.findByConceptCodes(conceptCodes, prop.getContext());
 
         Concept[] concepts = new Concept[conceptCodes.length];
         for(int i=0; i<concepts.length; 
@@ -62,11 +62,6 @@ public class PropertyPersister extends UMLPersister {
 
             newProp = propertyDAO.create(prop, conceptCodes);
             logger.info(PropertyAccessor.getProperty("created.prop"));
-            // is long_name the same?
-            // if not, then add alternate Name
-            if(!newName.equals(newProp.getLongName())) {
-              addAlternateName(newProp, newName, packageName);
-            }
           } catch (DAOCreateException e){
             logger.error(PropertyAccessor.getProperty("created.prop.failed", e.getMessage()));
             e.printStackTrace();
@@ -75,13 +70,10 @@ public class PropertyPersister extends UMLPersister {
 	} else {
 	  newProp = (Property) l.get(0);
 	  logger.info(PropertyAccessor.getProperty("existed.prop"));
-          // is long_name the same?
-          // if not, then add alternate Name
-          if(!newName.equals(newProp.getLongName())) {
-            addAlternateName(newProp, newName, packageName);
-          }
           
 	}
+
+        addAlternateName(newProp, newName, AlternateName.TYPE_UML_ATTRIBUTE, packageName);
 
 	LogUtil.logAc(newProp, logger);
         logger.info("-- Public ID: " + newProp.getPublicId());

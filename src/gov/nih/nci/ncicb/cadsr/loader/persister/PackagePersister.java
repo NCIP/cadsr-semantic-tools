@@ -71,13 +71,13 @@ public class PackagePersister extends UMLPersister {
 	  packageCsCsi.setLabel(pkg.getName());
 	  packageCsCsi.setAudit(defaults.getAudit());
 
-	  classificationSchemeDAO.addClassificationSchemeItem(defaults.getProjectCs(),
-							      packageCsCsi);
+	  packageCsCsi.setId(classificationSchemeDAO.addClassificationSchemeItem(defaults.getProjectCs(),
+                                                                                 packageCsCsi));
 	  logger.info(PropertyAccessor.getProperty("added.package"));
 	}
 
 	// Put CS_CSI in cache so OCs can use it
-	packageCsCsis.put(pkg.getName(), packageCsCsi);
+	packageCsCsis.put(pkg.getComments(), packageCsCsi);
       }
     }
 

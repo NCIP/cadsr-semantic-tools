@@ -28,6 +28,7 @@ public class ConceptPersister extends UMLPersister {
       for(Iterator it = cons.iterator(); it.hasNext();) {
         Concept c = (Concept)it.next();
         con.setPreferredName(c.getPreferredName());
+        logger.debug("concept name: " + con.getPreferredName());
         List l = conceptDAO.find(con);
 
         if(l.size() == 0) { // concept does not exist: create it

@@ -47,6 +47,8 @@ public class UMLPersister implements Persister {
     vdMapping.put("char", "java.lang.Char");
     vdMapping.put("byte", "java.lang.Byte");
     vdMapping.put("long", "java.lang.Long");
+    // !!! TODO Remove
+    vdMapping.put("String", "java.lang.String");
   }
 
   public UMLPersister() {
@@ -121,14 +123,14 @@ public class UMLPersister implements Persister {
     return result;
   }
 
-  protected void addAlternateName(AdminComponent ac, String newName, String packageName) {
+  protected void addAlternateName(AdminComponent ac, String newName, String type, String packageName) {
 
     List altNames = adminComponentDAO.getAlternateNames(ac);
     boolean found = false;
     ClassSchemeClassSchemeItem packageCsCsi = (ClassSchemeClassSchemeItem)defaults.getPackageCsCsis().get(packageName);
     for(Iterator it = altNames.iterator(); it.hasNext(); ) {
       AlternateName an = (AlternateName)it.next();
-      if(an.getType().equals(AlternateName.TYPE_SYNONYM) && an.getName().equals(newName)) {
+      if(an.getType().equals(type) && an.getName().equals(newName)) {
         found = true;
         logger.info(PropertyAccessor.getProperty(
                       "existed.altName", newName));
@@ -136,11 +138,6 @@ public class UMLPersister implements Persister {
         boolean csFound = false;
         for(Iterator it2 = an.getCsCsis().iterator(); it2.hasNext();) {
           ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
-          System.out.println(csCsi.getCs());
-          System.out.println(csCsi.getCs().getId());
-          System.out.println(csCsi.getCsi());
-          System.out.println(csCsi.getCsi().getId());
-          System.out.println(packageCsCsi);
           if(csCsi.getCs().getId().equals(defaults.getProjectCs().getId())
              && csCsi.getCsi().getId().equals(packageCsCsi.getId())) {
             csFound = true;
@@ -162,7 +159,7 @@ public class UMLPersister implements Persister {
       AlternateName altName = DomainObjectFactory.newAlternateName();
       altName.setContext(defaults.getContext());
       altName.setName(newName);
-      altName.setType(AlternateName.TYPE_SYNONYM);
+      altName.setType(type);
       altName.setId(adminComponentDAO.addAlternateName(ac, altName));
       logger.info(PropertyAccessor.getProperty(
                     "added.altName", 
@@ -308,7 +305,7 @@ public class UMLPersister implements Persister {
     
     for(int i=0; i < concepts.length; i++) {
       if(sb.length() > 0)
-        sb.append("-");
+        sb.append("\n");
       sb.append(concepts[i].getPreferredName());
       sb.append(":");
       sb.append(concepts[i].getPreferredDefinition());
@@ -321,19 +318,23 @@ public class UMLPersister implements Persister {
 
     List l = adminComponentDAO.getClassSchemeClassSchemeItems(ac);
 
+    ClassSchemeClassSchemeItem packageCsCsi = (ClassSchemeClassSchemeItem)defaults.getPackageCsCsis().get(packageName);
+
     // is projectCs linked?
     boolean found = false;
 
     for (ListIterator it = l.listIterator(); it.hasNext();) {
       ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it.next();
 
-      if (csCsi.getCs().getId().equals(defaults.getProjectCs().getId())) {
-	if (csCsi.getCsi().getName().equals(packageName)
-            && csCsi.getCsi().getType().equals(CSI_PACKAGE_TYPE)
-            ) {
-	  found = true;
-	}
-      }
+      if(csCsi.getId().equals(packageCsCsi.getId()))
+        found = true;
+//       if (csCsi.getCs().getId().equals(defaults.getProjectCs().getId())) {
+// 	if (csCsi.getCsi().getName().equals(packageName)
+//             && csCsi.getCsi().getType().equals(CSI_PACKAGE_TYPE)
+//             ) {
+// 	  found = true;
+// 	}
+//       }
     }
 
     List csCsis = new ArrayList();
@@ -341,8 +342,6 @@ public class UMLPersister implements Persister {
     if (!found) {
       logger.info(PropertyAccessor.
                   getProperty("attach.package.classification"));
-
-      ClassSchemeClassSchemeItem packageCsCsi = (ClassSchemeClassSchemeItem) defaults.getPackageCsCsis().get(packageName);
       
       if (packageCsCsi != null) {
         csCsis.add(packageCsCsi);

@@ -39,26 +39,26 @@ public class DECPersister extends UMLPersister {
         dec.setProperty(findProperty(
                              dec.getProperty().getLongName()));
         
-	dec.setContext(defaults.getContext());
-	dec.setConceptualDomain(defaults.getConceptualDomain());
-        
-        String first = dec.getProperty().getLongName().substring(0, 1).toUpperCase();
-        String propName = first + dec.getProperty().getLongName().substring(1);
+        String newName = dec.getLongName();
 
-        dec.setLongName(
-          dec.getObjectClass().getLongName()
-          + " " + propName);
 
 	logger.debug("dec name: " + dec.getLongName());
+        logger.debug("alt Name: " + newName);
 
 	// does this dec exist?
 	List l = dataElementConceptDAO.find(dec);
-
         
         String newDef = dec.getPreferredDefinition();
 	if (l.size() == 0) {
+          dec.setConceptualDomain(defaults.getConceptualDomain());
+          dec.setContext(defaults.getContext());
+          dec.setLongName(
+            dec.getObjectClass().getLongName()
+            + " " + 
+            dec.getProperty().getLongName()
+            );
 	  dec.setPreferredDefinition(
-            dec.getObjectClass().getPreferredDefinition() + ":" +
+            dec.getObjectClass().getPreferredDefinition() + "\n" +
             dec.getProperty().getPreferredDefinition()
             
             );
@@ -106,6 +106,8 @@ public class DECPersister extends UMLPersister {
           }
 
 	}
+
+        addAlternateName(newDec, newName, AlternateName.TYPE_UML_DEC, packageName);
 
 	LogUtil.logAc(newDec, logger);
         logger.info("-- Public ID: " + newDec.getPublicId());

@@ -414,7 +414,7 @@ public class XMIParser implements Parser {
 
   private boolean isInPackageFilter(String pName) {
     Map packageFilter = UMLDefaults.getInstance().getPackageFilter();
-    return (packageFilter.size() == 0) || (packageFilter.containsKey(pName));
+    return (packageFilter.size() == 0) || (packageFilter.containsKey(pName) || (UMLDefaults.getInstance().getDefaultPackageAlias() != null));
   }
 
   private String getPackageName(ModelElement elt) {

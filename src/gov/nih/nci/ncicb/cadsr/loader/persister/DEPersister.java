@@ -34,26 +34,24 @@ public class DEPersister extends UMLPersister {
           String packageName = getPackageName(de);
 	  de.setContext(defaults.getContext());
 
-	  for (ListIterator lit = elements.getElements(
-                 DomainObjectFactory.
-                 newDataElementConcept().getClass()).listIterator(); lit.hasNext();) {
+// 	  for (ListIterator lit = elements.getElements(
+//                  DomainObjectFactory.
+//                  newDataElementConcept().getClass()).listIterator(); lit.hasNext();) {
             
-	    DataElementConcept o = (DataElementConcept) lit.next();
+// 	    DataElementConcept o = (DataElementConcept) lit.next();
 
-            de.setDataElementConcept(findDec(de.getDataElementConcept().getLongName()));
+          de.setDataElementConcept(findDec(de.getDataElementConcept().getLongName()));
 
-	  }
 
 	  de.setValueDomain(lookupValueDomain(de.getValueDomain()));
+
+	  List l = dataElementDAO.find(de);
 
           de.setLongName(
             de.getDataElementConcept()
             .getLongName() + " "
             + de.getValueDomain().getPreferredName());
           
-
-	  List l = dataElementDAO.find(de);
-
 	  if (l.size() == 0) {
 	    de.setPreferredName(
               de.getDataElementConcept().getPublicId() + "-" +

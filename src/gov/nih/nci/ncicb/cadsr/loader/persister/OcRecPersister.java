@@ -33,6 +33,9 @@ public class OcRecPersister extends UMLPersister {
 	ocr.setVersion(defaults.getVersion());
 	ocr.setWorkflowStatus(defaults.getWorkflowStatus());
 
+        String sourcePackage = getPackageName(ocr.getSource());
+        String targetPackage = getPackageName(ocr.getTarget());
+
 	ocr.setPreferredDefinition(new OCRDefinitionBuilder().buildDefinition(ocr));
 
 	if ((ocr.getLongName() == null) ||
@@ -87,39 +90,39 @@ public class OcRecPersister extends UMLPersister {
 	eager.add(EagerConstants.AC_CS_CSI);
 
 	List l = objectClassRelationshipDAO.find(ocr2, eager);
-	boolean found = false;
+// 	boolean found = false;
 
-	if (l.size() > 0) {
-	  for (Iterator it2 = l.iterator(); it2.hasNext();) {
-	    ocr2 = (ObjectClassRelationship) it2.next();
+// 	if (l.size() > 0) {
+// 	  for (Iterator it2 = l.iterator(); it2.hasNext();) {
+// 	    ocr2 = (ObjectClassRelationship) it2.next();
 
-	    List acCsCsis = (List) ocr2.getAcCsCsis();
+// 	    List acCsCsis = (List) ocr2.getAcCsCsis();
 
-	    for (Iterator it3 = acCsCsis.iterator(); it3.hasNext();) {
-	      AdminComponentClassSchemeClassSchemeItem acCsCsi = (AdminComponentClassSchemeClassSchemeItem) it3.next();
+// 	    for (Iterator it3 = acCsCsis.iterator(); it3.hasNext();) {
+// 	      AdminComponentClassSchemeClassSchemeItem acCsCsi = (AdminComponentClassSchemeClassSchemeItem) it3.next();
 
-	      if (acCsCsi.getCsCsi().getCs().getLongName().equals(defaults.getProjectCs().getLongName())) {
-	      found = true;
-	      logger.debug("Association with same classification already found");
-	      }
+// 	      if (acCsCsi.getCsCsi().getCs().getLongName().equals(defaults.getProjectCs().getLongName())) {
+// 	      found = true;
+// 	      logger.debug("Association with same classification already found");
+// 	      }
 	      
-	    }
-	  }
-	}
-
-	if (found) {
-	  logger.info(PropertyAccessor.getProperty("existed.association"));
-	} else {
-	  ocr.setId(objectClassRelationshipDAO.create(ocr));
-// 	  addProjectCs(ocr);
+// 	    }
+// 	  }
+// 	}
+        
+        if (l.size() > 0) {
+          logger.info(PropertyAccessor.getProperty("existed.association"));
+          ocr = (ObjectClassRelationship)l.get(0);
+        } else {
+          ocr.setId(objectClassRelationshipDAO.create(ocr));
+          // 	  addProjectCs(ocr);
 	  logger.info(PropertyAccessor.getProperty("created.association"));
 	}
-
-	// !!! TODO also add package name
+        
+        addPackageClassification(ocr, sourcePackage);
+        addPackageClassification(ocr, targetPackage);
       }
     }
-
-  }
-
-
+  }    
+  
 }
