@@ -7,9 +7,11 @@ import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 
 
-public class UMLElementViewPanel extends JPanel {
+public class UMLElementViewPanel extends JScrollPane {
 
-  final static int GAP = 20;  
+  private JButton addButton = new JButton("Add"),
+    deleteButton = new JButton("Delete"),
+    saveButton = new JButton("Save");
 
   public UMLElementViewPanel(Concept[] concepts) {
     initUI(concepts);
@@ -20,7 +22,9 @@ public class UMLElementViewPanel extends JPanel {
   }
 
   private void initUI(Concept[] concepts) {
-    this.setLayout(new GridLayout(-1, 1));
+    JPanel scrollPanel = new JPanel(new BorderLayout());
+
+    JPanel gridPanel = new JPanel(new GridLayout(-1, 1));
 
     ConceptUI[] conceptUIs = new ConceptUI[concepts.length];
     JPanel[] conceptPanels = new JPanel[concepts.length];
@@ -57,30 +61,37 @@ public class UMLElementViewPanel extends JPanel {
 
       JPanel mainPanel = new JPanel(new GridLayout(-1, 1));
 
-      p = new JPanel();
+      p = new JPanel(new FlowLayout(FlowLayout.LEADING));
       p.add(conceptUIs[i].code);
       mainPanel.add(p);
 
-      p = new JPanel();
+      p = new JPanel(new FlowLayout(FlowLayout.LEADING));
       p.add(conceptUIs[i].name);
       mainPanel.add(p);
 
-//       p = new JPanel();
-//       p.add(conceptUIs[i].defScrollPane);
-//       mainPanel.add(p);
       mainPanel.add(conceptUIs[i].defScrollPane);
 
-      p = new JPanel();
+      p = new JPanel(new FlowLayout(FlowLayout.LEADING));
       p.add(conceptUIs[i].defSource);
       mainPanel.add(p);
 
       conceptPanels[i].add(leftPanel, BorderLayout.WEST);
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
-      this.add(conceptPanels[i]);
+      gridPanel.add(conceptPanels[i]);
     }
 
-//     this.add(leftPanel, BorderLayout.WEST);
-//     this.add(mainPanel, BorderLayout.CENTER);
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.add(addButton);
+    buttonPanel.add(deleteButton);
+    buttonPanel.add(saveButton);
+
+    scrollPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+    scrollPanel.add(gridPanel, BorderLayout.CENTER);
+
+    this.setViewportView(scrollPanel);
+
+    
 
   }
 

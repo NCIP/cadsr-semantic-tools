@@ -37,7 +37,7 @@ public class MainFrame extends JFrame
   private JSplitPane jSplitPane1 = new JSplitPane();
   private JSplitPane jSplitPane2 = new JSplitPane();
   private JTabbedPane jTabbedPane1 = new JTabbedPane();
-  private JTabbedPane viewTabbedPane = new JTabbedPane();
+  private JTabbedPane viewTabbedPane = new CloseableTabbedPane();
   private JPanel jPanel1 = new JPanel();
   private JPanel mainViewPanel = new JPanel();
 
