@@ -10,7 +10,7 @@ public class ClassNode extends AbstractUMLNode
 {
 
   static final Icon REVIEWED_ICON = 
-    new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-class.gif"));
+    new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-class-checked.gif"));
 
   static final Icon DEFAULT_ICON = 
     new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-class.gif"));
@@ -29,23 +29,31 @@ public class ClassNode extends AbstractUMLNode
   }
 
 
-  public void setReviewed(boolean b) 
+  public void setReviewed(boolean currentStatus) 
   {
-      this.reviewed = b;
+      reviewed = currentStatus;
       
-      boolean changeIcon = true;
+      boolean changeIcon = false;
       
       // iterate over children
-      for(UMLNode l : this.getChildren())
+      // if all children are reviewed then review the class
+      for(UMLNode l : getChildren())
       {
-        if(icon != AttributeNode.REVIEWED_ICON)
-        changeIcon = false;
+        AttributeNode next = (AttributeNode) l;
+        if(next.isReviewed())
+          changeIcon = true;
+        else {
+          changeIcon = false;
+          break;
+        }
       }
       
-      if(changeIcon) 
+      if(changeIcon && currentStatus) 
       {
-        this.setIcon(REVIEWED_ICON);
+        setIcon(REVIEWED_ICON);
       } 
+      else
+        setIcon(DEFAULT_ICON);
 //      else
 //      {
 //        this.setIcon(REVIEWED_ICON);
