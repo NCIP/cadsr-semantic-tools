@@ -40,6 +40,10 @@ public class UMLDefaultHandler implements UMLHandler {
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     oc.setConcept(concept);
     oc.setLongName(event.getName());
+    if(event.getDescription() != null && event.getDescription().length() > 0)
+      oc.setPreferredDefinition(event.getDescription());
+    else 
+      oc.setPreferredDefinition(concept.getPreferredDefinition());
     elements.addElement(oc);
 
     if (!packageList.contains(event.getPackageName())) {

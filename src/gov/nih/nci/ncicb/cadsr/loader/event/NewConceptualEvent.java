@@ -27,11 +27,17 @@ public class NewConceptualEvent implements LoaderEvent {
    */
   public static final String TV_CONCEPT_DEFINITION_SOURCE = "ConceptDefinitionSource";
 
+  /**
+   * Tagged Value name for Concept Definition Source
+   */
+  public static final String TV_DOCUMENTATION = "documentation";
+
   private String code;
   private String definition;
   private String preferredName;
   private String definitionSource;
 
+  private String description;
   
   /**
    * Get the DefinitionSource value.
@@ -74,6 +80,22 @@ public class NewConceptualEvent implements LoaderEvent {
    */
   public String getConceptDefinition() {
     return definition;
+  }
+
+  /**
+   * Get the Description value.
+   * @return the Description value.
+   */
+  public String getDescription() {
+    return description;
+  }
+
+  /**
+   * Set the Description value.
+   * @param newDescription The new Description value.
+   */
+  public void setDescription(String newDescription) {
+    this.description = newDescription;
   }
 
   /**
