@@ -12,4 +12,9 @@ public class NavigationEvent {
     this.type = type;
   }
 
+  public int getType() 
+  {
+    return type;
+  }
+
 }
