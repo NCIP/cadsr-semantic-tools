@@ -30,10 +30,28 @@ import org.apache.log4j.Logger;
 
 import gov.nih.nci.ncicb.cadsr.loader.jaas.ConsoleCallbackHandler;
 
+
+/**
+ *
+ * <code>UMLLoader</code> is the starting class for running UML Loader un command line. <br/>
+ * Usage: UMLLoader dir-name project-name
+ * <ul><li>dir-name is the full path to the directory containing the XMI files</li>
+ * <li>project-name is the name of an existing project in the UML_LOADER_DEFAULTS table of CADSR.</li>
+ * </ul>
+ * In order to start UML Loader, one needs a 'defaults' record in CADSR. 
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ * 
+ */
 public class UMLLoader {
 
   private static Logger logger = Logger.getLogger(UMLLoader.class.getName());
 
+  /**
+   *
+   * @param args a <code>String[]</code> value
+   * @exception Exception if an error occurs
+   */
   public static void main(String[] args) throws Exception {
     ApplicationContextFactory.init("applicationContext.xml");
 
@@ -120,6 +138,10 @@ public class UMLLoader {
 
   }
 
+  /**
+   * <code>UMLLoader</code> starts a separate thread for initializing the environement, while users enter their username and password. 
+   *
+   */
   class InitClass implements Runnable {
     Object parent;
     boolean done = false;
