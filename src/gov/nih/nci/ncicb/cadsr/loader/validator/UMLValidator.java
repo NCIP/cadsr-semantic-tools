@@ -18,17 +18,28 @@ public class UMLValidator implements Validator {
   /**
    * returns a list of Validation errors.
    */
-  public List<ValidationError> validate() {
+  public List validate() {
     // !!! TODO
+
+    List errors = new ArrayList();
     
     ObjectClass oc = DomainObjectFactory.newObjectClass();
-    List<ObjectClass> ocs = (List<ObjectClass>)elements.getElements(oc.getClass());
-
+    List ocs = (List)elements.getElements(oc.getClass());
     for(ObjectClass o : ocs) {
-      
+      if(o.getConcept().getPreferredName() == null) {
+        errors.add(new ValidationError(SEVERITY_ERROR, "Class: " + o.getLongName() + " has no concept code."));
+      }
     }
 
-    return new ArrayList<ValidationError>();
+    Property prop = DomainObjectFactory.newProperty();
+    List props = elements.getElements(prop.getClass());
+    for(Property o : props) {
+//       if(o.getConcept().getPreferredName() == null) {
+//         errors.add(new ValidationError(SEVERITY_ERROR, "Attribute: " + o.getLongName() + " has no concept code."));
+//       }
+    }
+
+    return errors;
   }
 
 }
