@@ -1,0 +1,529 @@
+OBJECT CLASS
+
+PREFERRED_NAME                      LONG_NAME                                                       
+----------------------------------- -----------------------------------                             
+PREFERRED_DEFINITION                   VERSION ASL_NAME                                             
+----------------------------------- ---------- --------------------                                 
+SEQUENCE                            Sequence                                                        
+The sequence of nucleotide residues          1 RELEASED                                             
+ along a DNA chain.                                                                                 
+                                                                                                    
+C25673                              Sequence                                                        
+C25673:Serial arrangement in which           1 RELEASED                                             
+things follow in logical order or a                                                                 
+ recurrent pattern.                                                                                 
+                                                                                                    
+
+OBJECT CLASS ALT DEF:
+TESTING ALT DEF
+
+no rows selected
+
+ALT DEF CLASSIFICATION
+
+no rows selected
+
+OBJECT CLASS ALT NAME:
+TESTING ALT_NAME
+
+NAME                                DETL_NAME                                                       
+----------------------------------- --------------------                                            
+Clones                              UML Class                                                       
+
+ALT_NAME CLASSIFICATIONS
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+
+11 rows selected.
+
+OBJECT CLASS CONCEPT:
+TESTING MULTIPLE CONCEPTS FOR OC
+OC
+
+LONG_NAME                           PREFERRED_NAME                                                  
+----------------------------------- -----------------------------------                             
+PREFERRED_DEFINITION                DEFINITION                                                      
+----------------------------------- ----------                                                      
+Clinical Trial Protocol             CLINICAL TRIAL PROTOCOL                                         
+Precise and detailed plans for the                                                                  
+study of a medical or biomedical pr                                                                 
+oblem and/or plans for a regimen of                                                                 
+ therapy.                                                                                           
+                                                                                                    
+Clinical Trial Protocol             C25398-C15207-C25320                                            
+C25398:Relating to the examination  NCI                                                             
+and treatment of patients dependent                                                                 
+
+LONG_NAME                           PREFERRED_NAME                                                  
+----------------------------------- -----------------------------------                             
+PREFERRED_DEFINITION                DEFINITION                                                      
+----------------------------------- ----------                                                      
+ on direct observation. The term ma                                                                 
+y also refer to the institution (cl                                                                 
+inic) providing this activity.                                                                      
+C15207:Relating to the examination                                                                  
+and treatment of patients dependent                                                                 
+ on direct observation. The term ma                                                                 
+y also refer to the institution (cl                                                                 
+inic) providing this activity.                                                                      
+C25320:A protocol is a rule which g                                                                 
+
+LONG_NAME                           PREFERRED_NAME                                                  
+----------------------------------- -----------------------------------                             
+PREFERRED_DEFINITION                DEFINITION                                                      
+----------------------------------- ----------                                                      
+uides how an activity should be per                                                                 
+formed; a set of formal rules used                                                                  
+to specify the format of an exchang                                                                 
+e of data.                                                                                          
+                                                                                                    
+
+DERIVATION RULE
+
+NAME                                LONG_NAME                                                       
+----------------------------------- -----------------------------------                             
+C25398-C15207-C25320                Clinical Trial Protocol                                         
+
+CONCEPTS:
+
+no rows selected
+
+PROPERTY ALT DEF:
+TESTING PROP ALT DEF
+
+no rows selected
+
+PROP ALT DEF CLASSIFICATION
+
+no rows selected
+
+PROPERTY ALT NAME:
+TESTING PROP ALT_NAME
+
+NAME                                DETL_NAME                                                       
+----------------------------------- --------------------                                            
+id                                  UML Attribute                                                   
+refIdSeq                            UML Attribute                                                   
+
+PROP ALT_NAME CLASSIFICATIONS
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+
+CSI_NAME   CSITL_NAME           PREFERRED_NAME                                                      
+---------- -------------------- -----------------------------------                                 
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+gov.nih.nc UML_PACKAGE          Gene-Test-1                                                         
+i.ncicb.ca                                                                                          
+bio.domain                                                                                          
+                                                                                                    
+
+44 rows selected.
+
+PROPERTY CONCEPT:
+TESTING MULTIPLE CONCEPTS FOR PROP
+PROP
+
+LONG_NAME                           PREFERRED_NAME                                                  
+----------------------------------- -----------------------------------                             
+PREFERRED_DEFINITION                DEFINITION                                                      
+----------------------------------- ----------                                                      
+Preferred Name                      CC_PREFERRED-C25191                                             
+CC_PREFERRED:Something you choose o NCI                                                             
+ver something else                                                                                  
+C25191:A word or group of words ind                                                                 
+icating the identity of a person us                                                                 
+ually consisting of a first (person                                                                 
+al) name and a last (family) name w                                                                 
+ith an optional middle name. In som                                                                 
+e cultural traditions the family na                                                                 
+
+LONG_NAME                           PREFERRED_NAME                                                  
+----------------------------------- -----------------------------------                             
+PREFERRED_DEFINITION                DEFINITION                                                      
+----------------------------------- ----------                                                      
+me comes first. (NCI)                                                                               
+                                                                                                    
+
+DERIVATION RULE
+
+NAME                                LONG_NAME                                                       
+----------------------------------- -----------------------------------                             
+CC_PREFERRED-C25191                 Preferred Name                                                  
+
+CONCEPTS:
+
+prop.LongName                                                                                       
+----------------------------------------------------------------------------------------------------
+CON.LongName                                                                                        
+----------------------------------------------------------------------------------------------------
+CON.PrefName                                                                                        
+------------------------------                                                                      
+Preferred Name                                                                                      
+preferred                                                                                           
+CC_PREFERRED                                                                                        
+                                                                                                    
+Preferred Name                                                                                      
+Name                                                                                                
+C25191                                                                                              
+
+prop.LongName                                                                                       
+----------------------------------------------------------------------------------------------------
+CON.LongName                                                                                        
+----------------------------------------------------------------------------------------------------
+CON.PrefName                                                                                        
+------------------------------                                                                      
+                                                                                                    
+
+ASSOCIATIONS:
+
+LONG_NAME                           DIRECTION            LONG_NAME                                  
+----------------------------------- -------------------- -----------------------------------        
+LONG_NAME                               srcLow      srcHi     tarLow      tarHi                     
+----------------------------------- ---------- ---------- ---------- ----------                     
+Gene.genes(1..*)::Sequence.sequence Bi-Directional       Gene                                       
+s(0..*)                                                                                             
+Sequence                                     1         -1          0          0                     
+                                                                                                    
+Sequence.sequences(1..*)::Clone.clo Source->Destination  Sequence                                   
+ne(0..1)                                                                                            
+Clone                                        1         -1          0          0                     
+                                                                                                    
+Agent.agents(0..*)::Target.targets( Bi-Directional       Agent                                      
+
+LONG_NAME                           DIRECTION            LONG_NAME                                  
+----------------------------------- -------------------- -----------------------------------        
+LONG_NAME                               srcLow      srcHi     tarLow      tarHi                     
+----------------------------------- ---------- ---------- ---------- ----------                     
+1..0)                                                                                               
+Target                                       0         -1          1          1                     
+                                                                                                    
+Clinical Trial Protocol.ctp(0..1):: Bi-Directional       Clinical Trial Protocol                    
+Agent.agent(0..*)                                                                                   
+Agent                                        0          1          0          0                     
+                                                                                                    
+Gene-->DomainObject                                      Gene                                       
+DomainObject                                 0          0          0          0                     
+
+LONG_NAME                           DIRECTION            LONG_NAME                                  
+----------------------------------- -------------------- -----------------------------------        
+LONG_NAME                               srcLow      srcHi     tarLow      tarHi                     
+----------------------------------- ---------- ---------- ---------- ----------                     
+                                                                                                    
+Sequence-->DomainObject                                  Sequence                                   
+DomainObject                                 0          0          0          0                     
+                                                                                                    
+Target.targets(0..*)::Gene.gene(0.. Bi-Directional       Target                                     
+1)                                                                                                  
+Gene                                         0         -1          0          0                     
+                                                                                                    
+
+7 rows selected.
+
+INHERITANCE:
+DEC:
+
+LONG_NAME                           PREFERRED_NAME                                                  
+----------------------------------- -----------------------------------                             
+PREFERRED_DEFINITION                                                                                
+-----------------------------------                                                                 
+Gene ID                             3504303-1.0:3505045-1.0                                         
+C16612:Life is too short, and so is                                                                 
+ EA's field for Gene's definition                                                                   
+CC_ID:Identifier                                                                                    
+                                                                                                    
+Gene Symbol                         3504303-1.0:3505046-1.0                                         
+C16612:Life is too short, and so is                                                                 
+ EA's field for Gene's definition                                                                   
+CC_SYMB:Symbolic representation                                                                     
+
+LONG_NAME                           PREFERRED_NAME                                                  
+----------------------------------- -----------------------------------                             
+PREFERRED_DEFINITION                                                                                
+-----------------------------------                                                                 
+                                                                                                    
+
+DE:
+
+no rows selected
+
+OC_RECS:
+
+LONG_NAME                           PREFERRED_NAME                                                  
+----------------------------------- -----------------------------------                             
+PREFERRED_DEFINITION                                                                                
+-----------------------------------                                                                 
+Gene-->DomainObject                 3505064                                                         
+Gene extends DomainObject                                                                           
+                                                                                                    
+Sequence-->DomainObject             3505065                                                         
+Sequence extends DomainObject                                                                       
+                                                                                                    
+
