@@ -33,6 +33,8 @@ public class UMLLoader {
     String projectName = args[2];
     String version = args[3];
     String workflowStatus = args[4];
+    String conceptualDomain = args[5];
+
     
     System.out.println(filenames.length + " files to process");
     
@@ -51,6 +53,7 @@ public class UMLLoader {
       persister.setParameter("projectName", projectName);
       persister.setParameter("version", version);
       persister.setParameter("workflowStatus", workflowStatus);
+      persister.setParameter("conceptualDomain", args[5]);
       persister.persist();
       
     }

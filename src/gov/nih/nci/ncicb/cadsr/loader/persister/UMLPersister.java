@@ -29,6 +29,7 @@ public class UMLPersister implements Persister {
   
   private String projectName, version, workflowStatus;
   private Context context;
+  private ConceptualDomain conceptualDomain;
 
   private ClassificationSchemeItem projectCsi, versionCsi;
   private ClassificationScheme domainCs;
@@ -54,8 +55,8 @@ public class UMLPersister implements Persister {
     System.out.println("Loading DataElementConceptDAO bean");
     dataElementConceptDAO = (DataElementConceptDAO) ApplicationContextFactory.getApplicationContext().getBean("dataElementConceptDAO");
 
-//     System.out.println("Loading CDDAO bean");
-//     conceptualDomainDAO = (ConceptualDomainDAO) ApplicationContextFactory.getApplicationContext().getBean("conceptualDomainDAO");
+    System.out.println("Loading CDDAO bean");
+    conceptualDomainDAO = (ConceptualDomainDAO) ApplicationContextFactory.getApplicationContext().getBean("conceptualDomainDAO");
 
     System.out.println("Loading VDDAO bean");
     valueDomainDAO = (ValueDomainDAO) ApplicationContextFactory.getApplicationContext().getBean("valueDomainDAO");
@@ -89,22 +90,6 @@ public class UMLPersister implements Persister {
     persistObjectClasses();
 
     persistDecs();
-
-//     DataElement o = DomainObjectFactory.newDataElement();
-
-//     List des = (List)elements.getElements(o.getClass());
-//     if(des != null) 
-//       for(int i=0; i<des.size(); i++) {
-// 	DataElement de = (DataElement)des.get(i);
-// 	DataElementConcept dec = de.getDataElementConcept();
-// 	System.out.println("Class: " + dec.getObjectClass().getPreferredName());
-// 	System.out.println(" -- Attribute: " + dec.getProperty().getPreferredName() + ":" + de.getValueDomain().getPreferredName());
-
-// 	List vds = valueDomainDAO.find(de.getValueDomain());
-// 	System.out.println("vds -- SIZE: " + vds.size());
-	
-
-//       }
 
   }
 
@@ -217,6 +202,13 @@ public class UMLPersister implements Persister {
 	elements.removeElement(dec);
 	
 	dec.setContext(context);
+	dec.setConceptualDomain(conceptualDomain);
+
+	int ind = dec.getLongName().lastIndexOf(".");
+	if(ind > 0)
+	  dec.setLongName(dec.getLongName().substring(ind+1));
+
+	System.out.println("dec name: " + dec.getLongName());
 
 	// does this dec exist?
 	List l = dataElementConceptDAO.find(dec);
@@ -236,8 +228,15 @@ public class UMLPersister implements Persister {
 	    if(o.getLongName().equals(dec.getObjectClass().getLongName()))
 	      dec.setObjectClass(o);
 	  }
-	  
 
+	  List props = elements.getElements(DomainObjectFactory.newProperty().getClass());
+	  for(int j=0; j<props.size(); j++) {
+	    Property o = (Property)props.get(j);
+	    if(o.getLongName().equals(dec.getProperty().getLongName()))
+	      dec.setProperty(o);
+	  }
+
+	  
 	  dec.setId(dataElementConceptDAO.create(dec));
 	} else {
 	  dec = (DataElementConcept)l.get(0);
@@ -309,6 +308,13 @@ public class UMLPersister implements Persister {
     workflowStatus = (String)params.get("workflowStatus");
     if(workflowStatus == null)
       throw new PersisterException("WorkflowStatus not Set.");
+
+    
+    conceptualDomain = DomainObjectFactory.newConceptualDomain();
+    conceptualDomain.setLongName((String)params.get("conceptualDomain"));
+    conceptualDomain.setContext(context);
+
+    conceptualDomain = (ConceptualDomain)conceptualDomainDAO.find(conceptualDomain).get(0);
 
 
   }
