@@ -1,7 +1,13 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
+
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
+
+import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,8 +16,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import gov.nih.nci.ncicb.cadsr.domain.Concept;
-import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
+
+
 
 
 public class UMLElementViewPanel extends JPanel
@@ -23,6 +29,8 @@ public class UMLElementViewPanel extends JPanel
 
   private JPanel _this = this;
 
+  private UMLNode node;
+
   private static final String ADD = "ADD",
     DELETE = "DELETE",
     SAVE = "SAVE";
@@ -31,12 +39,52 @@ public class UMLElementViewPanel extends JPanel
   private JCheckBox reviewButton;
   private List<ReviewListener> reviewListeners = new ArrayList();
   
-  public UMLElementViewPanel(Concept[] concepts) {
-    this.concepts = concepts;
+//  public UMLElementViewPanel(Concept[] concepts) {
+//    this.concepts = concepts;
+//    initUI();
+//  }
+  
+  public UMLElementViewPanel(UMLNode node) 
+  {
+    this.node = node;
+    initConcepts();
     initUI();
   }
 
-  public void updateConcepts(Concept[] concepts) {
+  public void updateNode(UMLNode node) 
+  {
+    this.node = node;
+    initConcepts();
+    updateConcepts(concepts);
+  }
+
+  private void initConcepts() 
+  {
+    String[] conceptCodes = null;
+      if(node instanceof ClassNode) {
+        ObjectClass oc = (ObjectClass)node.getUserObject();
+        conceptCodes = oc.getPreferredName().split("-");
+        
+      } else if(node instanceof AttributeNode) {
+        Property prop = ((DataElement)node.getUserObject()).getDataElementConcept().getProperty();
+        conceptCodes = prop.getPreferredName().split("-");
+      } 
+      
+      if(StringUtil.isEmpty(conceptCodes[0])) {
+        conceptCodes = new String[0];
+      }
+
+      concepts = new Concept[conceptCodes.length];
+
+      for(int i=0; i<concepts.length; 
+          concepts[i] = LookupUtil.lookupConcept(conceptCodes[i++])
+          );
+      if((concepts.length > 0) && (concepts[0] == null))
+        concepts = new Concept[0];
+    
+  }
+
+  private void updateConcepts(Concept[] concepts) {
     this.concepts = concepts;
     this.removeAll();
     initUI();
@@ -55,7 +103,6 @@ public class UMLElementViewPanel extends JPanel
 
 //     JPanel scrollPanel = new JPanel();
 
-    reviewListeners = new ArrayList();
     JPanel gridPanel = new JPanel(new GridLayout(-1, 1));
     JScrollPane scrollPane = new JScrollPane(gridPanel);
 
@@ -102,6 +149,8 @@ public class UMLElementViewPanel extends JPanel
     deleteButton = new JButton("Remove");
     saveButton = new JButton("Apply");
     reviewButton = new JCheckBox("Reviewed");
+    
+    reviewButton.setSelected(((ReviewableUMLNode)node).isReviewed());
 
     addButton.setActionCommand(ADD);
     deleteButton.setActionCommand(DELETE);
@@ -185,9 +234,13 @@ public class UMLElementViewPanel extends JPanel
        || e.getStateChange() == ItemEvent.DESELECTED
        ) {
       ReviewEvent event = new ReviewEvent();
-      event.setUserObject(null);
+      event.setUserObject(node);
+      
       event.setReviewed(ItemEvent.SELECTED == e.getStateChange());
+      
       fireReviewEvent(event);
+      
+
     }
   }
   
@@ -214,7 +267,12 @@ public class UMLElementViewPanel extends JPanel
     Concept[] concepts = new Concept[1];
     concepts[0] = con;
 
-    frame.add(new UMLElementViewPanel(concepts));
+    ObjectClass oc = DomainObjectFactory.newObjectClass();
+    oc.setPreferredName(con.getPreferredName());
+    oc.setLongName("com.anwar.ATrivialObject");
+    
+    ClassNode node = new ClassNode(oc);
+    frame.add(new UMLElementViewPanel(node));
     
     frame.setSize(500, 400);
 
