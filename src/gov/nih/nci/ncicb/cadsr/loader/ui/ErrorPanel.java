@@ -19,6 +19,7 @@ public class ErrorPanel extends JPanel {
 
   public ErrorPanel(UMLNode rootNode) {
     initUI(rootNode);
+    buildPopupMenu();
   }
 
   private void initUI(UMLNode rootNode) {
@@ -32,14 +33,7 @@ public class ErrorPanel extends JPanel {
     tree.setRootVisible(false);
     tree.setShowsRootHandles(true);
     
-    ImageIcon leafIcon = new ImageIcon(this.getClass().getResource("/red-dot.jpg"));
-    
-    if (leafIcon != null) {
-      DefaultTreeCellRenderer renderer = 
-	new DefaultTreeCellRenderer();
-      renderer.setLeafIcon(leafIcon);
-      tree.setCellRenderer(renderer);
-    }
+    tree.setCellRenderer(new UMLTreeCellRenderer());
 
     this.setLayout(new BorderLayout());
 
@@ -49,6 +43,13 @@ public class ErrorPanel extends JPanel {
 
   }
   
+  public void buildPopupMenu() {
+    JPopupMenu popup = new JPopupMenu();
+    JMenuItem menuItem = new JMenuItem("A test item");
+    //menuItem.addActionListener(popup);
+    popup.add(menuItem);
+  }
+
   private void firstRun(UMLNode node) {
     Set<UMLNode> children = node.getChildren();
 

@@ -15,8 +15,7 @@ public class AttributeNode extends AbstractUMLNode {
   }
 
   public Icon getIcon() {
-    return new ImageIcon(this.getClass().getResource("/tree-attribute.png"));
-
+    return new ImageIcon(this.getClass().getResource("/tree-attribute.gif"));
   }
 
 }
