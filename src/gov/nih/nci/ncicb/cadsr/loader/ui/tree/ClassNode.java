@@ -2,6 +2,9 @@ package gov.nih.nci.ncicb.cadsr.loader.ui.tree;
 
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 public class ClassNode extends AbstractUMLNode {
 
   public ClassNode(ObjectClass oc) {
@@ -10,5 +13,9 @@ public class ClassNode extends AbstractUMLNode {
     display = fullPath.substring(ind + 1);
   }
 
+  public Icon getIcon() {
+    return new ImageIcon(this.getClass().getResource("/tree-class.png"));
+
+  }
 
 }
