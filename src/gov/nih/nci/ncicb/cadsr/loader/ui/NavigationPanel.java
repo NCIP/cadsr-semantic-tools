@@ -55,8 +55,6 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
     node.setReviewed(event.isReviewed());
 
     tree.repaint();
-
-    System.out.println("repainted");
   }
   
   private void initUI() throws Exception
