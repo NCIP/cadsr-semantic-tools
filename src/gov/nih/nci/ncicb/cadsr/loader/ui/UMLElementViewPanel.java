@@ -29,7 +29,7 @@ public class UMLElementViewPanel extends JPanel
 
   private JButton addButton, deleteButton, saveButton;
   private JCheckBox reviewButton;
-  private List reviewListeners;
+  private List<ReviewListener> reviewListeners = new ArrayList();
   
   public UMLElementViewPanel(Concept[] concepts) {
     this.concepts = concepts;
@@ -181,19 +181,20 @@ public class UMLElementViewPanel extends JPanel
   }
   
   public void itemStateChanged(ItemEvent e) {
-    if(e.getStateChange() == ItemEvent.SELECTED) {
-      System.out.println(e.getSource());
+    if(e.getStateChange() == ItemEvent.SELECTED
+       || e.getStateChange() == ItemEvent.DESELECTED
+       ) {
       ReviewEvent event = new ReviewEvent();
-      event.setUserObject(e);
+      event.setUserObject(null);
+      event.setReviewed(ItemEvent.SELECTED == e.getStateChange());
       fireReviewEvent(event);
     }
   }
   
   public void fireReviewEvent(ReviewEvent event) {
-    for(Iterator it = reviewListeners.iterator(); it.hasNext();) {
-      ((ReviewListener) it.next()).reviewChanged(event);
-    }
-    }
+    for(ReviewListener l : reviewListeners)
+      l.reviewChanged(event);
+  }
   
 
   public void addReviewListener(ReviewListener listener) {
