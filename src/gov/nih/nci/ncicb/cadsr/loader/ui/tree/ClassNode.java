@@ -53,6 +53,9 @@ public class ClassNode extends AbstractUMLNode
       } 
       else
         setIcon(DEFAULT_ICON);
+        
+      PackageNode parent = (PackageNode) getParent();
+      parent.setReviewed(parent.isReviewed());
 
   }
   
