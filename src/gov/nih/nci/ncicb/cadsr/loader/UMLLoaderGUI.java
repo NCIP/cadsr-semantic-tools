@@ -35,64 +35,37 @@ public class UMLLoaderGUI
 {
 
   private static Logger logger = Logger.getLogger(UMLLoader.class.getName());
-  Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+  private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
 
   public UMLLoaderGUI()
   {
 
-    String username = doLogin();
+    Wizard wizard = new Wizard();
 
-    WizardSelectionDialog step1 = new WizardSelectionDialog();
-    putToCenter(step1);
-    step1.show();
+    wizard.getDialog().setTitle("Test Wizard Dialog");
     
-    while(step1.getSelection() == 0) {
-      try
-      {
-        Thread.currentThread().sleep(200);
-      }
-      catch (InterruptedException e)
-      {
-        
-      }
-    }
+    WizardPanelDescriptor descriptor1 = new LoginPanelDescriptor();
+    wizard.registerWizardPanel(LoginPanelDescriptor.IDENTIFIER, descriptor1);
+
+    WizardPanelDescriptor descriptor2 = new FileSelectionPanelDescriptor();
+    wizard.registerWizardPanel(FileSelectionPanelDescriptor.IDENTIFIER, descriptor2);
+
+    WizardPanelDescriptor descriptor3 = new SemanticConnectorPanelDescriptor();
+    wizard.registerWizardPanel(SemanticConnectorPanelDescriptor.IDENTIFIER, descriptor3);
+
     
-    String filename = null;
-    if(step1.getSelection() == WizardSelectionDialog.SELECTION_CANCEL) {
-      System.exit(0);
-    } else if(step1.getSelection() == WizardSelectionDialog.SELECTION_NEW) {
-      JFileChooser chooser = new JFileChooser();
-      javax.swing.filechooser.FileFilter filter = 
-        new javax.swing.filechooser.FileFilter() {
-          public boolean accept(File f) {
-            if (f.isDirectory()) {
-              return true;
-            }
-            return f.getName().endsWith(".xmi");
-          }
-          public String getDescription() {
-            return "XMI Files";
-          }
-        };
-      chooser.setFileFilter(filter);
-      int returnVal = chooser.showOpenDialog(null);
-      if(returnVal == JFileChooser.APPROVE_OPTION) {
-        filename = chooser.getSelectedFile().getName();
-        System.out.println("********* " + filename);
-      }
-    } else if(step1.getSelection() == WizardSelectionDialog.SELECTION_CONTINUE) {
+    wizard.setCurrentPanel(LoginPanelDescriptor.IDENTIFIER);
 
-    }
-    
+    wizard.showModalDialog();
 
+//     ProgressFrame progressFrame = new ProgressFrame(145);
+//     putToCenter(progressFrame);
+//     ProgressSimulator simulator = new ProgressSimulator();
+//     simulator.addProgressListener(progressFrame);
+//     simulator.run();
 
-    ProgressFrame progressFrame = new ProgressFrame(145);
-    putToCenter(progressFrame);
-    ProgressSimulator simulator = new ProgressSimulator();
-    simulator.addProgressListener(progressFrame);
-    simulator.run();
-
-    progressFrame.dispose();
+//     progressFrame.dispose();
 
 
     Frame frame = new MainFrame();
@@ -159,8 +132,6 @@ public class UMLLoaderGUI
       lc.login();
       boolean loginSuccess = true;
       
-      System.out.println("sucess");
-      
       Subject subject = lc.getSubject();
       
       Iterator it = subject.getPrincipals().iterator();
@@ -182,7 +153,7 @@ public class UMLLoaderGUI
   }
 
   private void putToCenter(Component comp) {
-      comp.setLocation((screenSize.width - comp.getSize().width) / 2, (screenSize.height - comp.getSize().height) / 2);
+    comp.setLocation((screenSize.width - comp.getSize().width) / 2, (screenSize.height - comp.getSize().height) / 2);
   }
 
 }

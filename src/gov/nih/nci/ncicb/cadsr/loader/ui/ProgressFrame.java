@@ -34,7 +34,13 @@ public class ProgressFrame extends JFrame
   }
 
   private void initUI(int maximum) {
-    progressBar = new JProgressBar(0, maximum);
+    if(maximum > 0)
+      progressBar = new JProgressBar(0, maximum);
+    else {
+      progressBar = new JProgressBar();
+      progressBar.setIndeterminate(true);
+    }
+      
 
     msgLabel = new JLabel();
 
