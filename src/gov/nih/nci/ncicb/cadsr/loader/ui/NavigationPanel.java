@@ -71,10 +71,8 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
     tree.setCellRenderer(new UMLTreeCellRenderer());
    
     this.setLayout(new BorderLayout());
-//     this.add(tree, BorderLayout.CENTER);
 
     JScrollPane scrollPane = new JScrollPane(tree);
-//     this.setPreferredSize(new Dimension(450, 110));
     this.add(scrollPane, BorderLayout.CENTER);
 
     
