@@ -13,8 +13,9 @@ public class LookupUtil {
     for (Iterator it = concepts.iterator(); it.hasNext();) {
       Concept con = (Concept)it.next();
       
-      if(con.getPreferredName().equals(conceptCode))
-        return con;
+      if(con.getPreferredName() != null)
+        if(con.getPreferredName().equals(conceptCode))
+          return con;
     }
     return null;
 
