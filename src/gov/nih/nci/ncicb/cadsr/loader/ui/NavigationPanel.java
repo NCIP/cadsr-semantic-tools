@@ -11,14 +11,17 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 import java.awt.BorderLayout;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import java.util.*;
+import javax.swing.tree.TreeSelectionModel;
 
-public class NavigationPanel extends JPanel implements ActionListener, MouseListener, ReviewListener
+public class NavigationPanel extends JPanel 
+  implements ActionListener, MouseListener, ReviewListener, NavigationListener
 {
   private JTree tree;
   private JPopupMenu popup;
@@ -64,9 +67,12 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
     tree = new JTree(top);
     tree.setRootVisible(false);
     tree.setShowsRootHandles(true);
-
-    //Traverse Tree expanding all nodes
-    TreeUtil.expandAll(tree, new TreePath(top));
+    
+//    tree.getSelectionModel().setSelectionMode
+//      (TreeSelectionModel.SINGLE_TREE_SELECTION);
+      
+    //Traverse Tree expanding all nodes    
+    TreeUtil.expandAll(tree, top);
 
     tree.setCellRenderer(new UMLTreeCellRenderer());
    
@@ -135,24 +141,7 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
   private void doMouseEvent(MouseEvent e) {
     if(e.getButton() == MouseEvent.BUTTON1) {
       TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-      if(path != null) {
-        DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
-        
-        Object o = dmtn.getUserObject();
-        if((o instanceof ClassNode)
-           || (o instanceof AttributeNode)
-           ) {
-          ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
-          evt.setViewObject(dmtn.getUserObject());
-          evt.setInNewTab(false);
-          vcl.viewChanged(evt);
-        } else if(o instanceof AssociationNode) {
-          ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_ASSOCIATION);
-          evt.setViewObject(dmtn.getUserObject());
-          evt.setInNewTab(false);
-          vcl.viewChanged(evt);
-        }
-      }
+      newViewEvent(path);
     } else if(e.getButton() == MouseEvent.BUTTON2) {
       TreePath path = tree.getPathForLocation(e.getX(), e.getY());
       if(path != null) {
@@ -164,6 +153,29 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
       }
     }
    }
+
+  private void newViewEvent(TreePath path)
+  {
+  	if(path != null) {
+  	  DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
+  	  
+  	  Object o = dmtn.getUserObject();
+  	  if((o instanceof ClassNode)
+  	     || (o instanceof AttributeNode)
+  	     ) {
+  	    ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
+  	    evt.setViewObject(dmtn.getUserObject());
+  	    evt.setInNewTab(false);
+  	    vcl.viewChanged(evt);
+  	  } else if(o instanceof AssociationNode) {
+  	    ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_ASSOCIATION);
+  	    evt.setViewObject(dmtn.getUserObject());
+  	    evt.setInNewTab(false);
+  	    vcl.viewChanged(evt);
+  	  }
+  	}
+  }
+
 
   private void buildPopupMenu() {
     JMenuItem newTabItem = new JMenuItem("Open in New Tab");
@@ -210,5 +222,27 @@ public class NavigationPanel extends JPanel implements ActionListener, MouseList
     return node;
     
   }
+  
+  public void navigate(NavigationEvent event) 
+  {    
+    DefaultMutableTreeNode selected = 
+      (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+    
+      if(event.getType() == NavigationEvent.NAVIGATE_NEXT) 
+      {      
+        TreePath path =  new TreePath(selected.getNextNode().getPath());
+        tree.setSelectionPath(path);
+        newViewEvent(path);
+      }
+      else 
+        if(event.getType() == NavigationEvent.NAVIGATE_PREVIOUS) 
+        {
+            TreePath path = new TreePath(selected.getPreviousNode().getPath());
+            tree.setSelectionPath(path);
+            newViewEvent(path);            
+        }
+    
+  }
+  
 
 }
