@@ -13,9 +13,9 @@ import org.omg.uml.modelmanagement.UmlPackage;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
-import uml.MdrModelManager;
-import uml.MdrModelManagerFactory;
-import uml.MdrModelManagerFactoryImpl;
+import gov.nih.nci.codegen.core.util.UML13Utils;
+import gov.nih.nci.codegen.core.access.UML13ModelAccess;
+import gov.nih.nci.codegen.framework.ModelAccess;
 
 import java.io.*;
 
@@ -30,8 +30,7 @@ public class XMIParser implements Parser {
   private static final String EA_CONTAINMENT = "containment";
   private static final String EA_UNSPECIFIED = "Unspecified";
   private UMLHandler listener;
-  private MdrModelManagerFactory fact;
-  private MdrModelManager mgr;
+
   private String packageName = "";
   private String className = "";
   private List associations = new ArrayList();
@@ -50,9 +49,16 @@ public class XMIParser implements Parser {
 
   public void parse(String filename) {
     try {
-      fact = new MdrModelManagerFactoryImpl();
-      mgr = fact.readModel("", filename);
-      Model model = mgr.getModel();
+      ModelAccess access = new UML13ModelAccess();
+      access.readModel("file:" + filename, "EA Model");
+      uml.UmlPackage umlExtent = (uml.UmlPackage) access.getOutermostExtent();
+
+      Model model = UML13Utils.getModel(umlExtent, "EA Model");      
+
+//       fact = new MdrModelManagerFactoryImpl();
+//       mgr = fact.readModel("", filename);
+//       Model model = mgr.getModel();
+
       Iterator it = model.getOwnedElement().iterator();
 
       while (it.hasNext()) {
@@ -359,22 +365,22 @@ public class XMIParser implements Parser {
 
   private void setConceptInfo(ModelElement elt, NewConceptualEvent event) {
 
-    TaggedValue tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_CODE);
+    TaggedValue tv = UML13Utils.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_CODE);
     if (tv != null) {
       event.setConceptCode(tv.getValue());
     }
 
-    tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_DEFINITION);
+    tv = UML13Utils.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_DEFINITION);
     if (tv != null) {
       event.setConceptDefinition(tv.getValue());
     }
 
-    tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_DEFINITION_SOURCE);
+    tv = UML13Utils.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_DEFINITION_SOURCE);
     if (tv != null) {
       event.setConceptDefinitionSource(tv.getValue());
     }
     
-    tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_PREFERRED_NAME);
+    tv = UML13Utils.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_PREFERRED_NAME);
     if (tv != null) {
       event.setConceptPreferredName(tv.getValue());
     }
