@@ -5,6 +5,8 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.spring.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.UMLDefaults;
+
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -91,9 +93,6 @@ public class UMLPersister implements Persister {
   }
 
   public void persist() throws PersisterException {
-    defaults.initParams(params);
-
-    defaults.initClassifications();
 
     new PackagePersister(elements).persist();
     new PropertyPersister(elements).persist();
