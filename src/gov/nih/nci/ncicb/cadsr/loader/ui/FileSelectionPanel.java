@@ -60,19 +60,6 @@ public class FileSelectionPanel extends JPanel
 
     browseButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
-
-          new ProgressFrame(-1);
-          
-          try {
-            Thread.currentThread().sleep(10000);
-          } catch (Exception e){
-          } // end of try-catch
-        }
-      });
-
-    
-    browseButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
           JFileChooser chooser = new JFileChooser();
           javax.swing.filechooser.FileFilter filter = 
             new javax.swing.filechooser.FileFilter() {
