@@ -1,6 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.event;
 
-public class ConceptualEvent implements LoaderEvent {
+public class NewConceptualEvent implements LoaderEvent {
 
   /**
    * Tagged Value name for Concept Code
