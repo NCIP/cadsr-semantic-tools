@@ -148,7 +148,7 @@ public class XMIParser implements Parser {
       className = pName + "." + className;
     }
 
-    NewClassEvent event = new NewClassEvent(className);
+    NewClassEvent event = new NewClassEvent(className.trim());
     event.setPackageName(pName);
 
     setConceptInfo(clazz, event, NewConceptEvent.TYPE_CLASS);
@@ -195,9 +195,14 @@ public class XMIParser implements Parser {
         UmlClass p = (UmlClass) g.getParent();
         NewGeneralizationEvent gEvent = new NewGeneralizationEvent();
         gEvent.setParentClassName(
-          p.getNamespace().getName() + "." + p.getName());
+          getPackageName(p) + "." + p.getName());
+
         gEvent.setChildClassName(
-          clazz.getNamespace().getName() + "." + clazz.getName());
+          getPackageName(clazz) + "." + clazz.getName());
+//         gEvent.setParentClassName(
+//           p.getNamespace().getName() + "." + p.getName());
+//         gEvent.setChildClassName(
+//           clazz.getNamespace().getName() + "." + clazz.getName());
 
         generalizationEvents.add(gEvent);
       }
@@ -208,7 +213,7 @@ public class XMIParser implements Parser {
     className = packageName + "." + interf.getName();
 
     //     logger.debug("Class: " + className);
-    listener.newInterface(new NewInterfaceEvent(className));
+    listener.newInterface(new NewInterfaceEvent(className.trim()));
 
     Iterator it = interf.getFeature().iterator();
 
@@ -229,7 +234,7 @@ public class XMIParser implements Parser {
   }
 
   private void doAttribute(Attribute att) {
-    NewAttributeEvent event = new NewAttributeEvent(att.getName());
+    NewAttributeEvent event = new NewAttributeEvent(att.getName().trim());
     event.setClassName(className);
     event.setType(att.getType().getName());
     
@@ -316,8 +321,6 @@ public class XMIParser implements Parser {
           MultiplicityRange mr = (MultiplicityRange) it2.next();
           int low = mr.getLower();
           int high = mr.getUpper();
-          logger.debug("B-LOW: " + low);
-          logger.debug("B-HIGH: " + high);
           event.setBLowCardinality(low);
           event.setBHighCardinality(high);
         }
@@ -328,6 +331,8 @@ public class XMIParser implements Parser {
     }
 
     event.setDirection(navig);
+
+    logger.debug(event.getAClassName() + "::" + event.getALowCardinality() + "^" + event.getAHighCardinality() + "%%%" + event.getBClassName() + "::" + event.getBLowCardinality() + "^" + event.getBHighCardinality());
 
     associationEvents.add(event);
   }
@@ -385,23 +390,23 @@ public class XMIParser implements Parser {
 
     TaggedValue tv = UML13Utils.getTaggedValue(elt, type + pre + NewConceptEvent.TV_CONCEPT_CODE + ((n>0)?""+n:""));
     if (tv != null) {
-      event.setConceptCode(tv.getValue());
+      event.setConceptCode(tv.getValue().trim());
     } else 
       return false;
 
     tv = UML13Utils.getTaggedValue(elt, type + pre + NewConceptEvent.TV_CONCEPT_DEFINITION + ((n>0)?""+n:""));
     if (tv != null) {
-      event.setConceptDefinition(tv.getValue());
+      event.setConceptDefinition(tv.getValue().trim());
     }
 
     tv = UML13Utils.getTaggedValue(elt, type + pre + NewConceptEvent.TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:""));
     if (tv != null) {
-      event.setConceptDefinitionSource(tv.getValue());
+      event.setConceptDefinitionSource(tv.getValue().trim());
     }
     
     tv = UML13Utils.getTaggedValue(elt, type + pre + NewConceptEvent.TV_CONCEPT_PREFERRED_NAME + ((n>0)?""+n:""));
     if (tv != null) {
-      event.setConceptPreferredName(tv.getValue());
+      event.setConceptPreferredName(tv.getValue().trim());
     }
 
     event.setOrder(n);

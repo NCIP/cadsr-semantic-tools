@@ -36,7 +36,7 @@ public class AssociationValidator implements Validator {
         it.remove();
         continue;
       }
-      if(ocr.getSourceRole() == null || ocr.getTargetRole() == null || ocr.getSourceRole().length() == 0 || ocr.getTargetRole().length() == 0) {
+      if(ocr.getType().equals(ObjectClassRelationship.TYPE_HAS) && (ocr.getSourceRole() == null || ocr.getTargetRole() == null || ocr.getSourceRole().length() == 0 || ocr.getTargetRole().length() == 0)) {
         errors.add(new ValidationError
                    (SEVERITY_ERROR, PropertyAccessor.getProperty(
                       "association.missing.role", 

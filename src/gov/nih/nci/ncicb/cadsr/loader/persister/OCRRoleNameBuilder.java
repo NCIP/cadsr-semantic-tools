@@ -5,13 +5,17 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 public class OCRRoleNameBuilder  {
 
   public String buildRoleName(ObjectClassRelationship ocr) {
-    // !!! TODO This requirement is changing. Business Case will require a Role name for all associations.
-    String roleName = ocr.getSource().getLongName();
 
-    if (ocr.getSourceRole() != null) {
-      roleName += ("." + ocr.getSourceRole());
+    if(ocr.getType().equals(ocr.TYPE_IS)) {
+      return ocr.getSource().getLongName() + "-->" + ocr.getTarget().getLongName();
     }
 
+    StringBuffer roleName = new StringBuffer(ocr.getSource().getLongName());
+
+    if (ocr.getSourceRole() != null) {
+      roleName.append(".")
+        .append(ocr.getSourceRole());
+    }
 
     String cardinality = "" + ocr.getSourceLowCardinality();
     if(ocr.getSourceLowCardinality() != ocr.getSourceHighCardinality()) {
@@ -23,13 +27,14 @@ public class OCRRoleNameBuilder  {
       }
     }
       
-
-
-    roleName += ("(" + cardinality + ")::" +
-		 ocr.getTarget().getLongName());
+    roleName.append("(")
+      .append(cardinality)
+      .append(")::")
+      .append(ocr.getTarget().getLongName());
 
     if (ocr.getTargetRole() != null) {
-      roleName += ("." + ocr.getTargetRole());
+      roleName.append(".")
+        .append(ocr.getTargetRole());
     }
 
     cardinality = "" + ocr.getTargetLowCardinality();
@@ -42,9 +47,11 @@ public class OCRRoleNameBuilder  {
       }
     }    
 
-    roleName += ("(" + cardinality + ")");
+    roleName.append("(")
+      .append(cardinality)
+      .append(")");
 
-    return roleName;
+    return roleName.toString();
   }
 
 }

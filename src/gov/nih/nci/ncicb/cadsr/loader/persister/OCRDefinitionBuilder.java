@@ -12,8 +12,12 @@ public class OCRDefinitionBuilder  {
   public String buildDefinition(ObjectClassRelationship ocr) {
     	String definition = null;
 
+        if(ocr.getType().equals(ocr.TYPE_IS)) {
+          return ocr.getSource().getLongName() + " extends " + ocr.getTarget().getLongName();
+        }
 
-	if(ocr.getType().equals(ObjectClassRelationship.TYPE_IS)) {
+
+	if(ocr.getType().equals(ObjectClassRelationship.TYPE_HAS)) {
 	  if (ocr.getSourceHighCardinality() == -1) {
 	    definition = "Many-to-";
 	  } else {

@@ -24,12 +24,12 @@ public class ObjectClassPersister extends UMLPersister {
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     List ocs = (List) elements.getElements(oc.getClass());
 
-    logger.debug("ocs...");
-
     String packageName = null;
 
     if (ocs != null) {
       for (ListIterator it = ocs.listIterator(); it.hasNext();) {
+        ObjectClass newOc = null;
+
 	oc = (ObjectClass) it.next();
 	oc.setContext(defaults.getMainContext());
 
@@ -38,22 +38,27 @@ public class ObjectClassPersister extends UMLPersister {
 	packageName = className.substring(0, ind);
 	className = className.substring(ind + 1);
 
-
 	// does this oc exist?
 	List eager = new ArrayList();
 	eager.add(EagerConstants.AC_CS_CSI);
 
         String[] conceptCodes = oc.getPreferredName().split("-");
-        Concept primaryConcept = findConcept(conceptCodes[0]);
-	oc.setLongName(primaryConcept.getLongName());
-
+        Concept[] concepts = new Concept[conceptCodes.length];
+        for(int i=0; i<concepts.length; 
+            concepts[i] = findConcept(conceptCodes[i++])
+            );
+        
         List l = objectClassDAO.findByConceptCodes(conceptCodes, eager);
         
+        Concept primaryConcept = concepts[concepts.length - 1];
+
 	boolean packageFound = false;
         String newDef = oc.getPreferredDefinition();
+        String newName = className;
 
 	if (l.size() == 0) {
-	  oc.setPreferredDefinition(primaryConcept.getPreferredDefinition());
+          oc.setLongName(longNameFromConcepts(concepts));
+	  oc.setPreferredDefinition(preferredDefinitionFromConcepts(concepts));
           oc.setDefinitionSource(primaryConcept.getDefinitionSource());
 
 	  oc.setVersion(new Float(1.0f));
@@ -62,42 +67,46 @@ public class ObjectClassPersister extends UMLPersister {
 
           try {
 //             oc.setId(objectClassDAO.create(oc, conceptCodes));
-            oc = objectClassDAO.create(oc, conceptCodes);
+            newOc = objectClassDAO.create(oc, conceptCodes);
             logger.info(PropertyAccessor.getProperty("created.oc"));
           } catch (DAOCreateException e){
             logger.error(PropertyAccessor.getProperty("created.oc.failed", e.getMessage()));
           } // end of try-catch
           // is definition the same?
           // if not, then add alternate Def
-          if((newDef.length() > 0) && !newDef.equals(oc.getPreferredDefinition())) {
-            addAlternateDefinition(oc, newDef, Definition.TYPE_UML);
+          if((newDef.length() > 0) && !newDef.equals(newOc.getPreferredDefinition())) {
+            addAlternateDefinition(newOc, newDef, Definition.TYPE_UML);
+          }
+          // is long_name the same?
+          // if not, then add alternate Name
+          if(!newName.equals(newOc.getLongName())) {
+            addAlternateName(newOc, newName);
           }
           
 	} else {
-          String newName = oc.getLongName();
           String newDefSource = primaryConcept.getDefinitionSource();
           String newConceptDef = primaryConcept.getPreferredDefinition();
-	  oc = (ObjectClass) l.get(0);
+	  newOc = (ObjectClass) l.get(0);
 	  logger.info(PropertyAccessor.getProperty("existed.oc"));
           // is long_name the same?
           // if not, then add alternate Name
-          if(!newName.equals(oc.getLongName())) {
-            addAlternateName(oc, newName);
+          if(!newName.equals(newOc.getLongName())) {
+            addAlternateName(newOc, newName);
           }
 
           // is definition the same?
           // if not, then add alternate Def
-          if((newDef.length() > 0) && !newDef.equals(oc.getPreferredDefinition())) {
-            addAlternateDefinition(oc, newDef, Definition.TYPE_UML);
+          if((newDef.length() > 0) && !newDef.equals(newOc.getPreferredDefinition())) {
+            addAlternateDefinition(newOc, newDef, Definition.TYPE_UML);
           }
 
           // is concept source the same?
           // if not, then add alternate Def
-          if(!newDefSource.equals(oc.getDefinitionSource())) {
-            addAlternateDefinition(oc, newConceptDef, newDefSource);
+          if(!newDefSource.equals(newOc.getDefinitionSource())) {
+            addAlternateDefinition(newOc, newConceptDef, newDefSource);
           }
 
-	  List packages = oc.getAcCsCsis();
+	  List packages = newOc.getAcCsCsis();
 
 	  if (packages != null) {
 	    for (Iterator it2 = packages.iterator();
@@ -113,11 +122,13 @@ public class ObjectClassPersister extends UMLPersister {
 	  }
 	}
 
-	LogUtil.logAc(oc, logger);
-        logger.info("public ID: " + oc.getPublicId());
+	LogUtil.logAc(newOc, logger);
+        logger.info("public ID: " + newOc.getPublicId());
 
-	addProjectCs(oc);
-	it.set(oc);
+	addProjectCs(newOc);
+	it.set(newOc);
+        
+        oc.setLongName(newOc.getLongName());
 
 	// add CSI to hold package name
 	// !!!! TODO
@@ -128,12 +139,12 @@ public class ObjectClassPersister extends UMLPersister {
 	  if (packageCsCsi != null) {
 	    List ll = new ArrayList();
 	    ll.add(packageCsCsi);
-	    adminComponentDAO.addClassSchemeClassSchemeItems(oc, ll);
+	    adminComponentDAO.addClassSchemeClassSchemeItems(newOc, ll);
 	    logger.info(PropertyAccessor
                         .getProperty("added.package",
                                      new String[] {
                                        packageName, 
-                                       oc.getLongName()}));
+                                       newOc.getLongName()}));
 	  } else {
 	    // PersistPackages should have taken care of it. 
 	    // We should not be here.

@@ -6,8 +6,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.spring.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
-import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -308,5 +307,32 @@ public class UMLPersister implements Persister {
 //     }
 //     return sb.toString();
 //   }
+
+  protected String longNameFromConcepts(Concept[] concepts) {
+    StringBuffer sb = new StringBuffer();
+    
+    for(int i=0; i < concepts.length; i++) {
+      if(sb.length() > 0)
+        sb.append(" ");
+      sb.append(StringUtil.upperFirst(concepts[i].getLongName()));
+    }
+
+    return sb.toString();
+
+  }
+
+  protected String preferredDefinitionFromConcepts(Concept[] concepts) {
+    StringBuffer sb = new StringBuffer();
+    
+    for(int i=0; i < concepts.length; i++) {
+      if(sb.length() > 0)
+        sb.append("-");
+      sb.append(concepts[i].getPreferredName());
+      sb.append(":");
+      sb.append(concepts[i].getPreferredDefinition());
+    }
+
+    return sb.toString();
+  }
 
 }

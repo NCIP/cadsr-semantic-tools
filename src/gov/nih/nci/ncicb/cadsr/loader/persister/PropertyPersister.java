@@ -27,19 +27,24 @@ public class PropertyPersister extends UMLPersister {
     if (props != null) {
       for (ListIterator it = props.listIterator(); it.hasNext();) {
 	prop = (Property) it.next();
+        Property newProp = null;
 
 	prop.setContext(defaults.getMainContext());
-
 
         String[] conceptCodes = prop.getPreferredName().split("-");
         List l = propertyDAO.findByConceptCodes(conceptCodes);
 
-        Concept primaryConcept = findConcept(conceptCodes[0]);
-        prop.setLongName(primaryConcept.getLongName());
+        Concept[] concepts = new Concept[conceptCodes.length];
+        for(int i=0; i<concepts.length; 
+            concepts[i] = findConcept(conceptCodes[i++])
+            );
 
+        Concept primaryConcept = concepts[concepts.length - 1];
         String newDef = prop.getPreferredDefinition();
+        String newName = prop.getLongName();
 	if (l.size() == 0) {
-	  prop.setPreferredDefinition(primaryConcept.getPreferredDefinition());
+          prop.setLongName(longNameFromConcepts(concepts));
+	  prop.setPreferredDefinition(preferredDefinitionFromConcepts(concepts));
           prop.setDefinitionSource(primaryConcept.getDefinitionSource());
 
 	  prop.setVersion(new Float(1.0f));
@@ -49,37 +54,35 @@ public class PropertyPersister extends UMLPersister {
           logger.debug("property: " + prop.getLongName());
 
           try {
-//             prop.setId(propertyDAO.create(prop, conceptCodes));
-            prop = propertyDAO.create(prop, conceptCodes);
+            newProp = propertyDAO.create(prop, conceptCodes);
             logger.info(PropertyAccessor.getProperty("created.prop"));
+            // is long_name the same?
+            // if not, then add alternate Name
+            if(!newName.equals(newProp.getLongName())) {
+              addAlternateName(newProp, newName);
+            }
           } catch (DAOCreateException e){
             logger.error(PropertyAccessor.getProperty("created.prop.failed", e.getMessage()));
           } // end of try-catch
 
-//           // is definition the same?
-//           // if not, then add alternate Def
-//           if((newDef.length() > 0) && !newDef.equals(prop.getPreferredDefinition())) {
-//             addAlternateDefinition(prop, newDef, Definition.TYPE_UML);
-//           }
-
 	} else {
-          // !!! TODO Verify that next line is ok.
-          String newPrefName = prop.getLongName();
-	  prop = (Property) l.get(0);
+	  newProp = (Property) l.get(0);
 	  logger.info(PropertyAccessor.getProperty("existed.prop"));
           // is long_name the same?
           // if not, then add alternate Name
-          if(!newPrefName.equals(prop.getPreferredName())) {
-            addAlternateName(prop, newPrefName);
+          if(!newName.equals(newProp.getLongName())) {
+            addAlternateName(newProp, newName);
           }
           
-
 	}
 
-	LogUtil.logAc(prop, logger);
-        logger.info("-- Public ID: " + prop.getPublicId());
-	addProjectCs(prop);
-	it.set(prop);
+	LogUtil.logAc(newProp, logger);
+        logger.info("-- Public ID: " + newProp.getPublicId());
+	addProjectCs(newProp);
+	it.set(newProp);
+
+        // This object still reference in DEC, update long_name to real long name
+        prop.setLongName(newProp.getLongName());
       }
     }
 

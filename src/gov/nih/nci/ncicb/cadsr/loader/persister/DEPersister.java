@@ -38,14 +38,7 @@ public class DEPersister extends UMLPersister {
                  newDataElementConcept().getClass()).listIterator(); lit.hasNext();) {
             
 	    DataElementConcept o = (DataElementConcept) lit.next();
-// 	    if (o.getObjectClass().getConcept().getId()
-//                 .equals(de.getDataElementConcept()
-//                         .getObjectClass().getConcept().getId())
-//                 && 
-//                 o.getProperty().getConcept().getId()
-//                 .equals(de.getDataElementConcept()
-//                         .getProperty().getConcept().getId()))
-// 	      de.setDataElementConcept(o);
+
             de.setDataElementConcept(findDec(de.getDataElementConcept().getLongName()));
 
 	  }
@@ -54,7 +47,7 @@ public class DEPersister extends UMLPersister {
 
           de.setLongName(
             de.getDataElementConcept()
-            .getLongName()
+            .getLongName() + " "
             + de.getValueDomain().getPreferredName());
           
 

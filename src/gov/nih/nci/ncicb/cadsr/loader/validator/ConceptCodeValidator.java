@@ -6,6 +6,8 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
+
 public class ConceptCodeValidator implements Validator {
 
   private ElementsLists elements;
@@ -47,14 +49,20 @@ public class ConceptCodeValidator implements Validator {
       for(Iterator it = concepts.iterator(); it.hasNext(); ) {
         Concept o = (Concept)it.next();
         if(o.getPreferredName() == null) {
-          errors.add(new ValidationError(SEVERITY_ERROR, "A Concept is missing its PreferredName."));
+          errors.add(new ValidationError(SEVERITY_ERROR, 
+                                         PropertyAccessor.getProperty("validation.concept.missing")));
         } else {
           if(o.getLongName() == null)
-            errors.add(new ValidationError(SEVERITY_ERROR, "Concept: " + o.getPreferredName() + " is missing Long Name."));
+            errors.add(new ValidationError(SEVERITY_ERROR,
+                                           PropertyAccessor.getProperty("validation.concept.missing.longName", o.getPreferredName())));
           if(o.getPreferredDefinition() == null)
-            errors.add(new ValidationError(SEVERITY_ERROR, "Concept: " + o.getPreferredName() + " is missing Preferred Definition."));
+            errors.add(
+              new ValidationError(SEVERITY_ERROR,
+                                  PropertyAccessor.getProperty("validation.concept.missing.definition", o.getPreferredName())));
           if(o.getDefinitionSource() == null)
-            errors.add(new ValidationError(SEVERITY_ERROR, "Concept: " + o.getPreferredName() + " is missing Definition Source."));
+            errors.add(
+              new ValidationError(SEVERITY_ERROR,
+                                  PropertyAccessor.getProperty("validation.concept.missing.source", o.getPreferredName())));
         }
       }
     }

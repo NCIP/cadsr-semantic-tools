@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 
-
 public class DECPersister extends UMLPersister {
 
   private static Logger logger = Logger.getLogger(DECPersister.class.getName());
@@ -27,53 +26,35 @@ public class DECPersister extends UMLPersister {
     logger.debug("decs... ");
     if (decs != null) {
       for (ListIterator it = decs.listIterator(); it.hasNext();) {
+        DataElementConcept newDec = null;
 	dec = (DataElementConcept) it.next();
-
-//         for (Iterator it2 = elements.getElements(DomainObjectFactory.newObjectClass().getClass()).iterator(); it2.hasNext(); ) {
-//           ObjectClass o = (ObjectClass) it2.next();
-//           if (o.getConcept().getId()
-//               .equals(dec.getObjectClass()
-//                       .getConcept().getId())) {
-//             dec.setObjectClass(o);
-//           }
-//         }
         
         // update object class with persisted one
         dec.setObjectClass(findObjectClass(
                              dec.getObjectClass().getLongName()));
 
-//         for (Iterator it2 = elements.getElements(DomainObjectFactory.newProperty().getClass()).iterator(); it2.hasNext(); ) {
-//           Property o = (Property) it2.next();
-//           if (o.getConcept().getId()
-//               .equals(dec.getProperty()
-//                       .getConcept().getId())) {
-//             dec.setProperty(o);
-//           }
-//         }
-
         // update object class with persisted one
         dec.setProperty(findProperty(
                              dec.getProperty().getLongName()));
         
-
 	dec.setContext(defaults.getContext());
 	dec.setConceptualDomain(defaults.getConceptualDomain());
-
         
         String first = dec.getProperty().getLongName().substring(0, 1).toUpperCase();
         String propName = first + dec.getProperty().getLongName().substring(1);
 
         dec.setLongName(
           dec.getObjectClass().getLongName()
-          + propName);
+          + " " + propName);
 
 	logger.debug("dec name: " + dec.getLongName());
 
 	// does this dec exist?
 	List l = dataElementConceptDAO.find(dec);
 
+        
+        String newDef = dec.getPreferredDefinition();
 	if (l.size() == 0) {
-	  // !!!!! TODO
 	  dec.setPreferredDefinition(
             dec.getObjectClass().getPreferredDefinition() + ":" +
             dec.getProperty().getPreferredDefinition()
@@ -102,28 +83,42 @@ public class DECPersister extends UMLPersister {
 	  }
 
 	  dec.setAudit(defaults.getAudit());
-// 	  dec.setId(dataElementConceptDAO.create(dec));
-          dec = dataElementConceptDAO.create(dec);
+          newDec = dataElementConceptDAO.create(dec);
 	  logger.info(PropertyAccessor.getProperty("created.dec"));
+
+          // is definition the same?
+          // if not, then add alternate Def
+          if((newDef.length() > 0) && !newDef.equals(newDec.getPreferredDefinition())) {
+            addAlternateDefinition(newDec, newDef, Definition.TYPE_UML);
+          }
+
+
 	} else {
-	  dec = (DataElementConcept) l.get(0);
+	  newDec = (DataElementConcept) l.get(0);
 	  logger.info(PropertyAccessor.getProperty("existed.dec"));
+
+          // is definition the same?
+          // if not, then add alternate Def
+          if((newDef.length() > 0) && !newDef.equals(newDec.getPreferredDefinition())) {
+            addAlternateDefinition(dec, newDef, Definition.TYPE_UML);
+          }
+
 	}
 
-	LogUtil.logAc(dec, logger);
-        logger.info("-- Public ID: " + dec.getPublicId());
+	LogUtil.logAc(newDec, logger);
+        logger.info("-- Public ID: " + newDec.getPublicId());
 	logger.info(PropertyAccessor
                     .getProperty("oc.longName",
-                                 dec.getObjectClass().getLongName()));
+                                 newDec.getObjectClass().getLongName()));
 	logger.info(PropertyAccessor
                     .getProperty("prop.longName",
-                                 dec.getProperty().getLongName()));
+                                 newDec.getProperty().getLongName()));
 
-	addProjectCs(dec);
-	it.set(dec);
+	addProjectCs(newDec);
+	it.set(newDec);
+        
+        dec.setLongName(dec.getLongName());
 
-	// add designation to hold package name
-	// !!!! TODO
       }
     }
 

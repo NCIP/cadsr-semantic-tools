@@ -6,7 +6,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import org.apache.log4j.Logger;
 
 import java.util.*;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 /**
  * This class implements UMLHandler specifically to handle UML events and convert them into caDSR objects.<br/> The handler's responsibility is to transform events received into cadsr domain objects, and store those objects in the Elements List.
@@ -40,14 +40,7 @@ public class UMLDefaultHandler implements UMLHandler {
     ObjectClass oc = DomainObjectFactory.newObjectClass();
 
     // store concept codes in preferredName
-    String prefName = "";
-    for(Iterator it = concepts.iterator(); it.hasNext(); ) {
-      Concept con = (Concept)it.next();
-      if(prefName.length() > 0)
-        prefName = prefName + "-";
-      prefName = prefName + con.getPreferredName();
-    }
-    oc.setPreferredName(prefName);
+    oc.setPreferredName(preferredNameFromConcepts(concepts));
 
     oc.setLongName(event.getName());
     if(event.getDescription() != null && event.getDescription().length() > 0)
@@ -76,26 +69,12 @@ public class UMLDefaultHandler implements UMLHandler {
     Property prop = DomainObjectFactory.newProperty();
 
     // store concept codes in preferredName
-    String prefName = "";
-    for(Iterator it = concepts.iterator(); it.hasNext(); ) {
-      Concept con = (Concept)it.next();
-      if(prefName.length() > 0)
-        prefName = prefName + "-";
-      prefName = prefName + con.getPreferredName();
-    }
-    prop.setPreferredName(prefName);
+    prop.setPreferredName(preferredNameFromConcepts(concepts));
 
     //     prop.setPreferredName(event.getName());
     prop.setLongName(event.getName());
 
-    if(event.getDescription() != null && event.getDescription().length() > 0)
-      prop.setPreferredDefinition(event.getDescription());
-    else 
-      prop.setPreferredDefinition("");
-
-    // Uppercase first Char
-    String first = event.getName().substring(0, 1).toUpperCase();
-    String propName = first + event.getName().substring(1);
+    String propName = StringUtil.upperFirst(event.getName());
 
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
     dec.setLongName(event.getClassName() + propName);
@@ -130,6 +109,16 @@ public class UMLDefaultHandler implements UMLHandler {
     vd.setPreferredName(event.getType());
     de.setValueDomain(vd);
 
+    if(event.getDescription() != null && event.getDescription().length() > 0) {
+      prop.setPreferredDefinition(event.getDescription());
+      dec.setPreferredDefinition(event.getDescription());
+      de.setPreferredDefinition(event.getDescription());
+    } else {
+      prop.setPreferredDefinition("");
+      dec.setPreferredDefinition("");
+      de.setPreferredDefinition("Please provide the appropriate definition.");
+    }
+
     elements.addElement(de);
     elements.addElement(dec);
     elements.addElement(prop);
@@ -153,9 +142,9 @@ public class UMLDefaultHandler implements UMLHandler {
     
     List ocs = elements.getElements(oc.getClass());
     logger.debug("direction: " + event.getDirection());
-    
-    for (int i = 0; i < ocs.size(); i++) {
-      ObjectClass o = (ObjectClass) ocs.get(i);
+
+    for(Iterator it = ocs.iterator(); it.hasNext(); ) {
+      ObjectClass o = (ObjectClass) it.next();
       
       if (o.getLongName().equals(event.getAClassName())) {
         if (event.getDirection().equals("B")) {
@@ -220,58 +209,56 @@ public class UMLDefaultHandler implements UMLHandler {
 
     List ocs = elements.getElements(oc.getClass());
 
-    for (int i = 0; i < ocs.size(); i++) {
-      ObjectClass o = (ObjectClass) ocs.get(i);
-
+    for(Iterator it = ocs.iterator(); it.hasNext(); ) {
+      ObjectClass o = (ObjectClass) it.next();
+      
       if (o.getLongName().equals(event.getParentClassName())) {
         ocr.setTarget(o);
       } else if (o.getLongName().equals(event.getChildClassName())) {
         ocr.setSource(o);
       }
+      
     }
-
     ocr.setType(ObjectClassRelationship.TYPE_IS);
 
     // Inherit all attributes
     // Find all DECs:
     ObjectClass parentOc = ocr.getTarget(),
       childOc = ocr.getSource();
-    List decs = elements.getElements(DomainObjectFactory.newDataElementConcept().getClass());
-    if(decs != null)
-      for(Iterator it = decs.iterator(); it.hasNext(); ) {
-        DataElementConcept dec = (DataElementConcept)it.next();
+
+    List newElts = new ArrayList();
+    List des = elements.getElements(DomainObjectFactory.newDataElement().getClass());
+    if(des != null)
+      for(Iterator it = des.iterator(); it.hasNext(); ) {
+        DataElement de = (DataElement)it.next();
+        DataElementConcept dec = de.getDataElementConcept();
         if(dec.getObjectClass() == parentOc) {
           // We found property belonging to parent
           // Duplicate it for child.
           DataElementConcept newDec = DomainObjectFactory.newDataElementConcept();
           newDec.setProperty(dec.getProperty());
           newDec.setObjectClass(childOc);
+          newDec.setPreferredDefinition(dec.getPreferredDefinition());
           
-          // Uppercase first Char
-          String first = newDec.getProperty().getLongName().substring(0, 1).toUpperCase();
-          String propName = first + newDec.getProperty().getLongName().substring(1);
+          String propName = StringUtil.upperFirst(newDec.getProperty().getLongName());
           
           newDec.setLongName(childOc.getLongName() + propName);		
+          DataElement newDe = DomainObjectFactory.newDataElement();
+          newDe.setDataElementConcept(dec);
+          newDe.setValueDomain(de.getValueDomain());
+          newDe.setLongName(newDec.getLongName() + de.getValueDomain().getPreferredName());
+          newDe.setPreferredDefinition(de.getPreferredDefinition());
 
-          // for each DEC, also create a DE.
-          List des = elements.getElements(DomainObjectFactory.newDataElement().getClass());
-          for(Iterator it2 = des.iterator(); it2.hasNext(); ) {
-            DataElement de = (DataElement)it.next();
-            if(de.getDataElementConcept() == dec) {
-              DataElement newDe = DomainObjectFactory.newDataElement();
-              newDe.setDataElementConcept(dec);
-              newDe.setValueDomain(de.getValueDomain());
-              newDe.setLongName(newDec.getLongName() + de.getValueDomain().getPreferredName());
-              elements.addElement(newDe);
-            }
-          }
-          elements.addElement(newDec);
+          newElts.add(newDe);
+          newElts.add(newDec);
         }
       }
-
-
+    
+    for(Iterator it = newElts.iterator(); it.hasNext();
+        elements.addElement(it.next()));
+    
+    
     elements.addElement(ocr);
-
 
     logger.debug("Generalization: ");
     logger.debug("Source:");
@@ -301,5 +288,16 @@ public class UMLDefaultHandler implements UMLHandler {
     }
 
     return concepts;
+  }
+
+  private String preferredNameFromConcepts(List concepts) {
+    StringBuffer sb = new StringBuffer();
+    for(Iterator it = concepts.iterator(); it.hasNext(); ) {
+      Concept con = (Concept)it.next();
+      if(sb.length() > 0)
+        sb.insert(0, "-");
+      sb.insert(0, con.getPreferredName());
+    }
+    return sb.toString();
   }
 }
