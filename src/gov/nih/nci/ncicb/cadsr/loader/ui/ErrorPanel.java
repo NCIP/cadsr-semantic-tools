@@ -3,6 +3,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
@@ -21,11 +22,12 @@ public class ErrorPanel extends JPanel {
 
   private void initUI(UMLNode rootNode) {
     DefaultMutableTreeNode node = buildTree(rootNode);
-    
+    System.out.println("The node in initUI");
+    System.out.println(node.getFirstChild());
     //create tree and make root not visible
     tree = new JTree(node);
-    tree.setRootVisible(false);
-    tree.setShowsRootHandles(true);
+//     tree.setRootVisible(false);
+//     tree.setShowsRootHandles(true);
     
     ImageIcon leafIcon = new ImageIcon(this.getClass().getResource("/red-dot.jpg"));
     
@@ -46,40 +48,58 @@ public class ErrorPanel extends JPanel {
   
   public DefaultMutableTreeNode buildTree(UMLNode rootNode) {
     DefaultMutableTreeNode node = new DefaultMutableTreeNode(rootNode);
-    
-    return doNode(node, rootNode);
+    System.out.println("The node in buildTree");
+    System.out.println(node.toString());
+    return doNode(node);
   }
 
-  private DefaultMutableTreeNode doNode(DefaultMutableTreeNode node, UMLNode parentNode) {
+  private DefaultMutableTreeNode doNode(DefaultMutableTreeNode node) {
     
+    UMLNode parentNode = (UMLNode)node.getUserObject();
+    
+    DefaultMutableTreeNode rnode = null;
+
     Set<UMLNode> children = parentNode.getChildren();
+    System.out.println("The set is empty:" + children.isEmpty());
     for(UMLNode child : children) {
 //       DefaultMutableTreeNode newNode = 
 //         new DefaultMutableTreeNode(child);
       
       DefaultMutableTreeNode newNode = 
         new DefaultMutableTreeNode(child);
+
+      System.out.println("1... " + child);
+
       if(child instanceof ValidationNode) {
         System.out.println("****  Validation Node");
-        drawTree(newNode, child);
-        node.add(newNode);
+	rnode = drawTree(newNode);
+	System.out.println("childCount: " + rnode.getChildCount());
+// 	System.out.println("** adding: " + newNode.toString() + " to " + node.toString());
+//         node.add(newNode);
       }
-      doNode(newNode, child);
+      doNode(newNode);
     }
+
+    if(rnode != null)
+      node.add(rnode);
+
     return node;
   }
 
-  private DefaultMutableTreeNode drawTree(DefaultMutableTreeNode node, UMLNode childNode) {
-    UMLNode pNode = childNode.getParent();
+  private DefaultMutableTreeNode drawTree(DefaultMutableTreeNode node) {
+    UMLNode pNode = ((UMLNode)node.getUserObject()).getParent();
     if(pNode != null) {
       System.out.println("*** Parent");
       DefaultMutableTreeNode newNode = 
-        new DefaultMutableTreeNode(childNode);
-      drawTree(newNode, pNode);
-      node.add(newNode);
+        new DefaultMutableTreeNode(pNode);
+      System.out.println(newNode.toString());
+      drawTree(newNode);
+      System.out.println("adding: " + node.toString() + " to " + newNode.toString());
+      newNode.add(node);
+      return newNode;
     }
     return node;
-  }
+   }
 
 }
 
