@@ -26,9 +26,19 @@ public interface UMLNode {
   public Set<UMLNode> getChildren();
 
   /**
+   * Returns this node's children, if any
+   */
+  public Set<ValidationNode> getValidationNodes();
+
+  /**
    * Appends a child to the list of children.
    */
   public void addChild(UMLNode child);
+
+  /**
+   * Appends a child to the list of children.
+   */
+  public void addValidationNode(ValidationNode child);
 
   /**
    * A reference to the parent node
