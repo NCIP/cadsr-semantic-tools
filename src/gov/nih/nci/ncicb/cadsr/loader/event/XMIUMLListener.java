@@ -17,104 +17,104 @@ public class XMIUMLListener implements UMLListener {
       this.elements = elements;
     }
 
-    public void newPackage(NewPackageEvent event) {
-        logger.debug("Package: " + event.getName());
+  public void newPackage(NewPackageEvent event) {
+    logger.debug("Package: " + event.getName());
+  }
+
+  public void newOperation(NewOperationEvent event) {
+    logger.debug("Operation: " + event.getClassName() + "." +
+                 event.getName());
+  }
+
+  public void newClass(NewClassEvent event) {
+    logger.debug("Class: " + event.getName());
+    
+    String conceptCode = event.getConceptCode();
+    
+    if (conceptCode == null) {
+      logger.warn("Class: " + event.getName() + " has no concept code.");
+    } else {
+      logger.debug("tagged value: " + conceptCode);
     }
 
-    public void newOperation(NewOperationEvent event) {
-        logger.debug("Operation: " + event.getClassName() + "." +
-            event.getName());
+    ObjectClass oc = DomainObjectFactory.newObjectClass();
+    oc.setLongName(event.getName());
+    elements.addElement(oc);
+
+    if (!packageList.contains(event.getPackageName())) {
+      ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
+      csi.setName(event.getPackageName());
+      elements.addElement(csi);
+      packageList.add(event.getPackageName());
+    }
+  }
+
+  public void newAttribute(NewAttributeEvent event) {
+    logger.debug("Attribute: " + event.getClassName() + "." +
+                 event.getName());
+
+    String conceptCode = event.getConceptCode();
+
+    if (conceptCode == null) {
+      logger.warn("Attribute: " + event.getClassName() + "." +
+                  event.getName() + " has no concept code");
+    } else {
+      logger.debug("tagged value: " + conceptCode);
     }
 
-    public void newClass(NewClassEvent event) {
-        logger.debug("Class: " + event.getName());
+    Property prop = DomainObjectFactory.newProperty();
 
-        String conceptCode = event.getConceptCode();
+    //     prop.setPreferredName(event.getName());
+    prop.setLongName(event.getName());
 
-        if (conceptCode == null) {
-            logger.warn("Class: " + event.getName() + " has no concept code.");
-        } else {
-            logger.debug("tagged value: " + conceptCode);
-        }
+    DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
+    dec.setLongName(event.getClassName() + event.getName());
+    dec.setProperty(prop);
 
-        ObjectClass oc = DomainObjectFactory.newObjectClass();
-        oc.setLongName(event.getName());
-        elements.addElement(oc);
+    logger.debug("DEC LONG_NAME: " + dec.getLongName());
 
-        if (!packageList.contains(event.getPackageName())) {
-            ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
-            csi.setName(event.getPackageName());
-            elements.addElement(csi);
-            packageList.add(event.getPackageName());
-        }
+    ObjectClass oc = DomainObjectFactory.newObjectClass();
+    List ocs = elements.getElements(oc.getClass());
+
+    for (int i = 0; i < ocs.size(); i++) {
+      ObjectClass o = (ObjectClass) ocs.get(i);
+
+      if (o.getLongName().equals(event.getClassName())) {
+        oc = o;
+      }
     }
 
-    public void newAttribute(NewAttributeEvent event) {
-        logger.debug("Attribute: " + event.getClassName() + "." +
-            event.getName());
+    dec.setObjectClass(oc);
 
-        String conceptCode = event.getConceptCode();
+    DataElement de = DomainObjectFactory.newDataElement();
 
-        if (conceptCode == null) {
-            logger.warn("Attribute: " + event.getClassName() + "." +
-                event.getName() + " has no concept code");
-        } else {
-            logger.debug("tagged value: " + conceptCode);
-        }
+    //     de.setLongName(dec.getLongName() + event.getType());
+    de.setLongName(dec.getLongName());
 
-        Property prop = DomainObjectFactory.newProperty();
+    logger.debug("DE LONG_NAME: " + de.getLongName());
 
-        //     prop.setPreferredName(event.getName());
-        prop.setLongName(event.getName());
+    de.setDataElementConcept(dec);
 
-        DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
-        dec.setLongName(event.getClassName() + event.getName());
-        dec.setProperty(prop);
+    ValueDomain vd = DomainObjectFactory.newValueDomain();
+    vd.setPreferredName(event.getType());
+    de.setValueDomain(vd);
 
-        logger.debug("DEC LONG_NAME: " + dec.getLongName());
+    elements.addElement(de);
+    elements.addElement(dec);
+    elements.addElement(prop);
+  }
 
-        ObjectClass oc = DomainObjectFactory.newObjectClass();
-        List ocs = elements.getElements(oc.getClass());
+  public void newInterface(NewInterfaceEvent event) {
+    logger.debug("Interface: " + event.getName());
+  }
 
-        for (int i = 0; i < ocs.size(); i++) {
-            ObjectClass o = (ObjectClass) ocs.get(i);
+  public void newStereotype(NewStereotypeEvent event) {
+    logger.debug("Stereotype: " + event.getName());
+  }
 
-            if (o.getLongName().equals(event.getClassName())) {
-                oc = o;
-            }
-        }
-
-        dec.setObjectClass(oc);
-
-        DataElement de = DomainObjectFactory.newDataElement();
-
-        //     de.setLongName(dec.getLongName() + event.getType());
-        de.setLongName(dec.getLongName());
-
-        logger.debug("DE LONG_NAME: " + de.getLongName());
-
-        de.setDataElementConcept(dec);
-
-        ValueDomain vd = DomainObjectFactory.newValueDomain();
-        vd.setPreferredName(event.getType());
-        de.setValueDomain(vd);
-
-        elements.addElement(de);
-        elements.addElement(dec);
-        elements.addElement(prop);
-    }
-
-    public void newInterface(NewInterfaceEvent event) {
-        logger.debug("Interface: " + event.getName());
-    }
-
-    public void newStereotype(NewStereotypeEvent event) {
-        logger.debug("Stereotype: " + event.getName());
-    }
-
-    public void newDataType(NewDataTypeEvent event) {
-        logger.debug("DataType: " + event.getName());
-    }
+  public void newDataType(NewDataTypeEvent event) {
+    logger.debug("DataType: " + event.getName());
+  }
 
   public void newAssociation(NewAssociationEvent event) {
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
@@ -174,29 +174,29 @@ public class XMIUMLListener implements UMLListener {
     //         logger.debug("-- " + ocr.getTargetCardinality());
   }
 
-    public void newGeneralization(NewGeneralizationEvent event) {
-        ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
-        ObjectClass oc = DomainObjectFactory.newObjectClass();
+  public void newGeneralization(NewGeneralizationEvent event) {
+    ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
+    ObjectClass oc = DomainObjectFactory.newObjectClass();
 
-        List ocs = elements.getElements(oc.getClass());
+    List ocs = elements.getElements(oc.getClass());
 
-        for (int i = 0; i < ocs.size(); i++) {
-            ObjectClass o = (ObjectClass) ocs.get(i);
+    for (int i = 0; i < ocs.size(); i++) {
+      ObjectClass o = (ObjectClass) ocs.get(i);
 
-            if (o.getLongName().equals(event.getParentClassName())) {
-                ocr.setTarget(o);
-            } else if (o.getLongName().equals(event.getChildClassName())) {
-                ocr.setSource(o);
-            }
-        }
-
-        ocr.setType(ObjectClassRelationship.TYPE_HAS);
-        elements.addElement(ocr);
-
-        logger.debug("Generalization: ");
-        logger.debug("Source:");
-        logger.debug("-- " + ocr.getSource().getLongName());
-        logger.debug("Target: ");
-        logger.debug("-- " + ocr.getTarget().getLongName());
+      if (o.getLongName().equals(event.getParentClassName())) {
+        ocr.setTarget(o);
+      } else if (o.getLongName().equals(event.getChildClassName())) {
+        ocr.setSource(o);
+      }
     }
+
+    ocr.setType(ObjectClassRelationship.TYPE_HAS);
+    elements.addElement(ocr);
+
+    logger.debug("Generalization: ");
+    logger.debug("Source:");
+    logger.debug("-- " + ocr.getSource().getLongName());
+    logger.debug("Target: ");
+    logger.debug("-- " + ocr.getTarget().getLongName());
+  }
 }
