@@ -18,13 +18,27 @@ import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.parser.*;
 import gov.nih.nci.ncicb.cadsr.loader.persister.*;
 
+import java.security.*;
+import javax.security.auth.*;
+import javax.security.auth.login.*;
+import javax.security.auth.callback.CallbackHandler;
+
 import org.apache.log4j.Logger;
+
+import gov.nih.nci.ncicb.cadsr.loader.jaas.ConsoleCallbackHandler;
 
 public class UMLLoader {
 
-  private static Logger logger = Logger.getLogger(ElementsLists.class.getName());
+  private static Logger logger = Logger.getLogger(UMLLoader.class.getName());
 
   public static void main(String[] args) throws Exception {
+    new UMLLoader().run(args);
+  }
+
+  private void run(String[] args) throws Exception {
+    InitClass initClass = new InitClass(this);
+    Thread t = new Thread(initClass);
+    t.start();
 
     String[] filenames = new File(args[0]).list(new FilenameFilter() {
 	public boolean accept(File dir, String name) {
@@ -32,14 +46,27 @@ public class UMLLoader {
 	}
       });
     
-    
-    
-//     String contextName = args[1];
-    String projectName = args[1];
-//     String version = args[3];
-//     String workflowStatus = args[4];
-//     String conceptualDomain = args[5];
+    LoginContext lc = new LoginContext("UML_Loader", new ConsoleCallbackHandler());
 
+    String username = null;
+    
+    try {
+      lc.login();
+      boolean loginSuccess = true;
+      
+      Subject subject = lc.getSubject();
+
+      Iterator it = subject.getPrincipals().iterator();
+      while (it.hasNext()) {
+	username = it.next().toString();
+	logger.debug("Authenticated username: " + username);
+      }
+    } catch (Exception ex) {
+      logger.error("Failed to login: " + ex.getMessage());
+      System.exit(1);
+    }
+    
+    String projectName = args[1];
     
     logger.info(filenames.length + " files to process");
     
@@ -53,13 +80,44 @@ public class UMLLoader {
       parser.setListener(listener);
       parser.parse(args[0] + "/" + filenames[i]);
 
+      synchronized(initClass) {
+	if(!initClass.isDone())
+	  try {
+	    wait();
+	  } catch (Exception e){
+	  } // end of try-catch
+      }
       Persister persister = new UMLPersister(elements);
       persister.setParameter("projectName", projectName);
+      persister.setParameter("username", username);
       persister.persist();
       
     }
 
   }
-   
+
+  class InitClass implements Runnable {
+    Object parent;
+    boolean done = false;
+
+    InitClass(Object parent) {
+      this.parent = parent;
+    }
+    
+    public void run() {
+      UMLPersister p = new UMLPersister(null);
+      synchronized (this) {
+	done = true;
+	notifyAll();
+      }
+    }
+    
+    public boolean isDone() {
+      return done;
+    }
+
+
+  }
 
 }
+

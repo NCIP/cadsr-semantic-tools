@@ -12,26 +12,71 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 public class UMLPersister implements Persister {
+  private static Logger logger = Logger.getLogger(UMLPersister.class.getName());
+  private static AdminComponentDAO      adminComponentDAO;
+  private static DataElementDAO         dataElementDAO;
+  private static ContextDAO             contextDAO;
+  private static DataElementConceptDAO  dataElementConceptDAO;
+  private static ValueDomainDAO         valueDomainDAO; 
+  private static ConceptualDomainDAO    conceptualDomainDAO;
+  private static PropertyDAO            propertyDAO;
+  private static ObjectClassDAO         objectClassDAO;
+  private static ObjectClassRelationshipDAO         objectClassRelationshipDAO;
+  private static ClassificationSchemeDAO     classificationSchemeDAO;
+  private static ClassificationSchemeItemDAO classificationSchemeItemDAO;
+  private static LoaderDAO loaderDAO;
+  private static ConceptDAO conceptDAO;
+
+  static {
+    ApplicationContextFactory.init("applicationContext.xml");
+
+//     logger.debug("Loading ContextDAO bean");
+    contextDAO = (ContextDAO) ApplicationContextFactory.getApplicationContext().getBean("contextDAO");
+
+//     logger.debug("Loading DataElementDAO bean");
+    dataElementDAO = (DataElementDAO) ApplicationContextFactory.getApplicationContext().getBean("dataElementDAO");
+
+//     logger.debug("Loading AdminComponentDAO bean");
+    adminComponentDAO = (AdminComponentDAO) ApplicationContextFactory.getApplicationContext().getBean("adminComponentDAO");
+
+//     logger.debug("Loading DataElementConceptDAO bean");
+    dataElementConceptDAO = (DataElementConceptDAO) ApplicationContextFactory.getApplicationContext().getBean("dataElementConceptDAO");
+
+//     logger.debug("Loading CDDAO bean");
+    conceptualDomainDAO = (ConceptualDomainDAO) ApplicationContextFactory.getApplicationContext().getBean("conceptualDomainDAO");
+
+//     logger.debug("Loading VDDAO bean");
+    valueDomainDAO = (ValueDomainDAO) ApplicationContextFactory.getApplicationContext().getBean("valueDomainDAO");
+
+//     logger.debug("Loading PropertyDAO bean");
+    propertyDAO = (PropertyDAO) ApplicationContextFactory.getApplicationContext().getBean("propertyDAO");
+
+//     logger.debug("Loading ObjectClassDAO bean");
+    objectClassDAO = (ObjectClassDAO) ApplicationContextFactory.getApplicationContext().getBean("objectClassDAO");
+
+//     logger.debug("Loading ObjectClassRelationshipDAO bean");
+    objectClassRelationshipDAO = (ObjectClassRelationshipDAO) ApplicationContextFactory.getApplicationContext().getBean("objectClassRelationshipDAO");
+
+//     logger.debug("Loading CSDAO bean");
+    classificationSchemeDAO = (ClassificationSchemeDAO) ApplicationContextFactory.getApplicationContext().getBean("classificationSchemeDAO");
+
+//     logger.debug("Loading CSIDAO bean");
+    classificationSchemeItemDAO = (ClassificationSchemeItemDAO) ApplicationContextFactory.getApplicationContext().getBean("classificationSchemeItemDAO");
+
+//     logger.debug("Loading LoaderDAO bean");
+    loaderDAO = (LoaderDAO) ApplicationContextFactory.getApplicationContext().getBean("loaderDAO");
+
+//     logger.debug("Loading ConceptDAO bean");
+    conceptDAO = (ConceptDAO) ApplicationContextFactory.getApplicationContext().getBean("conceptDAO");
+
+  }
+
 
   private ElementsLists elements = null;
-
-  private AdminComponentDAO      adminComponentDAO;
-  private DataElementDAO         dataElementDAO;
-  private ContextDAO             contextDAO;
-  private DataElementConceptDAO  dataElementConceptDAO;
-  private ValueDomainDAO         valueDomainDAO; 
-  private ConceptualDomainDAO    conceptualDomainDAO;
-  private PropertyDAO            propertyDAO;
-  private ObjectClassDAO         objectClassDAO;
-  private ObjectClassRelationshipDAO         objectClassRelationshipDAO;
-  private ClassificationSchemeDAO     classificationSchemeDAO;
-  private ClassificationSchemeItemDAO classificationSchemeItemDAO;
-  private LoaderDAO loaderDAO;
-  private ConceptDAO conceptDAO;
-
   private Map params = new HashMap();
   
-  private String projectName, projectVersion, version, workflowStatus;
+  private String projectName, projectVersion, workflowStatus;
+  private Float version;
   private Context context;
   private ConceptualDomain conceptualDomain;
 
@@ -44,57 +89,16 @@ public class UMLPersister implements Persister {
 
   private Map valueDomains = new HashMap();
 
-  private Logger logger = Logger.getLogger(UMLPersister.class.getName());
 
-  private static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
 
   private Map packageCsCsis = new HashMap();
+
+  private static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
 
   public UMLPersister(ElementsLists list) {
 
     this.elements = list;
 
-    ApplicationContextFactory.init("applicationContext.xml");
-
-    logger.debug("Loading ContextDAO bean");
-    contextDAO = (ContextDAO) ApplicationContextFactory.getApplicationContext().getBean("contextDAO");
-
-
-    logger.debug("Loading DataElementDAO bean");
-    dataElementDAO = (DataElementDAO) ApplicationContextFactory.getApplicationContext().getBean("dataElementDAO");
-
-    logger.debug("Loading AdminComponentDAO bean");
-    adminComponentDAO = (AdminComponentDAO) ApplicationContextFactory.getApplicationContext().getBean("adminComponentDAO");
-
-    logger.debug("Loading DataElementConceptDAO bean");
-    dataElementConceptDAO = (DataElementConceptDAO) ApplicationContextFactory.getApplicationContext().getBean("dataElementConceptDAO");
-
-    logger.debug("Loading CDDAO bean");
-    conceptualDomainDAO = (ConceptualDomainDAO) ApplicationContextFactory.getApplicationContext().getBean("conceptualDomainDAO");
-
-    logger.debug("Loading VDDAO bean");
-    valueDomainDAO = (ValueDomainDAO) ApplicationContextFactory.getApplicationContext().getBean("valueDomainDAO");
-
-    logger.debug("Loading PropertyDAO bean");
-    propertyDAO = (PropertyDAO) ApplicationContextFactory.getApplicationContext().getBean("propertyDAO");
-
-    logger.debug("Loading ObjectClassDAO bean");
-    objectClassDAO = (ObjectClassDAO) ApplicationContextFactory.getApplicationContext().getBean("objectClassDAO");
-
-    logger.debug("Loading ObjectClassRelationshipDAO bean");
-    objectClassRelationshipDAO = (ObjectClassRelationshipDAO) ApplicationContextFactory.getApplicationContext().getBean("objectClassRelationshipDAO");
-
-    logger.debug("Loading CSDAO bean");
-    classificationSchemeDAO = (ClassificationSchemeDAO) ApplicationContextFactory.getApplicationContext().getBean("classificationSchemeDAO");
-
-    logger.debug("Loading CSIDAO bean");
-    classificationSchemeItemDAO = (ClassificationSchemeItemDAO) ApplicationContextFactory.getApplicationContext().getBean("classificationSchemeItemDAO");
-
-    logger.debug("Loading LoaderDAO bean");
-    loaderDAO = (LoaderDAO) ApplicationContextFactory.getApplicationContext().getBean("loaderDAO");
-
-    logger.debug("Loading ConceptDAO bean");
-    conceptDAO = (ConceptDAO) ApplicationContextFactory.getApplicationContext().getBean("conceptDAO");
 
 
   }
@@ -109,6 +113,8 @@ public class UMLPersister implements Persister {
 
     initClassifications();
 
+    persistPackages();
+
     persistProperties();
     
     persistObjectClasses();
@@ -120,68 +126,205 @@ public class UMLPersister implements Persister {
     persistOcRecs();
   }
 
-  public void persistOcRecs() throws PersisterException {
+  private void persistPackages() throws PersisterException {
+    ClassificationSchemeItem pkg = DomainObjectFactory.newClassificationSchemeItem();
+    List packages = (List)elements.getElements(pkg.getClass());
+    if(packages != null)
+      for(ListIterator it = packages.listIterator(); it.hasNext();) {
+
+	pkg = (ClassificationSchemeItem)it.next();
+	pkg.setAudit(audit);
+	pkg.setType(CSI_PACKAGE_TYPE);
+	
+	// See if it already exist in DB
+	List l = classificationSchemeItemDAO.find(pkg);
+	if(l.size() == 0) { // not in DB, create it.
+	  pkg.setId(classificationSchemeItemDAO.create(pkg));
+	} else {
+	  pkg = (ClassificationSchemeItem)l.get(0);
+	}
+	
+	// link package CSI to project CS.
+	List csCsis = projectCs.getCsCsis();
+	boolean found = false;
+	ClassSchemeClassSchemeItem packageCsCsi = null;
+	for(ListIterator it2 = csCsis.listIterator(); it2.hasNext(); ) 
+	  {
+	    ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
+	    if(csCsi.getCsi().getType().equals(CSI_PACKAGE_TYPE) && csCsi.getCsi().getName().equals(pkg.getName())) {
+	      {
+		packageCsCsi = csCsi;
+		found = true;
+	      }
+	    }
+	  }
+	if(!found) {
+	  logger.info("Package " + pkg.getName() + " was not linked to Project CS -- linking it now.");
+	  packageCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+	  packageCsCsi.setCs(projectCs);
+	  packageCsCsi.setCsi(pkg);
+	  packageCsCsi.setLabel(pkg.getName());
+	  packageCsCsi.setAudit(audit);
+
+	  classificationSchemeDAO.addClassificationSchemeItem(projectCs, packageCsCsi);
+	  logger.info("Added Package CS_CSI");
+	}
+	
+	// Put CS_CSI in cache so OCs can use it
+	packageCsCsis.put(pkg.getName(), packageCsCsi);
+
+      }
+  }
+
+  private void persistOcRecs() throws PersisterException {
+
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
     List ocrs = (List)elements.getElements(ocr.getClass());
 
     if(ocrs != null)
       for(ListIterator it=ocrs.listIterator(); it.hasNext(); ) {
-
 	ocr = (ObjectClassRelationship)it.next();
+	ocr.setContext(context);
 	ocr.setAudit(audit);
+	ocr.setVersion(version);
+	ocr.setWorkflowStatus(workflowStatus);
+
+	String definition = null;
+	if(ocr.getSourceCardinality().indexOf("*") != -1)
+	  definition = "Many-to-";
+	else
+	  definition = "One-to-";
+	if(ocr.getTargetCardinality().indexOf("*") != -1)
+	  definition += "many";
+	else
+	  definition += "one";
+
+	ocr.setPreferredDefinition(definition);
 	
+	// !!! TODO This requirement is changing. Business Case will require a Role name for all associations.
+	if((ocr.getLongName() == null) || (ocr.getLongName().length() == 0)) {
+	  logger.debug("No Role name for association. Generating one");
+	  String longName = ocr.getSource().getLongName();
+	  if(ocr.getSourceRole() != null)
+	    longName += "." + ocr.getSourceRole();
+	  longName += "(" + ocr.getSourceCardinality() 
+	    + ")::"
+	    + ocr.getTarget().getLongName();
+	  if(ocr.getTargetRole() != null)
+	    longName += "." + ocr.getTargetRole();
+	  longName += "(" + ocr.getSourceCardinality() + ")";
+	  
+	  ocr.setLongName(longName);
+	}
+
+	List ocs = elements.getElements(DomainObjectFactory.newObjectClass().getClass());
+	for(int j=0; j<ocs.size(); j++) {
+	  ObjectClass o = (ObjectClass)ocs.get(j);
+	  if(o.getLongName().equals(ocr.getSource().getLongName())) {
+	    ocr.setSource(o);
+	  } else if(o.getLongName().equals(ocr.getTarget().getLongName()))
+	    ocr.setTarget(o);
+	}
+
+	logAc(ocr);
+	logger.info("-- Source Role: " + ocr.getSourceRole());
+	logger.info("-- Source Cardinality: " + ocr.getSourceCardinality());
+	logger.info("-- Target Role: " + ocr.getTargetRole());
+	logger.info("-- Target Cardinality: " + ocr.getTargetCardinality());
+	logger.info("-- Direction: " + ocr.getDirection());
+	logger.info("-- Type: " + ocr.getType());
+
+	// check if association already exists
+	ObjectClassRelationship ocr2 = DomainObjectFactory.newObjectClassRelationship();
+	ocr2.setSource(ocr.getSource());
+	ocr2.setSourceRole(ocr.getSourceRole());
+	ocr2.setTarget(ocr.getTarget());
+	ocr2.setTargetRole(ocr.getTargetRole());
+
+	List eager = new ArrayList();
+	eager.add(EagerConstants.AC_CS_CSI);
+	List l = objectClassRelationshipDAO.find(ocr2, eager);
+	boolean found = false;
+	if(l.size() > 0) {
+	  for(Iterator it2 = l.iterator(); it2.hasNext(); ) {
+	    ocr2 = (ObjectClassRelationship)it2.next();
+	    List acCsCsis = (List)ocr2.getAcCsCsis();
+	    for(Iterator it3 = acCsCsis.iterator(); it3.hasNext(); ) {
+	      AdminComponentClassSchemeClassSchemeItem acCsCsi = (AdminComponentClassSchemeClassSchemeItem)it3.next();
+	      if(acCsCsi.getCsCsi().getCs().getLongName().equals(projectCs.getLongName()));
+		found = true;
+	    }
+	  }
+	}
 	
+	if(found) {
+	  logger.info("Association already existed.");
+	} else {
+	  ocr.setId(objectClassRelationshipDAO.create(ocr));
+	  addProjectCs(ocr);
+	  logger.info("Created Association");
+	}
+
+	// !!! TODO also add package name
+
       }      
 
   }
 
-  public void persistDes() throws PersisterException {
+  private void persistDes() throws PersisterException {
     DataElement de = DomainObjectFactory.newDataElement();
     List des = (List)elements.getElements(de.getClass());
+
+    logger.debug("des...");
     
     if(des != null)
       for(ListIterator it=des.listIterator(); it.hasNext(); ) {
-	de = (DataElement)it.next();
-	
-	de.setContext(context);
+	try {
+	  de = (DataElement)it.next();
+	  
+	  de.setContext(context);
 
-	int ind = de.getLongName().lastIndexOf(".");
-	if(ind > 0)
-	  de.setLongName(de.getLongName().substring(ind+1));
+	  int ind = de.getLongName().lastIndexOf(".");
+	  if(ind > 0)
+	    de.setLongName(de.getLongName().substring(ind+1));
 
-	List decs = elements.getElements(DomainObjectFactory.newDataElementConcept().getClass());
-	for(ListIterator lit=decs.listIterator(); lit.hasNext();) {
-	  DataElementConcept o = (DataElementConcept)lit.next();
-	  if(o.getLongName().equals(de.getDataElementConcept().getLongName()))
-	    de.setDataElementConcept(o);
-	}
+	  List decs = elements.getElements(DomainObjectFactory.newDataElementConcept().getClass());
+	  for(ListIterator lit=decs.listIterator(); lit.hasNext();) {
+	    DataElementConcept o = (DataElementConcept)lit.next();
+	    if(o.getLongName().equals(de.getDataElementConcept().getLongName()))
+	      de.setDataElementConcept(o);
+	  }
 
-	de.setValueDomain(lookupValueDomain(de.getValueDomain()));
-	List l = dataElementDAO.find(de);
-	if(l.size() == 0) {
-	  de.setPreferredDefinition(de.getLongName());
-	  de.setPreferredName(de.getLongName());
-	  // !!!!! TODO -- following will pass constraints
-	  if(de.getPreferredName().length() > 30)
-	    de.setPreferredName(de.getPreferredName().substring(0, 29));
+	  de.setValueDomain(lookupValueDomain(de.getValueDomain()));
+	  List l = dataElementDAO.find(de);
+	  if(l.size() == 0) {
+	    de.setPreferredDefinition(de.getLongName());
+	    de.setPreferredName(de.getLongName());
+	    // !!!!! TODO -- following will pass constraints
+	    if(de.getPreferredName().length() > 30)
+	      de.setPreferredName(de.getPreferredName().substring(0, 29));
 
-	  de.setVersion(new Float(version));
-	  de.setWorkflowStatus(workflowStatus);
+	    de.setVersion(version);
+	    de.setWorkflowStatus(workflowStatus);
 
-	  de.setAudit(audit);
-	  de.setId(dataElementDAO.create(de));
-	  logger.info("Created DataElement:  ");
-	} else {
-	  de = (DataElement)l.get(0);
-	  logger.info("DataElement Existed: ");
-	}	
+	    de.setAudit(audit);
+	    logger.debug("Creating DE: " + de.getLongName());
+	    de.setId(dataElementDAO.create(de));
+	    logger.info("Created DataElement:  ");
+	  } else {
+	    de = (DataElement)l.get(0);
+	    logger.info("DataElement Existed: ");
+	  }	
 
-	logAc(de);
-	logger.info("-- Value Domain (Preferred_Name): " + de.getValueDomain().getPreferredName());
-	
-	addProjectCs(de);
-	it.set(de);
-
+	  logAc(de);
+	  logger.info("-- Value Domain (Preferred_Name): " + de.getValueDomain().getPreferredName());
+	  
+	  addProjectCs(de);
+	  it.set(de);
+	} catch (PersisterException e){
+	  logger.error("Could not persist DE: " + de.getLongName());
+	  logger.error(e.getMessage());
+	} // end of try-catch
       }
   }
 
@@ -246,10 +389,10 @@ public class UMLPersister implements Persister {
 	oc.setLongName(className);
 	// does this oc exist?
 	List eager = new ArrayList();
-	eager.add(EagerConstants.DESIGNATIONS);
+	eager.add(EagerConstants.AC_CS_CSI);
 	List l = objectClassDAO.find(oc, eager);
 
-	boolean desigFound = false;
+	boolean packageFound = false;
 	if(l.size() == 0) {
 	  // !!!!! TODO
 	  oc.setPreferredDefinition(oc.getLongName());
@@ -265,16 +408,15 @@ public class UMLPersister implements Persister {
 	  oc = (ObjectClass)l.get(0);
 	  logger.info("Object Class Existed: ");
 	  
-	  List designations = oc.getDesignations();
-	  if(designations != null) 
-	    for(Iterator it2 = designations.iterator(); it2.hasNext(); ) {
-	      Designation d = (Designation)it2.next();
-	      if(d.getType().equals(CSI_PACKAGE_TYPE) && d.getName().equals(packageName)) {
-		desigFound = true;
-		logger.debug("Found desig: " + d.getType() + " " + d.getName());
+	  List packages = oc.getAcCsCsis(); 
+	  if(packages != null)
+	    for(Iterator it2 = packages.iterator(); it2.hasNext() && !packageFound; ) {
+	      AdminComponentClassSchemeClassSchemeItem acCsCsi = (AdminComponentClassSchemeClassSchemeItem)it2.next();
+	      ClassSchemeClassSchemeItem csCsi = acCsCsi.getCsCsi();
+	      if(csCsi.getCsi().getType().equals(CSI_PACKAGE_TYPE) && csCsi.getCsi().getName().equals(packageName)) {
+		packageFound = true;
 	      }
 	    }
-	  
 	}	
 
 	logAc(oc);
@@ -282,20 +424,22 @@ public class UMLPersister implements Persister {
 	addProjectCs(oc);
 	it.set(oc);
 
-	// add designation to hold package name
+	// add CSI to hold package name
 	// !!!! TODO
-	if(!desigFound) {
-	  List des = new ArrayList();
-	  Designation desig = DomainObjectFactory.newDesignation();
-	  desig.setContext(context);
-	  desig.setName(packageName);
-	  desig.setType(CSI_PACKAGE_TYPE);
-	  des.add(desig);
-	  adminComponentDAO.addDesignations(oc, des);
-	  logger.info("Added Designation: ");
-	  logger.info("-- ID: " + desig.getId());
-	  logger.info("-- Type: " + desig.getType());
-	  logger.info("-- Name: " + desig.getName());
+	if(!packageFound) {
+	  // see if we have the package in cache
+	  ClassSchemeClassSchemeItem packageCsCsi = (ClassSchemeClassSchemeItem)packageCsCsis.get(packageName);
+	  
+	  if(packageCsCsi != null) {
+	    List ll = new ArrayList();
+	    ll.add(packageCsCsi);
+	    adminComponentDAO.addClassSchemeClassSchemeItems(oc, ll);
+	    logger.info("Added CS package: " + packageName);
+	  } else { 
+	    // PersistPackages should have taken care of it. 
+	    // We should not be here.
+	    logger.error("Missing Package: " + packageName);
+	  }
 	} else {
 	  logger.debug("Designation was found.");
 	}
@@ -329,7 +473,7 @@ public class UMLPersister implements Persister {
 	  dec.setPreferredDefinition(dec.getLongName());
 	  dec.setPreferredName(dec.getLongName());
 
-	  dec.setVersion(new Float(version));
+	  dec.setVersion(version);
 	  dec.setWorkflowStatus(workflowStatus);
 
 	  List ocs = elements.getElements(DomainObjectFactory.newObjectClass().getClass());
@@ -411,7 +555,7 @@ public class UMLPersister implements Persister {
     if(context == null)
       throw new PersisterException("Context: " + cName + " not found.");
 
-    version = loaderDefault.getVersion().toString();
+    version = new Float(loaderDefault.getVersion().toString());
     projectVersion = loaderDefault.getProjectVersion().toString();
 
     workflowStatus = loaderDefault.getWorkflowStatus();
@@ -470,7 +614,7 @@ public class UMLPersister implements Persister {
 
       projectCs.setAudit(audit);
       projectCs.setId(classificationSchemeDAO.create(projectCs));
-      logger.info("Addedd Project CS: ");
+      logger.info("Added Project CS: ");
       logAc(projectCs);
       logger.info("-- Type: " + projectCs.getType());
       
@@ -525,7 +669,11 @@ public class UMLPersister implements Persister {
     ValueDomain result = (ValueDomain)valueDomains.get(vd.getPreferredName());
 
     if(result == null) { // not in cache -- go to db
-      result = (ValueDomain)valueDomainDAO.find(vd).get(0);
+      List l = valueDomainDAO.find(vd);
+      if(l.size() == 0) {
+	throw new PersisterException("Value Domain " + vd.getPreferredName() + " does not exist.");
+      }
+      result = (ValueDomain)l.get(0);
       valueDomains.put(result.getPreferredName(), result);
     }
 

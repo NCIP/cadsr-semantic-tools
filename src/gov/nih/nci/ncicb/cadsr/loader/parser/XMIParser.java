@@ -1,8 +1,9 @@
 package gov.nih.nci.ncicb.cadsr.loader.parser;
 
-import java.util.Iterator;
+import java.util.*;
 
 import org.omg.uml.foundation.core.*;
+import org.omg.uml.foundation.datatypes.MultiplicityRange;
 import org.omg.uml.foundation.extensionmechanisms.*;
 
 import uml.MdrModelManager;
@@ -28,7 +29,16 @@ public class XMIParser implements Parser {
   private String packageName="";
   private String className = "";
 
+  private List associations = new ArrayList();
+
   private Logger logger = Logger.getLogger(XMIParser.class.getName());
+
+  private static final String TV_CONCEPT = "EVS_CONCEPT";
+  private static final String EA_CONTAINMENT = "containment";
+  private static final String EA_UNSPECIFIED = "Unspecified";
+
+  private List generalizationEvents = new ArrayList();
+  private List associationEvents = new ArrayList();
 
   public void setListener(LoaderListener listener) {
     this.listener = (UMLListener)listener;
@@ -51,10 +61,13 @@ public class XMIParser implements Parser {
 	  doDataType((DataType)o);
 	} else if(o instanceof UmlAssociation) {
 	  doAssociation((UmlAssociation)o);
+	} else if(o instanceof UmlClass) {
+	  doClass((UmlClass)o);
 	} else {
 	  logger.debug("Root Element: " + o.getClass());
 	}
       }
+      fireLastEvents();
     } catch (Exception e){
       logger.fatal("Could not parse: " + filename);
       e.printStackTrace();
@@ -96,13 +109,23 @@ public class XMIParser implements Parser {
   }
   
   private void doClass(UmlClass clazz) {
-    className = packageName + "." + clazz.getName();
-//     logger.debug("Class: " + className);
-    
-    listener.newClass(new NewClassEvent(className));
 
-    Iterator it = clazz.getFeature().iterator();
-    while(it.hasNext()) {
+    String pName = clazz.getNamespace().getName();
+
+    className = clazz.getName();
+    if(pName != null)
+      className = pName + "." + className;
+
+    NewClassEvent event = new NewClassEvent(className);
+    event.setPackageName(pName);
+
+    TaggedValue tv = mgr.getTaggedValue(clazz, TV_CONCEPT);
+    if(tv != null) 
+      event.setConceptCode(tv.getValue());
+
+    listener.newClass(event);
+
+    for(Iterator it = clazz.getFeature().iterator(); it.hasNext(); ) {
       Object o = it.next();
       if(o instanceof Attribute) {
 	doAttribute((Attribute)o);
@@ -113,6 +136,21 @@ public class XMIParser implements Parser {
       }
     }
     className = "";
+
+    for(Iterator it = clazz.getGeneralization().iterator(); it.hasNext(); ) {
+      Generalization g = (Generalization)it.next();
+
+      if(g.getParent() instanceof UmlClass) {
+	UmlClass p = (UmlClass)g.getParent();
+	NewGeneralizationEvent gEvent = new NewGeneralizationEvent();
+	gEvent.setParentClassName(p.getNamespace().getName() + "." + p.getName());
+	gEvent.setChildClassName(clazz.getNamespace().getName() + "." + clazz.getName());
+
+	generalizationEvents.add(gEvent);
+      }
+      
+    }
+
   }
 
   private void doInterface(Interface interf) {
@@ -140,7 +178,14 @@ public class XMIParser implements Parser {
 
     event.setClassName(className);
     event.setType(att.getType().getName());
+
+    TaggedValue tv = mgr.getTaggedValue(att, TV_CONCEPT);
+    if(tv != null) 
+      event.setConceptCode(tv.getValue());
+    
     listener.newAttribute(event);
+    
+
   }
 
   private void doDataType(DataType dt)
@@ -159,21 +204,95 @@ public class XMIParser implements Parser {
   }
 
   private void doAssociation(UmlAssociation assoc) {
-    logger.debug("-- Association: " + assoc.getName());
     Iterator it = assoc.getConnection().iterator();
-    while(it.hasNext()) {
+    NewAssociationEvent event = new NewAssociationEvent();
+    event.setRoleName(assoc.getName());
+
+    String navig = "";
+
+    if(it.hasNext()) {
       Object o = it.next();
       if(o instanceof AssociationEnd) {
 	AssociationEnd end = (AssociationEnd)o;
+	logger.debug("end A is navigable: " + end.isNavigable());
+	if(end.isNavigable())
+	  navig += 'A';
 	Classifier classif = end.getType();
-	logger.debug("----" + classif.getName());
+	event.setACardinality(cardinality(end));
+	event.setAClassName(classif.getNamespace().getName() + "." + classif.getName());
+	event.setARole(end.getName());
+
+	TaggedValue tv = mgr.getTaggedValue(end, EA_CONTAINMENT);
+	if(tv != null) {
+	  logger.debug("containment: "  + tv.getValue());
+	}
+
+
+      }
+    } 
+
+    if(it.hasNext()) {
+      Object o = it.next();
+      if(o instanceof AssociationEnd) {
+	AssociationEnd end = (AssociationEnd)o;
+	logger.debug("end B is navigable: " + end.isNavigable());
+	if(end.isNavigable())
+	  navig += 'B';
+
+	// This for EA only. EA has direction called "unspecified". We want to treat that as bi-directional. EA stores 'Unspecified' as a tagged valued.
+	TaggedValue tv = mgr.getTaggedValue(end, EA_CONTAINMENT);
+	if((tv != null) && (tv.getValue().equals(EA_UNSPECIFIED)))
+	  navig = "AB";
+
+	if(tv != null) {
+	  logger.debug("containment: "  + tv.getValue());
+	}
+
+
+	Classifier classif = end.getType();
+	event.setBCardinality(cardinality(end));
+	event.setBClassName(classif.getNamespace().getName() + "." + classif.getName());
+	event.setBRole(end.getName());
       }
     }
+
+    event.setDirection(navig);
+
+    associationEvents.add(event);
+    
   }
 
   private void doComponent(Component comp) {
     logger.debug("--- Component: " + comp.getName());
   }
 
+  private String cardinality(AssociationEnd end) {
+    Collection range = end.getMultiplicity().getRange();
+    for(Iterator it = range.iterator(); it.hasNext(); ) {
+      MultiplicityRange mr = (MultiplicityRange)it.next();
+      int low = mr.getLower();
+      int high = mr.getUpper();
+      if(low == high) {
+	return "" + low;
+      } else {
+	String h = high>=0?""+high:"*";
+	return low + ".." + h;
+      }
+    }
+
+    return "";
+
+  }
+  
+  private void fireLastEvents() {
+    for(Iterator it = associationEvents.iterator(); it.hasNext(); ) {
+      listener.newAssociation((NewAssociationEvent)it.next());
+    }
+
+    for(Iterator it = generalizationEvents.iterator(); it.hasNext(); ) {
+      listener.newGeneralization((NewGeneralizationEvent)it.next());
+    }
+
+  }
 
 }

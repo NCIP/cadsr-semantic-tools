@@ -16,5 +16,6 @@ public interface UMLListener extends LoaderListener {
   public void newStereotype(NewStereotypeEvent event);
   public void newDataType(NewDataTypeEvent event);
   public void newAssociation(NewAssociationEvent event);
+  public void newGeneralization(NewGeneralizationEvent event);
 
 }

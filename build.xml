@@ -36,6 +36,7 @@
     <copy todir="${class.dir}">
       <fileset dir="${config.dir}">
         <include name="*.properties"/>
+        <include name="jaas.config"/>
       </fileset>
     </copy>
   </target>
@@ -45,7 +46,9 @@
     <java classname="gov.nih.nci.ncicb.cadsr.loader.UMLLoader" classpathref="proj.class.path" 
       fork="yes" 
       maxmemory="512m"
+      input="input.properties"
       >
+      <jvmarg value="-Djava.security.auth.login.config=classes/jaas.config"/>
       <arg value="${dir}"/>
       <arg value="${projectName}"/>
     </java>
