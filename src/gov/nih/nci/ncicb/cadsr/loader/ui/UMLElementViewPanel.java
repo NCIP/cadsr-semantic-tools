@@ -15,6 +15,8 @@ public class UMLElementViewPanel extends JPanel
 
   private boolean unsavedChanges = false;
 
+  private JPanel _this = this;
+
   private static final String ADD = "ADD",
     DELETE = "DELETE",
     SAVE = "SAVE";
@@ -145,6 +147,8 @@ public class UMLElementViewPanel extends JPanel
       concept.setPreferredDefinition("");
       newConcepts[newConcepts.length - 1] = concept;
       concepts = newConcepts;
+
+      _this.removeAll();
       initUI();
     } else if(button.getActionCommand().equals(DELETE)) {
       Concept[] newConcepts = new Concept[concepts.length - 1];
@@ -152,6 +156,8 @@ public class UMLElementViewPanel extends JPanel
         newConcepts[i] = concepts[i];
       }
       concepts = newConcepts;
+
+      _this.removeAll();
       initUI();
     } else if(button.getActionCommand().equals(SAVE)) {
       saveButton.setEnabled(false);
@@ -180,10 +186,16 @@ public class UMLElementViewPanel extends JPanel
   }
 
   private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
+
+    insertInBag(bagComp, comp, x, y, 0.0, 0.0);
+
+  }
+
+  private void insertInBag(JPanel bagComp, Component comp, int x, int y, float width, float height) {
     JPanel p = new JPanel();
     p.add(comp);
 
-    bagComp.add(p, new GridBagConstraints(x, y, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+    bagComp.add(p, new GridBagConstraints(x, y, 1, 1, width, height, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
 
 }
