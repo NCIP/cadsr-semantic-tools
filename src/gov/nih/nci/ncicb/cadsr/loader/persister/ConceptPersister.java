@@ -20,18 +20,26 @@ public class ConceptPersister extends UMLPersister {
 
   public void persist() {
     Concept con = DomainObjectFactory.newConcept();
-    List<Concept> cons = (List<Concept>) elements.getElements(con.getClass());
+    List cons = elements.getElements(con.getClass());
 
     logger.debug("ConceptPersister.persist()");
 
     if (cons != null) {
-      for(Concept c : cons) {
-        con.setPublicId(c.getPublicId());
+      for(Iterator it = cons.iterator(); it.hasNext();) {
+        Concept c = (Concept)it.next();
+        con.setPreferredName(c.getPreferredName());
         List l = conceptDAO.find(con);
+
         if(l.size() == 0) { // concept does not exist: create it
+          c.setVersion(new Float(1.0f));
+          c.setContext(defaults.getContext());
+	  c.setWorkflowStatus(defaults.getWorkflowStatus());
+	  c.setAudit(defaults.getAudit());
           c.setId(conceptDAO.create(c));
+          logger.info("Created Concept: ");
+          LogUtil.logAc(c, logger);
         } else { // concept exist: See if we need to add alternate def.
-          
+          // !! TODO
         }
       }
     }

@@ -1,7 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.validator;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
 
@@ -35,7 +34,7 @@ public class UMLValidator implements Validator {
     Property prop = DomainObjectFactory.newProperty();
     List props = elements.getElements(prop.getClass());
     for(Iterator it = props.iterator(); it.hasNext(); ) {
-      ObjectClass o = (Property)it.next();
+      Property o = (Property)it.next();
 //       if(o.getConcept().getPreferredName() == null) {
 //         errors.add(new ValidationError(SEVERITY_ERROR, "Attribute: " + o.getLongName() + " has no concept code."));
 //       }

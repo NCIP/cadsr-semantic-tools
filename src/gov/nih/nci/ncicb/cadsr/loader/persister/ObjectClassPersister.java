@@ -43,7 +43,8 @@ public class ObjectClassPersister extends UMLPersister {
 	List eager = new ArrayList();
 	eager.add(EagerConstants.AC_CS_CSI);
 
-	List l = objectClassDAO.find(oc, eager);
+	List l = objectClassDAO.findByConceptCode(oc.getConcept().getPreferredName(), eager);
+        
 
 	boolean packageFound = false;
 

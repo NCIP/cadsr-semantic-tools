@@ -5,6 +5,11 @@ public class ValidationError {
   private String severity;
   private String message;
 
+  public ValidationError(String severity, String message) {
+    this.severity = severity;
+    this.message = message;
+  }
+
   /**
    * Get the Severity value.
    * @return the Severity value.

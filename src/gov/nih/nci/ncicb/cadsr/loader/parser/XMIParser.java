@@ -19,8 +19,6 @@ import java.io.*;
 
 import java.util.*;
 
-import static gov.nih.nci.ncicb.cadsr.loader.event.NewConceptualEvent.*;
-
 public class XMIParser implements Parser {
   private static final String EA_CONTAINMENT = "containment";
   private static final String EA_UNSPECIFIED = "Unspecified";
@@ -340,37 +338,37 @@ public class XMIParser implements Parser {
 
   private void setConceptInfo(ModelElement elt, NewConceptualEvent event) {
 
-    TaggedValue tv = mgr.getTaggedValue(elt, TV_CONCEPT_CODE);
+    TaggedValue tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_CODE);
     if (tv != null) {
       event.setConceptCode(tv.getValue());
     }
 
-    tv = mgr.getTaggedValue(elt, TV_CONCEPT_SOURCE);
+    tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_SOURCE);
     if (tv != null) {
       event.setConceptSource(tv.getValue());
     }
 
-    tv = mgr.getTaggedValue(elt, TV_CONCEPT_DEFINITION);
+    tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_DEFINITION);
     if (tv != null) {
       event.setConceptDefinition(tv.getValue());
     }
 
-    tv = mgr.getTaggedValue(elt, TV_CONCEPT_DEFINITION_SOURCE);
+    tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_DEFINITION_SOURCE);
     if (tv != null) {
       event.setConceptDefinitionSource(tv.getValue());
     }
     
-    tv = mgr.getTaggedValue(elt, TV_CONCEPT_PREFERRED_NAME);
+    tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_CONCEPT_PREFERRED_NAME);
     if (tv != null) {
       event.setConceptPreferredName(tv.getValue());
     }
 
-    tv = mgr.getTaggedValue(elt, TV_NCI_CONCEPT_CODE);
+    tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_NCI_CONCEPT_CODE);
     if (tv != null) {
       event.setNciConceptCode(tv.getValue());
     }
 
-    tv = mgr.getTaggedValue(elt, TV_NCI_CONCEPT_DEFINITION);
+    tv = mgr.getTaggedValue(elt, NewConceptualEvent.TV_NCI_CONCEPT_DEFINITION);
     if (tv != null) {
       event.setNciConceptDefinition(tv.getValue());
     }

@@ -31,14 +31,6 @@ public class XMIUMLListener implements UMLListener {
     
     Concept concept = newConcept(event);
     
-//     if (conceptCode == null) {
-//       logger.warn("Class: " + event.getName() + " has no concept code.");
-//     } else {
-//       Concept concept = DomainObjectFactory.newConcept();
-//       concept.setPublicId(new Long(conceptCode));
-//       logger.debug("Concept Code: " + conceptCode);
-//     }
-
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     oc.setConcept(concept);
     oc.setLongName(event.getName());

@@ -26,9 +26,6 @@ public class UMLPersister implements Persister {
   protected static ConceptDAO conceptDAO;
 
   static {
-    ApplicationContextFactory.init("applicationContext.xml");
-
-
     //     logger.debug("Loading DataElementDAO bean");
     dataElementDAO = (DataElementDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("dataElementDAO");

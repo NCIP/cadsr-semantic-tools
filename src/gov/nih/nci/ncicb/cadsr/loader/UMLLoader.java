@@ -1,6 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader;
 
-import java.util.Iterator;
+import java.util.*;
 
 import org.omg.uml.foundation.core.*;
 import org.omg.uml.foundation.extensionmechanisms.*;
@@ -24,6 +24,8 @@ import javax.security.auth.*;
 import javax.security.auth.login.*;
 import javax.security.auth.callback.CallbackHandler;
 
+import gov.nih.nci.ncicb.cadsr.spring.ApplicationContextFactory;
+
 import org.apache.log4j.Logger;
 
 import gov.nih.nci.ncicb.cadsr.loader.jaas.ConsoleCallbackHandler;
@@ -33,6 +35,8 @@ public class UMLLoader {
   private static Logger logger = Logger.getLogger(UMLLoader.class.getName());
 
   public static void main(String[] args) throws Exception {
+    ApplicationContextFactory.init("applicationContext.xml");
+
     new UMLLoader().run(args);
   }
 
@@ -96,7 +100,17 @@ public class UMLLoader {
       }
     }
 
-    validator.validate();
+    List errors = validator.validate();
+    if(errors.size() > 0) {
+      // Ask user if we should continue
+      for(Iterator it=errors.iterator(); it.hasNext();) {
+        ValidationError error = (ValidationError)it.next();
+        // !!! TODO choose error, warning, etc ...
+        logger.error(error.getSeverity() + ": " + error.getMessage());
+      }
+      System.exit(1);
+    }
+
 
     Persister persister = new UMLPersister(elements);
     persister.setParameter("projectName", projectName);
