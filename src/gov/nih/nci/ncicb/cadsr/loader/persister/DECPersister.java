@@ -12,6 +12,9 @@ import java.util.*;
 
 public class DECPersister extends UMLPersister {
 
+  public static String DEC_PREFERRED_NAME_DELIMITER = "v";
+  public static String DEC_PREFERRED_NAME_CONCAT_CHAR = ":";
+
   private static Logger logger = Logger.getLogger(DECPersister.class.getName());
 
   public DECPersister(ElementsLists list) {
@@ -65,9 +68,12 @@ public class DECPersister extends UMLPersister {
             );
 
 	  dec.setPreferredName(
-            dec.getObjectClass().getPublicId() + "v" 
-            + dec.getObjectClass().getVersion() + "_" 
-            + dec.getProperty().getPublicId() + "v"
+            dec.getObjectClass().getPublicId() 
+            + DEC_PREFERRED_NAME_DELIMITER
+            + dec.getObjectClass().getVersion()
+            + DEC_PREFERRED_NAME_CONCAT_CHAR
+            + dec.getProperty().getPublicId()
+            + DEC_PREFERRED_NAME_DELIMITER
             + dec.getProperty().getVersion());
 
 	  dec.setVersion(defaults.getVersion());
