@@ -345,9 +345,9 @@ public class UMLPersister implements Persister {
     
     for(int i=0; i < concepts.length; i++) {
       if(sb.length() > 0)
-        sb.append("\n");
-      sb.append(concepts[i].getPreferredName());
-      sb.append(DEF_CONCAT_CHAR);
+        sb.append(":");
+//       sb.append(concepts[i].getPreferredName());
+//       sb.append(DEF_CONCAT_CHAR);
       sb.append(concepts[i].getPreferredDefinition());
     }
 
