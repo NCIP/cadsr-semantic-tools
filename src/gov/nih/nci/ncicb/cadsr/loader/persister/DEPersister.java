@@ -15,6 +15,7 @@ public class DEPersister extends UMLPersister {
   private static Logger logger = Logger.getLogger(DEPersister.class.getName());
   public static String DE_PREFERRED_NAME_DELIMITER = "v";
   public static String DE_PREFERRED_NAME_CONCAT_CHAR = ":";
+  public static String DE_PREFERRED_DEF_CONCAT_CHAR = "_";
 
   public DEPersister(ElementsLists list) {
     this.elements = list;
@@ -58,7 +59,8 @@ public class DEPersister extends UMLPersister {
             de.setWorkflowStatus(defaults.getWorkflowStatus());
 
             de.setPreferredDefinition(
-              de.getDataElementConcept().getPreferredDefinition() + "\n" +
+              de.getDataElementConcept().getPreferredDefinition()
+              + DE_PREFERRED_DEF_CONCAT_CHAR +
               de.getValueDomain().getPreferredDefinition()
               );
 

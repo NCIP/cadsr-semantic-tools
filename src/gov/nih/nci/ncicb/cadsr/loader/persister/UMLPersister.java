@@ -36,7 +36,7 @@ public class UMLPersister implements Persister {
 
   protected UMLDefaults defaults = UMLDefaults.getInstance();
 
-  private static final String DEF_CONCAT_CHAR = "_";
+//   private static final String DEF_CONCAT_CHAR = "_";
 
 //   protected static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
 

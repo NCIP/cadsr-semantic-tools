@@ -15,6 +15,8 @@ public class DECPersister extends UMLPersister {
   public static String DEC_PREFERRED_NAME_DELIMITER = "v";
   public static String DEC_PREFERRED_NAME_CONCAT_CHAR = ":";
 
+  public static String DEC_PREFERRED_DEF_CONCAT_CHAR = "_";
+
   private static Logger logger = Logger.getLogger(DECPersister.class.getName());
 
   public DECPersister(ElementsLists list) {
@@ -62,8 +64,9 @@ public class DECPersister extends UMLPersister {
             dec.getProperty().getLongName()
             );
 	  dec.setPreferredDefinition(
-            dec.getObjectClass().getPreferredDefinition() + "\n" +
-            dec.getProperty().getPreferredDefinition()
+            dec.getObjectClass().getPreferredDefinition()
+            + DEC_PREFERRED_DEF_CONCAT_CHAR 
+            + dec.getProperty().getPreferredDefinition()
             
             );
 

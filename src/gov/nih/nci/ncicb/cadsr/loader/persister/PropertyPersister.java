@@ -32,7 +32,7 @@ public class PropertyPersister extends UMLPersister {
 
 	prop.setContext(defaults.getMainContext());
 
-        String[] conceptCodes = prop.getPreferredName().split("-");
+        String[] conceptCodes = prop.getPreferredName().split(":");
         List l = propertyDAO.findByConceptCodes(conceptCodes, prop.getContext());
 
         Concept[] concepts = new Concept[conceptCodes.length];

@@ -43,7 +43,7 @@ public class ObjectClassPersister extends UMLPersister {
 	List eager = new ArrayList();
 	eager.add(EagerConstants.AC_CS_CSI);
 
-        String[] conceptCodes = oc.getPreferredName().split("-");
+        String[] conceptCodes = oc.getPreferredName().split(":");
         Concept[] concepts = new Concept[conceptCodes.length];
         for(int i=0; i<concepts.length; 
             concepts[i] = lookupConcept(conceptCodes[i++])
