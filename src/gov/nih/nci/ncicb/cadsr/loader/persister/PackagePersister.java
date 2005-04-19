@@ -89,11 +89,24 @@ public class PackagePersister extends UMLPersister {
             
             if (csCsi.getCsi().getType().equals(csi.getType()) &&
                 csCsi.getCsi().getName().equals(csi.getName())) {
-              newCsCsi = csCsi;
-              if(parent != null) 
-                newCsCsi.setParent(parent);
-              found = true;
-            }
+              // There's already a CS_CSI. 
+              // Does it have the same parent?
+              
+              if(
+                 ((csCsi.getParent() == null) 
+                  && (parent == null))
+                 || 
+                 ((csCsi.getParent() != null)
+                  && (parent != null)
+                  && (csCsi.getParent().getId() == parent.getId()))
+                 )
+                {
+                  newCsCsi = csCsi;
+//                   if(parent != null) 
+//                     newCsCsi.setParent(parent);
+                  found = true;
+                }
+            } 
           }
         }
 
