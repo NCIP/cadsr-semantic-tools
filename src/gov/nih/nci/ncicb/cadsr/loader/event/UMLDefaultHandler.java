@@ -367,7 +367,7 @@ public class UMLDefaultHandler implements UMLHandler {
     for(Iterator it = concepts.iterator(); it.hasNext(); ) {
       Concept con = (Concept)it.next();
       if(sb.length() > 0)
-        sb.insert(0, "-");
+        sb.insert(0, ":");
       sb.insert(0, con.getPreferredName());
     }
     return sb.toString();
