@@ -444,7 +444,8 @@ public class XMIParser implements Parser {
       s = null;
       if (elt.getNamespace() != null) {
         s = elt.getNamespace().getName(); 
-        if(!s.startsWith("EA ")) {
+        if(s.indexOf(" ") == -1) {
+//         if(!s.startsWith("EA ")) {
           if(pack.length() > 0)
             pack.insert(0, '.');
           pack.insert(0, s);
