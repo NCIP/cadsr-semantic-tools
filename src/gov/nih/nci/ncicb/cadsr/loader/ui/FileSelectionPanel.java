@@ -7,6 +7,8 @@ import javax.swing.*;
 
 import java.io.File;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
+
 public class FileSelectionPanel extends JPanel 
 {
 
@@ -52,7 +54,7 @@ public class FileSelectionPanel extends JPanel
     
     browseButton = new JButton("Browse");
     filePathField = new JTextField(30);
-    filePathField.setText("/home/ludetc/dev/umlloader-gui/2.0.0/data/gene_fixed.xmi");
+//     filePathField.setText("/home/ludetc/dev/umlloader-gui/2.0.0/data/gene_fixed.xmi");
     JPanel browsePanel = new JPanel();
 
     browsePanel.setLayout(new GridBagLayout());
@@ -63,16 +65,14 @@ public class FileSelectionPanel extends JPanel
     insertInBag(browsePanel, filePathField, 0, 1);
     insertInBag(browsePanel, browseButton, 1, 1);
 
-//     browsePanel.add(filePathField);
-//     browsePanel.add(browseButton);
-    
     browsePanel.setPreferredSize(new Dimension(400, 200));
 
     this.add(browsePanel, BorderLayout.CENTER);
 
     browseButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
-          JFileChooser chooser = new JFileChooser();
+          String xmiDir = BeansAccessor.getUserPreferences().getXmiDir();
+          JFileChooser chooser = new JFileChooser(xmiDir);
           javax.swing.filechooser.FileFilter filter = 
             new javax.swing.filechooser.FileFilter() {
               public boolean accept(File f) {
@@ -90,6 +90,8 @@ public class FileSelectionPanel extends JPanel
           int returnVal = chooser.showOpenDialog(null);
           if(returnVal == JFileChooser.APPROVE_OPTION) {
             filePathField.setText(chooser.getSelectedFile().getAbsolutePath());
+            BeansAccessor.getUserPreferences()
+              .setXmiDir(chooser.getSelectedFile().getAbsolutePath());
           }
         }
       });
