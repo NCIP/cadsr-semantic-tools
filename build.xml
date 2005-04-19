@@ -89,6 +89,7 @@
       <fileset dir="${config.dir}">
         <include name="*.properties"/>
         <include name="jaas.config"/>
+        <include name="beans.xml"/>
       </fileset>
       <fileset dir="${images.dir}">
         <include name="*.png"/>
