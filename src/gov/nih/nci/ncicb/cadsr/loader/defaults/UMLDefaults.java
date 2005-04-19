@@ -267,9 +267,9 @@ public class UMLDefaults {
   }
 
   public String getPackageDisplay(String packageName) {
-    if(packageFilter.containsKey(packageName))
+    if(packageFilter.containsKey(packageName)) {
       return (String)packageFilter.get(packageName);
-    else if(defaultPackage != null)
+    } else if(defaultPackage != null)
       return defaultPackage;
     else
       return packageName;
