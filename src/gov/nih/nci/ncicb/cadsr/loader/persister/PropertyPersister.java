@@ -27,6 +27,8 @@ public class PropertyPersister extends UMLPersister {
     if (props != null) {
       for (ListIterator it = props.listIterator(); it.hasNext();) {
 	prop = (Property) it.next();
+        logger.debug(prop.getLongName());
+        logger.debug(prop.getPreferredName());
 
         Property newProp = null;
 
