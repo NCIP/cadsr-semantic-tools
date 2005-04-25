@@ -21,7 +21,8 @@ import java.util.*;
 import javax.swing.tree.TreeSelectionModel;
 
 public class NavigationPanel extends JPanel 
-  implements ActionListener, MouseListener, ReviewListener, NavigationListener
+  implements ActionListener, MouseListener, ReviewListener, NavigationListener,
+  KeyListener
 {
   private JTree tree;
   private JPopupMenu popup;
@@ -67,6 +68,7 @@ public class NavigationPanel extends JPanel
     tree = new JTree(top);
     tree.setRootVisible(false);
     tree.setShowsRootHandles(true);
+    tree.addKeyListener(this);
     
 //    tree.getSelectionModel().setSelectionMode
 //      (TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -105,6 +107,40 @@ public class NavigationPanel extends JPanel
       vcl.viewChanged(evt);
 
     }
+  }
+  
+  public void keyPressed(KeyEvent e) {
+    DefaultMutableTreeNode selected = 
+      (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+       
+    //if the down arrow is pressed then display the next element
+    //in the tree in the ViewPanel
+    if(e.getKeyCode() == KeyEvent.VK_DOWN  && selected != null) 
+    {
+      if (selected.getNextNode() != null) 
+      {
+        TreePath path =  new TreePath(selected.getNextNode().getPath());
+        newViewEvent(path);
+      }
+    }
+    //if the up arrow is pressed then display the previous element
+    //in the tree in the ViewPanel
+    if(e.getKeyCode() == KeyEvent.VK_UP && selected != null)
+    {
+      if (selected.getPreviousNode() != null) 
+      {
+        TreePath path =  new TreePath(selected.getPreviousNode().getPath());
+        newViewEvent(path);
+      }  
+    }
+
+  }
+  
+  public void keyTyped(KeyEvent e) {
+    
+  }
+  
+  public void keyReleased(KeyEvent e) {
   }
 
   public void mousePressed(MouseEvent e) {
