@@ -54,7 +54,7 @@ public class FileSelectionPanel extends JPanel
     
     browseButton = new JButton("Browse");
     filePathField = new JTextField(30);
-//     filePathField.setText("/home/ludetc/dev/umlloader-gui/2.0.0/data/gene_fixed.xmi");
+
     JPanel browsePanel = new JPanel();
 
     browsePanel.setLayout(new GridBagLayout());
@@ -64,6 +64,31 @@ public class FileSelectionPanel extends JPanel
 
     insertInBag(browsePanel, filePathField, 0, 1);
     insertInBag(browsePanel, browseButton, 1, 1);
+
+    insertInBag(browsePanel, 
+                new JLabel("Recent Files:"), 0, 2, 2, 1);
+
+    final UserPreferences prefs = BeansAccessor.getUserPreferences();
+
+    java.util.List<String> recentFiles = prefs.getRecentFiles();
+    
+    int y = 3;
+    for(String s : recentFiles) {
+      final JLabel jl = new JLabel(s);
+      
+      Font f = jl.getFont();
+      Font newFont = new Font(f.getName(), f.getStyle(), f.getSize() - 2);
+      jl.setFont(newFont);
+
+      jl.addMouseListener(new MouseAdapter() {
+          public void mouseClicked(MouseEvent evt) {
+            filePathField.setText(jl.getText());
+          }
+        });
+
+
+      insertInBag(browsePanel, jl, 0, y++, 2, 1);
+    }
 
     browsePanel.setPreferredSize(new Dimension(400, 200));
 
@@ -89,9 +114,10 @@ public class FileSelectionPanel extends JPanel
           chooser.setFileFilter(filter);
           int returnVal = chooser.showOpenDialog(null);
           if(returnVal == JFileChooser.APPROVE_OPTION) {
-            filePathField.setText(chooser.getSelectedFile().getAbsolutePath());
-            BeansAccessor.getUserPreferences()
-              .setXmiDir(chooser.getSelectedFile().getAbsolutePath());
+            String filePath = chooser.getSelectedFile().getAbsolutePath();
+            filePathField.setText(filePath);
+            prefs.setXmiDir(filePath);
+            prefs.addRecentFile(filePath);
           }
         }
       });
@@ -107,7 +133,7 @@ public class FileSelectionPanel extends JPanel
     JPanel p = new JPanel();
     p.add(comp);
 
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
 
 
