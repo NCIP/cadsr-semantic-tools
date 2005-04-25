@@ -16,7 +16,7 @@ public class UserPreferences {
   }
 
   public List<String> getRecentFiles() {
-    return new ArrayList(Arrays.asList(prefs.get("recentFiles", "").split(":")));
+    return new ArrayList(Arrays.asList(prefs.get("recentFiles", "").split("\\$\\$")));
 
   }
 
@@ -37,7 +37,7 @@ public class UserPreferences {
     StringBuilder sb = new StringBuilder();
     for(String s : files) {
       if(sb.length() > 0)
-        sb.append(":");
+        sb.append("$$");
       sb.append(s);
     }
     prefs.put("recentFiles", sb.toString());
