@@ -24,7 +24,7 @@ public class BeansAccessor {
   
   private static BeanFactory getFactory() {
     try {
-      return new XmlBeanFactory( ClassLoader.getSystemResourceAsStream("beans.xml"));
+      return new XmlBeanFactory(Thread.currentThread().getContextClassLoader().getResourceAsStream("beans.xml"));
     } catch (Exception e){
       logger.error(e.getMessage());
     } // end of try-catch
