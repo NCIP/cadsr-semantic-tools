@@ -44,7 +44,7 @@ values ('MSH2002_06_01');
 --values ('BIOINFORMATICS', 'BIOINFORMATICS', 'Bioinformatics Conceptual Domain', (select conte_idseq from contexts where name = 'caCORE'));
 
 insert into conceptual_domains (preferred_name, long_name, preferred_definition, conte_idseq)
-bvalues ('UML DEFAULT CD', 'UML DEFAULT CD', 'Default Conceptual Domain for UML Loader', (select conte_idseq from contexts where name = 'caCORE'));
+values ('UML DEFAULT CD', 'UML DEFAULT CD', 'Default Conceptual Domain for UML Loader', (select conte_idseq from contexts where name = 'caCORE'));
 
 insert into value_domains (preferred_name, long_name, conte_idseq, preferred_definition, DTL_NAME, CD_IDSEQ, VD_TYPE_FLAG)
 values ('byte', 'byte', (select conte_idseq from contexts where name = 'caCORE'), 'java byte type', 'NUMBER', (select cd_idseq from conceptual_domains where preferred_name = 'BIOINFORMATICS' ), 'N');
