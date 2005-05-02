@@ -12,6 +12,7 @@ import java.awt.BorderLayout;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeNode;
@@ -114,12 +115,13 @@ public class NavigationPanel extends JPanel
       (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
        
     //if the down arrow is pressed then display the next element
-    //in the tree in the ViewPanel
+    //in the tree in the ViewPanel    
     if(e.getKeyCode() == KeyEvent.VK_DOWN  && selected != null) 
     {
       if (selected.getNextNode() != null) 
       {
         TreePath path =  new TreePath(selected.getNextNode().getPath());
+        tree.makeVisible(path);
         newViewEvent(path);
       }
     }
@@ -130,6 +132,7 @@ public class NavigationPanel extends JPanel
       if (selected.getPreviousNode() != null) 
       {
         TreePath path =  new TreePath(selected.getPreviousNode().getPath());
+        tree.makeVisible(path);
         newViewEvent(path);
       }  
     }
@@ -137,7 +140,39 @@ public class NavigationPanel extends JPanel
   }
   
   public void keyTyped(KeyEvent e) {
-    
+//    DefaultMutableTreeNode selected = 
+//      (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+//       
+//    //if the down arrow is pressed then display the next element
+//    //in the tree in the ViewPanel
+//    //if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_UP)
+//    
+//    if(e.getKeyCode() == KeyEvent.VK_DOWN  && selected != null) 
+//    {
+//      //if (selected.getNextNode() != null) 
+//      //{
+//        TreePath path =  new TreePath(selected.getNextNode().getPath());
+//        newViewEvent(path);
+//      //}
+//    }
+//    //if the up arrow is pressed then display the previous element
+//    //in the tree in the ViewPanel
+//    if(e.getKeyCode() == KeyEvent.VK_UP && selected != null)
+//    {
+//      //if (selected.getPreviousNode() != null) 
+//      //{
+//        TreePath path =  new TreePath(selected.getPreviousNode().getPath());
+//        newViewEvent(path);
+//      //}  
+//    }
+        
+        
+////        if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_UP) 
+////        {
+////
+////          TreePath path =  tree.getSelectionPath();
+////          newViewEvent(path);
+////        }
   }
   
   public void keyReleased(KeyEvent e) {
@@ -280,5 +315,29 @@ public class NavigationPanel extends JPanel
     
   }
   
+//  public void search(SearchEvent event) 
+//  {
+//    System.out.println("When the button is pressed I'm inside search!!!");
+//    System.out.println("The search term was " + event.getSearchString());
+//    
+//    //DefaultMutableTreeNode theRoot = (DefaultMutableTreeNode) rootNode;
+//    TreePath path = tree.getNextMatch(event.getSearchString(), 0, Position.Bias.Forward);
+//    //if searchString isn't found then return error message
+//    if(path == null)
+//    {
+//      JOptionPane.showMessageDialog(null,"Text Not Found", "No Match",JOptionPane.ERROR_MESSAGE);
+//    }
+//    //else select the node that matches and display that element in viewPanel
+//    else
+//    {
+//      tree.setSelectionPath(path);
+//      tree.scrollPathToVisible(path);
+//      //if(tree.isVisible(path) == false)
+//      //  tree.makeVisible(path);  
+//      newViewEvent(path);
+//    }
+    
+    
+//  }
 
 }
