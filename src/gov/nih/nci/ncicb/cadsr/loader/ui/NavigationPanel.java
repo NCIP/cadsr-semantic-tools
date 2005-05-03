@@ -284,10 +284,13 @@ public class NavigationPanel extends JPanel
   {
     DefaultMutableTreeNode selected = 
       (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+
+    if(selected == null)
+      selected = (DefaultMutableTreeNode)tree.getPathForRow(0).getLastPathComponent();
+
     TreePath path = null;
+    selected = selected.getNextNode();
     while(selected != null) {
-      selected = selected.getNextNode();
-      //TreeNode temp = (TreeNode) e.nextElement();
       AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
             
       if((n.getDisplay()).equalsIgnoreCase(event.getSearchString())) 
@@ -299,12 +302,17 @@ public class NavigationPanel extends JPanel
         break;        
       }
       
+      selected = selected.getNextNode();
     }
 
     if(path == null)
-    {
-      JOptionPane.showMessageDialog(null,"Text Not Found", "No Match",JOptionPane.ERROR_MESSAGE);
-    }
+      {
+        int result = JOptionPane.showConfirmDialog(null, "Text Not Found", "No Match", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if(result == JOptionPane.YES_OPTION)
+          search(event);
+        
+//        JOptionPane.showMessageDialog(null,"Text Not Found", "No Match",JOptionPane.ERROR_MESSAGE);
+      }
 
   }
 
