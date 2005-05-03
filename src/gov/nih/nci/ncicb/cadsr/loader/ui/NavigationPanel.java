@@ -71,9 +71,6 @@ public class NavigationPanel extends JPanel
     tree.setShowsRootHandles(true);
     tree.addKeyListener(this);
     
-//    tree.getSelectionModel().setSelectionMode
-//      (TreeSelectionModel.SINGLE_TREE_SELECTION);
-      
     //Traverse Tree expanding all nodes    
     TreeUtil.expandAll(tree, top);
 
@@ -285,16 +282,9 @@ public class NavigationPanel extends JPanel
   
   public void search(SearchEvent event) 
   {
-    System.out.println("When the button is pressed I'm inside search!!!");
-    System.out.println("The search term was " + event.getSearchString());
-
     DefaultMutableTreeNode selected = 
       (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-    
-    System.out.println("selected toString " + selected.toString());
-    
-    
-    TreePath path2 = null;
+    TreePath path = null;
     while(selected != null) {
       selected = selected.getNextNode();
       //TreeNode temp = (TreeNode) e.nextElement();
@@ -302,17 +292,16 @@ public class NavigationPanel extends JPanel
             
       if((n.getDisplay()).equalsIgnoreCase(event.getSearchString())) 
       {
-        path2 = new TreePath(selected.getPath());
-        tree.setSelectionPath(path2);
-        tree.scrollPathToVisible(path2);
-        newViewEvent(path2);
+        path = new TreePath(selected.getPath());
+        tree.setSelectionPath(path);
+        tree.scrollPathToVisible(path);
+        newViewEvent(path);
         break;        
       }
       
     }
-    
 
-    if(path2 == null)
+    if(path == null)
     {
       JOptionPane.showMessageDialog(null,"Text Not Found", "No Match",JOptionPane.ERROR_MESSAGE);
     }
