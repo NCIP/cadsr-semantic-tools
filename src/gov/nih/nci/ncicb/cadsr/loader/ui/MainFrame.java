@@ -17,6 +17,7 @@ import javax.swing.*;
 import java.util.*;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 
 public class MainFrame extends JFrame 
@@ -52,6 +53,8 @@ public class MainFrame extends JFrame
 
   private Map<String, UMLElementViewPanel> viewPanels = new HashMap();
   private AssociationViewPanel associationViewPanel = null;
+
+  private JMenuItem findMenuItem = new JMenuItem();
 
   public MainFrame()
   {
@@ -89,9 +92,12 @@ public class MainFrame extends JFrame
     jSplitPane1.setDividerLocation(160);
     jSplitPane2.setDividerLocation(400);
 
+    findMenuItem.setText("Find");
+
     fileMenu.add(saveMenuItem);
     fileMenu.add(saveAsMenuItem);
     fileMenu.addSeparator();
+    fileMenu.add(findMenuItem);
     fileMenu.add(exportErrorsMenuItem);
     fileMenu.addSeparator();
     fileMenu.add(exitMenuItem);
@@ -140,6 +146,15 @@ public class MainFrame extends JFrame
           dialog.setSize(300, 150);
           dialog.show();
         }
+    });
+    
+    findMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent event) {
+        SearchDialog find = new SearchDialog(_this);
+        find.addSearchListener(navigationPanel);
+        find.setVisible(true);
+
+      }
     });
     
     mainViewPanel.setLayout(new BorderLayout());
