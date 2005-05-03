@@ -23,7 +23,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 public class NavigationPanel extends JPanel 
   implements ActionListener, MouseListener, ReviewListener, NavigationListener,
-  KeyListener
+  KeyListener, SearchListener
 {
   private JTree tree;
   private JPopupMenu popup;
@@ -140,39 +140,7 @@ public class NavigationPanel extends JPanel
   }
   
   public void keyTyped(KeyEvent e) {
-//    DefaultMutableTreeNode selected = 
-//      (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-//       
-//    //if the down arrow is pressed then display the next element
-//    //in the tree in the ViewPanel
-//    //if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_UP)
-//    
-//    if(e.getKeyCode() == KeyEvent.VK_DOWN  && selected != null) 
-//    {
-//      //if (selected.getNextNode() != null) 
-//      //{
-//        TreePath path =  new TreePath(selected.getNextNode().getPath());
-//        newViewEvent(path);
-//      //}
-//    }
-//    //if the up arrow is pressed then display the previous element
-//    //in the tree in the ViewPanel
-//    if(e.getKeyCode() == KeyEvent.VK_UP && selected != null)
-//    {
-//      //if (selected.getPreviousNode() != null) 
-//      //{
-//        TreePath path =  new TreePath(selected.getPreviousNode().getPath());
-//        newViewEvent(path);
-//      //}  
-//    }
-        
-        
-////        if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_UP) 
-////        {
-////
-////          TreePath path =  tree.getSelectionPath();
-////          newViewEvent(path);
-////        }
+
   }
   
   public void keyReleased(KeyEvent e) {
@@ -315,29 +283,40 @@ public class NavigationPanel extends JPanel
     
   }
   
-//  public void search(SearchEvent event) 
-//  {
-//    System.out.println("When the button is pressed I'm inside search!!!");
-//    System.out.println("The search term was " + event.getSearchString());
-//    
-//    //DefaultMutableTreeNode theRoot = (DefaultMutableTreeNode) rootNode;
-//    TreePath path = tree.getNextMatch(event.getSearchString(), 0, Position.Bias.Forward);
-//    //if searchString isn't found then return error message
-//    if(path == null)
-//    {
-//      JOptionPane.showMessageDialog(null,"Text Not Found", "No Match",JOptionPane.ERROR_MESSAGE);
-//    }
-//    //else select the node that matches and display that element in viewPanel
-//    else
-//    {
-//      tree.setSelectionPath(path);
-//      tree.scrollPathToVisible(path);
-//      //if(tree.isVisible(path) == false)
-//      //  tree.makeVisible(path);  
-//      newViewEvent(path);
-//    }
+  public void search(SearchEvent event) 
+  {
+    System.out.println("When the button is pressed I'm inside search!!!");
+    System.out.println("The search term was " + event.getSearchString());
+
+    DefaultMutableTreeNode selected = 
+      (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+    
+    System.out.println("selected toString " + selected.toString());
     
     
-//  }
+    TreePath path2 = null;
+    while(selected != null) {
+      selected = selected.getNextNode();
+      //TreeNode temp = (TreeNode) e.nextElement();
+      AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
+            
+      if((n.getDisplay()).equalsIgnoreCase(event.getSearchString())) 
+      {
+        path2 = new TreePath(selected.getPath());
+        tree.setSelectionPath(path2);
+        tree.scrollPathToVisible(path2);
+        newViewEvent(path2);
+        break;        
+      }
+      
+    }
+    
+
+    if(path2 == null)
+    {
+      JOptionPane.showMessageDialog(null,"Text Not Found", "No Match",JOptionPane.ERROR_MESSAGE);
+    }
+
+  }
 
 }
