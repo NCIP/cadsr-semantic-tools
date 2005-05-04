@@ -2,14 +2,15 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
+import java.awt.event.*;
+
 import java.util.*;
 import javax.swing.*;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
-public class SearchDialog extends JDialog implements ActionListener
+public class SearchDialog extends JDialog implements ActionListener, KeyListener 
 {
   private JTextField searchField = new JTextField(10);
   private JButton findButton = new JButton("Find Next");
@@ -24,7 +25,10 @@ public class SearchDialog extends JDialog implements ActionListener
     this.getContentPane().add(findButton);
     this.setSize(200,100);
     findButton.setActionCommand(FINDNEXT);    
+
     findButton.addActionListener(this);
+    findButton.addKeyListener(this);
+    searchField.addKeyListener(this);
   }
   
   public void addSearchListener(SearchListener listener) 
@@ -50,5 +54,21 @@ public class SearchDialog extends JDialog implements ActionListener
     }
   }
   
+  public void keyPressed(KeyEvent evt) {
+    System.out.println("" + KeyEvent.VK_ENTER);
+    System.out.println("Key Typed: " + evt.getKeyCode());
+    if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+      findButton.doClick();
+  }
+
+  public void keyTyped(KeyEvent evt) {
+    System.out.println("" + KeyEvent.VK_ENTER);
+    System.out.println("Key Typed: " + evt.getKeyCode());
+    if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+      findButton.doClick();
+  }
+
+  public void keyReleased(KeyEvent evt) {
+  }
   
 }
