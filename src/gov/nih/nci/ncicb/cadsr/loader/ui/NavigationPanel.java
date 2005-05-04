@@ -282,36 +282,69 @@ public class NavigationPanel extends JPanel
   
   public void search(SearchEvent event) 
   {
-    DefaultMutableTreeNode selected = 
-      (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-
-    if(selected == null)
-      selected = (DefaultMutableTreeNode)tree.getPathForRow(0).getLastPathComponent();
+    DefaultMutableTreeNode selected =
+     (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 
     TreePath path = null;
-    selected = selected.getNextNode();
-    while(selected != null) {
-      AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
-            
-      if((n.getDisplay()).equalsIgnoreCase(event.getSearchString())) 
-      {
-        path = new TreePath(selected.getPath());
-        tree.setSelectionPath(path);
-        tree.scrollPathToVisible(path);
-        newViewEvent(path);
-        break;        
-      }
+    
+    //search the tree in a forward direction from top to bottom
+    if(!event.getSearchFromBottom()) {
       
-      selected = selected.getNextNode();
-    }
+      //if no node is selected then select the first node 
+      if(selected == null)
+        selected = (DefaultMutableTreeNode)tree.getPathForRow(0).getLastPathComponent();
 
+      selected = selected.getNextNode();
+      while(selected != null) {
+        AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
+            
+        //if there is a match then select that node in the tree
+        if((n.getDisplay()).equalsIgnoreCase(event.getSearchString())) 
+        {
+          path = new TreePath(selected.getPath());
+          tree.setSelectionPath(path);
+          tree.scrollPathToVisible(path);
+          newViewEvent(path);
+          break;        
+        }
+      
+        selected = selected.getNextNode();
+      }
+    }
+    
+    //search the tree in backward direction from bottom to top
+    else 
+    {
+      //if no node is selected then select the last node in the tree
+      if(selected == null)
+        selected = (DefaultMutableTreeNode)tree.getPathForRow(tree.getRowCount()-1).getLastPathComponent();
+
+      selected = selected.getPreviousNode();
+      while(selected != null) {
+        AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
+            
+        //if there is a match then select that node in the tree
+        if((n.getDisplay()).equalsIgnoreCase(event.getSearchString())) 
+        {
+          path = new TreePath(selected.getPath());
+          tree.setSelectionPath(path);
+          tree.scrollPathToVisible(path);
+          newViewEvent(path);
+          break;        
+        }
+      
+        selected = selected.getPreviousNode();
+      }
+    }
+    
+    //if no match was found display error message
     if(path == null)
       {
-        int result = JOptionPane.showConfirmDialog(null, "Text Not Found", "No Match", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if(result == JOptionPane.YES_OPTION)
-          search(event);
+        //int result = JOptionPane.showConfirmDialog(null, "Text Not Found", "No Match", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        //if(result == JOptionPane.YES_OPTION)
+        //  search(event);
         
-//        JOptionPane.showMessageDialog(null,"Text Not Found", "No Match",JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null,"Text Not Found", "No Match",JOptionPane.ERROR_MESSAGE);
       }
 
   }
