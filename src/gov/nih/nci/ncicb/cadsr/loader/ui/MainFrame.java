@@ -5,6 +5,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.*;
 
 import java.awt.Component;
 import java.awt.BorderLayout;
@@ -150,9 +151,10 @@ public class MainFrame extends JFrame
     
     findMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
-        SearchDialog find = new SearchDialog(_this);
-        find.addSearchListener(navigationPanel);
-        find.setVisible(true);
+        SearchDialog sd = new SearchDialog(_this);
+        UIUtil.putToCenter(sd);
+        sd.addSearchListener(navigationPanel);
+        sd.setVisible(true);
 
       }
     });
