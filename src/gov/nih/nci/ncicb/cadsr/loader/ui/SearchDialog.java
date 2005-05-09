@@ -15,6 +15,7 @@ public class SearchDialog extends JDialog implements ActionListener, KeyListener
   private JTextField searchField = new JTextField(10);
   private JButton findButton = new JButton("Find Next");
   private JCheckBox searchFromBottom = new JCheckBox("Search From Bottom");
+  private JCheckBox searchByLongName = new JCheckBox("Search By Long Name");
   private List<SearchListener> searchListeners = new ArrayList();
   private static final String FINDNEXT = "FINDNEXT";
   
@@ -25,7 +26,8 @@ public class SearchDialog extends JDialog implements ActionListener, KeyListener
     this.getContentPane().add(searchField);
     this.getContentPane().add(findButton);
     this.getContentPane().add(searchFromBottom);
-    this.setSize(200,100);
+    this.getContentPane().add(searchByLongName);
+    this.setSize(200,125);
     findButton.setActionCommand(FINDNEXT);    
     
     findButton.addActionListener(this);
@@ -50,7 +52,8 @@ public class SearchDialog extends JDialog implements ActionListener, KeyListener
     if(button.getActionCommand().equals(FINDNEXT)) 
     {
       String s = searchField.getText();
-      SearchEvent searchEvent = new SearchEvent(s, searchFromBottom.isSelected());
+      SearchEvent searchEvent = new SearchEvent(s, searchFromBottom.isSelected(),
+        searchByLongName.isSelected());
       fireSearchEvent(searchEvent);
       //this.setVisible(false);
     }
