@@ -29,7 +29,8 @@ public class FileSelectionPanel extends JPanel
   }
 
   public String getSelection() {
-    return filePathField.getText();
+    String s = filePathField.getText().replace('\\', '/');
+    return s;
   }
 
   public void addFileActionListener(ActionListener l) {
