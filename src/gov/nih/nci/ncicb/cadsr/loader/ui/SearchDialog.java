@@ -27,7 +27,7 @@ public class SearchDialog extends JDialog implements ActionListener, KeyListener
     this.getContentPane().add(findButton);
     this.getContentPane().add(searchFromBottom);
     this.getContentPane().add(searchByLongName);
-    this.setSize(200,125);
+    this.setSize(200,150);
     findButton.setActionCommand(FINDNEXT);    
     
     findButton.addActionListener(this);
