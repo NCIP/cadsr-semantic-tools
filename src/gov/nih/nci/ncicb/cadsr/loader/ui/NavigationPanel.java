@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
@@ -287,6 +288,7 @@ public class NavigationPanel extends JPanel
 
     TreePath path = null;
     
+    //if(event.getSearchByLongName()) {
     //search the tree in a forward direction from top to bottom
     if(!event.getSearchFromBottom()) {
       
@@ -297,7 +299,23 @@ public class NavigationPanel extends JPanel
       selected = selected.getNextNode();
       while(selected != null) {
         AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
-            
+        if(event.getSearchByLongName()) 
+        {
+          Concept [] concepts = NodeUtil.getConceptsFromNode(n);
+          for(int i=0; i < concepts.length; i++) {
+            //System.out.println("Concepts" + i +" "+ concepts[i]);
+            if(event.getSearchString().equalsIgnoreCase(concepts[i].getLongName())) 
+            {
+              path = new TreePath(selected.getPath());
+              tree.setSelectionPath(path);
+              tree.scrollPathToVisible(path);
+              newViewEvent(path);
+              selected = null;
+              break;
+            }
+          }    
+        }
+        else {
         //if there is a match then select that node in the tree
         if((n.getDisplay()).equalsIgnoreCase(event.getSearchString())) 
         {
@@ -307,8 +325,9 @@ public class NavigationPanel extends JPanel
           newViewEvent(path);
           break;        
         }
-      
-        selected = selected.getNextNode();
+      }
+        if(selected != null)
+          selected = selected.getNextNode();
       }
     }
     
@@ -322,7 +341,24 @@ public class NavigationPanel extends JPanel
       selected = selected.getPreviousNode();
       while(selected != null) {
         AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
-            
+        if(event.getSearchByLongName()) 
+        {
+          Concept [] concepts = NodeUtil.getConceptsFromNode(n);
+          for(int i=0; i < concepts.length; i++) {
+            //System.out.println("Concepts" + i +" "+ concepts[i]);
+            if(event.getSearchString().equalsIgnoreCase(concepts[i].getLongName())) 
+            {
+              path = new TreePath(selected.getPath());
+              tree.setSelectionPath(path);
+              tree.scrollPathToVisible(path);
+              newViewEvent(path);
+              selected = null;
+              break;
+            }
+          }    
+        }
+        
+        else {  
         //if there is a match then select that node in the tree
         if((n.getDisplay()).equalsIgnoreCase(event.getSearchString())) 
         {
@@ -332,11 +368,13 @@ public class NavigationPanel extends JPanel
           newViewEvent(path);
           break;        
         }
-      
-        selected = selected.getPreviousNode();
+        }
+        if(selected != null)
+          selected = selected.getPreviousNode();
       }
     }
     
+
     //if no match was found display error message
     if(path == null)
       {
