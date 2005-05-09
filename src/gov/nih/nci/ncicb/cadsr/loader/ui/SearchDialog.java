@@ -15,7 +15,7 @@ public class SearchDialog extends JDialog implements ActionListener, KeyListener
   private JTextField searchField = new JTextField(10);
   private JButton findButton = new JButton("Find Next");
   private JCheckBox searchFromBottom = new JCheckBox("Search From Bottom");
-  private JCheckBox searchByLongName = new JCheckBox("Search By Long Name");
+  private JCheckBox searchByLongName = new JCheckBox("Search By Concept Name");
   private List<SearchListener> searchListeners = new ArrayList();
   private static final String FINDNEXT = "FINDNEXT";
   
