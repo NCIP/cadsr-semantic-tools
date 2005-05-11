@@ -11,14 +11,6 @@ public class UserSelections
 
   private HashMap properties = new HashMap();
 
-  private static UserSelections instance = new UserSelections();
-  
-  private UserSelections() {}
-
-  public static UserSelections getInstance() {
-    return instance;
-  }
-
   public void propertyChange(PropertyChangeEvent evt) {
     properties.put(evt.getPropertyName(), evt.getNewValue());
   }
