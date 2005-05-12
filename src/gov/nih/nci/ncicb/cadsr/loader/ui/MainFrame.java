@@ -7,6 +7,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.*;
 
+
 import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -30,6 +31,9 @@ public class MainFrame extends JFrame
   private JMenuItem saveMenuItem = new JMenuItem();
   private JMenuItem saveAsMenuItem = new JMenuItem();
   private JMenuItem exportErrorsMenuItem = new JMenuItem();
+  private JMenu editMenu = new JMenu();
+  private JMenuItem findMenuItem = new JMenuItem();
+  private JMenuItem prefMenuItem = new JMenuItem();
   private JMenu runMenu = new JMenu();
   private JMenuItem jMenuItem4 = new JMenuItem();
   private JMenuItem jMenuItem5 = new JMenuItem();
@@ -55,7 +59,7 @@ public class MainFrame extends JFrame
   private Map<String, UMLElementViewPanel> viewPanels = new HashMap();
   private AssociationViewPanel associationViewPanel = null;
 
-  private JMenuItem findMenuItem = new JMenuItem();
+  
 
   public MainFrame()
   {
@@ -81,6 +85,9 @@ public class MainFrame extends JFrame
     saveAsMenuItem.setText("Save As");
     exportErrorsMenuItem.setText("Export");
     semanticConnectorMenuItem.setText("Semantic Connector");
+    editMenu.setText("Edit");
+    findMenuItem.setText("Find");
+    prefMenuItem.setText("Preferences");
     runMenu.setText("Run");
     jMenuItem4.setText("Validate");
     jMenuItem5.setText("Upload");
@@ -93,7 +100,7 @@ public class MainFrame extends JFrame
     jSplitPane1.setDividerLocation(160);
     jSplitPane2.setDividerLocation(400);
 
-    findMenuItem.setText("Find");
+    
 
     fileMenu.add(saveMenuItem);
     fileMenu.add(saveAsMenuItem);
@@ -103,6 +110,11 @@ public class MainFrame extends JFrame
     fileMenu.addSeparator();
     fileMenu.add(exitMenuItem);
     jMenuBar1.add(fileMenu);
+
+    editMenu.add(findMenuItem);
+    editMenu.add(prefMenuItem);
+    jMenuBar1.add(editMenu);
+    
 
     runMenu.add(jMenuItem4);
     runMenu.add(jMenuItem5);
@@ -115,7 +127,7 @@ public class MainFrame extends JFrame
     helpMenu.add(jMenuItem6);
     jMenuBar1.add(helpMenu);
 
-    jTabbedPane1.addTab("Errors", new ErrorPanel(TreeBuilder.getRootNode()));
+    jTabbedPane1.addTab("Errors", new ErrorPanel(BeansAccessor.getTreeBuilder().getRootNode()));
 //     logTabbedPane.addTab("jPanel1", jPanel1);
 
     Icon closeIcon = new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("close-tab.gif"));
@@ -156,6 +168,14 @@ public class MainFrame extends JFrame
         sd.addSearchListener(navigationPanel);
         sd.setVisible(true);
 
+      }
+    });
+    
+    final PreferenceDialog pd = new PreferenceDialog(_this);
+    prefMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent event) {
+        UIUtil.putToCenter(pd);
+        pd.setVisible(true);
       }
     });
     
