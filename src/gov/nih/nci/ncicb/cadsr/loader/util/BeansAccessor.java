@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.util;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
 import java.io.FileInputStream;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -13,6 +14,7 @@ public class BeansAccessor {
   
   private static UserSelections userSelections;
   private static UserPreferences userPreferences;
+  private static TreeBuilder treeBuilder;
 
   private static Logger logger = Logger.getLogger(BeansAccessor.class.getName());
 
@@ -32,6 +34,15 @@ public class BeansAccessor {
     }
 
     return userPreferences;
+  }
+  
+  public static TreeBuilder getTreeBuilder() {
+
+    if(treeBuilder == null) {
+      treeBuilder = (TreeBuilder)getFactory().getBean("treeBuilder");
+    }
+
+    return treeBuilder;
   }
   
   private static BeanFactory getFactory() {
