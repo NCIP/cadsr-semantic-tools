@@ -1,11 +1,24 @@
 package gov.nih.nci.ncicb.cadsr.loader.util;
-
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import java.util.prefs.Preferences;
 import java.util.*;
 
 public class UserPreferences {
 
   Preferences prefs = Preferences.userRoot().node("UMLLOADER");
+  List<UserPreferencesListener> userPrefsListeners = new ArrayList(); 
+  
+  public String getViewAssociationType() 
+  {
+    return prefs.get("ViewAssociations", "false");
+  }
+  
+  public void setViewAssociationType(String value) 
+  {
+    prefs.put("ViewAssociations", value);
+    UserPreferencesEvent event = new UserPreferencesEvent(UserPreferencesEvent.VIEW_ASSOCIATION, value);
+    fireUserPreferencesEvent(event);
+  }
 
   public String getXmiDir() {
     return prefs.get("xmiDir","/");
@@ -41,6 +54,17 @@ public class UserPreferences {
       sb.append(s);
     }
     prefs.put("recentFiles", sb.toString());
+  }
+
+  private void fireUserPreferencesEvent(UserPreferencesEvent event) 
+  {
+    for(UserPreferencesListener l : userPrefsListeners)
+      l.preferenceChange(event);
+  }
+
+  public void addUserPreferencesListener(UserPreferencesListener listener) 
+  {
+    userPrefsListeners.add(listener);
   }
 
 }
