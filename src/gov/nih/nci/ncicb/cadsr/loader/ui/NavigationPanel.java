@@ -9,6 +9,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
 import java.awt.BorderLayout;
 import java.awt.event.*;
 import javax.swing.*;
@@ -16,6 +17,7 @@ import javax.swing.event.*;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -24,11 +26,12 @@ import javax.swing.tree.TreeSelectionModel;
 
 public class NavigationPanel extends JPanel 
   implements ActionListener, MouseListener, ReviewListener, NavigationListener,
-  KeyListener, SearchListener
+  KeyListener, SearchListener, TreeListener
 {
   private JTree tree;
   private JPopupMenu popup;
-  private UMLNode rootNode = TreeBuilder.getRootNode(); 
+  private JScrollPane scrollPane;
+  private UMLNode rootNode = BeansAccessor.getTreeBuilder().getRootNode(); 
 
   private Set<NavigationListener> navListeners = new HashSet<NavigationListener>();
 
@@ -39,6 +42,7 @@ public class NavigationPanel extends JPanel
     try
     {
       initUI();
+      BeansAccessor.getTreeBuilder().addTreeListener(this);
     }
     catch(Exception e)
     {
@@ -79,7 +83,7 @@ public class NavigationPanel extends JPanel
    
     this.setLayout(new BorderLayout());
 
-    JScrollPane scrollPane = new JScrollPane(tree);
+    scrollPane = new JScrollPane(tree);
     this.add(scrollPane, BorderLayout.CENTER);
 
     
@@ -258,6 +262,23 @@ public class NavigationPanel extends JPanel
 
     return node;
     
+  }
+  
+  public void treeChange(TreeEvent event) 
+  {
+    this.remove(scrollPane);
+    rootNode = BeansAccessor.getTreeBuilder().getRootNode();
+          
+    try
+    {
+      initUI();
+    }
+    catch (Exception e)
+    {
+      
+    }
+   
+    this.updateUI();
   }
   
   public void navigate(NavigationEvent event) 
