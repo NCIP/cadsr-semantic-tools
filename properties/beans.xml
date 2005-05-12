@@ -11,4 +11,8 @@
     class="gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences" 
     singleton="true">
   </bean>
+  <bean name="treeBuilder"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder" 
+    singleton="true">
+  </bean>
 </beans>
