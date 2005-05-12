@@ -22,8 +22,7 @@ public class FileSelectionPanelDescriptor
   }
   
   public Object getBackPanelDescriptor() {
-    return null;
-//     return LoginPanelDescriptor.IDENTIFIER;
+    return ModeSelectionPanelDescriptor.IDENTIFIER;
   }  
   
   public void actionPerformed(ActionEvent evt) {
