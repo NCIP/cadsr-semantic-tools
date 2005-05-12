@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -171,7 +172,9 @@ public class WizardController implements ActionListener {
                   Validator validator = new UMLValidator(elements);
                   validator.validate();
 
-                  new TreeBuilder().buildTree(elements);
+                  TreeBuilder tb = BeansAccessor.getTreeBuilder();
+                  tb.init();
+                  tb.buildTree(elements);
                   
                   return null;
                 } catch (Exception e){
