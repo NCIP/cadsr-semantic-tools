@@ -14,6 +14,8 @@ import gov.nih.nci.ncicb.cadsr.loader.parser.*;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
+import gov.nih.nci.ncicb.cadsr.loader.util.SemanticConnectorUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
 import java.io.File;
@@ -74,61 +76,74 @@ public class WizardController implements ActionListener {
         WizardPanelDescriptor descriptor = model.getCurrentPanelDescriptor();
 
         Object nextPanelDescriptor = descriptor.getNextPanelDescriptor();
-        if(descriptor.getPanelDescriptorIdentifier().equals(LoginPanelDescriptor.IDENTIFIER)) {
-          final LoginPanel panel = (LoginPanel)descriptor.getPanelComponent();
-          final ProgressLoginPanelDescriptor thisDesc =
-            (ProgressLoginPanelDescriptor)model
-            .getPanelDescriptor(nextPanelDescriptor);
+//         if(descriptor.getPanelDescriptorIdentifier().equals(LoginPanelDescriptor.IDENTIFIER)) {
+//           final LoginPanel panel = (LoginPanel)descriptor.getPanelComponent();
+//           final ProgressLoginPanelDescriptor thisDesc =
+//             (ProgressLoginPanelDescriptor)model
+//             .getPanelDescriptor(nextPanelDescriptor);
 
-          final SwingWorker worker = new SwingWorker() {
-              public Object construct() {
-                try {
-                  boolean workOffline = (Boolean)UserSelections.getInstance()
-                    .getProperty("WORK_OFFLINE");
+//           final SwingWorker worker = new SwingWorker() {
+//               public Object construct() {
+//                 try {
+//                   boolean workOffline = (Boolean)UserSelections.getInstance()
+//                     .getProperty("WORK_OFFLINE");
                   
-                  ProgressEvent evt = null;
+//                   ProgressEvent evt = null;
 
-                  if(!workOffline) {
-                    evt = new ProgressEvent();
-                    evt.setMessage("Sending credentials...");
-                    thisDesc.newProgressEvent(evt);
+//                   if(!workOffline) {
+//                     evt = new ProgressEvent();
+//                     evt.setMessage("Sending credentials...");
+//                     thisDesc.newProgressEvent(evt);
                     
-                    LoginContext lc = new LoginContext("UML_Loader", panel);    
-                    lc.login();
-                    username = panel.getUsername();
-                    panel.setErrorMessage("");
-                  } else {
-                    try {
-                      Thread.currentThread().sleep(100);
-                    } catch (Exception e){
-                    } // end of try-catch
-                  }
+//                     LoginContext lc = new LoginContext("UML_Loader", panel);    
+//                     lc.login();
+//                     username = panel.getUsername();
+//                     panel.setErrorMessage("");
+//                   } else {
+//                     try {
+//                       Thread.currentThread().sleep(100);
+//                     } catch (Exception e){
+//                     } // end of try-catch
+//                   }
                   
-                  evt = new ProgressEvent();
-                  evt.setGoal(100);
-                  evt.setStatus(100);
-                  evt.setMessage("Done");
-                  thisDesc.newProgressEvent(evt);
-                } catch (Exception e){
-                  ProgressEvent evt = new ProgressEvent();
-                  evt.setStatus(-1);
-                  evt.setGoal(-1);
-                  evt.setMessage("Failed");
-                  thisDesc.newProgressEvent(evt);
+//                   evt = new ProgressEvent();
+//                   evt.setGoal(100);
+//                   evt.setStatus(100);
+//                   evt.setMessage("Done");
+//                   thisDesc.newProgressEvent(evt);
+//                 } catch (Exception e){
+//                   ProgressEvent evt = new ProgressEvent();
+//                   evt.setStatus(-1);
+//                   evt.setGoal(-1);
+//                   evt.setMessage("Failed");
+//                   thisDesc.newProgressEvent(evt);
 
-                  username = null;
-                  panel.setErrorMessage("Login / Password incorrect");
-                } // end of try-catch
-                return null;
-              }
-            };
-          worker.start(); 
-        }
+//                   username = null;
+//                   panel.setErrorMessage("Login / Password incorrect");
+//                 } // end of try-catch
+//                 return null;
+//               }
+//             };
+//           worker.start(); 
+//         }
 
         if(descriptor.getPanelDescriptorIdentifier().equals(FileSelectionPanelDescriptor.IDENTIFIER)) {
           FileSelectionPanel panel = 
             (FileSelectionPanel)descriptor.getPanelComponent();
           filename = panel.getSelection();
+
+          BeansAccessor.getUserSelections().setProperty("FILENAME", filename);
+
+          SemanticConnectorPanelDescriptor semPnlDesc =
+            (SemanticConnectorPanelDescriptor)model
+            .getPanelDescriptor(SemanticConnectorPanelDescriptor.IDENTIFIER);
+
+          SemanticConnectorPanel semPanel =
+            (SemanticConnectorPanel)semPnlDesc.getPanelComponent();
+          
+          File csvFile = new File(SemanticConnectorUtil.getCSVFileName(filename));
+          semPanel.setMode(csvFile.exists()?SemanticConnectorPanel.MODE_INITIAL:SemanticConnectorPanel.MODE_SUBSEQUENT);
+
         }
 
         if(descriptor.getPanelDescriptorIdentifier().equals(SemanticConnectorPanelDescriptor.IDENTIFIER)) {
