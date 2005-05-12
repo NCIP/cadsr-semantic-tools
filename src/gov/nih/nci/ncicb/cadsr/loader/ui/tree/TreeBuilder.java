@@ -5,15 +5,27 @@ import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 
 import java.util.*;
 
-public class TreeBuilder {
+public class TreeBuilder implements UserPreferencesListener {
 
   private ElementsLists elements;
   private UMLDefaults defaults = UMLDefaults.getInstance();
 
-  private static UMLNode rootNode;
+  private UMLNode rootNode;
+
+  private List<TreeListener> treeListeners = new ArrayList();
+  private boolean inClassAssociations = false;
+  
+  public void init() 
+  {
+    UserPreferences prefs = BeansAccessor.getUserPreferences();
+    prefs.addUserPreferencesListener(this);
+    
+    inClassAssociations = new Boolean (prefs.getViewAssociationType());
+  }
 
   public UMLNode buildTree(ElementsLists elements) {
 
@@ -22,12 +34,13 @@ public class TreeBuilder {
     rootNode = new RootNode();
     doPackages(rootNode);
 
-    doAssociations(rootNode);
+    if(!inClassAssociations)
+      doAssociations(rootNode);
 
     return rootNode;
   }
 
-  public static UMLNode getRootNode() {
+  public UMLNode getRootNode() {
     return rootNode;
   }
 
@@ -79,7 +92,9 @@ public class TreeBuilder {
         UMLNode node = new ClassNode(o);
         parentNode.addChild(node);
         doAttributes(node);
-
+        if(inClassAssociations)
+          doAssociations(node,o);
+        
         List<ValidationItem> items = findValidationItems(o);
         for(ValidationItem item : items) {
           ValidationNode vNode = new ValidationNode(item);
@@ -122,5 +137,44 @@ public class TreeBuilder {
     parentNode.addChild(assocNode);
 
   }
+  
+   private void doAssociations(UMLNode parentNode, ObjectClass oc) {
+      UMLNode assocNode = new PackageNode("Associations", "Associations");
 
+    ObjectClassRelationship o = DomainObjectFactory.newObjectClassRelationship();
+    List<ObjectClassRelationship> ocrs = 
+      (List<ObjectClassRelationship>) 
+      elements.getElements(o.getClass());
+
+    for(ObjectClassRelationship ocr : ocrs) {
+      UMLNode node = new AssociationNode(ocr);
+      if(ocr.getSource().getLongName().equals(oc.getLongName()) 
+      | ocr.getTarget().getLongName().equals(oc.getLongName()))
+        assocNode.addChild(node);
+    }
+
+    parentNode.addChild(assocNode);
+   }
+
+  public void preferenceChange(UserPreferencesEvent event) 
+  {
+    if(event.getTypeOfEvent() == UserPreferencesEvent.VIEW_ASSOCIATION) 
+    {
+      inClassAssociations = new Boolean (event.getValue());
+      buildTree(elements);
+      TreeEvent tEvent = new TreeEvent();
+      fireTreeEvent(tEvent);
+    }
+  }
+
+  public void addTreeListener(TreeListener listener) 
+  {
+    treeListeners.add(listener);
+  }
+  
+  public void fireTreeEvent(TreeEvent event) 
+  {
+    for(TreeListener l : treeListeners)
+      l.treeChange(event);
+  }
 }
