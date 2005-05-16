@@ -116,8 +116,8 @@ public class UMLElementViewPanel extends JPanel
       JButton evsButton = new JButton("Evs Link");
       insertInBag(mainPanel, evsButton, 2, 3);
       
-      ImageIcon upIcon = new ImageIcon("C:/development/umlclassdiagramloader/2.0.0/images/up-arrow.gif");
-      ImageIcon downIcon = new ImageIcon("C:/development/umlclassdiagramloader/2.0.0/images/down-arrow.gif");
+      ImageIcon upIcon = new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("up-arrow.gif"));
+      ImageIcon downIcon = new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("down-arrow.gif"));
       JButton upButton = new JButton(upIcon);
       JButton downButton = new JButton(downIcon);
       JPanel arrowPanel = new JPanel(new BorderLayout());
