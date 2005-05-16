@@ -61,34 +61,14 @@ public class UMLElementViewPanel extends JPanel
 
   private void initConcepts() 
   {
-    String[] conceptCodes = null;
-      if(node instanceof ClassNode) {
-        ObjectClass oc = (ObjectClass)node.getUserObject();
-        conceptCodes = oc.getPreferredName().split("-");
-        
-      } else if(node instanceof AttributeNode) {
-        Property prop = ((DataElement)node.getUserObject()).getDataElementConcept().getProperty();
-        conceptCodes = prop.getPreferredName().split("-");
-      } 
-      
-      if(StringUtil.isEmpty(conceptCodes[0])) {
-        conceptCodes = new String[0];
-      }
-
-      concepts = new Concept[conceptCodes.length];
-
-      for(int i=0; i<concepts.length; 
-          concepts[i] = LookupUtil.lookupConcept(conceptCodes[i++])
-          );
-      if((concepts.length > 0) && (concepts[0] == null))
-        concepts = new Concept[0];
-    
+    concepts = NodeUtil.getConceptsFromNode(node);
   }
 
   private void updateConcepts(Concept[] concepts) {
     this.concepts = concepts;
     this.removeAll();
     initUI();
+    this.updateUI();
   }
 
   public Concept[] getConcepts() {
@@ -107,6 +87,8 @@ public class UMLElementViewPanel extends JPanel
 
     conceptUIs = new ConceptUI[concepts.length];
     JPanel[] conceptPanels = new JPanel[concepts.length];
+
+    
 
     for(int i = 0; i<concepts.length; i++) {
       conceptUIs[i] = new ConceptUI(concepts[i]);
@@ -134,7 +116,16 @@ public class UMLElementViewPanel extends JPanel
       JButton evsButton = new JButton("Evs Link");
       insertInBag(mainPanel, evsButton, 2, 3);
       
+      ImageIcon upIcon = new ImageIcon("C:/development/umlclassdiagramloader/2.0.0/images/up-arrow.gif");
+      ImageIcon downIcon = new ImageIcon("C:/development/umlclassdiagramloader/2.0.0/images/down-arrow.gif");
+      JButton upButton = new JButton(upIcon);
+      JButton downButton = new JButton(downIcon);
+      JPanel arrowPanel = new JPanel(new BorderLayout());
+      arrowPanel.add(upButton,BorderLayout.NORTH);
+      arrowPanel.add(downButton,BorderLayout.SOUTH);
+      
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
+      conceptPanels[i].add(arrowPanel, BorderLayout.EAST);
       gridPanel.add(conceptPanels[i]);
 
       conceptUIs[i].code.addKeyListener(this);
@@ -144,6 +135,34 @@ public class UMLElementViewPanel extends JPanel
       conceptUIs[i].code.addCaretListener(this);
       conceptUIs[i].name.addCaretListener(this);
       conceptUIs[i].defSource.addCaretListener(this);
+      conceptUIs[i].def.addCaretListener(this);
+      
+      final int index = i;
+      if(index == 0)
+        upButton.setVisible(false);
+      if(index == concepts.length-1)
+        downButton.setVisible(false);
+      
+      upButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent event) {
+          Concept temp = concepts[index-1];
+          concepts[index-1] = concepts[index];
+          concepts[index] = temp;
+          updateConcepts(concepts);
+              
+          }
+        });
+      
+      downButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent event) {
+          Concept temp = concepts[index];
+          concepts[index] = concepts[index+1];
+          concepts[index+1] = temp;
+          updateConcepts(concepts);
+              
+          }
+        });
+    
       
     }
 
@@ -169,6 +188,7 @@ public class UMLElementViewPanel extends JPanel
     previousButton.addActionListener(this);
     nextButton.addActionListener(this);
     
+
     if(concepts.length < 2)
       deleteButton.setEnabled(false);
 
@@ -206,7 +226,8 @@ public class UMLElementViewPanel extends JPanel
     for(int i=0; i < conceptUIs.length; i++) {
       if(conceptUIs[i].code.getText().trim().equals("")
          | conceptUIs[i].name.getText().trim().equals("")
-         | conceptUIs[i].defSource.getText().trim().equals("")) {
+         | conceptUIs[i].defSource.getText().trim().equals("")
+         | conceptUIs[i].def.getText().trim().equals("")) {
         button.setEnabled(false);
         return;
       }
