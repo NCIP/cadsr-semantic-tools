@@ -116,13 +116,17 @@ public class UMLElementViewPanel extends JPanel
       JButton evsButton = new JButton("Evs Link");
       insertInBag(mainPanel, evsButton, 2, 3);
       
-      ImageIcon upIcon = new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("up-arrow.gif"));
-      ImageIcon downIcon = new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("down-arrow.gif"));
-      JButton upButton = new JButton(upIcon);
-      JButton downButton = new JButton(downIcon);
-      JPanel arrowPanel = new JPanel(new BorderLayout());
-      arrowPanel.add(upButton,BorderLayout.NORTH);
-      arrowPanel.add(downButton,BorderLayout.SOUTH);
+      JButton upButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("up-arrow.gif")));
+      JButton downButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("down-arrow.gif")));
+
+      upButton.setPreferredSize(new Dimension(28, 35));
+      downButton.setPreferredSize(new Dimension(28, 35));
+
+      JPanel arrowPanel = new JPanel(new GridBagLayout());
+      insertInBag(arrowPanel, upButton, 0, 0);
+      insertInBag(arrowPanel, downButton, 0, 4);
+//       arrowPanel.add(upButton);
+//       arrowPanel.add(downButton);
       
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
       conceptPanels[i].add(arrowPanel, BorderLayout.EAST);
@@ -195,15 +199,8 @@ public class UMLElementViewPanel extends JPanel
     saveButton.setEnabled(false);
 
     setButtonState(reviewButton);
-//    GridBagLayout gridbag = new GridBagLayout();
     JPanel buttonPanel = new JPanel();
-//    GridBagConstraints c = new GridBagConstraints();
-//    c.weightx = 1.0;
-    
-//    insertInBag(buttonPanel,addButton,0,0);
-//    insertInBag(buttonPanel,deleteButton,1,0,2,1);
-//    insertInBag(buttonPanel,saveButton,2,3,2,1);
-//    insertInBag(buttonPanel,reviewButton,0,2);
+
     buttonPanel.add(addButton);
     buttonPanel.add(deleteButton);
     buttonPanel.add(saveButton);
@@ -211,11 +208,6 @@ public class UMLElementViewPanel extends JPanel
     buttonPanel.add(previousButton);
     buttonPanel.add(nextButton);
 
-//     scrollPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-//     scrollPanel.add(gridPanel);
-
-//     scrollPane.setViewportView(gridPanel);
 
     this.add(scrollPane, BorderLayout.CENTER);
     this.add(buttonPanel, BorderLayout.SOUTH);
