@@ -17,8 +17,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.parser.*;
 import gov.nih.nci.ncicb.cadsr.loader.persister.*;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
-import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
@@ -32,6 +31,7 @@ public class UMLLoaderGUI
   private static Logger logger = Logger.getLogger(UMLLoaderGUI.class.getName());
   private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
+  private UserSelections userSelections = BeansAccessor.getUserSelections();
 
   public UMLLoaderGUI()
   {
@@ -55,6 +55,14 @@ public class UMLLoaderGUI
     WizardPanelDescriptor descriptor2 = new FileSelectionPanelDescriptor();
     wizard.registerWizardPanel(FileSelectionPanelDescriptor.IDENTIFIER, descriptor2);
 
+    WizardPanelDescriptor fileProgress = new ProgressFileSelectionPanelDescriptor();
+    wizard.registerWizardPanel(ProgressFileSelectionPanelDescriptor.IDENTIFIER, fileProgress);
+
+
+    WizardPanelDescriptor reportConfirmDesc = new ReportConfirmPanelDescriptor();
+    wizard.registerWizardPanel(ReportConfirmPanelDescriptor.IDENTIFIER, reportConfirmDesc);
+
+
     WizardPanelDescriptor validationDesc = new ValidationPanelDescriptor();
     wizard.registerWizardPanel(ValidationPanelDescriptor.IDENTIFIER, validationDesc);
 
@@ -72,6 +80,10 @@ public class UMLLoaderGUI
     if(wizResult != 0) {
       System.exit(0);
     }
+      
+    String mode = (String)userSelections.getProperty("MODE");
+    if(mode.equals("Report")) 
+      System.exit(0);
 
     Frame frame = new MainFrame();
     putToCenter(frame);
