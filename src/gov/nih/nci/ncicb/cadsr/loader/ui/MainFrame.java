@@ -77,7 +77,7 @@ public class MainFrame extends JFrame
   private void jbInit() throws Exception
   {
     this.getContentPane().setLayout(borderLayout1);
-    this.setSize(new Dimension(800, 650));
+    this.setSize(new Dimension(830, 650));
     this.setJMenuBar(jMenuBar1);
     this.setTitle("UML Loader");
     fileMenu.setText("File");
