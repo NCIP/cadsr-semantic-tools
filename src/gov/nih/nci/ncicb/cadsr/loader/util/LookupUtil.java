@@ -20,5 +20,21 @@ public class LookupUtil {
     return null;
 
   }
+  
+  public static List<ObjectClassRelationship> lookupOcrs(ObjectClass oc) {
+    List ocrs = (List)ElementsLists.getInstance().getElements(DomainObjectFactory.newObjectClassRelationship().getClass());
+
+    List<ObjectClassRelationship> result = new ArrayList<ObjectClassRelationship>();
+
+    for (Iterator it = ocrs.iterator(); it.hasNext();) {
+      ObjectClassRelationship ocr = (ObjectClassRelationship)it.next();
+      
+      // Lookup by reference
+      if((ocr.getSource() == oc) || (ocr.getTarget() == oc))
+        result.add(ocr);
+    }
+    return result;
+
+  }
 
 }

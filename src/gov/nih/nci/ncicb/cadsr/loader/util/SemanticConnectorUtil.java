@@ -1,0 +1,156 @@
+package gov.nih.nci.ncicb.cadsr.loader.util;
+
+import java.io.File;
+import java.util.HashMap;
+
+import gov.nih.nci.semantic.app.ReportHandler;
+import gov.nih.nci.semantic.app.ModelAnnotator;
+import gov.nih.nci.semantic.util.Configuration;
+
+import org.jdom.Element;
+import org.jdom.Attribute;
+import org.jdom.Namespace;
+import org.jdom.Document;
+import org.jdom.input.SAXBuilder;
+import org.jaxen.JaxenException;
+import org.jaxen.jdom.JDOMXPath;
+
+import org.jdom.input.SAXBuilder;
+
+import java.util.*;
+
+public class SemanticConnectorUtil {
+
+  public static String getCsvFilename(String xmiFilename) {
+    
+    return xmiFilename.substring(0, xmiFilename.lastIndexOf("/") + 1)
+      + "EVSReport_" 
+      + xmiFilename.substring(xmiFilename.lastIndexOf("/")+1,xmiFilename.lastIndexOf("."))
+      + ".csv";
+
+  }
+
+
+  /**
+   * @return the location of the generated report.
+   */  
+  public static String generateReport(String inputXmi) 
+    throws SemanticConnectorException {
+    
+
+    String filepath = inputXmi.substring(0, inputXmi.lastIndexOf("/") + 1);
+    
+    new ModelAnnotator(inputXmi, "_" + inputXmi, filepath);
+
+
+    return filepath + "/" + "EVSReport_" + inputXmi.substring(inputXmi.lastIndexOf("/")+1, inputXmi.lastIndexOf(".")) + ".csv";
+    
+  }
+
+//   private static ArrayList readModel(Element modelElement){
+//     try
+//       {
+//         // Objects eligible for semantic lookup must reside in a UML:Package entity with attribute name="Logical Model" 
+//         Collection elements = getClasses(modelElement, "//*[local-name()='Package' and @name='Logical Model']//*[local-name()='Class' and @isRoot='false']");
+
+//         String UMLClass = null;
+
+//         ArrayList<Element> umlEntities = new ArrayList();
+        
+//         Map<String, String> elementValues = null;
+        
+//         for (Element classElement : umlEntities) {
+//           elementValues = new HashMap();
+//           UMLClass = (String)classElement.getAttributeValue("name");
+          
+//           elementValues.put(Configuration.getUMLClassCol(), UMLClass);
+          
+// //           getTaggedValue(classElement, "documentation");
+
+//           List<Element> attributeList = getElements(classElement, "Attribute");
+
+          
+//           for(Element attElt : attributeList)
+//             {
+//               elementValues = new HashMap();
+//               elementValues.put(Configuration.getUMLClassCol(), UMLClass);
+// //               getTaggedValue((Element)iter.next(), "description");
+//             }
+//           }
+//         return umlEntities;
+//       } catch (Exception ex) {
+//       throw new RuntimeException("Error while reading model", ex);
+//     }
+//   }
+
+//   private static Collection getClasses(Element modelElement, String xpathExpression) throws JaxenException {
+//     JDOMXPath path = new JDOMXPath(xpathExpression);
+//     Collection elementCollection = path.selectNodes(modelElement);
+//     return elementCollection;
+//   }
+
+
+//   private static List<Element> getElements(Element classElement, String elementName) throws JaxenException{
+    
+//     List<Element> elementList = null;
+//     try {
+//       String exp = ".//*[local-name()='"+elementName+"']";
+//       elementList = (List) (new JDOMXPath(exp)).selectNodes(classElement);
+      
+//     } catch (Exception ex) {
+//       throw new RuntimeException("Error searching for elements " + elementName
+//                                  + " for class " + classElement.getAttributeValue("name"), ex);
+//     }
+//     return elementList;
+    
+//   }
+
+
+// 	public void getTaggedValue(Element classElement, String tag) throws JaxenException
+// 	{
+// 		Element taggedValue = null;
+// 		String id = classElement.getAttributeValue("xmi.id");
+// 		String tagName = null;
+// 		ArrayList ccodeList = new ArrayList();
+// 		ArrayList classificationList = new ArrayList();
+// 		String description = null;
+// 		int index = 0;
+
+// 		elementValues.put(Configuration.getUMLEntityCol(), classElement.getAttributeValue("name"));
+// 		try {
+
+// 			String exp = "//*[local-name()='TaggedValue' and @modelElement='"
+// 					+ id + "']";
+// 			List taggedValues = (List) (new JDOMXPath(exp)).selectNodes(modelElement);
+
+// 			ArrayList tagNames = Configuration.getTagNames();
+
+// 			for(Iterator iter=taggedValues.iterator(); iter.hasNext();)
+// 			{
+
+// 			   taggedValue = (Element)iter.next();
+
+// 			   if(taggedValue.getAttributeValue("tag").equalsIgnoreCase(tag))
+// 			   {
+// 			   	  description = (String)taggedValue.getAttributeValue("value");
+// 			      elementValues.put(Configuration.getUMLDescriptionCol(), description);
+// 			   }
+// 			   else
+// 			   {
+// 			   	  tagName = (String)taggedValue.getAttributeValue("tag");
+// 			   	  if(tagNames.contains(tagName))
+// 					 elementValues.put(tagName, taggedValue.getAttributeValue("value"));
+// 			   }
+// 			}
+
+// 			umlEntities.add(elementValues);
+
+// 		} catch (Exception ex) {
+// 			throw new RuntimeException("Error searching for TaggedValue " + tag
+// 					+ " for class " + classElement.getAttributeValue("name"), ex);
+// 		}
+
+// 	}
+
+
+}
