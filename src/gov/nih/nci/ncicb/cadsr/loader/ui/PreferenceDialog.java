@@ -12,6 +12,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
   private JCheckBox associationBox = new JCheckBox("View Associations in Class Tree");
   private JButton apply = new JButton("Apply");
   private JButton cancel = new JButton("Cancel");
+  private static final String APPLY = "Apply";
+  private static final String CANCEL = "Cancel";
   
   public PreferenceDialog(JFrame owner)
   {
@@ -25,7 +27,11 @@ public class PreferenceDialog extends JDialog implements ActionListener
     this.getContentPane().add(southPanel,BorderLayout.SOUTH);
     this.setSize(200,100);
     
+    apply.setActionCommand(APPLY);
+    cancel.setActionCommand(CANCEL);
+    
     apply.addActionListener(this);
+    cancel.addActionListener(this);
     
     UserPreferences prefs = BeansAccessor.getUserPreferences();
     if(prefs.getViewAssociationType().equalsIgnoreCase("true"))
@@ -36,12 +42,17 @@ public class PreferenceDialog extends JDialog implements ActionListener
   
   public void actionPerformed(ActionEvent event) 
   {
-    UserPreferences prefs = BeansAccessor.getUserPreferences();
-    if(associationBox.isSelected())
-      prefs.setViewAssociationType("true");
-    else
-      prefs.setViewAssociationType("false");
+    JButton button = (JButton)event.getSource();
+    if(button.getActionCommand().equals(APPLY)) {
+      UserPreferences prefs = BeansAccessor.getUserPreferences();
+      if(associationBox.isSelected())
+        prefs.setViewAssociationType("true");
+      else
+        prefs.setViewAssociationType("false");
+    }
     
+    if(button.getActionCommand().equals(CANCEL))
+      this.dispose();
 
   }
 }
