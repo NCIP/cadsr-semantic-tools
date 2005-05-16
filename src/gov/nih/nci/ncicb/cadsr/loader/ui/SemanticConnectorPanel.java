@@ -13,29 +13,48 @@ import gov.nih.nci.ncicb.cadsr.loader.event.*;
 public class SemanticConnectorPanel extends JPanel 
   implements ProgressListener {
 
-  private JRadioButton noButton, yesButton;
+  private JRadioButton optionButton1, optionButton2;
   private JPanel _this = this;
   private ProgressPanel progressPanel;
   private boolean isProgress = false;
   private int goal;
+
+  public static final int MODE_INITIAL = 1;
+  public static final int MODE_SUBSEQUENT = 2;
+
+  private int mode = 0;
+
+  private String[][] options = 
+  {{"error", "error", "error"}, 
+   {"<html>It appears there is no Sematic Connector <br>annotation file for the file you selected.<br> Do you want to: </html>",
+    "Extract Annotations from the XMI file?",
+    "Run Semantic Connector to create an annotation file?"},
+   {"<html>The is a Semantic Connector annotation file<br> Do you want to run Semantic Connector?<html>", 
+    "No", 
+    "Yes"}};
   
   public SemanticConnectorPanel()
   {
-    initUI();
+//     initUI();
   }
   public SemanticConnectorPanel(int progressGoal)
   {
     this.isProgress = true;
     this.goal = progressGoal;
-    initUI();
+//     initUI();
   }
 
   public void newProgressEvent(ProgressEvent evt) {
     progressPanel.newProgressEvent(evt);
   }
 
-  public boolean getSelection() {
-    return yesButton.isSelected();
+  public void setMode(int mode) {
+    this.mode = mode;
+    initUI();
+  }
+
+  public int getSelection() {
+    return optionButton2.isSelected()?2:1;
   }
 
   private void initUI() {
@@ -47,19 +66,19 @@ public class SemanticConnectorPanel extends JPanel
     infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
     infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("xmi.gif"))), FlowLayout.LEFT);
     
-    JLabel textLabel = new JLabel("<html>Do you want to run Semantic Connector <br> on the file you selected?</html>");
+    JLabel textLabel = new JLabel(options[mode][0]);
 
     infoPanel.add(textLabel);
 
     ButtonGroup group = new ButtonGroup();
     
-    noButton = new JRadioButton("No, I have already run Semantic Connector");
-    yesButton = new JRadioButton("Yes, I need to run Semantic Connector");
+    optionButton1 = new JRadioButton(options[mode][1]);
+    optionButton2 = new JRadioButton(options[mode][2]);
 
-    yesButton.setSelected(true);
+    optionButton1.setSelected(true);
 
-    group.add(yesButton);
-    group.add(noButton);
+    group.add(optionButton1);
+    group.add(optionButton2);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new GridLayout(0, 1));
@@ -67,15 +86,15 @@ public class SemanticConnectorPanel extends JPanel
     buttonPanel.add
       (new JLabel("Semantic Connector will tag the XMI document with concepts."));
 
-    buttonPanel.add(yesButton);
-    buttonPanel.add(noButton);
+    buttonPanel.add(optionButton1);
+    buttonPanel.add(optionButton2);
 
     progressPanel = new ProgressPanel(goal);
 
     if(isProgress) {
       progressPanel.setVisible(true);
-      yesButton.setEnabled(false);
-      noButton.setEnabled(false);
+      optionButton1.setEnabled(false);
+      optionButton2.setEnabled(false);
     } else {
       progressPanel.setVisible(false);
     }

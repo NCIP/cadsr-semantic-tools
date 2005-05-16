@@ -8,9 +8,10 @@ import javax.swing.*;
 import java.io.File;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
 public class FileSelectionPanel extends JPanel 
-{
+implements ProgressListener {
 
   public static final int SELECTION_NEW = 1;
   public static final int SELECTION_CONTINUE = 2;
@@ -23,9 +24,24 @@ public class FileSelectionPanel extends JPanel
 
   private JPanel _this = this;
 
+  private ProgressPanel progressPanel;
+  private boolean isProgress = false;
+  private int goal;
+
   public FileSelectionPanel()
   {
     initUI();
+  }
+
+  public FileSelectionPanel(int progressGoal)
+  {
+    this.isProgress = true;
+    this.goal = progressGoal;
+    initUI();
+  }
+
+  public void newProgressEvent(ProgressEvent evt) {
+    progressPanel.newProgressEvent(evt);
   }
 
   public String getSelection() {
@@ -91,7 +107,7 @@ public class FileSelectionPanel extends JPanel
       insertInBag(browsePanel, jl, 0, y++, 2, 1);
     }
 
-    browsePanel.setPreferredSize(new Dimension(400, 200));
+    browsePanel.setPreferredSize(new Dimension(400, 250));
 
     this.add(browsePanel, BorderLayout.CENTER);
 
@@ -122,6 +138,19 @@ public class FileSelectionPanel extends JPanel
           }
         }
       });
+
+    progressPanel = new ProgressPanel(goal);
+    
+    if(isProgress) {
+      progressPanel.setVisible(true);
+      browseButton.setEnabled(false);
+      filePathField.setEnabled(false);
+    } else {
+      progressPanel.setVisible(false);
+    }
+
+    this.add(progressPanel, BorderLayout.SOUTH);
+
   }
 
   private void insertInBag(JPanel bagComp, Component comp, int x, int y) {

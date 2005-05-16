@@ -15,7 +15,7 @@ public class LoginPanelDescriptor extends WizardPanelDescriptor
     
     public LoginPanelDescriptor() {
       panel = new LoginPanel();
-      panel.addPropertyChangeListener(UserSelections.getInstance());
+//       panel.addPropertyChangeListener(UserSelections.getInstance());
       setPanelComponent(panel);
       setPanelDescriptorIdentifier(IDENTIFIER);
     }

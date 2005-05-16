@@ -15,15 +15,10 @@ public class FileSelectionPanelDescriptor
     setPanelDescriptorIdentifier(IDENTIFIER);
 //     panel.addFileActionListener(this);
     setPanelComponent(panel);
+
+    nextPanelDescriptor = ProgressFileSelectionPanelDescriptor.IDENTIFIER;
+    backPanelDescriptor = ModeSelectionPanelDescriptor.IDENTIFIER;
   }
-  
-  public Object getNextPanelDescriptor() {
-    return ValidationPanelDescriptor.IDENTIFIER;
-  }
-  
-  public Object getBackPanelDescriptor() {
-    return ModeSelectionPanelDescriptor.IDENTIFIER;
-  }  
   
   public void actionPerformed(ActionEvent evt) {
     String path = panel.getSelection();

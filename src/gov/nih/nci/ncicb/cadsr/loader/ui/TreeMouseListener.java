@@ -36,7 +36,9 @@ public class TreeMouseListener extends MouseAdapter {
           popup.show(e.getComponent(),
                      e.getX(), e.getY());
       }
+    } else if(e.getButton() == MouseEvent.BUTTON1) {
+      
     }
   
-}
+  }
 }

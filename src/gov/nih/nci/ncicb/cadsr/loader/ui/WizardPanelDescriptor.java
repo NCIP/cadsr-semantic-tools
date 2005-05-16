@@ -10,18 +10,22 @@ import javax.swing.*;
  */
 public class WizardPanelDescriptor {
     
-    private static final String DEFAULT_PANEL_IDENTIFIER = "defaultPanelIdentifier";
+  private static final String DEFAULT_PANEL_IDENTIFIER = "defaultPanelIdentifier";
     
     
-    /**
-     * Identifier returned by getNextPanelDescriptor() to indicate that this is the
-     * last panel and the text of the 'Next' button should change to 'Finish'.
-     */    
-    public static final FinishIdentifier FINISH = new FinishIdentifier();
+  /**
+   * Identifier returned by getNextPanelDescriptor() to indicate that this is the
+   * last panel and the text of the 'Next' button should change to 'Finish'.
+   */    
+  public static final FinishIdentifier FINISH = new FinishIdentifier();
     
-    private Wizard wizard;
-    private Component targetPanel;
-    private Object panelIdentifier;
+  private Wizard wizard;
+  private Component targetPanel;
+  private Object panelIdentifier;
+
+  protected String nextPanelDescriptor;
+  protected String backPanelDescriptor;
+  
     
     /**
      * Default constructor. The id and the Component panel must be set separately.
@@ -109,8 +113,13 @@ public class WizardPanelDescriptor {
      * @return Object-based identifier.
      */    
     public Object getNextPanelDescriptor() {
-        return null;
+        return nextPanelDescriptor;
     }
+  
+  public void setNextPanelDescriptor(String descriptor) {
+//     if(descriptor.equals("FINISH"))
+    this.nextPanelDescriptor = descriptor;
+  }
 
     //  Override this method to provide an Object-based identifier
     //  for the previous panel.
@@ -124,8 +133,11 @@ public class WizardPanelDescriptor {
      * @return Object-based identifier
      */    
     public Object getBackPanelDescriptor() {
-        return null;
+        return backPanelDescriptor;
     }
+  public void setBackPanelDescriptor(String descriptor) {
+    this.backPanelDescriptor = descriptor;
+  }
     
     //  Override this method in the subclass if you wish it to be called
     //  just before the panel is displayed.
