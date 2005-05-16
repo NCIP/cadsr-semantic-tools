@@ -93,7 +93,7 @@ public class UMLElementViewPanel extends JPanel
     for(int i = 0; i<concepts.length; i++) {
       conceptUIs[i] = new ConceptUI(concepts[i]);
 
-      String title = i == 0?"Primary Concept":"Qualifier Concept";
+      String title = i == 0?"Primary Concept":"Qualifier Concept" +" #" + i;
 
       conceptPanels[i] = new JPanel();
       conceptPanels[i].setBorder
