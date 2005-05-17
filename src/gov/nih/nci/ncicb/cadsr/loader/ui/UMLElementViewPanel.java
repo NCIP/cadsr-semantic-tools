@@ -134,6 +134,7 @@ public class UMLElementViewPanel extends JPanel
 
       conceptUIs[i].code.addKeyListener(this);
       conceptUIs[i].name.addKeyListener(this);
+      conceptUIs[i].def.addKeyListener(this);
       conceptUIs[i].defSource.addKeyListener(this);
 
       conceptUIs[i].code.addCaretListener(this);
@@ -251,7 +252,13 @@ public class UMLElementViewPanel extends JPanel
   public void actionPerformed(ActionEvent evt) {
     JButton button = (JButton)evt.getSource();
     if(button.getActionCommand().equals(SAVE)) {
-      
+      for(int i = 0; i<concepts.length; i++) 
+      {
+        concepts[i].setPreferredName(conceptUIs[i].code.getText());
+        concepts[i].setLongName(conceptUIs[i].name.getText());
+        concepts[i].setPreferredDefinition(conceptUIs[i].def.getText());
+        concepts[i].setDefinitionSource(conceptUIs[i].defSource.getText());
+      }
     } else if(button.getActionCommand().equals(ADD)) {
       Concept[] newConcepts = new Concept[concepts.length + 1];
       for(int i = 0; i<concepts.length; i++) {
