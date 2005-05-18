@@ -154,6 +154,8 @@ public class UMLElementViewPanel extends JPanel
           concepts[index-1] = concepts[index];
           concepts[index] = temp;
           updateConcepts(concepts);
+          
+          setButtonState(saveButton);
               
           }
         });
@@ -164,6 +166,8 @@ public class UMLElementViewPanel extends JPanel
           concepts[index] = concepts[index+1];
           concepts[index+1] = temp;
           updateConcepts(concepts);
+          
+          setButtonState(saveButton);
               
           }
         });
@@ -235,7 +239,8 @@ public class UMLElementViewPanel extends JPanel
   }
   
   public void keyTyped(KeyEvent evt) {
-    saveButton.setEnabled(true);
+    //saveButton.setEnabled(true);
+    
   }
 
 
@@ -244,7 +249,7 @@ public class UMLElementViewPanel extends JPanel
     
   }
   public void keyReleased(KeyEvent evt) {
-    
+    setButtonState(saveButton);
   }
 
   
@@ -259,6 +264,7 @@ public class UMLElementViewPanel extends JPanel
         concepts[i].setPreferredDefinition(conceptUIs[i].def.getText());
         concepts[i].setDefinitionSource(conceptUIs[i].defSource.getText());
       }
+      saveButton.setEnabled(false);
     } else if(button.getActionCommand().equals(ADD)) {
       Concept[] newConcepts = new Concept[concepts.length + 1];
       for(int i = 0; i<concepts.length; i++) {
@@ -274,6 +280,7 @@ public class UMLElementViewPanel extends JPanel
 
       _this.removeAll();
       initUI();
+      setButtonState(addButton);
     } else if(button.getActionCommand().equals(DELETE)) {
       Concept[] newConcepts = new Concept[concepts.length - 1];
       for(int i = 0; i<newConcepts.length; i++) {
@@ -283,9 +290,7 @@ public class UMLElementViewPanel extends JPanel
 
       _this.removeAll();
       initUI();
-    } else if(button.getActionCommand().equals(SAVE)) {
-      saveButton.setEnabled(false);
-    }
+    } 
       else if(button.getActionCommand().equals(PREVIOUS)) {
         NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_PREVIOUS);
         fireNavigationEvent(event);
