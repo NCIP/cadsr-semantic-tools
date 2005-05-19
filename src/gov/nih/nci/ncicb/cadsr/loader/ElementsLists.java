@@ -60,7 +60,11 @@ public class ElementsLists {
    * @return a <code>List</code> of objects of class <code>type<code>
    */
   public List getElements(Class type) {
-    return (List)objects.get(type.getName());
+    List l = (List)objects.get(type.getName());
+    if(l != null)
+      return l;
+    else 
+      return new ArrayList();
   }
 
 
