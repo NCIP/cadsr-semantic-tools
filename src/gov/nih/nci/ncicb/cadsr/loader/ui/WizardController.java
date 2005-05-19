@@ -147,8 +147,9 @@ public class WizardController implements ActionListener {
             desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
           } else if(mode.equals("Review")) {
             desc.setNextPanelDescriptor("FINISH");
+          } else if(mode.equals("Curate")) {
+            desc.setNextPanelDescriptor("FINISH");
           }
-
 
         }
 
@@ -213,6 +214,40 @@ public class WizardController implements ActionListener {
                 };
               worker.start(); 
             }
+          }
+          else if(mode.equals("Curate")) {
+            SwingWorker worker = new SwingWorker() {
+                public Object construct() {
+                  try {
+                    Parser parser = new CsvParser();
+                    ElementsLists elements = ElementsLists.getInstance();
+                    UMLHandler listener = new UMLDefaultHandler(elements);
+                    parser.setEventHandler(listener);
+                    parser.addProgressListener(progressDesc);
+                    
+//                     UMLDefaults defaults = UMLDefaults.getInstance();
+//                     defaults.initParams(filename);
+                    
+                    parser.parse(filename);
+                    
+//                     Validator validator = new UMLValidator(elements);
+//                     validator.validate();
+                    
+                    TreeBuilder tb = BeansAccessor.getTreeBuilder();
+                    tb.init();
+                    tb.buildTree(elements);
+
+                    wizard.close(Wizard.FINISH_RETURN_CODE);
+                    
+                    return null;
+                  } catch (Exception e){
+                    e.printStackTrace();
+                    logger.error(e);
+                    return null;
+                  } // end of try-catch
+                }
+              };
+            worker.start(); 
           }
           else if(mode.equals("Review")) {
             SwingWorker worker = new SwingWorker() {
