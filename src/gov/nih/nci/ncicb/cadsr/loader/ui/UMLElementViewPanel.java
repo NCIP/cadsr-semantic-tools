@@ -8,8 +8,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 
-import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
-import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -154,6 +153,8 @@ public class UMLElementViewPanel extends JPanel
           concepts[index-1] = concepts[index];
           concepts[index] = temp;
           updateConcepts(concepts);
+
+          ((AdminComponent)node.getUserObject()).setPreferredName(ObjectUpdater.preferredNameFromConcepts(concepts));
           
           setButtonState(saveButton);
               
@@ -166,6 +167,8 @@ public class UMLElementViewPanel extends JPanel
           concepts[index] = concepts[index+1];
           concepts[index+1] = temp;
           updateConcepts(concepts);
+
+          ((AdminComponent)node.getUserObject()).setPreferredName(ObjectUpdater.preferredNameFromConcepts(concepts));
           
           setButtonState(saveButton);
               
@@ -259,10 +262,26 @@ public class UMLElementViewPanel extends JPanel
     if(button.getActionCommand().equals(SAVE)) {
       for(int i = 0; i<concepts.length; i++) 
       {
-        concepts[i].setPreferredName(conceptUIs[i].code.getText());
-        concepts[i].setLongName(conceptUIs[i].name.getText());
-        concepts[i].setPreferredDefinition(conceptUIs[i].def.getText());
-        concepts[i].setDefinitionSource(conceptUIs[i].defSource.getText());
+
+        // concept code has not changed
+        if(conceptUIs[i].code.getText().equals(concepts[i].getPreferredName())) {
+          concepts[i].setLongName(conceptUIs[i].name.getText());
+          concepts[i].setPreferredDefinition(conceptUIs[i].def.getText());
+          concepts[i].setDefinitionSource(conceptUIs[i].defSource.getText());
+        } else { // concept code has changed
+          Concept concept = DomainObjectFactory.newConcept();
+          concept.setPreferredName(conceptUIs[i].code.getText());
+          concept.setLongName(conceptUIs[i].name.getText());
+          concept.setPreferredDefinition(conceptUIs[i].def.getText());
+          concept.setDefinitionSource(conceptUIs[i].defSource.getText());
+
+          concepts[i] = concept;
+
+
+//           ObjectUpdater.update((AdminComponent)node.getUserObject(),concepts[i], concept);
+
+        }
+
       }
       saveButton.setEnabled(false);
     } else if(button.getActionCommand().equals(ADD)) {
@@ -419,5 +438,7 @@ class ConceptUI {
     defSource.setText(concept.getDefinitionSource());
     
   }
+
+  
 
 }

@@ -40,8 +40,6 @@ public class UMLDefaultHandler implements UMLHandler {
     
     List concepts = createConcepts(event);
 
-//     verifyConcepts(event.getName(), concepts);
-
     ObjectClass oc = DomainObjectFactory.newObjectClass();
 
     verifyConcepts(oc, concepts);
@@ -84,8 +82,6 @@ public class UMLDefaultHandler implements UMLHandler {
                  event.getName());
 
     List concepts = createConcepts(event);
-
-//     verifyConcepts(event.getClassName() + "." + event.getName(), concepts);
 
     Property prop = DomainObjectFactory.newProperty();
     verifyConcepts(prop, concepts);
@@ -190,10 +186,13 @@ public class UMLDefaultHandler implements UMLHandler {
     List ocs = elements.getElements(oc.getClass());
     logger.debug("direction: " + event.getDirection());
 
+    boolean aDone = false, 
+      bDone = false;
+
     for(Iterator it = ocs.iterator(); it.hasNext(); ) {
       ObjectClass o = (ObjectClass) it.next();
       
-      if (o.getLongName().equals(event.getAClassName())) {
+      if (!aDone && (o.getLongName().equals(event.getAClassName()))) {
         if (event.getDirection().equals("B")) {
           ocr.setSource(o);
           ocr.setSourceRole(event.getARole());
@@ -205,7 +204,9 @@ public class UMLDefaultHandler implements UMLHandler {
           ocr.setTargetLowCardinality(event.getALowCardinality());
           ocr.setTargetHighCardinality(event.getAHighCardinality());
         }
-      } else if (o.getLongName().equals(event.getBClassName())) {
+        aDone = true;
+      }
+      if (!bDone && (o.getLongName().equals(event.getBClassName()))) {
         if (event.getDirection().equals("B")) {
           ocr.setTarget(o);
           ocr.setTargetRole(event.getBRole());
@@ -217,6 +218,7 @@ public class UMLDefaultHandler implements UMLHandler {
           ocr.setSourceLowCardinality(event.getBLowCardinality());
           ocr.setSourceHighCardinality(event.getBHighCardinality());
         }
+        bDone = true;
       }
     }
 
@@ -228,6 +230,20 @@ public class UMLDefaultHandler implements UMLHandler {
 
     ocr.setLongName(event.getRoleName());
     ocr.setType(ObjectClassRelationship.TYPE_HAS);
+
+
+//     logger.debug("Created Association :");
+//     logger.debug("event.A: " + event.getAClassName());
+//     logger.debug("event.B: " + event.getBClassName());
+//     logger.debug("Source: " + ocr.getSource().getLongName());
+//     logger.debug("Target: " + ocr.getTarget().getLongName());
+
+    if(!aDone)
+      logger.debug("!aDone: " + event.getAClassName() + " -- " + event.getBClassName());
+
+    if(!bDone) 
+      logger.debug("!bDone: " + event.getAClassName() + " -- " + event.getBClassName());
+
     elements.addElement(ocr);
 
   }
@@ -320,7 +336,13 @@ public class UMLDefaultHandler implements UMLHandler {
     logger.debug("Source:");
     logger.debug("-- " + ocr.getSource().getLongName());
     logger.debug("Target: ");
-    logger.debug("-- " + ocr.getTarget().getLongName());
+    if(ocr.getTarget() != null)
+      logger.debug("-- " + ocr.getTarget().getLongName());
+    else {
+      logger.error("Target does not exist: ");
+      logger.error("Parent: " + event.getParentClassName());
+    }
+      
   }
 
   private Concept newConcept(NewConceptEvent event) {
@@ -351,7 +373,7 @@ public class UMLDefaultHandler implements UMLHandler {
     for(Iterator it = concepts.iterator(); it.hasNext(); ) {
       Concept con = (Concept)it.next();
       if(sb.length() > 0)
-        sb.insert(0, "-");
+        sb.insert(0, ":");
       sb.insert(0, con.getPreferredName());
     }
     return sb.toString();
