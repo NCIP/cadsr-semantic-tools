@@ -19,7 +19,7 @@ public class NewConceptualEvent implements LoaderEvent {
 
   private String description;
 
-  private List concepts = new ArrayList();
+  private List<NewConceptEvent> concepts = new ArrayList();
 
 
   /**
@@ -36,7 +36,7 @@ public class NewConceptualEvent implements LoaderEvent {
    *
    * @return a <code>List</code> of NewConceptEvent
    */
-  public List getConcepts() {
+  public List<NewConceptEvent> getConcepts() {
     return concepts;
   }
 
