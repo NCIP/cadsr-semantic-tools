@@ -43,6 +43,8 @@ public class UMLElementViewPanel extends JPanel
   private List<ReviewListener> reviewListeners = new ArrayList();
   private List<NavigationListener> navigationListeners = new ArrayList();
   
+  private JPanel gridPanel;
+  private JScrollPane scrollPane;
   
   public UMLElementViewPanel(UMLNode node) 
   {
@@ -80,14 +82,29 @@ public class UMLElementViewPanel extends JPanel
 
   private void initUI() {
     this.setLayout(new BorderLayout());
+    initViewPanel();
+    initButtonPanel();
+  }
+  
+  private void initViewPanel() {
+ 
 
-    JPanel gridPanel = new JPanel(new GridLayout(-1, 1));
-    JScrollPane scrollPane = new JScrollPane(gridPanel);
+    gridPanel = new JPanel(new GridLayout(-1, 1));
+    scrollPane = new JScrollPane(gridPanel);
 
     conceptUIs = new ConceptUI[concepts.length];
     JPanel[] conceptPanels = new JPanel[concepts.length];
 
-    
+    JPanel summaryPanel = new JPanel();
+    JLabel summaryTitle = new JLabel("UML Concept Code Summary: ");
+    summaryPanel.add(summaryTitle);
+    for(int i = 0; i < concepts.length; i++) {
+      conceptUIs[i] = new ConceptUI(concepts[i]);
+      System.out.println(conceptUIs[i].code.getText());
+      JLabel label= new JLabel(concepts[i].getPreferredName());
+      summaryPanel.add(label);
+    }
+    this.add(summaryPanel,BorderLayout.NORTH);
 
     for(int i = 0; i<concepts.length; i++) {
       conceptUIs[i] = new ConceptUI(concepts[i]);
@@ -123,9 +140,9 @@ public class UMLElementViewPanel extends JPanel
 
       JPanel arrowPanel = new JPanel(new GridBagLayout());
       insertInBag(arrowPanel, upButton, 0, 0);
-      insertInBag(arrowPanel, downButton, 0, 4);
-//       arrowPanel.add(upButton);
-//       arrowPanel.add(downButton);
+      insertInBag(arrowPanel, downButton, 0, 6);
+//       arrowPanel.add(upButton, BorderLayout.NORTH);
+//       arrowPanel.add(downButton, BorderLayout.SOUTH);
       
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
       conceptPanels[i].add(arrowPanel, BorderLayout.EAST);
@@ -177,50 +194,79 @@ public class UMLElementViewPanel extends JPanel
     
       
     }
-
-    addButton = new JButton("Add");
-    deleteButton = new JButton("Remove");
-    saveButton = new JButton("Apply");
-    reviewButton = new JCheckBox("Reviewed");
-    previousButton = new JButton("Previous");
-    nextButton = new JButton("Next");
     
-    reviewButton.setSelected(((ReviewableUMLNode)node).isReviewed());
-
-    addButton.setActionCommand(ADD);
-    deleteButton.setActionCommand(DELETE);
-    saveButton.setActionCommand(SAVE);
-    previousButton.setActionCommand(PREVIOUS);
-    nextButton.setActionCommand(NEXT);
-
-    addButton.addActionListener(this);
-    deleteButton.addActionListener(this);
-    saveButton.addActionListener(this);
-    reviewButton.addItemListener(this);
-    previousButton.addActionListener(this);
-    nextButton.addActionListener(this);
+    if(node.getClass() == ClassNode.class) {
+      String title = "UML Description";
+      JPanel umlPanel = new JPanel();
+      umlPanel.setBorder
+        (BorderFactory.createTitledBorder(title));   
+      umlPanel.setLayout(new BorderLayout());
     
+    JPanel descriptionPanel = new JPanel(new FlowLayout());
+    
+    ObjectClass oc = (ObjectClass) node.getUserObject();
+    //List<Definition> defNames = (List<Definition>)description.getDefinitions();
+    JTextArea classDescription = new JTextArea(oc.getPreferredDefinition());
+    //classDescription.setHorizontalTextPosition(RIGHT);
+    classDescription.setLineWrap(true);
+    classDescription.setWrapStyleWord(true);
+    classDescription.setEditable(false);
+    classDescription.setColumns(75);
+    
+    if(StringUtil.isEmpty(classDescription.getText())) 
+    {
+      classDescription.setVisible(false);
+    }
 
-    if(concepts.length < 2)
-      deleteButton.setEnabled(false);
+    descriptionPanel.add(classDescription);
+    umlPanel.add(descriptionPanel);    
+    gridPanel.add(umlPanel);
 
-    saveButton.setEnabled(false);
+    }
+  	
+  	this.add(scrollPane, BorderLayout.CENTER);
 
-    setButtonState(reviewButton);
-    JPanel buttonPanel = new JPanel();
-
-    buttonPanel.add(addButton);
-    buttonPanel.add(deleteButton);
-    buttonPanel.add(saveButton);
-    buttonPanel.add(reviewButton);
-    buttonPanel.add(previousButton);
-    buttonPanel.add(nextButton);
-
-
-    this.add(scrollPane, BorderLayout.CENTER);
-    this.add(buttonPanel, BorderLayout.SOUTH);
 
   }
+
+  private void initButtonPanel()
+  {
+  	addButton = new JButton("Add");
+  	deleteButton = new JButton("Remove");
+  	saveButton = new JButton("Apply");
+  	reviewButton = new JCheckBox("Reviewed");
+  	previousButton = new JButton("Previous");
+  	nextButton = new JButton("Next");
+  	
+  	reviewButton.setSelected(((ReviewableUMLNode)node).isReviewed());
+  	addButton.setActionCommand(ADD);
+  	deleteButton.setActionCommand(DELETE);
+  	saveButton.setActionCommand(SAVE);
+  	previousButton.setActionCommand(PREVIOUS);
+  	nextButton.setActionCommand(NEXT);
+  	addButton.addActionListener(this);
+  	deleteButton.addActionListener(this);
+  	saveButton.addActionListener(this);
+  	reviewButton.addItemListener(this);
+  	previousButton.addActionListener(this);
+  	nextButton.addActionListener(this);
+  	
+  	if(concepts.length < 2)
+  	  deleteButton.setEnabled(false);
+  	saveButton.setEnabled(false);
+  	setButtonState(reviewButton);
+  	JPanel buttonPanel = new JPanel();
+  	buttonPanel.add(addButton);
+  	buttonPanel.add(deleteButton);
+  	buttonPanel.add(saveButton);
+  	buttonPanel.add(reviewButton);
+  	buttonPanel.add(previousButton);
+  	buttonPanel.add(nextButton);
+
+  	this.add(buttonPanel, BorderLayout.SOUTH);
+
+  }
+
   
   private void setButtonState(AbstractButton button)  {
     for(int i=0; i < conceptUIs.length; i++) {
@@ -239,6 +285,7 @@ public class UMLElementViewPanel extends JPanel
 
   public void caretUpdate(CaretEvent evt) {
     setButtonState(reviewButton);
+    setButtonState(addButton);
   }
   
   public void keyTyped(KeyEvent evt) {
@@ -297,8 +344,12 @@ public class UMLElementViewPanel extends JPanel
       newConcepts[newConcepts.length - 1] = concept;
       concepts = newConcepts;
 
-      _this.removeAll();
-      initUI();
+      this.remove(scrollPane);
+      initViewPanel();
+      this.updateUI();
+      addButton.setEnabled(false);
+      if(concepts.length > 1)
+        deleteButton.setEnabled(true);
       setButtonState(addButton);
     } else if(button.getActionCommand().equals(DELETE)) {
       Concept[] newConcepts = new Concept[concepts.length - 1];
@@ -307,8 +358,11 @@ public class UMLElementViewPanel extends JPanel
       }
       concepts = newConcepts;
 
-      _this.removeAll();
-      initUI();
+      _this.remove(scrollPane);
+      initViewPanel();
+      if(concepts.length < 2)
+        deleteButton.setEnabled(false);
+      this.updateUI();
     } 
       else if(button.getActionCommand().equals(PREVIOUS)) {
         NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_PREVIOUS);
@@ -362,32 +416,6 @@ public class UMLElementViewPanel extends JPanel
     reviewListeners.add(listener);
   }
   
-  public static void main(String[] args) {
-    JFrame frame = new JFrame();
-    frame.setLayout(new BorderLayout());
-
-    Concept con = DomainObjectFactory.newConcept();
-    con.setPreferredName("C12345");
-    con.setPreferredDefinition("A definition of this concept");
-    con.setDefinitionSource("NCI_GLOSS");
-    con.setLongName("NewConceptName");
-
-    Concept[] concepts = new Concept[1];
-    concepts[0] = con;
-
-    ObjectClass oc = DomainObjectFactory.newObjectClass();
-    oc.setPreferredName(con.getPreferredName());
-    oc.setLongName("com.anwar.ATrivialObject");
-    
-    ClassNode node = new ClassNode(oc);
-    frame.add(new UMLElementViewPanel(node));
-    
-    frame.setSize(500, 400);
-
-    frame.show();
-
-  }
-
   private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
 
     insertInBag(bagComp, comp, x, y, 1, 1);
