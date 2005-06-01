@@ -290,6 +290,7 @@ public class NavigationPanel extends JPanel
       {      
         TreePath path =  new TreePath(selected.getNextNode().getPath());
         tree.setSelectionPath(path);
+        tree.scrollPathToVisible(path);
         newViewEvent(path);
       }
       else 
@@ -297,6 +298,7 @@ public class NavigationPanel extends JPanel
         {
             TreePath path = new TreePath(selected.getPreviousNode().getPath());
             tree.setSelectionPath(path);
+            tree.scrollPathToVisible(path);
             newViewEvent(path);            
         }
     
