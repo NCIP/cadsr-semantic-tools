@@ -156,7 +156,7 @@ public class MainFrame extends JFrame
           JDialog dialog = new JDialog(_this, "UML Loader Defaults", true);
           dialog.getContentPane().setLayout(new BorderLayout());
           dialog.getContentPane().add(defaultsPanel, BorderLayout.CENTER);
-          dialog.setSize(300, 150);
+          dialog.setSize(300, 225);
           dialog.show();
         }
     });
