@@ -100,7 +100,6 @@ public class UMLElementViewPanel extends JPanel
     summaryPanel.add(summaryTitle);
     for(int i = 0; i < concepts.length; i++) {
       conceptUIs[i] = new ConceptUI(concepts[i]);
-      System.out.println(conceptUIs[i].code.getText());
       JLabel label= new JLabel(concepts[i].getPreferredName());
       summaryPanel.add(label);
     }
