@@ -1,7 +1,9 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
+import gov.nih.nci.ncicb.cadsr.loader.parser.CSVWriter;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
@@ -14,6 +16,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.io.File;
 import javax.swing.*;
 
 import java.util.*;
@@ -179,6 +182,41 @@ public class MainFrame extends JFrame
       }
     });
     
+    saveMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent event) {
+       CSVWriter writer = new CSVWriter();
+       writer.setOutput("Anwar's File.csv");
+       writer.write(ElementsLists.getInstance());
+      }
+    });
+    
+    saveAsMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent event) {
+        JFileChooser chooser = new JFileChooser();
+        javax.swing.filechooser.FileFilter filter = 
+            new javax.swing.filechooser.FileFilter() {
+              public boolean accept(File f) {
+                if (f.isDirectory()) {
+                  return true;
+                }                
+                return f.getName().endsWith(".csv");
+              }
+              public String getDescription() {
+                return "CSV Files";
+              }
+            };
+            
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showSaveDialog(null);
+          if(returnVal == JFileChooser.APPROVE_OPTION) {
+            String filePath = chooser.getSelectedFile().getAbsolutePath();
+            filePath = filePath + ".csv";
+            CSVWriter writer = new CSVWriter();
+            writer.setOutput(filePath);
+            writer.write(ElementsLists.getInstance());
+          }
+      }
+    });
     mainViewPanel.setLayout(new BorderLayout());
   }
 
