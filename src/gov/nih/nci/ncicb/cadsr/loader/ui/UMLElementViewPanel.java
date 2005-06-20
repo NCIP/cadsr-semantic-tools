@@ -188,44 +188,57 @@ public class UMLElementViewPanel extends JPanel
           
           setButtonState(saveButton);
               
-          }
+        }
         });
-    
+      
+      
       
     }
+
+    gridPanel.add(createDescriptionPanel());
     
-    if(node.getClass() == ClassNode.class) {
-      String title = "UML Description";
-      JPanel umlPanel = new JPanel();
-      umlPanel.setBorder
-        (BorderFactory.createTitledBorder(title));   
-      umlPanel.setLayout(new BorderLayout());
+    this.add(scrollPane, BorderLayout.CENTER);
+    
+  }
+
+  private JPanel createDescriptionPanel() {
+    JPanel umlPanel = new JPanel();
+    umlPanel.setBorder
+      (BorderFactory.createTitledBorder("UML Description"));   
+    umlPanel.setLayout(new BorderLayout());
     
     JPanel descriptionPanel = new JPanel(new FlowLayout());
+    JTextArea descriptionArea = new JTextArea();
     
-    ObjectClass oc = (ObjectClass) node.getUserObject();
-    //List<Definition> defNames = (List<Definition>)description.getDefinitions();
-    JTextArea classDescription = new JTextArea(oc.getPreferredDefinition());
-    //classDescription.setHorizontalTextPosition(RIGHT);
-    classDescription.setLineWrap(true);
-    classDescription.setWrapStyleWord(true);
-    classDescription.setEditable(false);
-    classDescription.setColumns(75);
     
-    if(StringUtil.isEmpty(classDescription.getText())) 
+    if(node instanceof ClassNode) {
+      ObjectClass oc = (ObjectClass) node.getUserObject();
+      descriptionArea.setText(oc.getPreferredDefinition());
+    } else if(node instanceof AttributeNode) {
+      DataElement de = (DataElement) node.getUserObject();
+
+      for(Definition def : (List<Definition>) de.getDefinitions()) {
+        descriptionArea.setText(def.getDefinition());
+        break;
+      }
+
+    }
+
+    descriptionArea.setLineWrap(true);
+    descriptionArea.setWrapStyleWord(true);
+    descriptionArea.setEditable(false);
+    descriptionArea.setColumns(75);
+    
+    if(StringUtil.isEmpty(descriptionArea.getText())) 
     {
-      classDescription.setVisible(false);
+      descriptionArea.setVisible(false);
     }
 
-    descriptionPanel.add(classDescription);
+    descriptionPanel.add(descriptionArea);
     umlPanel.add(descriptionPanel);    
-    gridPanel.add(umlPanel);
-
-    }
-  	
-  	this.add(scrollPane, BorderLayout.CENTER);
-
-
+    
+    return umlPanel;
+ 
   }
 
   private void initButtonPanel()
@@ -288,7 +301,6 @@ public class UMLElementViewPanel extends JPanel
   }
   
   public void keyTyped(KeyEvent evt) {
-    //saveButton.setEnabled(true);
     
   }
 
@@ -330,6 +342,8 @@ public class UMLElementViewPanel extends JPanel
 
       }
       saveButton.setEnabled(false);
+
+
     } else if(button.getActionCommand().equals(ADD)) {
       Concept[] newConcepts = new Concept[concepts.length + 1];
       for(int i = 0; i<concepts.length; i++) {
@@ -350,6 +364,9 @@ public class UMLElementViewPanel extends JPanel
       if(concepts.length > 1)
         deleteButton.setEnabled(true);
       setButtonState(addButton);
+      setButtonState(saveButton);
+
+
     } else if(button.getActionCommand().equals(DELETE)) {
       Concept[] newConcepts = new Concept[concepts.length - 1];
       for(int i = 0; i<newConcepts.length; i++) {
@@ -359,18 +376,25 @@ public class UMLElementViewPanel extends JPanel
 
       _this.remove(scrollPane);
       initViewPanel();
+
+      setButtonState(saveButton);
+
       if(concepts.length < 2)
         deleteButton.setEnabled(false);
       this.updateUI();
-    } 
-      else if(button.getActionCommand().equals(PREVIOUS)) {
-        NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_PREVIOUS);
-        fireNavigationEvent(event);
-      }
-      else if(button.getActionCommand().equals(NEXT)) {
-        NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_NEXT);
-        fireNavigationEvent(event);
-      }
+
+
+
+    } else if(button.getActionCommand().equals(PREVIOUS)) {
+      NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_PREVIOUS);
+      fireNavigationEvent(event);
+
+      
+    } else if(button.getActionCommand().equals(NEXT)) {
+      NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_NEXT);
+      fireNavigationEvent(event);
+    }
+
   }
   
   public void fireNavigationEvent(NavigationEvent event) 
