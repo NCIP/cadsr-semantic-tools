@@ -106,6 +106,7 @@ public class CsvParser implements Parser {
 
   private static int COL_CLASS = 0;
   private static int COL_ENTITY = 1;
+  private static int COL_DESCRIPTION = 2;
 //   private static int COL_CONCEPT_NAME = 4;
   private static int COL_CONCEPT_PREF_NAME = 4;
   private static int COL_CONCEPT_CODE = 6;
@@ -122,6 +123,7 @@ public class CsvParser implements Parser {
     NewClassEvent evt = new NewClassEvent(DEFAULT_PACKAGE_NAME + "." + row.getString(COL_CLASS));
     evt.setPackageName(DEFAULT_PACKAGE_NAME);
     evt.addConcept(createConceptEvent(row));
+    evt.setDescription(row.getString(COL_DESCRIPTION));
     return evt;
   }
   private NewAttributeEvent createAttributeEvent(DataRow row) {
@@ -129,7 +131,7 @@ public class CsvParser implements Parser {
     evt.setClassName(DEFAULT_PACKAGE_NAME + "." + row.getString(COL_CLASS));
     
     evt.addConcept(createConceptEvent(row));
-
+    evt.setDescription(row.getString(COL_DESCRIPTION));
     return evt;
   }
 
