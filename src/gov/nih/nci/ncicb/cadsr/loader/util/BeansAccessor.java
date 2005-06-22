@@ -9,12 +9,14 @@ import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.apache.log4j.Logger;
 
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 
 public class BeansAccessor {
   
   private static UserSelections userSelections;
   private static UserPreferences userPreferences;
   private static TreeBuilder treeBuilder;
+  private static ReviewTracker reviewTracker;
 
   private static Logger logger = Logger.getLogger(BeansAccessor.class.getName());
 
@@ -43,6 +45,14 @@ public class BeansAccessor {
     }
 
     return treeBuilder;
+  }
+  
+  public static ReviewTracker getReviewTracker() {
+    if(reviewTracker == null) {
+      reviewTracker = (ReviewTracker)getFactory().getBean("reviewTracker");
+    }
+
+    return reviewTracker;
   }
   
   private static BeanFactory getFactory() {

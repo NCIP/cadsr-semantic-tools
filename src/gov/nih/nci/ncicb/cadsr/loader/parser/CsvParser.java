@@ -2,6 +2,8 @@ package gov.nih.nci.ncicb.cadsr.loader.parser;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 import org.apache.log4j.Logger;
 
 import com.infomata.data.*;
@@ -17,7 +19,6 @@ public class CsvParser implements Parser {
   private UMLHandler listener;
 
   private Logger logger = Logger.getLogger(CsvParser.class.getName());
-
 
   public void setEventHandler(LoaderHandler handler) {
     this.listener = (UMLHandler) handler;
@@ -112,7 +113,7 @@ public class CsvParser implements Parser {
   private static int COL_CONCEPT_CODE = 6;
   private static int COL_CONCEPT_DEF = 7;
   private static int COL_CONCEPT_DEF_SOURCE = 8;
-  
+  private static int COL_HUMAN_VERIFIED = 10;
   
 
   public void addProgressListener(ProgressListener listener) {
@@ -124,6 +125,9 @@ public class CsvParser implements Parser {
     evt.setPackageName(DEFAULT_PACKAGE_NAME);
     evt.addConcept(createConceptEvent(row));
     evt.setDescription(row.getString(COL_DESCRIPTION));
+    
+    evt.setReviewed(row.getString(COL_HUMAN_VERIFIED).equals("1")?true:false);
+    
     return evt;
   }
   private NewAttributeEvent createAttributeEvent(DataRow row) {
@@ -132,6 +136,9 @@ public class CsvParser implements Parser {
     
     evt.addConcept(createConceptEvent(row));
     evt.setDescription(row.getString(COL_DESCRIPTION));
+    
+    evt.setReviewed(row.getString(COL_HUMAN_VERIFIED).equals("1")?true:false);
+  
     return evt;
   }
 

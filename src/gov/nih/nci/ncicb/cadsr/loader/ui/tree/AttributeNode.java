@@ -21,7 +21,7 @@ public class AttributeNode extends AbstractUMLNode
     display = de.getDataElementConcept().getProperty().getLongName();
 
     fullPath = de.getDataElementConcept().getObjectClass().getLongName()
-      + display;
+      + "." + display;
     userObject = de;
     
     icon = DEFAULT_ICON;

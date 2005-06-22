@@ -1,6 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.parser.CSVWriter;
@@ -62,7 +63,7 @@ public class MainFrame extends JFrame
   private Map<String, UMLElementViewPanel> viewPanels = new HashMap();
   private AssociationViewPanel associationViewPanel = null;
 
-  
+  private ReviewTracker reviewTracker = BeansAccessor.getReviewTracker();
 
   public MainFrame()
   {
@@ -236,6 +237,7 @@ public class MainFrame extends JFrame
         UMLElementViewPanel viewPanel = new UMLElementViewPanel(node);
         
         viewPanel.addReviewListener(navigationPanel);
+        viewPanel.addReviewListener(reviewTracker);
         viewPanel.addNavigationListener(navigationPanel);
         
         viewTabbedPane.addTab(node.getDisplay(), viewPanel);

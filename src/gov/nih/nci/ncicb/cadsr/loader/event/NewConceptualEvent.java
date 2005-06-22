@@ -16,8 +16,8 @@ public class NewConceptualEvent implements LoaderEvent {
   public static final String TV_DOCUMENTATION = "documentation";
   public static final String TV_DESCRIPTION = "description";
 
-
   private String description;
+  private boolean reviewed = false;
 
   private List<NewConceptEvent> concepts = new ArrayList();
 
@@ -30,6 +30,15 @@ public class NewConceptualEvent implements LoaderEvent {
     return description;
   }
 
+  public boolean isReviewed() 
+  {
+    return reviewed;
+  }
+  
+  public void setReviewed(boolean b) 
+  {
+    reviewed = b;
+  }
   
   /**
    * Describe <code>getConcepts</code> method here.

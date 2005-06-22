@@ -5,6 +5,8 @@ import com.infomata.data.DataRow;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.domain.Property;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
+import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +17,7 @@ public class CSVWriter implements ElementWriter
 {
   private DataFile write;
   private File report;
+  private ReviewTracker reviewTracker = BeansAccessor.getReviewTracker();
   //private ObjectClass oc = ;
  
   public void setOutput(String url) 

@@ -3,6 +3,7 @@ package gov.nih.nci.ncicb.cadsr.loader.event;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -21,6 +22,8 @@ public class UMLDefaultHandler implements UMLHandler {
   private ElementsLists elements;
   private Logger logger = Logger.getLogger(UMLDefaultHandler.class.getName());
   private List packageList = new ArrayList();
+  
+  private ReviewTracker reviewTracker = BeansAccessor.getReviewTracker();
   
   public UMLDefaultHandler(ElementsLists elements) {
     this.elements = elements;
@@ -54,6 +57,7 @@ public class UMLDefaultHandler implements UMLHandler {
       oc.setPreferredDefinition("");
 
     elements.addElement(oc);
+    reviewTracker.put(event.getName(), event.isReviewed());
     
     ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
     String csiName = null;
@@ -161,6 +165,8 @@ public class UMLDefaultHandler implements UMLHandler {
     prop.setAcCsCsis(oc.getAcCsCsis());
     de.setAcCsCsis(oc.getAcCsCsis());
     dec.setAcCsCsis(oc.getAcCsCsis());
+
+    reviewTracker.put(event.getClassName() + "." + event.getName(), event.isReviewed());
 
     elements.addElement(de);
     elements.addElement(dec);

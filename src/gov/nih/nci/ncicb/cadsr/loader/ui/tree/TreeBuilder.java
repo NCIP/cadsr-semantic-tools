@@ -6,6 +6,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 
 import java.util.*;
 
@@ -18,6 +19,8 @@ public class TreeBuilder implements UserPreferencesListener {
 
   private List<TreeListener> treeListeners = new ArrayList();
   private boolean inClassAssociations = false;
+  
+  private ReviewTracker reviewTracker = BeansAccessor.getReviewTracker();
   
   public void init() 
   {
@@ -90,7 +93,15 @@ public class TreeBuilder implements UserPreferencesListener {
       packageName = className.substring(0, ind);
       if(packageName.equals(parentNode.getFullPath())) {
         UMLNode node = new ClassNode(o);
+        //ClassNode classNode = (ClassNode) node;
+        //boolean temp; 
+        //temp = Boolean.valueOf((String)reviewTracker.get(node.getFullPath()));
+   
         parentNode.addChild(node);
+     
+        ((ClassNode) node).setReviewed(
+          reviewTracker.get(node.getFullPath()));
+        
         doAttributes(node);
         if(inClassAssociations)
           doAssociations(node,o);
@@ -114,7 +125,13 @@ public class TreeBuilder implements UserPreferencesListener {
       if(de.getDataElementConcept().getObjectClass().getLongName()
          .equals(parentNode.getFullPath())) {
         UMLNode node = new AttributeNode(de);
-        parentNode.addChild(node);
+
+        
+        Boolean reviewed = reviewTracker.get(node.getFullPath());
+        if(reviewed != null) {
+          parentNode.addChild(node);
+          ((AttributeNode) node).setReviewed(reviewed);
+        }
       }
     }
 
