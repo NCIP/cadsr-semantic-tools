@@ -2,7 +2,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui.tree;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
-import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.*;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
@@ -18,7 +18,8 @@ public class TreeBuilder implements UserPreferencesListener {
   private UMLNode rootNode;
 
   private List<TreeListener> treeListeners = new ArrayList();
-  private boolean inClassAssociations = false;
+  private boolean inClassAssociations = false,
+    showAssociations = true;
   
   private ReviewTracker reviewTracker = BeansAccessor.getReviewTracker();
   
@@ -26,8 +27,15 @@ public class TreeBuilder implements UserPreferencesListener {
   {
     UserPreferences prefs = BeansAccessor.getUserPreferences();
     prefs.addUserPreferencesListener(this);
+
+    UserSelections selections = BeansAccessor.getUserSelections();
     
     inClassAssociations = new Boolean (prefs.getViewAssociationType());
+
+    // only show association node in Review Mode
+    showAssociations = selections.getProperty("MODE").equals(RunMode.Reviewer);
+
+    
   }
 
   public UMLNode buildTree(ElementsLists elements) {
@@ -37,7 +45,7 @@ public class TreeBuilder implements UserPreferencesListener {
     rootNode = new RootNode();
     doPackages(rootNode);
 
-    if(!inClassAssociations)
+    if(!inClassAssociations && showAssociations)
       doAssociations(rootNode);
 
     return rootNode;
@@ -103,7 +111,7 @@ public class TreeBuilder implements UserPreferencesListener {
           reviewTracker.get(node.getFullPath()));
         
         doAttributes(node);
-        if(inClassAssociations)
+        if(inClassAssociations && showAssociations)
           doAssociations(node,o);
         
         List<ValidationItem> items = findValidationItems(o);
