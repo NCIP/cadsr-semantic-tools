@@ -36,7 +36,7 @@ public class WizardController implements ActionListener {
   private String filename;
   private String outputCsv;
 
-  private String mode;
+  private RunMode mode;
 
   private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     
@@ -136,18 +136,22 @@ public class WizardController implements ActionListener {
         if(descriptor.getPanelDescriptorIdentifier().equals(ModeSelectionPanelDescriptor.IDENTIFIER)) {
           ModeSelectionPanel panel = 
             (ModeSelectionPanel)descriptor.getPanelComponent();
-          mode = panel.getSelection();
+          
+          
+          mode = Enum.valueOf(RunMode.class, panel.getSelection());
+
+//           mode = panel.getSelection();
           userSelections.setProperty("MODE", mode);
 
           ProgressFileSelectionPanelDescriptor desc =
             (ProgressFileSelectionPanelDescriptor)model
             .getPanelDescriptor(ProgressFileSelectionPanelDescriptor.IDENTIFIER);
 
-          if(mode.equals("Report")) {
+          if(mode.equals(RunMode.GenerateReport)) {
             desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-          } else if(mode.equals("Review")) {
+          } else if(mode.equals(RunMode.Reviewer)) {
             desc.setNextPanelDescriptor("FINISH");
-          } else if(mode.equals("Curate")) {
+          } else if(mode.equals(RunMode.Curator)) {
             desc.setNextPanelDescriptor("FINISH");
           }
 
@@ -172,7 +176,7 @@ public class WizardController implements ActionListener {
             .getPanelDescriptor(ProgressFileSelectionPanelDescriptor.IDENTIFIER);
 
 
-          if(mode.equals("Report")) {
+          if(mode.equals(RunMode.GenerateReport)) {
             File csvFile = new File(SemanticConnectorUtil.getCsvFilename(filename));
             boolean doIt = true;
             if(csvFile.exists()) {
@@ -215,7 +219,7 @@ public class WizardController implements ActionListener {
               worker.start(); 
             }
           }
-          else if(mode.equals("Curate")) {
+          else if(mode.equals(RunMode.Curator)) {
             SwingWorker worker = new SwingWorker() {
                 public Object construct() {
                   try {
@@ -249,7 +253,7 @@ public class WizardController implements ActionListener {
               };
             worker.start(); 
           }
-          else if(mode.equals("Review")) {
+          else if(mode.equals(RunMode.Reviewer)) {
             SwingWorker worker = new SwingWorker() {
                 public Object construct() {
                   try {

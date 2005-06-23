@@ -49,10 +49,10 @@ public class BeansAccessor {
   }
 
   public static ElementWriter getWriter() {
-    String mode = (String)getUserSelections().getProperty("MODE");
-    if(mode.equals("Review")) {
+    RunMode mode = (RunMode)getUserSelections().getProperty("MODE");
+    if(mode.equals(RunMode.Reviewer)) {
       return (ElementWriter)getFactory().getBean("csvWriter");
-    } else if(mode.equals("Curate")) {
+    } else if(mode.equals(RunMode.Curator)) {
       return (ElementWriter)getFactory().getBean("xmiWriter");
     }
     else return null;

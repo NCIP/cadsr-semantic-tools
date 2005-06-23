@@ -81,8 +81,8 @@ public class UMLLoaderGUI
       System.exit(0);
     }
       
-    String mode = (String)userSelections.getProperty("MODE");
-    if(mode.equals("Report")) 
+    RunMode mode = (RunMode)userSelections.getProperty("MODE");
+    if(mode.equals(RunMode.GenerateReport)) 
       System.exit(0);
 
     Frame frame = new MainFrame();

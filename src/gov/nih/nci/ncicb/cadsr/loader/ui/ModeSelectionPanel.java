@@ -9,9 +9,9 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 public class ModeSelectionPanel extends JPanel 
 {
 
-  public static final String SELECTION_CREATE_REPORT = "Report";
-  public static final String SELECTION_EVS_CURATE = "Curate";
-  public static final String SELECTION_MODEL_REVIEW = "Review";
+//   public static final String SELECTION_CREATE_REPORT = "Report";
+//   public static final String SELECTION_EVS_CURATE = "Curate";
+//   public static final String SELECTION_MODEL_REVIEW = "Review";
 
   private JRadioButton reportOption, curateOption, reviewOption;
   private ButtonGroup group;
@@ -45,13 +45,13 @@ public class ModeSelectionPanel extends JPanel
     group = new ButtonGroup();
     
     reportOption = new JRadioButton("Generate Semantic Annotation Report Only");
-    reportOption.setActionCommand(SELECTION_CREATE_REPORT);
+    reportOption.setActionCommand(RunMode.GenerateReport.toString());
 
     curateOption = new JRadioButton("Curate Semantic Annotation");
-    curateOption.setActionCommand(SELECTION_EVS_CURATE);
+    curateOption.setActionCommand(RunMode.Curator.toString());
 
     reviewOption = new JRadioButton("Review Annotated Model");
-    reviewOption.setActionCommand(SELECTION_MODEL_REVIEW);
+    reviewOption.setActionCommand(RunMode.Reviewer.toString());
 
     reportOption.setSelected(true);
 
