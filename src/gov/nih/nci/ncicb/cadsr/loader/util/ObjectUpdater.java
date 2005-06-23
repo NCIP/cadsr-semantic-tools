@@ -7,18 +7,24 @@ import java.util.*;
 
 public class ObjectUpdater {
 
-  public static void update(AdminComponent ac, Concept oldConcepts, Concept newConcepts) {
+  public static void update(AdminComponent ac, Concept[] oldConcepts, Concept[] newConcepts) {
 
-    ElementsLists elements = ElementsLists.getInstance();
+    if(ac instanceof ObjectClass) {
+      ObjectClass oc = (ObjectClass)ac;
+      System.out.println("NEW PREFERRED NAME: " + preferredNameFromConcepts(newConcepts));
+      oc.setPreferredName(preferredNameFromConcepts(newConcepts));
+    } else if(ac instanceof DataElement) {
+      DataElement de = (DataElement)ac;
 
-    List concepts = elements.getElements(DomainObjectFactory.newConcept().getClass());
+      de.getDataElementConcept().getProperty().setPreferredName(preferredNameFromConcepts(newConcepts));
+//       de.setPreferredName(preferredNameFromConcepts(newConcepts));
+      
+    }
+
+    System.out.println("OLD PREFERRED NAME: " + preferredNameFromConcepts(oldConcepts));    
     
-    List ocs = elements.getElements(DomainObjectFactory.newObjectClass().getClass());
-
-    List props = elements.getElements(DomainObjectFactory.newObjectClass().getClass());
-
-    
-
+    addNewConcepts(newConcepts);
+    removeStaleConcepts(oldConcepts);
 
   }
 
@@ -42,5 +48,77 @@ public class ObjectUpdater {
     return sb.toString();
   }
 
+  private static void removeStaleConcepts(Concept[] concepts) {
+    ElementsLists elements = ElementsLists.getInstance();
+
+    List<ObjectClass> ocs = (List<ObjectClass>)elements.getElements(DomainObjectFactory.newObjectClass().getClass());
+    List<Property> props = (List<Property>)elements.getElements(DomainObjectFactory.newProperty().getClass());
+
+    a:
+    for(Concept concept : concepts) {
+      boolean found = false;
+      if(StringUtil.isEmpty(concept.getPreferredName()))
+        continue a;
+      for(ObjectClass oc : ocs) {
+        String[] codes = oc.getPreferredName().split(":");
+        for(String code : codes) {
+          if(code.equals(concept.getPreferredName())) {
+            found = true;
+            continue a;
+          }
+        }
+      }
+      for(Property prop : props) {
+        String[] codes = prop.getPreferredName().split(":");
+        for(String code : codes) {
+          if(code.equals(concept.getPreferredName())) {
+            found = true;
+            continue a;
+          }
+        }
+      }
+
+      if(!found) {
+        removeFromConcepts(concept);
+      }
+    }
+  }
+
+  private static void addNewConcepts(Concept[] newConcepts) {
+    ElementsLists elements = ElementsLists.getInstance();
+    List<Concept> concepts = (List<Concept>)elements.getElements(DomainObjectFactory.newConcept().getClass());
+    
+    for(Concept concept : newConcepts) {
+      boolean found = false;
+      for(Concept con : concepts) {
+        if(con.getPreferredName().equals(concept.getPreferredName())) {
+          found = true;
+          break;
+        }
+      }
+      if(!found) {
+        elements.addElement(concept);
+        System.out.println("**** Added new concept: " + concept.getPreferredName());
+      }
+    }
+
+
+  }
+
+  private static void removeFromConcepts(Concept concept) {
+    ElementsLists elements = ElementsLists.getInstance();
+    List<Concept> concepts = (List<Concept>)elements.getElements(DomainObjectFactory.newConcept().getClass());
+    
+    for(int i = 0, n = concepts.size(); i<n; i++) {
+      if(concepts.get(i).getPreferredName().equals(concept.getPreferredName())) {
+        concepts.remove(i);
+        System.out.println("*** removed concept: " + concepts.get(i).getPreferredName());
+        return;
+      }
+    }
+    
+    concepts.remove(concept);
+
+  }
 
 }

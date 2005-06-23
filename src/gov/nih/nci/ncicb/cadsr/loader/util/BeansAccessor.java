@@ -8,6 +8,7 @@ import org.springframework.beans.factory.xml.XmlBeanFactory;
 
 import org.apache.log4j.Logger;
 
+import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 
@@ -46,6 +47,17 @@ public class BeansAccessor {
 
     return treeBuilder;
   }
+
+  public static ElementWriter getWriter() {
+    String mode = (String)getUserSelections().getProperty("MODE");
+    if(mode.equals("Review")) {
+      return (ElementWriter)getFactory().getBean("csvWriter");
+    } else if(mode.equals("Curate")) {
+      return (ElementWriter)getFactory().getBean("xmiWriter");
+    }
+    else return null;
+      
+  }
   
   public static ReviewTracker getReviewTracker() {
     if(reviewTracker == null) {
@@ -63,5 +75,5 @@ public class BeansAccessor {
     } // end of try-catch
     return null;
   }
-
+  
 }
