@@ -258,7 +258,6 @@ public class WizardController implements ActionListener {
                     UMLHandler listener = new UMLDefaultHandler(elements);
                     parser.setEventHandler(listener);
                     parser.addProgressListener(progressDesc);
-                    
                     UMLDefaults defaults = UMLDefaults.getInstance();
                     defaults.initParams(filename);
                     

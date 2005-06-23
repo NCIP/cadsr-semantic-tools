@@ -30,6 +30,7 @@ public class UMLElementViewPanel extends JPanel
   private JPanel _this = this;
 
   private UMLNode node;
+  private boolean remove = false;
 
   private static final String ADD = "ADD",
     DELETE = "DELETE",
@@ -300,27 +301,22 @@ public class UMLElementViewPanel extends JPanel
     setButtonState(addButton);
   }
   
-  public void keyTyped(KeyEvent evt) {
-    
-  }
-
-
-
-  public void keyPressed(KeyEvent evt) {
-    
-  }
+  public void keyTyped(KeyEvent evt) {}
+  public void keyPressed(KeyEvent evt) {}
   public void keyReleased(KeyEvent evt) {
     setButtonState(saveButton);
   }
-
-  
   
   public void actionPerformed(ActionEvent evt) {
     JButton button = (JButton)evt.getSource();
     if(button.getActionCommand().equals(SAVE)) {
+      boolean update = remove;
+      remove = false;
+      Concept[] newConcepts = new Concept[concepts.length];
+      
       for(int i = 0; i<concepts.length; i++) 
       {
-
+        newConcepts[i] = concepts[i];
         // concept code has not changed
         if(conceptUIs[i].code.getText().equals(concepts[i].getPreferredName())) {
           concepts[i].setLongName(conceptUIs[i].name.getText());
@@ -332,15 +328,15 @@ public class UMLElementViewPanel extends JPanel
           concept.setLongName(conceptUIs[i].name.getText());
           concept.setPreferredDefinition(conceptUIs[i].def.getText());
           concept.setDefinitionSource(conceptUIs[i].defSource.getText());
-
-          concepts[i] = concept;
-
-
-//           ObjectUpdater.update((AdminComponent)node.getUserObject(),concepts[i], concept);
-
+          newConcepts[i] = concept;
+          update = true;
         }
-
       }
+
+      if(update) {
+        ObjectUpdater.update((AdminComponent)node.getUserObject(), concepts, newConcepts);
+      }
+
       saveButton.setEnabled(false);
 
 
@@ -383,16 +379,16 @@ public class UMLElementViewPanel extends JPanel
         deleteButton.setEnabled(false);
       this.updateUI();
 
-
+      remove = true;
 
     } else if(button.getActionCommand().equals(PREVIOUS)) {
       NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_PREVIOUS);
       fireNavigationEvent(event);
-
-      
+      remove = false;
     } else if(button.getActionCommand().equals(NEXT)) {
       NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_NEXT);
       fireNavigationEvent(event);
+      remove = false;
     }
 
   }
