@@ -9,6 +9,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.*;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -46,6 +47,13 @@ public class UMLElementViewPanel extends JPanel
   
   private JPanel gridPanel;
   private JScrollPane scrollPane;
+
+  // initialize once the mode in which we're running
+  private static boolean editable = false;
+  static {
+    UserSelections selections = BeansAccessor.getUserSelections();
+    editable = selections.getProperty("MODE").equals(RunMode.Curator);
+  }
   
   public UMLElementViewPanel(UMLNode node) 
   {
@@ -451,6 +459,13 @@ public class UMLElementViewPanel extends JPanel
 }
 
 class ConceptUI {
+  // initialize once the mode in which we're running
+  private static boolean editable = false;
+  static {
+    UserSelections selections = BeansAccessor.getUserSelections();
+    editable = selections.getProperty("MODE").equals(RunMode.Curator);
+  }
+
   JLabel[] labels = new JLabel[] {
     new JLabel("Concept Code"),
     new JLabel("Concept Preferred Name"),
@@ -483,6 +498,13 @@ class ConceptUI {
     name.setText(concept.getLongName());
     def.setText(concept.getPreferredDefinition());
     defSource.setText(concept.getDefinitionSource());
+
+    if(!editable) {
+      code.setEnabled(false);
+      name.setEnabled(false);
+      def.setEnabled(false);
+      defSource.setEnabled(false);
+    }
     
   }
 
