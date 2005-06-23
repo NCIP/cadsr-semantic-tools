@@ -11,18 +11,14 @@ public class ObjectUpdater {
 
     if(ac instanceof ObjectClass) {
       ObjectClass oc = (ObjectClass)ac;
-      System.out.println("NEW PREFERRED NAME: " + preferredNameFromConcepts(newConcepts));
       oc.setPreferredName(preferredNameFromConcepts(newConcepts));
     } else if(ac instanceof DataElement) {
       DataElement de = (DataElement)ac;
 
       de.getDataElementConcept().getProperty().setPreferredName(preferredNameFromConcepts(newConcepts));
-//       de.setPreferredName(preferredNameFromConcepts(newConcepts));
       
     }
 
-    System.out.println("OLD PREFERRED NAME: " + preferredNameFromConcepts(oldConcepts));    
-    
     addNewConcepts(newConcepts);
     removeStaleConcepts(oldConcepts);
 
@@ -98,7 +94,6 @@ public class ObjectUpdater {
       }
       if(!found) {
         elements.addElement(concept);
-        System.out.println("**** Added new concept: " + concept.getPreferredName());
       }
     }
 
@@ -112,7 +107,6 @@ public class ObjectUpdater {
     for(int i = 0, n = concepts.size(); i<n; i++) {
       if(concepts.get(i).getPreferredName().equals(concept.getPreferredName())) {
         concepts.remove(i);
-        System.out.println("*** removed concept: " + concepts.get(i).getPreferredName());
         return;
       }
     }
