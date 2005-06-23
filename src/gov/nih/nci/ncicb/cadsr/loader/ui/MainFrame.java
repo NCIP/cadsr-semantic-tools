@@ -67,14 +67,19 @@ public class MainFrame extends JFrame
 
   private RunMode runMode = null;
 
+  private String saveFilename = "";
+
   public MainFrame()
   {
     try
     {
       jbInit();
 
-      runMode = (RunMode)(BeansAccessor.getUserSelections().getProperty("MODE"));
-      
+      UserSelections selections = BeansAccessor.getUserSelections();
+
+      runMode = (RunMode)(selections.getProperty("MODE"));
+      saveFilename = (String)selections.getProperty("FILENAME");
+
     }
     catch(Exception e)
     {
@@ -190,12 +195,14 @@ public class MainFrame extends JFrame
     
     saveMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
+        if(runMode.equals(RunMode.Reviewer)) {
+          JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
+          return;
+        } 
 
-        JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
-        
-//        CSVWriter writer = new CSVWriter();
-//        writer.setOutput("Anwar's File.csv");
-//        writer.write(ElementsLists.getInstance());
+        CSVWriter writer = new CSVWriter();
+        writer.setOutput(saveFilename);
+        writer.write(ElementsLists.getInstance());
       }
     });
     
@@ -227,6 +234,7 @@ public class MainFrame extends JFrame
             filePath = filePath + ".csv";
             CSVWriter writer = new CSVWriter();
             writer.setOutput(filePath);
+            saveFilename = filePath;
             writer.write(ElementsLists.getInstance());
           }
       }
