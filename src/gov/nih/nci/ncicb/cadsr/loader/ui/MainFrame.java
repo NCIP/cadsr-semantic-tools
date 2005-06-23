@@ -65,11 +65,16 @@ public class MainFrame extends JFrame
 
   private ReviewTracker reviewTracker = BeansAccessor.getReviewTracker();
 
+  private RunMode runMode = null;
+
   public MainFrame()
   {
     try
     {
       jbInit();
+
+      runMode = (RunMode)(BeansAccessor.getUserSelections().getProperty("MODE"));
+      
     }
     catch(Exception e)
     {
@@ -185,14 +190,22 @@ public class MainFrame extends JFrame
     
     saveMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
-       CSVWriter writer = new CSVWriter();
-       writer.setOutput("Anwar's File.csv");
-       writer.write(ElementsLists.getInstance());
+
+        JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
+        
+//        CSVWriter writer = new CSVWriter();
+//        writer.setOutput("Anwar's File.csv");
+//        writer.write(ElementsLists.getInstance());
       }
     });
     
     saveAsMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
+        if(runMode.equals(RunMode.Reviewer)) {
+          JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
+          return;
+        } 
+
         JFileChooser chooser = new JFileChooser();
         javax.swing.filechooser.FileFilter filter = 
             new javax.swing.filechooser.FileFilter() {
