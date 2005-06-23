@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import java.util.*;
 
 import java.io.FileInputStream;
+import java.io.File;
 
 public class AttachedFileDefaultsLoader  {
 
@@ -24,8 +25,7 @@ public class AttachedFileDefaultsLoader  {
 
       logger.debug("loading prop file: " + propsFileName);
 
-      props.load(new FileInputStream(propsFileName));
-//       props.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("file://" + propsFileName));
+      props.load(new FileInputStream(new File(propsFileName)));
 
       logger.debug("loaded");
 
