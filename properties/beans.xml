@@ -21,4 +21,14 @@
     singleton="true">
   </bean>
 
+  <bean name="csvWriter"
+    class="gov.nih.nci.ncicb.cadsr.loader.parser.CSVWriter" 
+    singleton="true">
+  </bean>
+
+  <bean name="xmiWriter"
+    class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIWriter" 
+    singleton="true">
+  </bean>
+
 </beans>
