@@ -1,4 +1,5 @@
 package gov.nih.nci.ncicb.cadsr.loader.util;
+import gov.nih.nci.ncicb.cadsr.loader.ui.ModeSelectionPanel;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import java.util.prefs.Preferences;
 import java.util.*;
@@ -18,6 +19,31 @@ public class UserPreferences {
     prefs.put("ViewAssociations", value);
     UserPreferencesEvent event = new UserPreferencesEvent(UserPreferencesEvent.VIEW_ASSOCIATION, value);
     fireUserPreferencesEvent(event);
+  }
+
+  public String getUmlDescriptionOrder() 
+  {
+    return prefs.get("UmlDescriptionOrder", "last");
+  }
+  
+  public void setUmlDescriptionOrder(String value) 
+  {
+    prefs.put("UmlDescriptionOrder", value);
+    UserPreferencesEvent event = new UserPreferencesEvent(UserPreferencesEvent.UML_DESCRIPTION, value);
+    fireUserPreferencesEvent(event);
+  }
+  
+  public String getModeSelection() 
+  {
+    //return prefs.get("ModeSelection", ModeSelectionPanel.SELECTION_CREATE_REPORT);
+    return null;
+  }
+  
+  public void setModeSelection(String value) 
+  {
+    prefs.put("ModeSelection", value);
+    //UserPreferencesEvent event = new UserPreferencesEvent(UserPreferencesEvent.MODE_SELECTION, value);
+    //fireUserPreferencesEvent(event);    
   }
 
   public String getXmiDir() {
