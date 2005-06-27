@@ -3,7 +3,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.loader.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
-import gov.nih.nci.ncicb.cadsr.loader.parser.CSVWriter;
+import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
@@ -199,7 +199,7 @@ public class MainFrame extends JFrame
           return;
         } 
 
-        CSVWriter writer = new CSVWriter();
+        ElementWriter writer = BeansAccessor.getWriter();
         writer.setOutput(saveFilename);
         writer.write(ElementsLists.getInstance());
       }
@@ -207,19 +207,14 @@ public class MainFrame extends JFrame
     
     saveAsMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
-        if(runMode.equals(RunMode.Reviewer)) {
-          JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
-          return;
-        } 
-
         JFileChooser chooser = new JFileChooser();
         javax.swing.filechooser.FileFilter filter = 
             new javax.swing.filechooser.FileFilter() {
               public boolean accept(File f) {
-                if (f.isDirectory()) {
+//                 if (f.isDirectory()) {
                   return true;
-                }                
-                return f.getName().endsWith(".csv");
+//                 }                
+//                 return f.getName().endsWith(".csv");
               }
               public String getDescription() {
                 return "CSV Files";
@@ -230,8 +225,8 @@ public class MainFrame extends JFrame
         int returnVal = chooser.showSaveDialog(null);
           if(returnVal == JFileChooser.APPROVE_OPTION) {
             String filePath = chooser.getSelectedFile().getAbsolutePath();
-            filePath = filePath + ".csv";
-            CSVWriter writer = new CSVWriter();
+//             filePath = filePath + ".csv";
+            ElementWriter writer = BeansAccessor.getWriter();
             writer.setOutput(filePath);
             saveFilename = filePath;
             writer.write(ElementsLists.getInstance());
