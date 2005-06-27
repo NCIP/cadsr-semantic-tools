@@ -10,6 +10,7 @@ import javax.swing.*;
 public class PreferenceDialog extends JDialog implements ActionListener
 {
   private JCheckBox associationBox = new JCheckBox("View Associations in Class Tree");
+  private JCheckBox umlDescriptionBox = new JCheckBox("Display UML Description First");
   private JButton apply = new JButton("Apply");
   private JButton cancel = new JButton("Cancel");
   private JButton ok = new JButton("OK");
@@ -25,10 +26,14 @@ public class PreferenceDialog extends JDialog implements ActionListener
     southPanel.add(cancel);
     southPanel.add(apply);
     
+    JPanel centerPanel = new JPanel();
+    centerPanel.add(associationBox);
+    centerPanel.add(umlDescriptionBox);
+    
     this.getContentPane().setLayout(new BorderLayout());
-    this.getContentPane().add(associationBox);
+    this.getContentPane().add(centerPanel);
     this.getContentPane().add(southPanel,BorderLayout.SOUTH);
-    this.setSize(200,100);
+    this.setSize(200,125);
     
     apply.setActionCommand(APPLY);
     cancel.setActionCommand(CANCEL);
@@ -43,6 +48,11 @@ public class PreferenceDialog extends JDialog implements ActionListener
       associationBox.setSelected(true);
     else
       associationBox.setSelected(false);
+      
+    if(prefs.getUmlDescriptionOrder().equals("first"))
+      umlDescriptionBox.setSelected(true);
+    else
+      umlDescriptionBox.setSelected(false);
   }
   
   public void actionPerformed(ActionEvent event) 
@@ -56,6 +66,11 @@ public class PreferenceDialog extends JDialog implements ActionListener
       else
         prefs.setViewAssociationType("false");
       
+      if(umlDescriptionBox.isSelected())
+        prefs.setUmlDescriptionOrder("first");
+      else
+        prefs.setUmlDescriptionOrder("last");
+        
       this.dispose();
     }
     
@@ -65,6 +80,12 @@ public class PreferenceDialog extends JDialog implements ActionListener
         prefs.setViewAssociationType("true");
       else
         prefs.setViewAssociationType("false");
+      
+      if(umlDescriptionBox.isSelected())
+        prefs.setUmlDescriptionOrder("first");
+      else
+        prefs.setUmlDescriptionOrder("last");  
+      
     }
     
     if(button.getActionCommand().equals(CANCEL))
