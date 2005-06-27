@@ -6,6 +6,8 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.UserPreferencesEvent;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.UserPreferencesListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
@@ -21,7 +23,7 @@ import javax.swing.event.*;
 
 public class UMLElementViewPanel extends JPanel
   implements ActionListener, KeyListener
-             , ItemListener, CaretListener {
+             , ItemListener, CaretListener, UserPreferencesListener {
 
   private Concept[] concepts;
   private ConceptUI[] conceptUIs;
@@ -114,6 +116,10 @@ public class UMLElementViewPanel extends JPanel
     }
     this.add(summaryPanel,BorderLayout.NORTH);
 
+    UserPreferences prefs = BeansAccessor.getUserPreferences();
+    if(prefs.getUmlDescriptionOrder().equals("first"))
+      gridPanel.add(createDescriptionPanel());
+      
     for(int i = 0; i<concepts.length; i++) {
       conceptUIs[i] = new ConceptUI(concepts[i]);
 
@@ -203,8 +209,9 @@ public class UMLElementViewPanel extends JPanel
       
       
     }
-
-    gridPanel.add(createDescriptionPanel());
+    
+    if(prefs.getUmlDescriptionOrder().equals("last"))
+      gridPanel.add(createDescriptionPanel());
     
     this.add(scrollPane, BorderLayout.CENTER);
     
@@ -314,6 +321,18 @@ public class UMLElementViewPanel extends JPanel
   public void keyReleased(KeyEvent evt) {
     setButtonState(saveButton);
   }
+
+
+  public void preferenceChange(UserPreferencesEvent event) 
+  {
+    if(event.getTypeOfEvent() == UserPreferencesEvent.UML_DESCRIPTION) 
+    {
+      this.remove(gridPanel);
+      initViewPanel();
+      this.updateUI();
+    }
+  }
+
   
   public void actionPerformed(ActionEvent evt) {
     JButton button = (JButton)evt.getSource();
