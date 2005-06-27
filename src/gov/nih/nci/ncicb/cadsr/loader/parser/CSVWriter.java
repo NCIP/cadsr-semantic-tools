@@ -55,7 +55,6 @@ public class CSVWriter implements ElementWriter
 
           String [] conceptCodes = oc.getPreferredName().split(":");
           for(int i = conceptCodes.length-1; i > -1; i--) {
-          System.out.println("Length of conceptCodes " + conceptCodes.length);
           String temp[] = oc.getLongName().split("domain.");
           row = write.next();
           
