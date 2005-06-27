@@ -57,11 +57,11 @@ public class XMIParser implements Parser {
       fireProgressEvent(evt);
 
       ModelAccess access = new UML13ModelAccess();
-       access.readModel("file:" + filename, "EA Model");
-      
-      uml.UmlPackage umlExtent = (uml.UmlPackage) access.getOutermostExtent();
+      access.readModel("file:" + filename, "EA Model");
 
-      Model model = UML13Utils.getModel(umlExtent, "EA Model");      
+      uml.UmlPackage umlExtent = (uml.UmlPackage) access.getOutermostExtent();
+      
+      Model model = UML13Utils.getModel(umlExtent, "EA Model");
 //       fact = new MdrModelManagerFactoryImpl();
 //       mgr = fact.readModel("", filename);
 //       Model model = mgr.getModel();
@@ -92,7 +92,7 @@ public class XMIParser implements Parser {
     }
     catch (Exception e) {
       logger.fatal("Could not parse: " + filename);
-      logger.fatal(e);
+      logger.fatal(e, e);
     } // end of try-catch
   }
 
@@ -177,6 +177,11 @@ public class XMIParser implements Parser {
       event.setDescription(tv.getValue());
     }
 
+    tv = UML13Utils.getTaggedValue(clazz, NewConceptualEvent.TV_HUMAN_REVIEWED);
+    if(tv != null) {
+      event.setReviewed(tv.getValue().equals("1")?true:false);
+    }
+
     if(isInPackageFilter(pName)) {
       listener.newClass(event);
     } else {
@@ -250,6 +255,12 @@ public class XMIParser implements Parser {
     if(tv != null) {
       event.setDescription(tv.getValue());
     }
+
+    tv = UML13Utils.getTaggedValue(att, NewConceptualEvent.TV_HUMAN_REVIEWED);
+    if(tv != null) {
+      event.setReviewed(tv.getValue().equals("1")?true:false);
+    }
+
 
     setConceptInfo(att, event, NewConceptEvent.TYPE_PROPERTY);
 
@@ -342,6 +353,9 @@ public class XMIParser implements Parser {
         event.setBRole(end.getName());
       }
     }
+
+//     logger.debug("A END -- " + event.getAClassName() + " " + event.getALowCardinality());
+//     logger.debug("B END -- " + event.getBClassName() + " " + event.getBLowCardinality());
 
     event.setDirection(navig);
 
