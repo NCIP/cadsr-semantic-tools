@@ -7,6 +7,7 @@ import javax.swing.*;
 
 import java.io.File;
 
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
@@ -28,8 +29,21 @@ implements ProgressListener {
   private boolean isProgress = false;
   private int goal;
 
+  private RunMode runMode = null;
+  private String fileExtension = "xmi";
+
   public FileSelectionPanel()
   {
+  }
+
+  public void init() {
+    UserSelections selections = BeansAccessor.getUserSelections();
+    
+    runMode = (RunMode)(selections.getProperty("MODE"));
+    if(runMode.equals(RunMode.Curator)) 
+      fileExtension = "csv";
+    else if(runMode.equals(RunMode.Reviewer)) 
+      fileExtension = "xmi";
     initUI();
   }
 
@@ -55,6 +69,8 @@ implements ProgressListener {
 
   private void initUI() {
 
+    this.removeAll();
+
     this.setLayout(new BorderLayout());
     
     JPanel infoPanel = new JPanel();
@@ -64,7 +80,7 @@ implements ProgressListener {
 
     infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("xmi.gif"))));
 
-    JLabel infoLabel = new JLabel("<html>Please choose a file to parse<br>The file must be in XMI format</html>");
+    JLabel infoLabel = new JLabel("<html>Please choose a file to parse<br>The file must be in " + fileExtension.toUpperCase() + " format</html>");
     infoPanel.add(infoLabel);
     
     this.add(infoPanel, BorderLayout.NORTH);
@@ -77,7 +93,7 @@ implements ProgressListener {
     browsePanel.setLayout(new GridBagLayout());
 
     insertInBag(browsePanel, 
-                new JLabel("Click browse to search for an XMI file"), 0, 0, 2, 1);
+                new JLabel("Click browse to search for an " + fileExtension.toUpperCase() + " file"), 0, 0, 2, 1);
 
     insertInBag(browsePanel, filePathField, 0, 1);
     insertInBag(browsePanel, browseButton, 1, 1);
@@ -121,10 +137,10 @@ implements ProgressListener {
                 if (f.isDirectory()) {
                   return true;
                 }                
-                return f.getName().endsWith(".xmi");
+                return f.getName().endsWith("." + fileExtension);
               }
               public String getDescription() {
-                return "XMI Files";
+                return fileExtension.toUpperCase() + " Files";
               }
             };
           

@@ -140,8 +140,12 @@ public class WizardController implements ActionListener {
           
           mode = Enum.valueOf(RunMode.class, panel.getSelection());
 
-//           mode = panel.getSelection();
           userSelections.setProperty("MODE", mode);
+
+          FileSelectionPanelDescriptor fileDesc =
+            (FileSelectionPanelDescriptor)model
+            .getPanelDescriptor(FileSelectionPanelDescriptor.IDENTIFIER);
+          fileDesc.init();
 
           ProgressFileSelectionPanelDescriptor desc =
             (ProgressFileSelectionPanelDescriptor)model

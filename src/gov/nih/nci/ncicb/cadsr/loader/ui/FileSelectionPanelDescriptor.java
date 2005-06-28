@@ -13,11 +13,14 @@ public class FileSelectionPanelDescriptor
   public FileSelectionPanelDescriptor() {
     panel =  new FileSelectionPanel();
     setPanelDescriptorIdentifier(IDENTIFIER);
-//     panel.addFileActionListener(this);
     setPanelComponent(panel);
 
     nextPanelDescriptor = ProgressFileSelectionPanelDescriptor.IDENTIFIER;
     backPanelDescriptor = ModeSelectionPanelDescriptor.IDENTIFIER;
+  }
+
+  public void init() {
+    panel.init();
   }
   
   public void actionPerformed(ActionEvent evt) {
