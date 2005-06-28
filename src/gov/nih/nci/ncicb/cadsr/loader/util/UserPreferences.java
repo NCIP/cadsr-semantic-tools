@@ -1,4 +1,5 @@
 package gov.nih.nci.ncicb.cadsr.loader.util;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.ui.ModeSelectionPanel;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import java.util.prefs.Preferences;
@@ -8,6 +9,7 @@ public class UserPreferences {
 
   Preferences prefs = Preferences.userRoot().node("UMLLOADER");
   List<UserPreferencesListener> userPrefsListeners = new ArrayList(); 
+  private UserSelections userSelections = null;
   
   public String getViewAssociationType() 
   {
@@ -35,15 +37,12 @@ public class UserPreferences {
   
   public String getModeSelection() 
   {
-    //return prefs.get("ModeSelection", ModeSelectionPanel.SELECTION_CREATE_REPORT);
     return null;
   }
   
   public void setModeSelection(String value) 
   {
     prefs.put("ModeSelection", value);
-    //UserPreferencesEvent event = new UserPreferencesEvent(UserPreferencesEvent.MODE_SELECTION, value);
-    //fireUserPreferencesEvent(event);    
   }
 
   public String getXmiDir() {
@@ -55,11 +54,26 @@ public class UserPreferences {
   }
 
   public List<String> getRecentFiles() {
-    return new ArrayList(Arrays.asList(prefs.get("recentFiles", "").split("\\$\\$")));
+    UserSelections selections = BeansAccessor.getUserSelections();
+    RunMode runMode = (RunMode)(selections.getProperty("MODE"));
+
+    if(runMode == null) {
+      return new ArrayList();
+    }
+    String s = prefs.get(runMode.toString() + "-recentFiles", "");
+    if(StringUtil.isEmpty(s))
+      return new ArrayList();
+    
+    return new ArrayList(Arrays.asList(s.split("\\$\\$")));
 
   }
 
   public void addRecentFile(String filePath) {
+    UserSelections selections = BeansAccessor.getUserSelections();
+    RunMode runMode = (RunMode)(selections.getProperty("MODE"));
+
+    System.out.println("***** runmode: " + runMode);
+
     List<String> files = getRecentFiles();
     
     if(!files.contains(filePath)) {
@@ -79,7 +93,7 @@ public class UserPreferences {
         sb.append("$$");
       sb.append(s);
     }
-    prefs.put("recentFiles", sb.toString());
+    prefs.put(runMode.toString() + "-recentFiles", sb.toString());
   }
 
   private void fireUserPreferencesEvent(UserPreferencesEvent event) 
@@ -91,6 +105,10 @@ public class UserPreferences {
   public void addUserPreferencesListener(UserPreferencesListener listener) 
   {
     userPrefsListeners.add(listener);
+  }
+
+  public void setUserSelections(UserSelections us) {
+    userSelections = us;
   }
 
 }
