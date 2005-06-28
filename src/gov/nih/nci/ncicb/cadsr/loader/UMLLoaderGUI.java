@@ -43,12 +43,6 @@ public class UMLLoaderGUI
 
     wizard.getDialog().setTitle("UML Loader");
     
-//     WizardPanelDescriptor lpDesc = new LoginPanelDescriptor();
-//     wizard.registerWizardPanel(LoginPanelDescriptor.IDENTIFIER, lpDesc);
-
-//     WizardPanelDescriptor plpDesc = new ProgressLoginPanelDescriptor();
-//     wizard.registerWizardPanel(ProgressLoginPanelDescriptor.IDENTIFIER, plpDesc);
-
     WizardPanelDescriptor modeSelDesc = new ModeSelectionPanelDescriptor();
     wizard.registerWizardPanel(ModeSelectionPanelDescriptor.IDENTIFIER, modeSelDesc);
 
