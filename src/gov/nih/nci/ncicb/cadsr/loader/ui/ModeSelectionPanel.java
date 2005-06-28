@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -17,6 +18,9 @@ public class ModeSelectionPanel extends JPanel
   private ButtonGroup group;
   private JPanel _this = this;
 
+  private UserSelections userSelections = BeansAccessor.getUserSelections();
+  private UserPreferences prefs = BeansAccessor.getUserPreferences();
+  
   public ModeSelectionPanel()
   {
     initUI();
@@ -46,15 +50,22 @@ public class ModeSelectionPanel extends JPanel
     
     reportOption = new JRadioButton("Generate Semantic Annotation Report Only");
     reportOption.setActionCommand(RunMode.GenerateReport.toString());
-
+        
     curateOption = new JRadioButton("Curate Semantic Annotation");
     curateOption.setActionCommand(RunMode.Curator.toString());
-
+       
     reviewOption = new JRadioButton("Review Annotated Model");
     reviewOption.setActionCommand(RunMode.Reviewer.toString());
-
-    reportOption.setSelected(true);
-
+                        
+    if(prefs.getModeSelection().equals(RunMode.GenerateReport.toString()))
+      reportOption.setSelected(true);
+    else if(prefs.getModeSelection().equals(RunMode.Curator.toString()))
+      curateOption.setSelected(true);
+    else if(prefs.getModeSelection().equals(RunMode.Reviewer.toString()))
+      reviewOption.setSelected(true);
+    else
+      reportOption.setSelected(true);
+      
     group.add(reportOption);
     group.add(curateOption);
     group.add(reviewOption);
