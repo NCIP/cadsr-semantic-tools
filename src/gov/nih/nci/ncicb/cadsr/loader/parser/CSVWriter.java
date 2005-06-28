@@ -53,13 +53,15 @@ public class CSVWriter implements ElementWriter
         
         for(ObjectClass oc : (List<ObjectClass>) ocs) {
 
+          String className = oc.getLongName();
+          className = className.substring(className.lastIndexOf(".") + 1);
+
           String [] conceptCodes = oc.getPreferredName().split(":");
           for(int i = conceptCodes.length-1; i > -1; i--) {
-          String temp[] = oc.getLongName().split("domain.");
           row = write.next();
           
-          row.add(temp[1]);
-          row.add(temp[1]);
+          row.add(className);
+          row.add(className);
           row.add(oc.getPreferredDefinition());
           Concept con = LookupUtil.lookupConcept(conceptCodes[i]);
           if(con != null) {
@@ -70,7 +72,7 @@ public class CSVWriter implements ElementWriter
           row.add(con.getPreferredDefinition());
           row.add(con.getDefinitionSource());
           row.addEmpty();
-          row.add(0);
+          row.add(reviewTracker.get(oc.getLongName())?"1":"0");
           }
           }
         
@@ -80,13 +82,12 @@ public class CSVWriter implements ElementWriter
           for(DataElementConcept dec : decs) {
             if(dec.getObjectClass().getLongName()
               .equals(oc.getLongName())) {
-            
+
             String [] propConCodes = dec.getProperty().getPreferredName().split(":");
             for(int i = propConCodes.length-1; i > -1; i--)
             {
-              String temp[] = oc.getLongName().split("domain.");
               row = write.next();
-              row.add(temp[1]);
+              row.add(className);
               row.add(dec.getProperty().getLongName());
               row.addEmpty();
               
@@ -102,8 +103,7 @@ public class CSVWriter implements ElementWriter
               row.add(con.getPreferredDefinition());
               row.add(con.getDefinitionSource());
               row.addEmpty();
-              row.add(0);
-            
+              row.add(reviewTracker.get(oc.getLongName() + "." + dec.getProperty().getLongName())?"1":"0");            
             }
            }
           }          
