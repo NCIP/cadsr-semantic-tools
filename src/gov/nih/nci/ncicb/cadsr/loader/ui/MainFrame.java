@@ -255,7 +255,12 @@ public class MainFrame extends JFrame
         viewPanel.addReviewListener(reviewTracker);
         viewPanel.addNavigationListener(navigationPanel);
         
-        viewTabbedPane.addTab(node.getDisplay(), viewPanel);
+        String tabTitle = node.getDisplay();;
+        if(node instanceof AttributeNode) 
+          tabTitle = node.getParent().getDisplay() 
+            + "." + tabTitle;
+
+        viewTabbedPane.addTab(tabTitle, viewPanel);
         viewTabbedPane.setSelectedComponent(viewPanel);
 
         viewPanel.setName(node.getFullPath());
@@ -265,7 +270,12 @@ public class MainFrame extends JFrame
           viewTabbedPane.getSelectedComponent();
         viewPanels.remove(viewPanel.getName());
 
-        viewTabbedPane.setTitleAt(viewTabbedPane.getSelectedIndex(), node.getDisplay());
+        
+        String tabTitle = node.getDisplay();;
+        if(node instanceof AttributeNode) 
+          tabTitle = node.getParent().getDisplay() 
+            + "." + tabTitle;
+        viewTabbedPane.setTitleAt(viewTabbedPane.getSelectedIndex(), tabTitle);
 
         viewPanel.setName(node.getFullPath());
         viewPanel.updateNode(node);
