@@ -44,6 +44,7 @@ public class WizardController implements ActionListener {
 
   private UserSelections userSelections = BeansAccessor.getUserSelections();
 
+  private UserPreferences prefs = BeansAccessor.getUserPreferences();
     /**
      * This constructor accepts a reference to the Wizard component that created it,
      * which it uses to update the button components and access the WizardModel.
@@ -141,6 +142,8 @@ public class WizardController implements ActionListener {
           mode = Enum.valueOf(RunMode.class, panel.getSelection());
 
           userSelections.setProperty("MODE", mode);
+          
+          prefs.setModeSelection(mode.toString());
 
           FileSelectionPanelDescriptor fileDesc =
             (FileSelectionPanelDescriptor)model
