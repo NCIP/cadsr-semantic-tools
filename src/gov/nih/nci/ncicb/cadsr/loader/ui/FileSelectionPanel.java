@@ -44,6 +44,8 @@ implements ProgressListener {
       fileExtension = "csv";
     else if(runMode.equals(RunMode.Reviewer)) 
       fileExtension = "xmi";
+    else if(runMode.equals(RunMode.GenerateReport)) 
+      fileExtension = "xmi";
     initUI();
   }
 
