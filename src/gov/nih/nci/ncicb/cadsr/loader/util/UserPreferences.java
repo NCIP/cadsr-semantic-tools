@@ -1,6 +1,5 @@
 package gov.nih.nci.ncicb.cadsr.loader.util;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
-import gov.nih.nci.ncicb.cadsr.loader.ui.ModeSelectionPanel;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import java.util.prefs.Preferences;
 import java.util.*;
@@ -42,7 +41,7 @@ public class UserPreferences {
   
   public String getModeSelection() 
   {
-    return null;
+    return prefs.get("ModeSelection", RunMode.GenerateReport.toString());    
   }
   
   public void setModeSelection(String value) 
