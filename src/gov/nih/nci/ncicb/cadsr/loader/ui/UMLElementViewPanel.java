@@ -6,8 +6,8 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.UserPreferencesEvent;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.UserPreferencesListener;
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesEvent;
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
