@@ -2,7 +2,6 @@ package gov.nih.nci.ncicb.cadsr.loader.parser;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
-import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 import org.apache.log4j.Logger;
 

@@ -2,24 +2,6 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
  
 <beans>
-  <bean name="userSelections"
-    class="gov.nih.nci.ncicb.cadsr.loader.UserSelections" 
-    singleton="true">
-  </bean>
-
-  <bean name="userPreferences"
-    class="gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences" 
-    singleton="true">
-  </bean>
-  <bean name="treeBuilder"
-    class="gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder" 
-    singleton="true">
-  </bean>
-
-  <bean name="reviewTracker"
-    class="gov.nih.nci.ncicb.cadsr.loader.ReviewTracker" 
-    singleton="true">
-  </bean>
 
   <bean name="csvWriter"
     class="gov.nih.nci.ncicb.cadsr.loader.parser.CSVWriter" 

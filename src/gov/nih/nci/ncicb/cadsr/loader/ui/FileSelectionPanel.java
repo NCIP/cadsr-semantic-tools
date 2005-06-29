@@ -37,7 +37,7 @@ implements ProgressListener {
   }
 
   public void init() {
-    UserSelections selections = BeansAccessor.getUserSelections();
+    UserSelections selections = UserSelections.getInstance();
     
     runMode = (RunMode)(selections.getProperty("MODE"));
     if(runMode.equals(RunMode.Curator)) 
@@ -103,7 +103,7 @@ implements ProgressListener {
     insertInBag(browsePanel, 
                 new JLabel("Recent Files:"), 0, 2, 2, 1);
 
-    final UserPreferences prefs = BeansAccessor.getUserPreferences();
+    final UserPreferences prefs = UserPreferences.getInstance();
 
     java.util.List<String> recentFiles = prefs.getRecentFiles();
     
@@ -131,7 +131,7 @@ implements ProgressListener {
 
     browseButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
-          String xmiDir = BeansAccessor.getUserPreferences().getXmiDir();
+          String xmiDir = UserPreferences.getInstance().getXmiDir();
           JFileChooser chooser = new JFileChooser(xmiDir);
           javax.swing.filechooser.FileFilter filter = 
             new javax.swing.filechooser.FileFilter() {

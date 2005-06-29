@@ -2,7 +2,6 @@ package gov.nih.nci.ncicb.cadsr.loader.parser;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.*;
-import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 
 import org.jdom.*;
@@ -19,7 +18,7 @@ public class XMIWriter implements ElementWriter {
 
   private String output = null;
 
-  private UserSelections userSelections = BeansAccessor.getUserSelections();
+  private UserSelections userSelections = UserSelections.getInstance();
   private String input = (String)userSelections.getProperty("FILENAME");
 
   private Element modelElement;
@@ -28,7 +27,7 @@ public class XMIWriter implements ElementWriter {
 
   private ElementsLists cadsrObjects = null;
 
-  private ReviewTracker reviewTracker = BeansAccessor.getReviewTracker();
+  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
 
   
   public XMIWriter() {

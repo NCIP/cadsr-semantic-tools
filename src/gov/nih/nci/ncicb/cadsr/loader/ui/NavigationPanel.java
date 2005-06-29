@@ -9,7 +9,6 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 
-import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
 import java.awt.BorderLayout;
 import java.awt.event.*;
 import javax.swing.*;
@@ -31,7 +30,7 @@ public class NavigationPanel extends JPanel
   private JTree tree;
   private JPopupMenu popup;
   private JScrollPane scrollPane;
-  private UMLNode rootNode = BeansAccessor.getTreeBuilder().getRootNode(); 
+  private UMLNode rootNode = TreeBuilder.getInstance().getRootNode(); 
 
   private Set<NavigationListener> navListeners = new HashSet<NavigationListener>();
 
@@ -42,7 +41,7 @@ public class NavigationPanel extends JPanel
     try
     {
       initUI();
-      BeansAccessor.getTreeBuilder().addTreeListener(this);
+      TreeBuilder.getInstance().addTreeListener(this);
     }
     catch(Exception e)
     {
@@ -267,7 +266,7 @@ public class NavigationPanel extends JPanel
   public void treeChange(TreeEvent event) 
   {
     this.remove(scrollPane);
-    rootNode = BeansAccessor.getTreeBuilder().getRootNode();
+    rootNode = TreeBuilder.getInstance().getRootNode();
           
     try
     {

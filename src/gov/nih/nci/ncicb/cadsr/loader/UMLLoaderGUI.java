@@ -31,7 +31,7 @@ public class UMLLoaderGUI
   private static Logger logger = Logger.getLogger(UMLLoaderGUI.class.getName());
   private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-  private UserSelections userSelections = BeansAccessor.getUserSelections();
+  private UserSelections userSelections = UserSelections.getInstance();
 
   public UMLLoaderGUI()
   {

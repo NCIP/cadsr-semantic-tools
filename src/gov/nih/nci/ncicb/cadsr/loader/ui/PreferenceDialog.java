@@ -43,7 +43,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     cancel.addActionListener(this);
     ok.addActionListener(this);
     
-    UserPreferences prefs = BeansAccessor.getUserPreferences();
+    UserPreferences prefs = UserPreferences.getInstance();
     if(prefs.getViewAssociationType().equalsIgnoreCase("true"))
       associationBox.setSelected(true);
     else
@@ -60,7 +60,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     JButton button = (JButton)event.getSource();
     
     if(button.getActionCommand().equals(OK)) {
-      UserPreferences prefs = BeansAccessor.getUserPreferences();
+      UserPreferences prefs = UserPreferences.getInstance();
       if(associationBox.isSelected())
         prefs.setViewAssociationType("true");
       else
@@ -75,7 +75,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     }
     
     if(button.getActionCommand().equals(APPLY)) {
-      UserPreferences prefs = BeansAccessor.getUserPreferences();
+      UserPreferences prefs = UserPreferences.getInstance();
       if(associationBox.isSelected())
         prefs.setViewAssociationType("true");
       else

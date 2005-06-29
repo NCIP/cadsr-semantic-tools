@@ -53,7 +53,7 @@ public class UMLElementViewPanel extends JPanel
   // initialize once the mode in which we're running
   private static boolean editable = false;
   static {
-    UserSelections selections = BeansAccessor.getUserSelections();
+    UserSelections selections = UserSelections.getInstance();
     editable = selections.getProperty("MODE").equals(RunMode.Curator);
   }
   
@@ -116,7 +116,7 @@ public class UMLElementViewPanel extends JPanel
     }
     this.add(summaryPanel,BorderLayout.NORTH);
 
-    UserPreferences prefs = BeansAccessor.getUserPreferences();
+    UserPreferences prefs = UserPreferences.getInstance();
     if(prefs.getUmlDescriptionOrder().equals("first"))
       gridPanel.add(createDescriptionPanel());
       
@@ -481,7 +481,7 @@ class ConceptUI {
   // initialize once the mode in which we're running
   private static boolean editable = false;
   static {
-    UserSelections selections = BeansAccessor.getUserSelections();
+    UserSelections selections = UserSelections.getInstance();
     editable = selections.getProperty("MODE").equals(RunMode.Curator);
   }
 

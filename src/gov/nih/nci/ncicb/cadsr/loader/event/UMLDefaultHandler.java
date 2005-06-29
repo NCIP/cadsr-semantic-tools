@@ -23,7 +23,7 @@ public class UMLDefaultHandler implements UMLHandler {
   private Logger logger = Logger.getLogger(UMLDefaultHandler.class.getName());
   private List packageList = new ArrayList();
   
-  private ReviewTracker reviewTracker = BeansAccessor.getReviewTracker();
+  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
   
   public UMLDefaultHandler(ElementsLists elements) {
     this.elements = elements;

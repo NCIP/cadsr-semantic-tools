@@ -13,6 +13,12 @@ public class UserSelections
 
   private List<PropertyChangeListener> propChangeListeners = new ArrayList();
 
+  private static UserSelections instance = new UserSelections();
+  private UserSelections() {}
+  public static UserSelections getInstance() {
+    return instance;
+  }
+
   public void addPropertyChangeListener(PropertyChangeListener l) {
     propChangeListeners.add(l);
   }

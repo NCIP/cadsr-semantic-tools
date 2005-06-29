@@ -12,6 +12,14 @@ import java.util.HashMap;
 public class ReviewTracker implements ReviewListener
 {
   private HashMap<String, Boolean> reviewed = new HashMap(); 
+
+  private static ReviewTracker instance = new ReviewTracker();
+  private ReviewTracker() {
+
+  }
+  public static ReviewTracker getInstance() {
+    return instance;
+  }
   
   public Boolean get(String key) 
   {   

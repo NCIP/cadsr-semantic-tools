@@ -62,7 +62,7 @@ public class MainFrame extends JFrame
   private Map<String, UMLElementViewPanel> viewPanels = new HashMap();
   private AssociationViewPanel associationViewPanel = null;
 
-  private ReviewTracker reviewTracker = BeansAccessor.getReviewTracker();
+  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
 
   private RunMode runMode = null;
 
@@ -74,7 +74,7 @@ public class MainFrame extends JFrame
     {
       jbInit();
 
-      UserSelections selections = BeansAccessor.getUserSelections();
+      UserSelections selections = UserSelections.getInstance();
 
       runMode = (RunMode)(selections.getProperty("MODE"));
       saveFilename = (String)selections.getProperty("FILENAME");
@@ -140,7 +140,7 @@ public class MainFrame extends JFrame
     helpMenu.add(jMenuItem6);
     jMenuBar1.add(helpMenu);
 
-    jTabbedPane1.addTab("Errors", new ErrorPanel(BeansAccessor.getTreeBuilder().getRootNode()));
+    jTabbedPane1.addTab("Errors", new ErrorPanel(TreeBuilder.getInstance().getRootNode()));
 //     logTabbedPane.addTab("jPanel1", jPanel1);
 
     Icon closeIcon = new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("close-tab.gif"));

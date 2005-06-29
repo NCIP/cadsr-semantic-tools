@@ -14,42 +14,12 @@ import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 
 public class BeansAccessor {
   
-  private static UserSelections userSelections;
-  private static UserPreferences userPreferences;
-  private static TreeBuilder treeBuilder;
-  private static ReviewTracker reviewTracker;
-
   private static Logger logger = Logger.getLogger(BeansAccessor.class.getName());
 
-  public static UserSelections getUserSelections() {
-
-    if(userSelections == null) {
-      userSelections = (UserSelections)getFactory().getBean("userSelections");
-    }
-
-    return userSelections;
-  }
-
-  public static UserPreferences getUserPreferences() {
-
-    if(userPreferences == null) {
-      userPreferences = (UserPreferences)getFactory().getBean("userPreferences");
-    }
-
-    return userPreferences;
-  }
-  
-  public static TreeBuilder getTreeBuilder() {
-
-    if(treeBuilder == null) {
-      treeBuilder = (TreeBuilder)getFactory().getBean("treeBuilder");
-    }
-
-    return treeBuilder;
-  }
+  private static XmlBeanFactory factory = null;
 
   public static ElementWriter getWriter() {
-    RunMode mode = (RunMode)getUserSelections().getProperty("MODE");
+    RunMode mode = (RunMode)UserSelections.getInstance().getProperty("MODE");
     if(mode.equals(RunMode.Reviewer)) {
       return (ElementWriter)getFactory().getBean("xmiWriter");
     } else if(mode.equals(RunMode.Curator)) {
@@ -58,17 +28,11 @@ public class BeansAccessor {
     else return null;
       
   }
-  
-  public static ReviewTracker getReviewTracker() {
-    if(reviewTracker == null) {
-      reviewTracker = (ReviewTracker)getFactory().getBean("reviewTracker");
-    }
-
-    return reviewTracker;
-  }
-  
+    
   private static BeanFactory getFactory() {
     try {
+      if(factory != null)
+        return factory;
       return new XmlBeanFactory(Thread.currentThread().getContextClassLoader().getResourceAsStream("beans.xml"));
     } catch (Exception e){
       logger.error(e.getMessage());

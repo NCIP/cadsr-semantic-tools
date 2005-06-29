@@ -9,7 +9,12 @@ public class UserPreferences {
 
   Preferences prefs = Preferences.userRoot().node("UMLLOADER");
   List<UserPreferencesListener> userPrefsListeners = new ArrayList(); 
-  private UserSelections userSelections = null;
+  private UserSelections userSelections = UserSelections.getInstance();
+  private static UserPreferences instance = new UserPreferences();
+  private UserPreferences() {}
+  public static UserPreferences getInstance() {
+    return instance;
+  }
   
   public String getViewAssociationType() 
   {
@@ -54,7 +59,7 @@ public class UserPreferences {
   }
 
   public List<String> getRecentFiles() {
-    UserSelections selections = BeansAccessor.getUserSelections();
+    UserSelections selections = UserSelections.getInstance();
     RunMode runMode = (RunMode)(selections.getProperty("MODE"));
 
     if(runMode == null) {
@@ -69,7 +74,7 @@ public class UserPreferences {
   }
 
   public void addRecentFile(String filePath) {
-    UserSelections selections = BeansAccessor.getUserSelections();
+    UserSelections selections = UserSelections.getInstance();
     RunMode runMode = (RunMode)(selections.getProperty("MODE"));
 
     System.out.println("***** runmode: " + runMode);

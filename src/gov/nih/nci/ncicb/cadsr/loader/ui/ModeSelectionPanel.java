@@ -10,16 +10,12 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 public class ModeSelectionPanel extends JPanel 
 {
 
-//   public static final String SELECTION_CREATE_REPORT = "Report";
-//   public static final String SELECTION_EVS_CURATE = "Curate";
-//   public static final String SELECTION_MODEL_REVIEW = "Review";
-
   private JRadioButton reportOption, curateOption, reviewOption;
   private ButtonGroup group;
   private JPanel _this = this;
 
-  private UserSelections userSelections = BeansAccessor.getUserSelections();
-  private UserPreferences prefs = BeansAccessor.getUserPreferences();
+  private UserSelections userSelections = UserSelections.getInstance();
+  private UserPreferences prefs = UserPreferences.getInstance();
   
   public ModeSelectionPanel()
   {
@@ -56,8 +52,10 @@ public class ModeSelectionPanel extends JPanel
        
     reviewOption = new JRadioButton("Review Annotated Model");
     reviewOption.setActionCommand(RunMode.Reviewer.toString());
-                        
-    if(prefs.getModeSelection().equals(RunMode.GenerateReport.toString()))
+
+    if(prefs.getModeSelection() == null) 
+      reportOption.setSelected(true);
+    else if(prefs.getModeSelection().equals(RunMode.GenerateReport.toString()))
       reportOption.setSelected(true);
     else if(prefs.getModeSelection().equals(RunMode.Curator.toString()))
       curateOption.setSelected(true);

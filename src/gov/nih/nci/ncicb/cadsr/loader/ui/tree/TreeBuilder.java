@@ -21,14 +21,20 @@ public class TreeBuilder implements UserPreferencesListener {
   private boolean inClassAssociations = false,
     showAssociations = true;
   
-  private ReviewTracker reviewTracker = BeansAccessor.getReviewTracker();
+  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+  private static TreeBuilder instance = new TreeBuilder();
+  
+  private TreeBuilder() {}
+  public static TreeBuilder getInstance() {
+    return instance;
+  }
   
   public void init() 
   {
-    UserPreferences prefs = BeansAccessor.getUserPreferences();
+    UserPreferences prefs = UserPreferences.getInstance();
     prefs.addUserPreferencesListener(this);
 
-    UserSelections selections = BeansAccessor.getUserSelections();
+    UserSelections selections = UserSelections.getInstance();
     
     inClassAssociations = new Boolean (prefs.getViewAssociationType());
 
