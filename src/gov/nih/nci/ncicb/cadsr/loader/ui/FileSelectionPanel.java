@@ -1,15 +1,31 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
-import java.awt.*;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.*;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
+
 
 import java.io.File;
 
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
+
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 
 public class FileSelectionPanel extends JPanel 
 implements ProgressListener {
@@ -31,9 +47,12 @@ implements ProgressListener {
 
   private RunMode runMode = null;
   private String fileExtension = "xmi";
+  
+  private List<ActionListener> actionListeners = new ArrayList();
 
   public FileSelectionPanel()
   {
+      
   }
 
   public void init() {
@@ -89,6 +108,12 @@ implements ProgressListener {
     
     browseButton = new JButton("Browse");
     filePathField = new JTextField(30);
+    
+    filePathField.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent event) {
+        fireActionEvent(event);
+      }
+    });
 
     JPanel browsePanel = new JPanel();
 
@@ -118,6 +143,7 @@ implements ProgressListener {
       jl.addMouseListener(new MouseAdapter() {
           public void mouseClicked(MouseEvent evt) {
             filePathField.setText(jl.getText());
+            fireActionEvent(new ActionEvent(evt, 3, "mouseclick" ));
           }
         });
 
@@ -153,6 +179,7 @@ implements ProgressListener {
             filePathField.setText(filePath);
             prefs.setXmiDir(filePath);
             prefs.addRecentFile(filePath);
+            fireActionEvent(evt);
           }
         }
       });
@@ -183,6 +210,16 @@ implements ProgressListener {
 
     bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
-
+  
+  public void fireActionEvent(ActionEvent event) 
+  {
+    for(ActionListener l : actionListeners)
+      l.actionPerformed(event);
+  }
+  
+  public void addActionListener(ActionListener listener) 
+  {
+    actionListeners.add(listener);
+  }
 
 }
