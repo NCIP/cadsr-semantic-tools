@@ -254,7 +254,8 @@ public class MainFrame extends JFrame
         viewPanel.addReviewListener(navigationPanel);
         viewPanel.addReviewListener(reviewTracker);
         viewPanel.addNavigationListener(navigationPanel);
-        
+        navigationPanel.addNavigationListener(viewPanel);
+
         String tabTitle = node.getDisplay();;
         if(node instanceof AttributeNode) 
           tabTitle = node.getParent().getDisplay() 

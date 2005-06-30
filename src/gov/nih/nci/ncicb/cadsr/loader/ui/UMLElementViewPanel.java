@@ -23,12 +23,13 @@ import javax.swing.event.*;
 
 public class UMLElementViewPanel extends JPanel
   implements ActionListener, KeyListener
-             , ItemListener, CaretListener, UserPreferencesListener {
+             , ItemListener, CaretListener,
+             UserPreferencesListener, NavigationListener {
 
   private Concept[] concepts;
   private ConceptUI[] conceptUIs;
 
-  private boolean unsavedChanges = false;
+//   private boolean unsavedChanges = false;
 
   private JPanel _this = this;
 
@@ -64,6 +65,13 @@ public class UMLElementViewPanel extends JPanel
     initUI();
   }
 
+  public void navigate(NavigationEvent evt) {
+    if(saveButton.isEnabled()) {
+      if(JOptionPane.showConfirmDialog(_this, "There are unsaved changes in this concept, would you like to apply the changes them?", "Unsaved Changed", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+        saveButton.doClick();
+    }
+  }
+
   public void updateNode(UMLNode node) 
   {
     this.node = node;
@@ -83,13 +91,13 @@ public class UMLElementViewPanel extends JPanel
     this.updateUI();
   }
 
-  public Concept[] getConcepts() {
-    return null;
-  }
+//   public Concept[] getConcepts() {
+//     return null;
+//   }
 
-  public boolean haveUnsavedChanges() {
-    return unsavedChanges;
-  }
+//   public boolean haveUnsavedChanges() {
+//     return unsavedChanges;
+//   }
 
   private void initUI() {
     this.setLayout(new BorderLayout());

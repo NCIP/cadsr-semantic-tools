@@ -13,15 +13,9 @@ import java.awt.BorderLayout;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.text.Position;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 
 import java.util.*;
-import javax.swing.tree.TreeSelectionModel;
 
 public class NavigationPanel extends JPanel 
   implements ActionListener, MouseListener, ReviewListener, NavigationListener,
@@ -32,9 +26,9 @@ public class NavigationPanel extends JPanel
   private JScrollPane scrollPane;
   private UMLNode rootNode = TreeBuilder.getInstance().getRootNode(); 
 
-  private Set<NavigationListener> navListeners = new HashSet<NavigationListener>();
+  private List<ViewChangeListener> viewListeners = new ArrayList();
+  private List<NavigationListener> navigationListeners = new ArrayList();
 
-  private ViewChangeListener vcl;
 
   public NavigationPanel()
   {
@@ -51,12 +45,11 @@ public class NavigationPanel extends JPanel
   }
 
   public void addViewChangeListener(ViewChangeListener l) {
-    // replace by list
-    vcl = l;
+    viewListeners.add(l);
   }
 
   public void addNavigationListener(NavigationListener l) {
-    navListeners.add(l);
+    navigationListeners.add(l);
   }
 
   public void reviewChanged(ReviewEvent event) {
@@ -106,7 +99,7 @@ public class NavigationPanel extends JPanel
       else 
         evt.setInNewTab(false);
 
-      vcl.viewChanged(evt);
+      fireViewChangeEvent(evt);
 
     }
   }
@@ -189,7 +182,8 @@ public class NavigationPanel extends JPanel
         ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
         evt.setViewObject(dmtn.getUserObject());
         evt.setInNewTab(true);
-        vcl.viewChanged(evt);
+
+        fireViewChangeEvent(evt);
       }
     }
    }
@@ -206,12 +200,14 @@ public class NavigationPanel extends JPanel
   	    ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
   	    evt.setViewObject(dmtn.getUserObject());
   	    evt.setInNewTab(false);
-  	    vcl.viewChanged(evt);
+
+            fireViewChangeEvent(evt);
   	  } else if(o instanceof AssociationNode) {
   	    ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_ASSOCIATION);
   	    evt.setViewObject(dmtn.getUserObject());
   	    evt.setInNewTab(false);
-  	    vcl.viewChanged(evt);
+
+            fireViewChangeEvent(evt);
   	  }
   	}
   }
@@ -407,6 +403,19 @@ public class NavigationPanel extends JPanel
         JOptionPane.showMessageDialog(null,"Text Not Found", "No Match",JOptionPane.ERROR_MESSAGE);
       }
 
+  }
+
+  private void fireViewChangeEvent(ViewChangeEvent evt) {
+    fireNavigationEvent(new NavigationEvent(NavigationEvent.NAVIGATE_NEXT));
+
+    for(ViewChangeListener vcl : viewListeners) 
+      vcl.viewChanged(evt);
+  }
+  
+  private void fireNavigationEvent(NavigationEvent evt) {
+    for(NavigationListener nl : navigationListeners) {
+      nl.navigate(evt);
+    }
   }
 
 }
