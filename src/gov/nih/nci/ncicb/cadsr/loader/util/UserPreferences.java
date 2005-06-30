@@ -76,8 +76,6 @@ public class UserPreferences {
     UserSelections selections = UserSelections.getInstance();
     RunMode runMode = (RunMode)(selections.getProperty("MODE"));
 
-    System.out.println("***** runmode: " + runMode);
-
     List<String> files = getRecentFiles();
     
     if(!files.contains(filePath)) {
