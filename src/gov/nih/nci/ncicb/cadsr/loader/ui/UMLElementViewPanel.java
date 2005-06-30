@@ -365,6 +365,7 @@ public class UMLElementViewPanel extends JPanel
       }
 
       saveButton.setEnabled(false);
+      reviewButton.setEnabled(true);
 
 
     } else if(button.getActionCommand().equals(ADD)) {
@@ -439,6 +440,9 @@ public class UMLElementViewPanel extends JPanel
       event.setUserObject(node);
       
       event.setReviewed(ItemEvent.SELECTED == e.getStateChange());
+
+      if(event.isReviewed())
+        saveButton.doClick();
       
       fireReviewEvent(event);
       
