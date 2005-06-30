@@ -66,6 +66,10 @@ public class UMLDefaults {
 
   public void initParams(String filename) throws PersisterException  {
     LoaderDefault loaderDefault = new AttachedFileDefaultsLoader().loadDefaults(filename);
+
+    if(loaderDefault == null) 
+      loaderDefault = new EmptyDefaultsLoader().loadDefaults();
+
     initParams(loaderDefault);
   }
 

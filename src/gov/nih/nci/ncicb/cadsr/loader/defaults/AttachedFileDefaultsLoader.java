@@ -25,7 +25,10 @@ public class AttachedFileDefaultsLoader  {
 
       logger.debug("loading prop file: " + propsFileName);
 
-      props.load(new FileInputStream(new File(propsFileName)));
+      File f = new File(propsFileName);
+      if(!f.exists())
+        return null;
+      props.load(new FileInputStream(f));
 
       logger.debug("loaded");
 
@@ -43,8 +46,7 @@ public class AttachedFileDefaultsLoader  {
 
       return loaderDefault;
     } catch (Exception e){
-      e.printStackTrace();
-      logger.fatal(e);
+      logger.error(e);
       return null;
     } // end of try-catch
 
