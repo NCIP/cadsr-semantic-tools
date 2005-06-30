@@ -67,7 +67,7 @@ public class UMLElementViewPanel extends JPanel
 
   public void navigate(NavigationEvent evt) {
     if(saveButton.isEnabled()) {
-      if(JOptionPane.showConfirmDialog(_this, "There are unsaved changes in this concept, would you like to apply the changes them?", "Unsaved Changed", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+      if(JOptionPane.showConfirmDialog(_this, "There are unsaved changes in this concept, would you like to apply the changes now?", "Unsaved Changed", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
         saveButton.doClick();
     }
   }
