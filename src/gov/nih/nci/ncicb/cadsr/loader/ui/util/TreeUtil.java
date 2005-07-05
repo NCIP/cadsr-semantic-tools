@@ -8,30 +8,27 @@ import javax.swing.*;
 public class TreeUtil 
 {
 
-  public static void expandAll(JTree tree, TreeNode root) 
-  {
+  public static void expandAll(JTree tree, TreeNode root) {
     //Create TreePath from the root 
     TreePath parent = new TreePath(root);
+
+    doNode(tree, root, parent);
     
     //Traverse if the root has any children
-    if(root.getChildCount() > 0)
+  }
+
+  private static void doNode(JTree tree, TreeNode parentNode, TreePath parentPath) {
+    if(parentNode.getChildCount() > 0)
     {
-      //Traverse through the package nodes and expand them
-      for(Enumeration e=root.children(); e.hasMoreElements();) 
+      for(Enumeration e=parentNode.children(); e.hasMoreElements();) 
       {
-        TreeNode packageNode = (TreeNode) e.nextElement();
-        TreePath path = parent.pathByAddingChild(packageNode);
+        TreeNode childNode = (TreeNode) e.nextElement();
+        TreePath path = parentPath.pathByAddingChild(childNode);
         tree.expandPath(path);
 
-        //Traverse through the class nodes and expand them
-        for(Enumeration f=packageNode.children(); f.hasMoreElements();)
-        {
-          TreeNode classNode = (TreeNode) f.nextElement();
-          TreePath path2 = path.pathByAddingChild(classNode);
-          tree.expandPath(path2);
-        }        
+        doNode(tree, childNode, path);
       }      
     }
-    
   }
+
 }
