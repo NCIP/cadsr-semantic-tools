@@ -133,11 +133,3 @@ public class ErrorPanel extends JPanel
 
 }
 
-
-class DummyErrorPanelData {
-  static java.util.List<ValidationError> getData() {
-
-    return new ArrayList();
-
-  }
-}      
