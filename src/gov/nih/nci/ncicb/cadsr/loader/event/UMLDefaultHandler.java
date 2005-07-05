@@ -3,12 +3,14 @@ package gov.nih.nci.ncicb.cadsr.loader.event;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 import org.apache.log4j.Logger;
 
 import java.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
-import gov.nih.nci.ncicb.cadsr.loader.validator.ConceptError;
+import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationError;
+import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
 
 /**
  * This class implements UMLHandler specifically to handle UML events and convert them into caDSR objects.<br/> The handler's responsibility is to transform events received into cadsr domain objects, and store those objects in the Elements List.
@@ -20,6 +22,8 @@ public class UMLDefaultHandler implements UMLHandler {
   private ElementsLists elements;
   private Logger logger = Logger.getLogger(UMLDefaultHandler.class.getName());
   private List packageList = new ArrayList();
+  
+  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
   
   public UMLDefaultHandler(ElementsLists elements) {
     this.elements = elements;
@@ -39,9 +43,9 @@ public class UMLDefaultHandler implements UMLHandler {
     
     List concepts = createConcepts(event);
 
-    verifyConcepts(event.getName(), concepts);
-
     ObjectClass oc = DomainObjectFactory.newObjectClass();
+
+    verifyConcepts(oc, concepts);
 
     // store concept codes in preferredName
     oc.setPreferredName(preferredNameFromConcepts(concepts));
@@ -53,6 +57,7 @@ public class UMLDefaultHandler implements UMLHandler {
       oc.setPreferredDefinition("");
 
     elements.addElement(oc);
+    reviewTracker.put(event.getName(), event.isReviewed());
     
     ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
     String csiName = null;
@@ -82,9 +87,8 @@ public class UMLDefaultHandler implements UMLHandler {
 
     List concepts = createConcepts(event);
 
-    verifyConcepts(event.getClassName() + "." + event.getName(), concepts);
-
     Property prop = DomainObjectFactory.newProperty();
+    verifyConcepts(prop, concepts);
 
     // store concept codes in preferredName
     prop.setPreferredName(preferredNameFromConcepts(concepts));
@@ -161,6 +165,8 @@ public class UMLDefaultHandler implements UMLHandler {
     prop.setAcCsCsis(oc.getAcCsCsis());
     de.setAcCsCsis(oc.getAcCsCsis());
     dec.setAcCsCsis(oc.getAcCsCsis());
+
+    reviewTracker.put(event.getClassName() + "." + event.getName(), event.isReviewed());
 
     elements.addElement(de);
     elements.addElement(dec);
@@ -336,7 +342,13 @@ public class UMLDefaultHandler implements UMLHandler {
     logger.debug("Source:");
     logger.debug("-- " + ocr.getSource().getLongName());
     logger.debug("Target: ");
-    logger.debug("-- " + ocr.getTarget().getLongName());
+    if(ocr.getTarget() != null)
+      logger.debug("-- " + ocr.getTarget().getLongName());
+    else {
+      logger.error("Target does not exist: ");
+      logger.error("Parent: " + event.getParentClassName());
+    }
+      
   }
 
   private Concept newConcept(NewConceptEvent event) {
@@ -373,13 +385,17 @@ public class UMLDefaultHandler implements UMLHandler {
     return sb.toString();
   }
 
-  private void verifyConcepts(String eltName, List concepts) {
+  private void verifyConcepts(AdminComponent cause, List concepts) {
     for(Iterator it = concepts.iterator(); it.hasNext(); ) {
       Concept concept = (Concept)it.next();
       if(StringUtil.isEmpty(concept.getPreferredName())) {
-        elements.addElement(new ConceptError(
-                       ConceptError.SEVERITY_ERROR,
-                       PropertyAccessor.getProperty("validation.concept.missing.for", eltName)));
+        ValidationItems.getInstance()
+          .addItem(new ValidationError(
+                                       PropertyAccessor.getProperty("validation.concept.missing.for", cause.getLongName()),
+                                       cause));
+//         elements.addElement(new ConceptError(
+//                        ConceptError.SEVERITY_ERROR,
+//                        PropertyAccessor.getProperty("validation.concept.missing.for", eltName)));
       }
     }
   }

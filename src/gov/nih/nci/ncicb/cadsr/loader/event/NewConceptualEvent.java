@@ -15,11 +15,12 @@ public class NewConceptualEvent implements LoaderEvent {
    */
   public static final String TV_DOCUMENTATION = "documentation";
   public static final String TV_DESCRIPTION = "description";
-
+  public static final String TV_HUMAN_REVIEWED = "HUMAN_REVIEWED";
 
   private String description;
+  private boolean reviewed = false;
 
-  private List concepts = new ArrayList();
+  private List<NewConceptEvent> concepts = new ArrayList();
 
 
   /**
@@ -30,13 +31,22 @@ public class NewConceptualEvent implements LoaderEvent {
     return description;
   }
 
+  public boolean isReviewed() 
+  {
+    return reviewed;
+  }
+  
+  public void setReviewed(boolean b) 
+  {
+    reviewed = b;
+  }
   
   /**
    * Describe <code>getConcepts</code> method here.
    *
    * @return a <code>List</code> of NewConceptEvent
    */
-  public List getConcepts() {
+  public List<NewConceptEvent> getConcepts() {
     return concepts;
   }
 

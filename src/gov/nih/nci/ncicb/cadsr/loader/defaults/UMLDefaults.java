@@ -26,12 +26,6 @@ public class UMLDefaults {
 
   private static UMLDefaults singleton = new UMLDefaults();
 
-  private ContextDAO contextDAO = DAOAccessor.getContextDAO();
-  private ConceptualDomainDAO conceptualDomainDAO = DAOAccessor.getConceptualDomainDAO();
-  private ClassificationSchemeDAO classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
-  private ClassificationSchemeItemDAO classificationSchemeItemDAO = DAOAccessor.getClassificationSchemeItemDAO();
-  private ClassSchemeClassSchemeItemDAO classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
-
   private String projectName, projectLongName, projectDescription;
   private Float projectVersion;
   private String workflowStatus;
@@ -69,20 +63,34 @@ public class UMLDefaults {
    * @param username the authenticated username
    * @exception PersisterException if an error occurs
    */
+
+  public void initParams(String filename) throws PersisterException  {
+    LoaderDefault loaderDefault = new AttachedFileDefaultsLoader().loadDefaults(filename);
+
+    if(loaderDefault == null) 
+      loaderDefault = new EmptyDefaultsLoader().loadDefaults();
+
+    initParams(loaderDefault);
+  }
+
   public void initParams(String projectName, Float projectVersion, String username) throws PersisterException {
+    LoaderDefault loaderDefault = new DBDefaultsLoader().loadDefaults(projectName, projectVersion);
+
+    initParams(loaderDefault);
+
+  }
+
+  private void initParams(LoaderDefault loaderDefault) throws PersisterException {
 
     audit = DomainObjectFactory.newAudit();
-    audit.setCreatedBy(username);
-    
-    this.projectName = projectName;
-    this.projectVersion = projectVersion;
 
-    LoaderDefault loaderDefault = new DBDefaultsLoader().loadDefaults(projectName, projectVersion);
-    
     if (loaderDefault == null) {
       throw new PersisterException(
 	"Defaults not found. Please create a profile first.");
     }
+
+    this.projectName = loaderDefault.getProjectName();
+    this.projectVersion = loaderDefault.getProjectVersion();
     
     String cName = loaderDefault.getContextName();
     
@@ -90,12 +98,9 @@ public class UMLDefaults {
       throw new PersisterException("Context Name not Set.");
     }
     
-    context = contextDAO.findByName(cName);
-    
-    if (context == null) {
-      logger.error(PropertyAccessor.getProperty("context.not.found", cName));
-      System.exit(1);
-    }
+    context = DomainObjectFactory.newContext();
+    context.setName(cName);
+
     
     version = new Float(loaderDefault.getVersion().toString());
     
@@ -110,26 +115,12 @@ public class UMLDefaults {
 
     conceptualDomain = DomainObjectFactory.newConceptualDomain();
     conceptualDomain.setPreferredName(loaderDefault.getCdName());
-    
-    Context cdContext = contextDAO.findByName(loaderDefault.getCdContextName());
-    if (cdContext == null) {
-      throw new PersisterException("CD Context not found.");
-    }
+
+    Context cdContext = DomainObjectFactory.newContext();
+    cdContext.setName(loaderDefault.getCdContextName());
+
     conceptualDomain.setContext(cdContext);
 
-    try {
-      conceptualDomain = (ConceptualDomain) conceptualDomainDAO.find(conceptualDomain)
-	.get(0);
-    } catch (NullPointerException e) {
-      throw new PersisterException("CD: " +
-				   conceptualDomain.getPreferredName() + " not found.");
-    }
-
-    mainContext = contextDAO.findByName(PropertyAccessor.getProperty("context.main.name"));
-    if (mainContext == null) {
-      logger.error(PropertyAccessor.getProperty("context.not.found", PropertyAccessor.getProperty("context.main.name")));
-      System.exit(1);
-    } 
 
     logger.info(PropertyAccessor.getProperty("listOfPackages"));
     String filt = loaderDefault.getPackageFilter();
@@ -163,12 +154,49 @@ public class UMLDefaults {
     }
   }
 
+  public void initWithDB() throws PersisterException {
+    ContextDAO contextDAO = DAOAccessor.getContextDAO();
+    ConceptualDomainDAO conceptualDomainDAO = DAOAccessor.getConceptualDomainDAO();
+
+    context = contextDAO.findByName(context.getName());
+    if (context == null) {
+      logger.fatal(PropertyAccessor.getProperty("context.not.found", context.getName()));
+      System.exit(1);
+    }
+    
+    mainContext = contextDAO.findByName(PropertyAccessor.getProperty("context.main.name"));
+    if (mainContext == null) {
+      logger.fatal(PropertyAccessor.getProperty("context.not.found", PropertyAccessor.getProperty("context.main.name")));
+      System.exit(1);
+    } 
+
+    Context cdContext = contextDAO.findByName(conceptualDomain.getContext().getName());
+    if (cdContext == null) {
+      throw new PersisterException("CD Context not found.");
+    }
+    conceptualDomain.setContext(cdContext);
+      
+    try {
+      conceptualDomain = (ConceptualDomain) conceptualDomainDAO.find(conceptualDomain)
+        .get(0);
+    } catch (NullPointerException e) {
+      throw new PersisterException("CD: " +
+                                   conceptualDomain.getPreferredName() + " not found.");
+    }
+    
+    initClassifications();
+
+  }
+
   /**
    * Creates or loads classifications and CSI that will be used.
    *
    * @exception PersisterException if an error occurs
    */
-  public void initClassifications() throws PersisterException {
+  private void initClassifications() throws PersisterException {
+    
+    ClassificationSchemeDAO classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
+
     projectCs = DomainObjectFactory.newClassificationScheme();
     projectCs.setPreferredName(projectName);
     projectCs.setVersion(projectVersion);
@@ -214,6 +242,7 @@ public class UMLDefaults {
    * @return default context
    */
   public Context getContext() {
+
     return context;
   }
   /**
@@ -236,6 +265,8 @@ public class UMLDefaults {
   }
 
   public void refreshProjectCs() {
+    ClassificationSchemeDAO classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
+
     ArrayList eager = new ArrayList();
     eager.add(EagerConstants.CS_CSI);
     projectCs = (ClassificationScheme)(classificationSchemeDAO.find(projectCs, eager).get(0));
@@ -278,5 +309,9 @@ public class UMLDefaults {
   public Context getMainContext() {
     return mainContext;
   }
-  
+ 
+  public void setUsername(String username) {
+    audit.setCreatedBy(username);
+  }
+ 
 }

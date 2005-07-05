@@ -19,7 +19,7 @@ public class PropertyAccessor {
     String filename = "resources.properties";
     properties = new Properties();
     try {
-      properties.load(ClassLoader.getSystemResourceAsStream(filename));
+      properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename));
     } catch (IOException e){
       logger.fatal("Resource Properties could not be loaded (" + filename + "). Exiting now.");
       logger.fatal(e.getMessage());

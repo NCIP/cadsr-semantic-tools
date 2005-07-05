@@ -18,6 +18,14 @@ public class ElementsLists {
 
   private Logger logger = Logger.getLogger(ElementsLists.class.getName());
 
+  private static ElementsLists instance = new ElementsLists();
+
+  private ElementsLists() {}
+
+  public static ElementsLists getInstance() {
+    return instance;
+  }
+
   /**
    * remove an element from this list.
    *
@@ -52,7 +60,11 @@ public class ElementsLists {
    * @return a <code>List</code> of objects of class <code>type<code>
    */
   public List getElements(Class type) {
-    return (List)objects.get(type.getName());
+    List l = (List)objects.get(type.getName());
+    if(l != null)
+      return l;
+    else 
+      return new ArrayList();
   }
 
 

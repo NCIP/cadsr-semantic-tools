@@ -126,9 +126,8 @@ public class UMLLoader {
     
     logger.info(PropertyAccessor.getProperty("nbOfFiles", filenames.length));
     
-    ElementsLists elements = new ElementsLists();
-    Validator validator = new UMLValidator(elements);
-    UMLHandler listener = new UMLDefaultHandler(elements);
+    Validator validator = new UMLValidator(ElementsLists.getInstance());
+    UMLHandler listener = new UMLDefaultHandler(ElementsLists.getInstance());
 
     synchronized(initClass) {
       if(!initClass.isDone())
@@ -143,7 +142,7 @@ public class UMLLoader {
 
       UMLDefaults defaults = UMLDefaults.getInstance();
       defaults.initParams(projectName, projectVersion, username);
-      defaults.initClassifications();
+//       defaults.initClassifications();
 
       XMIParser  parser = new XMIParser();
       parser.setEventHandler(listener);
@@ -151,13 +150,14 @@ public class UMLLoader {
       
     }
 
-    List errors = validator.validate();
+    ValidationItems items = validator.validate();
+    Set errors = items.getErrors();
     if(errors.size() > 0) {
       // Ask user if we should continue
       for(Iterator it=errors.iterator(); it.hasNext();) {
         ValidationError error = (ValidationError)it.next();
         // !!! TODO choose error, warning, etc ...
-        logger.error(error.getSeverity() + ": " + error.getMessage());
+        logger.error("ERROR: " + error.getMessage());
       }
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
       System.out.print(PropertyAccessor.getProperty("validation.continue"));
@@ -167,7 +167,23 @@ public class UMLLoader {
       }
     }
 
-    Persister persister = new UMLPersister(elements);
+    Set warnings = items.getErrors();
+    if(warnings.size() > 0) {
+      // Ask user if we should continue
+      for(Iterator it=warnings.iterator(); it.hasNext();) {
+        ValidationWarning warning = (ValidationWarning)it.next();
+        // !!! TODO choose error, warning, etc ...
+        logger.error("ERROR: " + warning.getMessage());
+      }
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+      System.out.print(PropertyAccessor.getProperty("validation.continue"));
+      String answ = br.readLine();
+      if(!answ.equals("y")) {
+        System.exit(1);
+      }
+    }
+
+    Persister persister = new UMLPersister(ElementsLists.getInstance());
     persister.persist();
 
   }

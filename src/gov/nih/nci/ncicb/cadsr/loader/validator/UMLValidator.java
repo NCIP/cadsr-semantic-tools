@@ -22,15 +22,13 @@ public class UMLValidator implements Validator {
   /**
    * returns a list of Validation errors.
    */
-  public List validate() {
-    List errors = new ArrayList();
-
+  public ValidationItems validate() {
     for(Iterator it = validators.iterator(); it.hasNext(); ) {
       Validator val = (Validator)it.next();
-      errors.addAll(val.validate());
+      val.validate();
     }
 
-    return errors;
+    return ValidationItems.getInstance();
   }
 
 }

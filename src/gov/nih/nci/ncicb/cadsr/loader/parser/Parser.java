@@ -1,6 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.parser;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.LoaderHandler;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 
 /**
@@ -22,4 +23,6 @@ public interface Parser {
    * @param filename a <code>String</code> value
    */
   public void parse(String filename);
+
+  public void addProgressListener(ProgressListener listener);
 }

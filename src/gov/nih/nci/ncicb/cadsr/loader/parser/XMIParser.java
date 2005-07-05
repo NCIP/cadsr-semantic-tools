@@ -38,6 +38,8 @@ public class XMIParser implements Parser {
   private List generalizationEvents = new ArrayList();
   private List associationEvents = new ArrayList();
 
+  private ProgressListener progressListener = null;
+
   private String[] bannedClassNames = null;
   {
     bannedClassNames = PropertyAccessor.getProperty("banned.classNames").split(",");
@@ -49,12 +51,17 @@ public class XMIParser implements Parser {
 
   public void parse(String filename) {
     try {
+
+      ProgressEvent evt = new ProgressEvent();
+      evt.setMessage("Parsing ...");
+      fireProgressEvent(evt);
+
       ModelAccess access = new UML13ModelAccess();
       access.readModel("file:" + filename, "EA Model");
+
       uml.UmlPackage umlExtent = (uml.UmlPackage) access.getOutermostExtent();
-
-      Model model = UML13Utils.getModel(umlExtent, "EA Model");      
-
+      
+      Model model = UML13Utils.getModel(umlExtent, "EA Model");
 //       fact = new MdrModelManagerFactoryImpl();
 //       mgr = fact.readModel("", filename);
 //       Model model = mgr.getModel();
@@ -85,7 +92,7 @@ public class XMIParser implements Parser {
     }
     catch (Exception e) {
       logger.fatal("Could not parse: " + filename);
-      e.printStackTrace();
+      logger.fatal(e, e);
     } // end of try-catch
   }
 
@@ -150,6 +157,10 @@ public class XMIParser implements Parser {
       className = pName + "." + className;
     }
 
+    ProgressEvent evt = new ProgressEvent();
+    evt.setMessage("Parsing " + className);
+    fireProgressEvent(evt);
+
     NewClassEvent event = new NewClassEvent(className.trim());
     event.setPackageName(pName);
 
@@ -166,6 +177,11 @@ public class XMIParser implements Parser {
     TaggedValue tv = UML13Utils.getTaggedValue(clazz, NewConceptualEvent.TV_DOCUMENTATION);
     if(tv != null) {
       event.setDescription(tv.getValue());
+    }
+
+    tv = UML13Utils.getTaggedValue(clazz, NewConceptualEvent.TV_HUMAN_REVIEWED);
+    if(tv != null) {
+      event.setReviewed(tv.getValue().equals("1")?true:false);
     }
 
     if(isInPackageFilter(pName)) {
@@ -202,10 +218,6 @@ public class XMIParser implements Parser {
 
         gEvent.setChildClassName(
           getPackageName(clazz) + "." + clazz.getName());
-//         gEvent.setParentClassName(
-//           p.getNamespace().getName() + "." + p.getName());
-//         gEvent.setChildClassName(
-//           clazz.getNamespace().getName() + "." + clazz.getName());
 
         generalizationEvents.add(gEvent);
       }
@@ -250,6 +262,12 @@ public class XMIParser implements Parser {
         event.setDescription(tv.getValue());
       }
     }
+
+    tv = UML13Utils.getTaggedValue(att, NewConceptualEvent.TV_HUMAN_REVIEWED);
+    if(tv != null) {
+      event.setReviewed(tv.getValue().equals("1")?true:false);
+    }
+
 
     setConceptInfo(att, event, NewConceptEvent.TYPE_PROPERTY);
 
@@ -356,6 +374,9 @@ public class XMIParser implements Parser {
       return;
     }
 
+//     logger.debug("A END -- " + event.getAClassName() + " " + event.getALowCardinality());
+//     logger.debug("B END -- " + event.getBClassName() + " " + event.getBLowCardinality());
+
     event.setDirection(navig);
 
     logger.debug("Adding association. AClassName: " + event.getAClassName());
@@ -395,6 +416,13 @@ public class XMIParser implements Parser {
     for (Iterator it = generalizationEvents.iterator(); it.hasNext();) {
       listener.newGeneralization((NewGeneralizationEvent) it.next());
     }
+
+    ProgressEvent evt = new ProgressEvent();
+    evt.setGoal(100);
+    evt.setStatus(100);
+    evt.setMessage("Done");
+    fireProgressEvent(evt);
+
   }
 
   private void setConceptInfo(ModelElement elt, NewConceptualEvent event, String type) {
@@ -470,5 +498,13 @@ public class XMIParser implements Parser {
     }
     return false;
   }
-    
+
+  private void fireProgressEvent(ProgressEvent evt) {
+    if(progressListener != null)
+      progressListener.newProgressEvent(evt);
+  }
+
+  public void addProgressListener(ProgressListener listener) {
+    progressListener = listener;
+  }
 }

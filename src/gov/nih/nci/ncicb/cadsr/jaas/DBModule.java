@@ -81,6 +81,7 @@ public class DBModule implements LoginModule {
       }
     catch(Exception e)
       {
+        javax.swing.JOptionPane.showMessageDialog(null, e);
         logger.debug("Error while logging.", e);
       }
     if(!success)
