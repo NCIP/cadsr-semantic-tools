@@ -241,8 +241,8 @@ public class WizardController implements ActionListener {
                     
                     parser.parse(filename);
                     
-//                     Validator validator = new UMLValidator(elements);
-//                     validator.validate();
+                    Validator validator = new UMLValidator(elements);
+                    validator.validate();
                     
                     TreeBuilder tb = TreeBuilder.getInstance();
                     tb.init();
