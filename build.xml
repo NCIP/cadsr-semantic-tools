@@ -10,8 +10,10 @@
   <property name="src.dir" value="src"/>
   <property name="class.dir" value="./classes"/>
   <property name="lib.dir" value="./lib"/>
+  <property name="dist.dir" value="./dist" />
   <property name="config.dir" value="properties"/>
   <property name="docs.dir" value="./javadoc" />
+  <property name="images.dir" value="./images" />
 
 
   <path id="proj.class.path">
@@ -56,21 +58,23 @@
     <fail message="missing cadsr-api jar, please build cadsr service layer first"/>
   </target>
 
-  <target name="fail2" depends="fail1" unless="available.build.props">
+  <target name="fail2" unless="available.build.props">
     <fail message="missing build.properties, please create one first first"/>
   </target>
 
-  <target name="fail3" depends="fail2" unless="available.input.props">
+  <target name="fail3" unless="available.input.props">
     <fail message="missing input.properties, please create one first first (username and password)"/>
   </target>
 
-  <target name="compile" depends="fail3">
+  <target name="compile" depends="fail1">
     <mkdir dir="${class.dir}"/>
     <javac
       destdir="${class.dir}"
       debug="on"
       srcdir="${src.dir}"
       deprecation="false"
+      fork="yes"
+      executable="${javac}"
       >
       <!--
            <compilerarg value="-Xlint"/>
@@ -85,8 +89,35 @@
       <fileset dir="${config.dir}">
         <include name="*.properties"/>
         <include name="jaas.config"/>
+        <include name="beans.xml"/>
+      </fileset>
+      <fileset dir="${images.dir}">
+        <include name="*.png"/>
+        <include name="*.jpg"/>
+        <include name="*.gif"/>
       </fileset>
     </copy>
+  </target>
+
+  <target name="dist" depends="prepare">
+    <mkdir dir="${dist.dir}"/>
+    <jar destfile="${dist.dir}/uml-loader.jar"
+      manifest="MANIFEST.MF">
+      <fileset dir="${class.dir}">
+        <!--
+        <exclude name="*.png"/>
+        <exclude name="*.jpg"/>
+        <exclude name="*.gif"/>
+-->
+      </fileset>
+    </jar>
+    <jar destfile="${dist.dir}/images.jar">
+      <fileset dir="${class.dir}">
+        <include name="*.png"/>
+        <include name="*.jpg"/>
+        <include name="*.gif"/>
+      </fileset>
+    </jar>
   </target>
 
   <target name="doc">
@@ -125,5 +156,28 @@
     </java>
   </target>
 
+  <target name="gui" depends="prepare">
+    <java classname="gov.nih.nci.ncicb.cadsr.loader.UMLLoaderGUI" classpathref="proj.class.path" 
+      fork="yes"
+      jvm="${java}"
+      maxmemory="512m"
+      >
+      <!--
+      <jvmarg value="-Djava.security.auth.login.config=classes/jaas.config"/>
+      -->
+      <arg value="${dir}"/>
+      <arg value="${projectName}"/>
+      <arg value="${projectVersion}"/>
+    </java>
+  </target>
+
+  <target name="test-ui" depends="prepare">
+    <java classname="gov.nih.nci.ncicb.cadsr.loader.ui.${testClass}" classpathref="proj.class.path" 
+      fork="yes"
+      jvm="${java}"
+      maxmemory="512m"
+      >
+    </java>    
+  </target>
 
 </project>
