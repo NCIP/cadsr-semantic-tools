@@ -38,8 +38,8 @@ public class MainFrame extends JFrame
   private JMenuItem findMenuItem = new JMenuItem();
   private JMenuItem prefMenuItem = new JMenuItem();
   private JMenu runMenu = new JMenu();
-  private JMenuItem jMenuItem4 = new JMenuItem();
-  private JMenuItem jMenuItem5 = new JMenuItem();
+  private JMenuItem validateMenuItem = new JMenuItem();
+  private JMenuItem uploadMenuItem = new JMenuItem();
   private JMenu helpMenu = new JMenu();
   private JMenuItem jMenuItem6 = new JMenuItem();
   private JMenuItem exitMenuItem = new JMenuItem();
@@ -102,8 +102,8 @@ public class MainFrame extends JFrame
     findMenuItem.setText("Find");
     prefMenuItem.setText("Preferences");
     runMenu.setText("Run");
-    jMenuItem4.setText("Validate");
-    jMenuItem5.setText("Upload");
+    validateMenuItem.setText("Validate");
+    uploadMenuItem.setText("Upload");
     helpMenu.setText("Help");
     jMenuItem6.setText("About");
     exitMenuItem.setText("Exit");
@@ -129,8 +129,8 @@ public class MainFrame extends JFrame
     jMenuBar1.add(editMenu);
     
 
-    runMenu.add(jMenuItem4);
-    runMenu.add(jMenuItem5);
+    runMenu.add(validateMenuItem);
+    runMenu.add(uploadMenuItem);
     runMenu.addSeparator();
     runMenu.add(defaultsMenuItem);
     jMenuBar1.add(runMenu);
@@ -233,6 +233,26 @@ public class MainFrame extends JFrame
           }
       }
     });
+
+
+    exportErrorsMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent event) {
+          JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
+        } 
+      });
+
+    validateMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent event) {
+          JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
+        } 
+      });
+
+    uploadMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent event) {
+          JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
+        } 
+      });
+
     mainViewPanel.setLayout(new BorderLayout());
   }
 
