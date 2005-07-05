@@ -29,8 +29,6 @@ public class UMLElementViewPanel extends JPanel
   private Concept[] concepts;
   private ConceptUI[] conceptUIs;
 
-//   private boolean unsavedChanges = false;
-
   private JPanel _this = this;
 
   private UMLNode node;
@@ -91,14 +89,6 @@ public class UMLElementViewPanel extends JPanel
     this.updateUI();
   }
 
-//   public Concept[] getConcepts() {
-//     return null;
-//   }
-
-//   public boolean haveUnsavedChanges() {
-//     return unsavedChanges;
-//   }
-
   private void initUI() {
     this.setLayout(new BorderLayout());
     initViewPanel();
@@ -106,9 +96,9 @@ public class UMLElementViewPanel extends JPanel
   }
   
   private void initViewPanel() {
- 
 
-    gridPanel = new JPanel(new GridLayout(-1, 1));
+    gridPanel = new JPanel(new GridBagLayout());
+
     scrollPane = new JScrollPane(gridPanel);
 
     conceptUIs = new ConceptUI[concepts.length];
@@ -126,7 +116,7 @@ public class UMLElementViewPanel extends JPanel
 
     UserPreferences prefs = UserPreferences.getInstance();
     if(prefs.getUmlDescriptionOrder().equals("first"))
-      gridPanel.add(createDescriptionPanel());
+      insertInBag(gridPanel, createDescriptionPanel(), 0, 0);
       
     for(int i = 0; i<concepts.length; i++) {
       conceptUIs[i] = new ConceptUI(concepts[i]);
@@ -163,12 +153,11 @@ public class UMLElementViewPanel extends JPanel
       JPanel arrowPanel = new JPanel(new GridBagLayout());
       insertInBag(arrowPanel, upButton, 0, 0);
       insertInBag(arrowPanel, downButton, 0, 6);
-//       arrowPanel.add(upButton, BorderLayout.NORTH);
-//       arrowPanel.add(downButton, BorderLayout.SOUTH);
       
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
       conceptPanels[i].add(arrowPanel, BorderLayout.EAST);
-      gridPanel.add(conceptPanels[i]);
+
+      insertInBag(gridPanel, conceptPanels[i], 0, i+1);
 
       conceptUIs[i].code.addKeyListener(this);
       conceptUIs[i].name.addKeyListener(this);
@@ -213,14 +202,11 @@ public class UMLElementViewPanel extends JPanel
               
         }
         });
-      
-      
-      
     }
     
     if(prefs.getUmlDescriptionOrder().equals("last"))
-      gridPanel.add(createDescriptionPanel());
-    
+      insertInBag(gridPanel, createDescriptionPanel(), 0, concepts.length + 1); 
+
     this.add(scrollPane, BorderLayout.CENTER);
     
   }
@@ -230,11 +216,10 @@ public class UMLElementViewPanel extends JPanel
     umlPanel.setBorder
       (BorderFactory.createTitledBorder("UML Description"));   
     umlPanel.setLayout(new BorderLayout());
-    
-    JPanel descriptionPanel = new JPanel(new FlowLayout());
-    JTextArea descriptionArea = new JTextArea();
-    
-    
+
+    JTextArea descriptionArea = new JTextArea(5, 54);
+    JScrollPane descScrollPane = new JScrollPane(descriptionArea);
+
     if(node instanceof ClassNode) {
       ObjectClass oc = (ObjectClass) node.getUserObject();
       descriptionArea.setText(oc.getPreferredDefinition());
@@ -249,17 +234,14 @@ public class UMLElementViewPanel extends JPanel
     }
 
     descriptionArea.setLineWrap(true);
-    descriptionArea.setWrapStyleWord(true);
     descriptionArea.setEditable(false);
-    descriptionArea.setColumns(75);
     
     if(StringUtil.isEmpty(descriptionArea.getText())) 
     {
-      descriptionArea.setVisible(false);
+      umlPanel.setVisible(false);
     }
 
-    descriptionPanel.add(descriptionArea);
-    umlPanel.add(descriptionPanel);    
+    umlPanel.add(descScrollPane, BorderLayout.CENTER);
     
     return umlPanel;
  
