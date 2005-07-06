@@ -146,6 +146,12 @@ public class TreeBuilder implements UserPreferencesListener {
           parentNode.addChild(node);
           ((AttributeNode) node).setReviewed(reviewed);
         }
+
+        List<ValidationItem> items = findValidationItems(de.getDataElementConcept().getProperty());
+        for(ValidationItem item : items) {
+          ValidationNode vNode = new ValidationNode(item);
+          node.addValidationNode(vNode);
+        }
       }
     }
 

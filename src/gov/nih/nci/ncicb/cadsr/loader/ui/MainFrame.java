@@ -8,6 +8,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 
 
 import java.awt.Component;
@@ -15,6 +16,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 
 import java.io.File;
 import javax.swing.*;
@@ -26,26 +30,37 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 
 public class MainFrame extends JFrame 
-  implements ViewChangeListener, CloseableTabbedPaneListener
+  implements ViewChangeListener, CloseableTabbedPaneListener,
+             PropertyChangeListener
 {
 
-  private JMenuBar jMenuBar1 = new JMenuBar();
-  private JMenu fileMenu = new JMenu();
-  private JMenuItem saveMenuItem = new JMenuItem();
-  private JMenuItem saveAsMenuItem = new JMenuItem();
-  private JMenuItem exportErrorsMenuItem = new JMenuItem();
-  private JMenu editMenu = new JMenu();
-  private JMenuItem findMenuItem = new JMenuItem();
-  private JMenuItem prefMenuItem = new JMenuItem();
-  private JMenu runMenu = new JMenu();
-  private JMenuItem validateMenuItem = new JMenuItem();
-  private JMenuItem uploadMenuItem = new JMenuItem();
-  private JMenu helpMenu = new JMenu();
-  private JMenuItem jMenuItem6 = new JMenuItem();
-  private JMenuItem exitMenuItem = new JMenuItem();
-  private JMenuItem jMenuItem8 = new JMenuItem();
-  private JMenuItem semanticConnectorMenuItem = new JMenuItem();
-  private JMenuItem defaultsMenuItem = new JMenuItem();
+  private JMenuBar mainMenuBar = new JMenuBar();
+  private JMenu fileMenu = new JMenu("File");
+  private JMenuItem saveMenuItem = new JMenuItem("Save");
+  private JMenuItem saveAsMenuItem = new JMenuItem("Save As");
+  private JMenuItem exportErrorsMenuItem = new JMenuItem("Export");
+  private JMenuItem exitMenuItem = new JMenuItem("Exit");
+
+  private JMenu editMenu = new JMenu("Edit");
+  private JMenuItem findMenuItem = new JMenuItem("Find");
+  private JMenuItem prefMenuItem = new JMenuItem("Preferences");
+
+  private JMenu elementMenu = new JMenu("Element");
+  private JMenuItem applyMenuItem = new JMenuItem("Apply");
+  private JMenuItem applyToAllMenuItem = new JMenuItem("Apply to All");
+
+
+  private JMenu runMenu = new JMenu("Run");
+  private JMenuItem validateMenuItem = new JMenuItem("Validate");
+  private JMenuItem uploadMenuItem = new JMenuItem("Upload");
+  private JMenuItem defaultsMenuItem = new JMenuItem("Defaults");
+
+  private JMenu helpMenu = new JMenu("Help");
+  private JMenuItem aboutMenuItem = new JMenuItem("About");
+  private JMenuItem indexMenuItem = new JMenuItem("Index");
+
+  private JMenuItem semanticConnectorMenuItem = new JMenuItem("Semantic Connector");
+
   private BorderLayout borderLayout1 = new BorderLayout();
   private JSplitPane jSplitPane1 = new JSplitPane();
   private JSplitPane jSplitPane2 = new JSplitPane();
@@ -56,6 +71,7 @@ public class MainFrame extends JFrame
 
   private UmlDefaultsPanel defaultsPanel = new UmlDefaultsPanel();
   private NavigationPanel navigationPanel = new NavigationPanel();
+  private ErrorPanel errorPanel = null;
 
   private MainFrame _this = this;
 
@@ -87,33 +103,27 @@ public class MainFrame extends JFrame
 
   }
 
+  public void exit() {
+    System.exit(0);
+  }
+
+  public void propertyChange(PropertyChangeEvent evt) {
+    if(evt.getPropertyName().equals("APPLY")) {
+      applyMenuItem.setEnabled((Boolean)evt.getNewValue());
+      applyToAllMenuItem.setEnabled((Boolean)evt.getNewValue());
+    }
+  }
+
   private void jbInit() throws Exception
   {
     this.getContentPane().setLayout(borderLayout1);
     this.setSize(new Dimension(830, 650));
-    this.setJMenuBar(jMenuBar1);
+    this.setJMenuBar(mainMenuBar);
     this.setTitle("UML Loader");
-    fileMenu.setText("File");
-    saveMenuItem.setText("Save");
-    saveAsMenuItem.setText("Save As");
-    exportErrorsMenuItem.setText("Export");
-    semanticConnectorMenuItem.setText("Semantic Connector");
-    editMenu.setText("Edit");
-    findMenuItem.setText("Find");
-    prefMenuItem.setText("Preferences");
-    runMenu.setText("Run");
-    validateMenuItem.setText("Validate");
-    uploadMenuItem.setText("Upload");
-    helpMenu.setText("Help");
-    jMenuItem6.setText("About");
-    exitMenuItem.setText("Exit");
-    jMenuItem8.setText("Index");
-    defaultsMenuItem.setText("Defaults");
+
     jSplitPane2.setOrientation(JSplitPane.VERTICAL_SPLIT);
     jSplitPane1.setDividerLocation(160);
     jSplitPane2.setDividerLocation(400);
-
-    
 
     fileMenu.add(saveMenuItem);
     fileMenu.add(saveAsMenuItem);
@@ -122,26 +132,33 @@ public class MainFrame extends JFrame
     fileMenu.add(exportErrorsMenuItem);
     fileMenu.addSeparator();
     fileMenu.add(exitMenuItem);
-    jMenuBar1.add(fileMenu);
+    mainMenuBar.add(fileMenu);
 
     editMenu.add(findMenuItem);
     editMenu.add(prefMenuItem);
-    jMenuBar1.add(editMenu);
+    mainMenuBar.add(editMenu);
     
+
+    applyMenuItem.setEnabled(false);
+    applyToAllMenuItem.setEnabled(false);
+    elementMenu.add(applyMenuItem);
+    elementMenu.add(applyToAllMenuItem);
+    mainMenuBar.add(elementMenu);
 
     runMenu.add(validateMenuItem);
     runMenu.add(uploadMenuItem);
     runMenu.addSeparator();
     runMenu.add(defaultsMenuItem);
-    jMenuBar1.add(runMenu);
+    mainMenuBar.add(runMenu);
 
-    helpMenu.add(jMenuItem8);
+    helpMenu.add(indexMenuItem);
     helpMenu.addSeparator();
-    helpMenu.add(jMenuItem6);
-    jMenuBar1.add(helpMenu);
+    helpMenu.add(aboutMenuItem);
+    mainMenuBar.add(helpMenu);
 
-    jTabbedPane1.addTab("Errors", new ErrorPanel(TreeBuilder.getInstance().getRootNode()));
-//     logTabbedPane.addTab("jPanel1", jPanel1);
+    errorPanel = new ErrorPanel(TreeBuilder.getInstance().getRootNode());
+
+    jTabbedPane1.addTab("Errors", errorPanel);
 
     Icon closeIcon = new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("close-tab.gif"));
     viewTabbedPane.setCloseIcons(closeIcon, closeIcon, closeIcon);
@@ -160,7 +177,7 @@ public class MainFrame extends JFrame
     
     exitMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
-          System.exit(0);
+          _this.exit();
         }
     });  
 
@@ -243,6 +260,12 @@ public class MainFrame extends JFrame
 
     validateMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
+          ValidationItems.getInstance().clear();
+          Validator validator = new UMLValidator();
+          validator.validate();
+
+          errorPanel.update(TreeBuilder.getInstance().getRootNode());
+
           JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
         } 
       });
@@ -253,6 +276,22 @@ public class MainFrame extends JFrame
         } 
       });
 
+    applyMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          UMLElementViewPanel viewPanel =
+            (UMLElementViewPanel)viewTabbedPane
+            .getSelectedComponent();
+          
+          viewPanel.apply();
+          
+        }
+      });
+    applyToAllMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
+        }
+      });
+    
     mainViewPanel.setLayout(new BorderLayout());
   }
 
@@ -271,6 +310,7 @@ public class MainFrame extends JFrame
       if((event.getInNewTab() == true) || (viewPanels.size() == 0)) {
         UMLElementViewPanel viewPanel = new UMLElementViewPanel(node);
         
+        viewPanel.addPropertyChangeListener(this);
         viewPanel.addReviewListener(navigationPanel);
         viewPanel.addReviewListener(reviewTracker);
         viewPanel.addNavigationListener(navigationPanel);

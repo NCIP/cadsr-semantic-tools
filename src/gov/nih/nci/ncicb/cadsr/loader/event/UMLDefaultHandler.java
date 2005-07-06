@@ -45,7 +45,7 @@ public class UMLDefaultHandler implements UMLHandler {
 
     ObjectClass oc = DomainObjectFactory.newObjectClass();
 
-    verifyConcepts(oc, concepts);
+//     verifyConcepts(oc, concepts);
 
     // store concept codes in preferredName
     oc.setPreferredName(preferredNameFromConcepts(concepts));
@@ -88,7 +88,7 @@ public class UMLDefaultHandler implements UMLHandler {
     List concepts = createConcepts(event);
 
     Property prop = DomainObjectFactory.newProperty();
-    verifyConcepts(prop, concepts);
+//     verifyConcepts(prop, concepts);
 
     // store concept codes in preferredName
     prop.setPreferredName(preferredNameFromConcepts(concepts));
