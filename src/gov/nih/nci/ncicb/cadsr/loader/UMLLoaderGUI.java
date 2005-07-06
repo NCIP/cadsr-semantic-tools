@@ -79,13 +79,14 @@ public class UMLLoaderGUI
     if(mode.equals(RunMode.GenerateReport)) 
       System.exit(0);
 
-    Frame frame = new MainFrame();
+    final MainFrame frame = new MainFrame();
     putToCenter(frame);
+    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     frame.addWindowListener(new WindowAdapter()
       {
         public void windowClosing(WindowEvent e)
         {
-          System.exit(0);
+          frame.exit();
         }
       });
     frame.setVisible(true);

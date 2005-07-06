@@ -126,7 +126,7 @@ public class UMLLoader {
     
     logger.info(PropertyAccessor.getProperty("nbOfFiles", filenames.length));
     
-    Validator validator = new UMLValidator(ElementsLists.getInstance());
+    Validator validator = new UMLValidator();
     UMLHandler listener = new UMLDefaultHandler(ElementsLists.getInstance());
 
     synchronized(initClass) {
