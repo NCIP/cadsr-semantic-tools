@@ -8,12 +8,10 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 public class UMLValidator implements Validator {
 
-  private ElementsLists elements;
+  private ElementsLists elements = ElementsLists.getInstance();
   private List validators;
 
-  public UMLValidator(ElementsLists elements) {
-    this.elements = elements;
-    
+  public UMLValidator() {
     validators = new ArrayList();
     validators.add(new ConceptCodeValidator(elements)); 
     validators.add(new AssociationValidator(elements));

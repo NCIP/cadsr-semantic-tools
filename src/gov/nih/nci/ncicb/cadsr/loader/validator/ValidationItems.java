@@ -16,6 +16,10 @@ public class ValidationItems {
     return instance;
   }
 
+  public void clear() {
+    instance = new ValidationItems();
+  }
+
   /**
    * 
    */
