@@ -26,6 +26,11 @@ public class ErrorPanel extends JPanel
     buildPopupMenu();
   }
 
+  public void update(UMLNode rootNode) {
+    this.removeAll();
+    initUI(rootNode);
+  }
+
   private void initUI(UMLNode rootNode) {
     firstRun(rootNode);
 
