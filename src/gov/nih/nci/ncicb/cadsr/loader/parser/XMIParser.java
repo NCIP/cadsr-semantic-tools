@@ -12,6 +12,7 @@ import org.omg.uml.modelmanagement.Model;
 import org.omg.uml.modelmanagement.UmlPackage;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 
 import gov.nih.nci.codegen.core.util.UML13Utils;
 import gov.nih.nci.codegen.core.access.UML13ModelAccess;
@@ -429,10 +430,15 @@ public class XMIParser implements Parser {
     NewConceptEvent concept = new NewConceptEvent();
     setConceptInfo(elt, concept, type, "", 0);
 
-    event.addConcept(concept);
+    if(!StringUtil.isEmpty(concept.getConceptCode()))
+      event.addConcept(concept);
     
     concept = new NewConceptEvent();
     for(int i=1;setConceptInfo(elt, concept, type, NewConceptEvent.TV_QUALIFIER, i); i++) {
+
+      if(!StringUtil.isEmpty(concept.getConceptCode()))
+        event.addConcept(concept);
+
       event.addConcept(concept);
       concept = new NewConceptEvent();
     }
