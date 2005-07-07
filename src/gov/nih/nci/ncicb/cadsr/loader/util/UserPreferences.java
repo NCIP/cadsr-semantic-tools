@@ -49,12 +49,18 @@ public class UserPreferences {
     prefs.put("ModeSelection", value);
   }
 
-  public String getXmiDir() {
-    return prefs.get("xmiDir","/");
+  public String getRecentDir() {
+    UserSelections selections = UserSelections.getInstance();
+    RunMode runMode = (RunMode)(selections.getProperty("MODE"));
+
+    return prefs.get(runMode.toString() + "-recentDir","/");
   }
 
-  public void setXmiDir(String dir) {
-    prefs.put("xmiDir",dir);
+  public void setRecentDir(String dir) {
+    UserSelections selections = UserSelections.getInstance();
+    RunMode runMode = (RunMode)(selections.getProperty("MODE"));
+
+    prefs.put(runMode.toString() + "-recentDir",dir);
   }
 
   public List<String> getRecentFiles() {
