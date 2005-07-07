@@ -62,6 +62,8 @@ public class UMLElementViewPanel extends JPanel
     editable = selections.getProperty("MODE").equals(RunMode.Curator);
   }
   
+  private UserPreferences prefs = UserPreferences.getInstance();
+  
   public UMLElementViewPanel(UMLNode node) 
   {
     this.node = node;
@@ -113,6 +115,7 @@ public class UMLElementViewPanel extends JPanel
   }
 
   private void initUI() {
+    prefs.addUserPreferencesListener(this);
     this.setLayout(new BorderLayout());
     initViewPanel();
     initButtonPanel();
@@ -136,8 +139,7 @@ public class UMLElementViewPanel extends JPanel
       summaryPanel.add(label);
     }
     this.add(summaryPanel,BorderLayout.NORTH);
-
-    UserPreferences prefs = UserPreferences.getInstance();
+    
     if(prefs.getUmlDescriptionOrder().equals("first"))
       insertInBag(gridPanel, createDescriptionPanel(), 0, 0);
       
@@ -358,9 +360,8 @@ public class UMLElementViewPanel extends JPanel
   {
     if(event.getTypeOfEvent() == UserPreferencesEvent.UML_DESCRIPTION) 
     {
-      this.remove(gridPanel);
+      _this.remove(scrollPane);
       initViewPanel();
-      this.updateUI();
     }
   }
 
