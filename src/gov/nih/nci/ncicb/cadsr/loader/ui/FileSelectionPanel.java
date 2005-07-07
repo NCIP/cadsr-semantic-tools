@@ -157,7 +157,7 @@ implements ProgressListener {
 
     browseButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
-          String xmiDir = UserPreferences.getInstance().getXmiDir();
+          String xmiDir = UserPreferences.getInstance().getRecentDir();
           JFileChooser chooser = new JFileChooser(xmiDir);
           javax.swing.filechooser.FileFilter filter = 
             new javax.swing.filechooser.FileFilter() {
@@ -177,8 +177,7 @@ implements ProgressListener {
           if(returnVal == JFileChooser.APPROVE_OPTION) {
             String filePath = chooser.getSelectedFile().getAbsolutePath();
             filePathField.setText(filePath);
-            prefs.setXmiDir(filePath);
-            prefs.addRecentFile(filePath);
+            prefs.setRecentDir(filePath);
             fireActionEvent(evt);
           }
         }
