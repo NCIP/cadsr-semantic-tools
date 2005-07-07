@@ -169,6 +169,8 @@ public class WizardController implements ActionListener {
             (FileSelectionPanel)descriptor.getPanelComponent();
           filename = panel.getSelection();
 
+          prefs.addRecentFile(filename);
+
           userSelections.setProperty("FILENAME", filename);
 
           ReportConfirmPanelDescriptor reportDesc =
