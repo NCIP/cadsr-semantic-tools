@@ -6,12 +6,12 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesEvent;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.*;
+
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
@@ -225,6 +225,16 @@ public class UMLElementViewPanel extends JPanel
               
         }
         });
+
+
+      evsButton.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent event) {
+            EvsDialog dialog = new EvsDialog();
+            UIUtil.putToCenter(dialog);
+            dialog.setVisible(true);
+          }
+        });
+      
     }
     
     if(prefs.getUmlDescriptionOrder().equals("last"))
