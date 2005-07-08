@@ -416,7 +416,7 @@ public class UMLElementViewPanel extends JPanel
       this.remove(scrollPane);
       initViewPanel();
       this.updateUI();
-      addButton.setEnabled(false);
+
       if(concepts.length > 1)
         deleteButton.setEnabled(true);
       setButtonState(addButton);
@@ -433,8 +433,9 @@ public class UMLElementViewPanel extends JPanel
       _this.remove(scrollPane);
       initViewPanel();
 
+      setButtonState(addButton);
       setButtonState(saveButton);
-
+      
       if(concepts.length < 2)
         deleteButton.setEnabled(false);
       this.updateUI();
