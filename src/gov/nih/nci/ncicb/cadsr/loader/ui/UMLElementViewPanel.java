@@ -421,7 +421,7 @@ public class UMLElementViewPanel extends JPanel
         deleteButton.setEnabled(true);
       setButtonState(addButton);
       setButtonState(saveButton);
-
+      setButtonState(reviewButton);
 
     } else if(button.getActionCommand().equals(DELETE)) {
       Concept[] newConcepts = new Concept[concepts.length - 1];
@@ -435,6 +435,7 @@ public class UMLElementViewPanel extends JPanel
 
       setButtonState(addButton);
       setButtonState(saveButton);
+      setButtonState(reviewButton);
       
       if(concepts.length < 2)
         deleteButton.setEnabled(false);
