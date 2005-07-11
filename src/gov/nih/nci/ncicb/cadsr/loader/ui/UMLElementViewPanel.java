@@ -33,7 +33,7 @@ public class UMLElementViewPanel extends JPanel
   private Concept[] concepts;
   private ConceptUI[] conceptUIs;
 
-  private JPanel _this = this;
+  private UMLElementViewPanel _this = this;
 
   private UMLNode node;
   private boolean remove = false;
@@ -234,6 +234,11 @@ public class UMLElementViewPanel extends JPanel
             EvsDialog dialog = new EvsDialog();
             UIUtil.putToCenter(dialog);
             dialog.setVisible(true);
+
+            concepts[index] = dialog.getConcept();
+            updateConcepts(concepts);
+
+            setButtonState(saveButton);
           }
         });
       
