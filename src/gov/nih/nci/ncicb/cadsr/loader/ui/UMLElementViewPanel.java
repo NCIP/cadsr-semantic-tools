@@ -235,8 +235,12 @@ public class UMLElementViewPanel extends JPanel
             UIUtil.putToCenter(dialog);
             dialog.setVisible(true);
 
-            concepts[index] = dialog.getConcept();
-            updateConcepts(concepts);
+            Concept c = dialog.getConcept();
+
+            conceptUIs[index].code.setText(c.getPreferredName());
+            conceptUIs[index].name.setText(c.getLongName());
+            conceptUIs[index].def.setText(c.getPreferredDefinition());
+            conceptUIs[index].defSource.setText(c.getDefinitionSource());
 
             setButtonState(saveButton);
           }
