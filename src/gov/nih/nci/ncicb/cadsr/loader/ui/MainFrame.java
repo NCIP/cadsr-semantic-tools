@@ -224,17 +224,26 @@ public class MainFrame extends JFrame
     
     saveAsMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
+
         JFileChooser chooser = new JFileChooser();
         javax.swing.filechooser.FileFilter filter = 
             new javax.swing.filechooser.FileFilter() {
+              String fileExtension = null;
+              {
+                if(runMode.equals(RunMode.GenerateReport)) 
+                  fileExtension = "csv";
+                else if(runMode.equals(RunMode.Reviewer)) 
+                  fileExtension = "xmi";
+              }
+
               public boolean accept(File f) {
-//                 if (f.isDirectory()) {
+                if (f.isDirectory()) {
                   return true;
-//                 }                
-//                 return f.getName().endsWith(".csv");
+                }                
+                return f.getName().endsWith("." + fileExtension);
               }
               public String getDescription() {
-                return "CSV Files";
+                return fileExtension.toUpperCase() + " Files";
               }
             };
             
