@@ -14,6 +14,8 @@ import org.omg.uml.modelmanagement.UmlPackage;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 
+import gov.nih.nci.ncicb.cadsr.loader.validator.*;
+
 import gov.nih.nci.codegen.core.util.UML13Utils;
 import gov.nih.nci.codegen.core.access.UML13ModelAccess;
 import gov.nih.nci.codegen.framework.ModelAccess;
@@ -252,6 +254,18 @@ public class XMIParser implements Parser {
   private void doAttribute(Attribute att) {
     NewAttributeEvent event = new NewAttributeEvent(att.getName().trim());
     event.setClassName(className);
+
+    if(att.getType() == null) {
+      ValidationItems.getInstance()
+        .addItem(new ValidationFatal
+                 (PropertyAccessor
+                  .getProperty
+                  ("validation.type.missing.for"
+                   , event.getClassName() + "." + event.getName()),
+                  null));
+      return;
+    }
+
     event.setType(att.getType().getName());
 
     TaggedValue tv = UML13Utils.getTaggedValue(att, NewConceptualEvent.TV_DESCRIPTION);
