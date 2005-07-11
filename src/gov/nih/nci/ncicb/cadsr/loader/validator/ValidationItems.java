@@ -5,8 +5,9 @@ import java.util.HashSet;
 
 public class ValidationItems {
 
-  private Set<ValidationError> errors = new HashSet<ValidationError>();
-  private Set<ValidationWarning> warnings = new HashSet<ValidationWarning>();
+  private Set<ValidationFatal> fatals = new HashSet();
+  private Set<ValidationError> errors = new HashSet();
+  private Set<ValidationWarning> warnings = new HashSet();
 
   private static ValidationItems instance = new ValidationItems();
 
@@ -30,6 +31,8 @@ public class ValidationItems {
       errors.add((ValidationError)item);
     else if(item instanceof ValidationWarning)
       warnings.add((ValidationWarning)item);
+    else if(item instanceof ValidationFatal)
+      fatals.add((ValidationFatal)item);
     else
       throw new IllegalArgumentException("Wrong ValidationItem Class: " +  item.getClass().toString());
 
@@ -41,6 +44,10 @@ public class ValidationItems {
 
   public Set<ValidationWarning> getWarnings() {
     return warnings;
+  }
+
+  public Set<ValidationFatal> getFatals() {
+    return fatals;
   }
 
 }
