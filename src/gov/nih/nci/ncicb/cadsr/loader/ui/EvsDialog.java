@@ -6,12 +6,17 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.*;
+import javax.swing.border.*;
 
 public class EvsDialog extends JDialog implements ActionListener
 {
+  private EvsDialog _this = this;
+
   private JLabel searchLabel = new JLabel("Search String ");
   private JTextField searchField = new JTextField(10);
   private JLabel whereToSearchLabel = new JLabel("Search In");
@@ -38,13 +43,19 @@ public class EvsDialog extends JDialog implements ActionListener
     "Code", "Name", "Synonyms", "Definition", "Source"
   };
 
-  private static int PAGE_SIZE = 10;
+  private int colWidth[] = {30, 30, 30, 300, 15};
+
+  private static int PAGE_SIZE = 5;
 
   private int pageIndex = 0;
 
+//   private UMLElementViewPanel viewPanel = null;
+
+  private Concept choiceConcept = null;
+
   public EvsDialog()
   {
-    super();
+    super((Frame)null, true);
     this.setTitle("Search Thesaurus");
 
     this.getContentPane().setLayout(new BorderLayout());
@@ -78,11 +89,15 @@ public class EvsDialog extends JDialog implements ActionListener
             s = res.getConcept().getLongName();
             break;
           case 2: 
+            s += "<html><body>";
             for(int i = 0; i<res.getSynonyms().length; i++)
-              s += res.getSynonyms()[i];
+              s += res.getSynonyms()[i] + "<br>";
+            s += "</body></html>"; 
             break;
           case 3:
-            s = res.getConcept().getPreferredDefinition();
+            s += "<html><body>";
+            s += res.getConcept().getPreferredDefinition();
+            s += "</body></html>";
             break;
           case 4:
             s = res.getConcept().getDefinitionSource();
@@ -109,8 +124,27 @@ public class EvsDialog extends JDialog implements ActionListener
         }
       };
 
-//     resultTable.setPreferredScrollableViewportSize(new Dimension(500, 70));
-    
+    resultTable.setRowHeight(60);
+
+    int c = 0;
+    for(int width : colWidth) {
+      TableColumn col = resultTable.getColumnModel().getColumn(c++);
+      col.setPreferredWidth(width);
+    }
+
+    resultTable.addMouseListener(new MouseAdapter() {
+        public void mouseClicked(MouseEvent evt) {
+          if(evt.getClickCount() == 2) {
+            int row = resultTable.getSelectedRow();
+            if(row > -1) {
+              choiceConcept = resultSet.get(pageIndex * PAGE_SIZE + row).getConcept();
+              _this.dispose();
+//               System.out.println("Chose: " + resultSet.get(pageIndex * PAGE_SIZE + row));
+            }
+          }
+        }
+      });
+
     JScrollPane scrollPane = new JScrollPane(resultTable);
 
     insertInBag(searchPanel,searchLabel,0,0);
@@ -138,8 +172,18 @@ public class EvsDialog extends JDialog implements ActionListener
     this.getContentPane().add(scrollPane, BorderLayout.CENTER);
     this.getContentPane().add(browsePanel, BorderLayout.SOUTH);
 
-    this.setSize(500,600);
+    this.setSize(600,500);
   }
+
+
+  public Concept getConcept() {
+    return choiceConcept;
+  }
+  
+  // might change to a more generic signature, not decided yet.
+//   void setViewPanel(UMLElementViewPanel panel) {
+//     this.viewPanel = panel;
+//   }
   
   private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
 
