@@ -278,6 +278,17 @@ public class WizardController implements ActionListener {
                     
                     Validator validator = new UMLValidator();
                     validator.validate();
+
+                    Set<ValidationFatal> fatals = ValidationItems.getInstance().getFatals();
+                    if(fatals.size() > 0) {
+                      String s = "<html><body><ul>";
+                      for(ValidationFatal fat : fatals) {
+                        s += "<li>" + fat.getMessage();
+                      }
+                      s += "</ul></body></html>";
+                      JOptionPane.showMessageDialog(null, s, "Fatal Error in Model", JOptionPane.ERROR_MESSAGE);
+                      wizard.close(-1);
+                    }
                     
                     TreeBuilder tb = TreeBuilder.getInstance();
                     tb.init();
