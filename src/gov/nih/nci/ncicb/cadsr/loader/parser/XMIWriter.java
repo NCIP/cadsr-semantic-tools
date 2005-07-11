@@ -250,7 +250,7 @@ public class XMIWriter implements ElementWriter {
       for(Element pkg : packages) {
         String packName = pkg.getAttributeValue("name");
 
-        if(packName.indexOf("0") != -1) {
+        if(packName.indexOf(" ") != -1) {
           doPackage(xpath, packageName);
           return;
         }
