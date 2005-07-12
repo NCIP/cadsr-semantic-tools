@@ -291,13 +291,19 @@ public class MainFrame extends JFrame
             (UMLElementViewPanel)viewTabbedPane
             .getSelectedComponent();
           
-          viewPanel.apply();
+          viewPanel.apply(false);
           
         }
       });
     applyToAllMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
-          JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
+          //           JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
+          UMLElementViewPanel viewPanel =
+            (UMLElementViewPanel)viewTabbedPane
+            .getSelectedComponent();
+          
+          viewPanel.apply(true);
+          
         }
       });
 
