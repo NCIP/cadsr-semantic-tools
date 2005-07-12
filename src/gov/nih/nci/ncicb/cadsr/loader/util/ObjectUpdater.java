@@ -7,6 +7,34 @@ import java.util.*;
 
 public class ObjectUpdater {
 
+  public static void updateByAltName(String altName, Concept[] oldConcepts, Concept[] newConcepts) {
+
+    ElementsLists elements = ElementsLists.getInstance();
+
+    List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());
+
+    for(DataElement de : des) {
+//       Collection<AlternateName> altNames = 
+//         (Collection<AlternateName>)de.getAlternateNames();
+//       boolean found = false;
+//       for(AlternateName n : altNames) {
+//         if(n.getName().equals(altName)) {
+//           found = true;
+//           break;
+//         }
+//       }
+//       if(found) {
+      if(de.getDataElementConcept().getProperty().getLongName().equals(altName)) {
+        de.getDataElementConcept().getProperty().setPreferredName(preferredNameFromConcepts(newConcepts));
+      }
+    }
+    
+    addNewConcepts(newConcepts);
+    removeStaleConcepts(oldConcepts);
+    
+  }
+
+
   public static void update(AdminComponent ac, Concept[] oldConcepts, Concept[] newConcepts) {
 
     if(ac instanceof ObjectClass) {
