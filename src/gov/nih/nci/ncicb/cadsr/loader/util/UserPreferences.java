@@ -7,7 +7,7 @@ import java.util.*;
 public class UserPreferences {
 
   Preferences prefs = Preferences.userRoot().node("UMLLOADER");
-  Set<UserPreferencesListener> userPrefsListeners = new HashSet(); 
+  List<UserPreferencesListener> userPrefsListeners = new ArrayList(); 
   private UserSelections userSelections = UserSelections.getInstance();
   private static UserPreferences instance = new UserPreferences();
   private UserPreferences() {}
