@@ -14,16 +14,6 @@ public class ObjectUpdater {
     List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());
 
     for(DataElement de : des) {
-//       Collection<AlternateName> altNames = 
-//         (Collection<AlternateName>)de.getAlternateNames();
-//       boolean found = false;
-//       for(AlternateName n : altNames) {
-//         if(n.getName().equals(altName)) {
-//           found = true;
-//           break;
-//         }
-//       }
-//       if(found) {
       if(de.getDataElementConcept().getProperty().getLongName().equals(altName)) {
         de.getDataElementConcept().getProperty().setPreferredName(preferredNameFromConcepts(newConcepts));
       }
