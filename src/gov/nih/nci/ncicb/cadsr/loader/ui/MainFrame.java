@@ -300,6 +300,12 @@ public class MainFrame extends JFrame
           JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
         }
       });
+
+    aboutMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          new AboutPanel();
+        }
+      });
     
     mainViewPanel.setLayout(new BorderLayout());
   }

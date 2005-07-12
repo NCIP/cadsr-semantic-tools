@@ -285,9 +285,10 @@ public class WizardController implements ActionListener {
                       for(ValidationFatal fat : fatals) {
                         s += "<li>" + fat.getMessage();
                       }
-                      s += "</ul></body></html>";
-                      JOptionPane.showMessageDialog(null, s, "Fatal Error in Model", JOptionPane.ERROR_MESSAGE);
-                      wizard.close(-1);
+                      s += "</ul><br>Would you still like to continue?</body></html>";
+                      int result = JOptionPane.showConfirmDialog(null, s, "Fatal Error in Model", JOptionPane.YES_NO_OPTION);
+                      if (result == JOptionPane.NO_OPTION)
+                        wizard.close(-1);
                     }
                     
                     TreeBuilder tb = TreeBuilder.getInstance();
