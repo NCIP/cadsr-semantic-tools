@@ -73,8 +73,8 @@ public class UMLElementViewPanel extends JPanel
 
   public void navigate(NavigationEvent evt) {
     if(saveButton.isEnabled()) {
-      if(JOptionPane.showConfirmDialog(_this, "There are unsaved changes in this concept, would you like to apply the changes now?", "Unsaved Changed", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-        saveButton.doClick();
+      if(JOptionPane.showConfirmDialog(_this, "There are unsaved changes in this concept, would you like to apply the changes now?", "Unsaved Changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+        apply(false);
     }
   }
 
@@ -98,8 +98,44 @@ public class UMLElementViewPanel extends JPanel
     updateConcepts(concepts);
   }
 
-  public void apply() {
-    saveButton.doClick();
+  public void apply(boolean toAll) {
+    boolean update = remove;
+    remove = false;
+    Concept[] newConcepts = new Concept[concepts.length];
+    
+    for(int i = 0; i<concepts.length; i++) {
+      newConcepts[i] = concepts[i];
+      // concept code has not changed
+      if(conceptUIs[i].code.getText().equals(concepts[i].getPreferredName())) {
+        concepts[i].setLongName(conceptUIs[i].name.getText());
+        concepts[i].setPreferredDefinition(conceptUIs[i].def.getText());
+        concepts[i].setDefinitionSource(conceptUIs[i].defSource.getText());
+      } else { // concept code has changed
+        Concept concept = DomainObjectFactory.newConcept();
+        concept.setPreferredName(conceptUIs[i].code.getText());
+        concept.setLongName(conceptUIs[i].name.getText());
+        concept.setPreferredDefinition(conceptUIs[i].def.getText());
+        concept.setDefinitionSource(conceptUIs[i].defSource.getText());
+        newConcepts[i] = concept;
+        update = true;
+      }
+    }
+    
+    if(update) {
+      if(toAll) {
+        Object o = node.getUserObject();
+        if(o instanceof DataElement) {
+          DataElement de = (DataElement)o;
+//           List<AlternateName> altNames = 
+//             (List<AlternateName>)de.getAlternateNames();
+          ObjectUpdater.updateByAltName(de.getDataElementConcept().getProperty().getLongName(), concepts, newConcepts);
+        }
+      } else
+        ObjectUpdater.update((AdminComponent)node.getUserObject(), concepts, newConcepts);
+    }
+    
+    setSaveButtonState(false);
+    reviewButton.setEnabled(true);
   }
 
   private void initConcepts() 
@@ -378,37 +414,7 @@ public class UMLElementViewPanel extends JPanel
   public void actionPerformed(ActionEvent evt) {
     JButton button = (JButton)evt.getSource();
     if(button.getActionCommand().equals(SAVE)) {
-      boolean update = remove;
-      remove = false;
-      Concept[] newConcepts = new Concept[concepts.length];
-      
-      for(int i = 0; i<concepts.length; i++) 
-      {
-        newConcepts[i] = concepts[i];
-        // concept code has not changed
-        if(conceptUIs[i].code.getText().equals(concepts[i].getPreferredName())) {
-          concepts[i].setLongName(conceptUIs[i].name.getText());
-          concepts[i].setPreferredDefinition(conceptUIs[i].def.getText());
-          concepts[i].setDefinitionSource(conceptUIs[i].defSource.getText());
-        } else { // concept code has changed
-          Concept concept = DomainObjectFactory.newConcept();
-          concept.setPreferredName(conceptUIs[i].code.getText());
-          concept.setLongName(conceptUIs[i].name.getText());
-          concept.setPreferredDefinition(conceptUIs[i].def.getText());
-          concept.setDefinitionSource(conceptUIs[i].defSource.getText());
-          newConcepts[i] = concept;
-          update = true;
-        }
-      }
-
-      if(update) {
-        ObjectUpdater.update((AdminComponent)node.getUserObject(), concepts, newConcepts);
-      }
-
-      setSaveButtonState(false);
-      reviewButton.setEnabled(true);
-
-
+      apply(false);
     } else if(button.getActionCommand().equals(ADD)) {
       Concept[] newConcepts = new Concept[concepts.length + 1];
       for(int i = 0; i<concepts.length; i++) {
