@@ -19,7 +19,7 @@
   <path id="proj.class.path">
     <pathelement location="${class.dir}"/>
     <fileset dir="${lib.dir}">
-      <include name="*.jar"/>
+      <include name="**/*.jar"/>
     </fileset>
   </path>
   
@@ -90,6 +90,7 @@
         <include name="*.properties"/>
         <include name="jaas.config"/>
         <include name="beans.xml"/>
+        <include name="about.html"/>
       </fileset>
       <fileset dir="${images.dir}">
         <include name="*.png"/>
