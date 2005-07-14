@@ -7,15 +7,14 @@ import gov.nih.nci.system.applicationservice.*;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import java.util.*;
 
 
 public class EVSQueryService {
-  public static String NCI_THESAURUS_VOCAB_NAME = "NCI_Thesaurus";
-  public static String SYNONYM_PROPERTY_NAME = "Synonym";
-  public static String DEFINITION_PROPERTY_NAME = "DEFINITION";
+  private static String NCI_THESAURUS_VOCAB_NAME = "NCI_Thesaurus";
+  private static String SYNONYM_PROPERTY_NAME = "Synonym";
+  private static String DEFINITION_PROPERTY_NAME = "DEFINITION";
   private ApplicationService evsService;
   private String cacoreServiceURL;
 
@@ -34,10 +33,6 @@ public class EVSQueryService {
     this.cacoreServiceURL = cacoreServiceURL;
   }
 
-  public String getCacoreServiceURL() {
-    return cacoreServiceURL;
-  }
-
   public List findConceptsBySynonym(
     String searchTerm,
     boolean includeRetiredConcepts,
@@ -53,10 +48,8 @@ public class EVSQueryService {
 
     List conceptNames = evsService.evsSearch(query);
 
-    System.out.println("Concepts:" + conceptNames.size());
-
     results =
-      this.findConceptDetaisByName(conceptNames, includeRetiredConcepts);
+      this.findConceptDetailsByName(conceptNames, includeRetiredConcepts);
 
     /*for (Iterator it = conceptNames.iterator(); it.hasNext();) {
        String conceptName = (String) it.next();
@@ -78,20 +71,18 @@ public class EVSQueryService {
     return results;
   }
 
-  public List findConceptDetaisByName(
+  public List findConceptDetailsByName(
     List conceptNames,
     boolean includeRetiredConcepts) throws Exception {
     List results = new ArrayList();
     for (Iterator it = conceptNames.iterator(); it.hasNext();) {
       String conceptName = (String) it.next();
-      System.out.println("Element: " + conceptName);
       DescLogicConcept concept =
         this.findDescLogicConceptByName(NCI_THESAURUS_VOCAB_NAME, conceptName);
 
       if (
         (includeRetiredConcepts) ||
             (!includeRetiredConcepts && !concept.isRetired().booleanValue())) {
-        System.out.println("Concept code: " + concept.getCode());
         List synonyms = this.retrieveSynonyms(concept);
         List defs = this.retrieveDefinitions(concept);
 
@@ -121,10 +112,8 @@ public class EVSQueryService {
     query.getConceptNameByCode(NCI_THESAURUS_VOCAB_NAME, conceptCode);
     List conceptNames = evsService.evsSearch(query);
 
-    System.out.println("Concepts:" + conceptNames.size());
-
     results =
-      this.findConceptDetaisByName(conceptNames, includeRetiredConcepts);
+      this.findConceptDetailsByName(conceptNames, includeRetiredConcepts);
 
     return results;
   }
@@ -147,7 +136,6 @@ public class EVSQueryService {
       Property p = (Property) propVect.get(x);
       if (p.getName().equalsIgnoreCase(SYNONYM_PROPERTY_NAME)) {
         synonyms.add(p.getValue());
-        System.out.println("Synonym: " + p.getValue());
       }
     }
 
@@ -161,7 +149,6 @@ public class EVSQueryService {
       Property p = (Property) propVect.get(x);
       if (p.getName().equalsIgnoreCase(DEFINITION_PROPERTY_NAME)) {
         //definitions.add(p.getValue());
-        System.out.println("Definition: " + p.getValue());
         String definition = this.retrieveDefinitionValue(p.getValue());
         String definitionSource = this.retrieveDefinitionSource(p.getValue());
         Definition def = new Definition();
@@ -181,7 +168,6 @@ public class EVSQueryService {
 
     int length = 0; //<def-source>,  <def-definition>
     length = termStr.length();
-    System.out.println(termStr);
     int iStartDefSource = 0;
     int iEndDefSource = 0;
 
@@ -193,7 +179,6 @@ public class EVSQueryService {
         source = termStr.substring(iStartDefSource, iEndDefSource);
       }
     }
-    System.out.println("Definition source: " + source);
 
     return source;
   }
@@ -215,7 +200,6 @@ public class EVSQueryService {
         definition = termStr.substring(iStartDef, iEndDef);
       }
     }
-    System.out.println("Definition value: " + definition);
 
     return definition;
   }
