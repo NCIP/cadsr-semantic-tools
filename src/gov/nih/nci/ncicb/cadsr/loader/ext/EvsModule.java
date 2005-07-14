@@ -3,42 +3,70 @@ import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
+import gov.nih.nci.ncicb.cadsr.evs.*;
 
 public class EvsModule 
 {
+
+  private static EVSQueryService evsService = new EVSQueryService();
+
   public EvsModule()
   {
   }
   
   public EvsResult findByConceptCode(String code) 
   {
-    Concept con = DomainObjectFactory.newConcept();
-    con.setPreferredName("C16642");
-    con.setLongName("Gene");
-    con.setPreferredDefinition("But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?");
-    con.setDefinitionSource("NCI");
 
-    return new EvsResult(con, new String[] {
-                           "Gene", "Gene2", "Gene3"
-                         });
+    try {
+      List<EVSConcept> evsConcepts = (List<EVSConcept>)evsService.findConceptsByCode(code, false, 100);
+      
+      for(EVSConcept evsConcept : evsConcepts) {
+        return evsConceptToEvsResult(evsConcept);
+      }
+    } catch (Exception e){
+      e.printStackTrace();
+    } // end of try-catch
+
+    return null;
   }
   
   public Collection<EvsResult> findBySynonym(String s) 
   {
     Collection<EvsResult> result = new ArrayList();
-    int n = (int)(Math.random() * 10 + 5);
+
+    try {
+      List<EVSConcept> evsConcepts = (List<EVSConcept>)evsService.findConceptsBySynonym(s, false, 100);
+      
+      for(EVSConcept evsConcept : evsConcepts) {
+        result.add(evsConceptToEvsResult(evsConcept));
+      }
+    } catch (Exception e){
+      e.printStackTrace();
+    } // end of try-catch
+
+    return result;
+  }
+
+  private EvsResult evsConceptToEvsResult(EVSConcept evsConcept) {
+
+    Concept c = DomainObjectFactory.newConcept();
+    c.setPreferredName(evsConcept.getCode());
+    c.setLongName(evsConcept.getPreferredName());
     
-    for(int i = 0; i<n; i++) {
-      Concept con = DomainObjectFactory.newConcept();
-      con.setPreferredName("C16642");
-      con.setLongName("Gene");
-      con.setPreferredDefinition("But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?");
-      con.setDefinitionSource("NCI");
-      result.add(new EvsResult(con, new String[] {
-                                 "Gene", "Gene2", "Gene3"
-                               }));
+    gov.nih.nci.evs.domain.Definition def = (gov.nih.nci.evs.domain.Definition)evsConcept.getDefinitions().get(0);
+    if(def != null) {
+      c.setPreferredDefinition(def.getDefinition());
+      c.setDefinitionSource(def.getSource().getAbbreviation());
     }
     
-    return result;
+    
+    String[] syns = new String[evsConcept.getSynonyms().size()];
+    evsConcept.getSynonyms().toArray(syns);
+    
+    return new EvsResult(c, syns);
+    
+
   }
 }
