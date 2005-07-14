@@ -453,7 +453,6 @@ public class XMIParser implements Parser {
       if(!StringUtil.isEmpty(concept.getConceptCode()))
         event.addConcept(concept);
 
-      event.addConcept(concept);
       concept = new NewConceptEvent();
     }
 
