@@ -391,13 +391,15 @@ public class UMLElementViewPanel extends JPanel
 
   public void caretUpdate(CaretEvent evt) {
     setButtonState(reviewButton);
-    setButtonState(addButton);
+    //setButtonState(addButton);
   }
   
   public void keyTyped(KeyEvent evt) {}
   public void keyPressed(KeyEvent evt) {}
   public void keyReleased(KeyEvent evt) {
     setButtonState(saveButton);
+    if(saveButton.isEnabled())
+      addButton.setEnabled(false);
   }
 
 
@@ -415,6 +417,7 @@ public class UMLElementViewPanel extends JPanel
     JButton button = (JButton)evt.getSource();
     if(button.getActionCommand().equals(SAVE)) {
       apply(false);
+      setButtonState(addButton);
     } else if(button.getActionCommand().equals(ADD)) {
       Concept[] newConcepts = new Concept[concepts.length + 1];
       for(int i = 0; i<concepts.length; i++) {
