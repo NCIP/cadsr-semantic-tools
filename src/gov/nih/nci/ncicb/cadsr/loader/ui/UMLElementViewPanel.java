@@ -106,11 +106,11 @@ public class UMLElementViewPanel extends JPanel
     for(int i = 0; i<concepts.length; i++) {
       newConcepts[i] = concepts[i];
       // concept code has not changed
-      if(conceptUIs[i].code.getText().equals(concepts[i].getPreferredName())) {
-        concepts[i].setLongName(conceptUIs[i].name.getText());
-        concepts[i].setPreferredDefinition(conceptUIs[i].def.getText());
-        concepts[i].setDefinitionSource(conceptUIs[i].defSource.getText());
-      } else { // concept code has changed
+      //if(conceptUIs[i].code.getText().equals(concepts[i].getPreferredName())) {
+      //  concepts[i].setLongName(conceptUIs[i].name.getText());
+      //  concepts[i].setPreferredDefinition(conceptUIs[i].def.getText());
+      //  concepts[i].setDefinitionSource(conceptUIs[i].defSource.getText());
+      //} else { // concept code has changed
         Concept concept = DomainObjectFactory.newConcept();
         concept.setPreferredName(conceptUIs[i].code.getText());
         concept.setLongName(conceptUIs[i].name.getText());
@@ -119,7 +119,7 @@ public class UMLElementViewPanel extends JPanel
         newConcepts[i] = concept;
         update = true;
       }
-    }
+    //}
     
     if(update) {
       if(toAll) {
