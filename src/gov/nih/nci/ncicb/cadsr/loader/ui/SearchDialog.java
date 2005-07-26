@@ -60,15 +60,11 @@ public class SearchDialog extends JDialog implements ActionListener, KeyListener
   }
   
   public void keyPressed(KeyEvent evt) {
-    System.out.println("" + KeyEvent.VK_ENTER);
-    System.out.println("Key Typed: " + evt.getKeyCode());
     if(evt.getKeyCode() == KeyEvent.VK_ENTER)
       findButton.doClick();
   }
 
   public void keyTyped(KeyEvent evt) {
-    System.out.println("" + KeyEvent.VK_ENTER);
-    System.out.println("Key Typed: " + evt.getKeyCode());
     if(evt.getKeyCode() == KeyEvent.VK_ENTER)
       findButton.doClick();
   }
