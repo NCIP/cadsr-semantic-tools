@@ -14,9 +14,12 @@ import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
@@ -197,6 +200,9 @@ public class MainFrame extends JFrame
       }
     });
     
+    findMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,    
+      Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    
     final PreferenceDialog pd = new PreferenceDialog(_this);
     prefMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
@@ -217,6 +223,9 @@ public class MainFrame extends JFrame
         writer.write(ElementsLists.getInstance());
       }
     });
+    
+    saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,    
+      Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     
     saveAsMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
