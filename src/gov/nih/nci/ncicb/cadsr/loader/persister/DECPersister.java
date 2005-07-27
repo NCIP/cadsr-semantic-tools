@@ -79,7 +79,7 @@ public class DECPersister extends UMLPersister {
             + DEC_PREFERRED_NAME_DELIMITER
             + dec.getProperty().getVersion());
 
-	  dec.setVersion(defaults.getVersion());
+	  dec.setVersion(new Float(1.0f));
 	  dec.setWorkflowStatus(defaults.getWorkflowStatus());
 
 	  List props = elements.getElements(DomainObjectFactory.newProperty()
