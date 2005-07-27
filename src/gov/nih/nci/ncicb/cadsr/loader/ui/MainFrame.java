@@ -69,7 +69,7 @@ public class MainFrame extends JFrame
   private JPanel jPanel1 = new JPanel();
   private JPanel mainViewPanel = new JPanel();
 
-  private UmlDefaultsPanel defaultsPanel = new UmlDefaultsPanel();
+//   private UmlDefaultsPanel defaultsPanel = new UmlDefaultsPanel();
   private NavigationPanel navigationPanel = new NavigationPanel();
   private ErrorPanel errorPanel = null;
 
@@ -119,7 +119,7 @@ public class MainFrame extends JFrame
     this.getContentPane().setLayout(borderLayout1);
     this.setSize(new Dimension(830, 650));
     this.setJMenuBar(mainMenuBar);
-    this.setTitle("UML Loader");
+    this.setTitle("Semantic Integrator Workbench");
 
     jSplitPane2.setOrientation(JSplitPane.VERTICAL_SPLIT);
     jSplitPane1.setDividerLocation(160);
@@ -183,11 +183,7 @@ public class MainFrame extends JFrame
 
     defaultsMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
-          JDialog dialog = new JDialog(_this, "UML Loader Defaults", true);
-          dialog.getContentPane().setLayout(new BorderLayout());
-          dialog.getContentPane().add(defaultsPanel, BorderLayout.CENTER);
-          dialog.setSize(300, 225);
-          dialog.show();
+          new UmlDefaultsPanel().show();
         }
     });
     
