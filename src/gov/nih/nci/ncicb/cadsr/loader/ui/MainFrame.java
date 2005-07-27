@@ -226,7 +226,7 @@ public class MainFrame extends JFrame
             new javax.swing.filechooser.FileFilter() {
               String fileExtension = null;
               {
-                if(runMode.equals(RunMode.GenerateReport)) 
+                if(runMode.equals(RunMode.Curator)) 
                   fileExtension = "csv";
                 else if(runMode.equals(RunMode.Reviewer)) 
                   fileExtension = "xmi";
