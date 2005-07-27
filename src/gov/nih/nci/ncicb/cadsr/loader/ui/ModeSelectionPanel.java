@@ -37,7 +37,7 @@ public class ModeSelectionPanel extends JPanel
 
     infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("xmi.gif"))));
 
-    JLabel infoLabel = new JLabel("<html>Please select the mode you want <br>the UML Loader to run in</html>");
+    JLabel infoLabel = new JLabel("<html>Please select the mode you want <br>the Workbench to run in</html>");
     infoPanel.add(infoLabel);
     
     this.add(infoPanel, BorderLayout.NORTH);
@@ -72,7 +72,7 @@ public class ModeSelectionPanel extends JPanel
     buttonPanel.setLayout(new GridLayout(0, 1));
 
     buttonPanel.add
-      (new JLabel("<html>UML Loader can be run in 3 modes<br>Which would you like to use?</html>"));
+      (new JLabel("<html>Semantic Integrator Workbench can be run in 3 modes<br>Which would you like to use?</html>"));
 
     buttonPanel.add(reportOption);
     buttonPanel.add(curateOption);
