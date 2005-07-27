@@ -55,7 +55,7 @@ public class DEPersister extends UMLPersister {
           if (l.size() == 0) {
             de.setContext(defaults.getContext());
             de.setPreferredName(this.derivePreferredName(de));
-            de.setVersion(defaults.getVersion());
+            de.setVersion(new Float(1.0f));
             de.setWorkflowStatus(defaults.getWorkflowStatus());
 
             de.setPreferredDefinition(
