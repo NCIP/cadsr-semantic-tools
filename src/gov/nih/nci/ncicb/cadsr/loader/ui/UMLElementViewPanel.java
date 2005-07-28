@@ -63,6 +63,8 @@ public class UMLElementViewPanel extends JPanel
   }
   
   private UserPreferences prefs = UserPreferences.getInstance();
+
+  private static EvsDialog evsDialog;
   
   public UMLElementViewPanel(UMLNode node) 
   {
@@ -267,11 +269,13 @@ public class UMLElementViewPanel extends JPanel
 
       evsButton.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent event) {
-            EvsDialog dialog = new EvsDialog();
-            UIUtil.putToCenter(dialog);
-            dialog.setVisible(true);
+            if (evsDialog == null)
+              evsDialog = new EvsDialog();
 
-            Concept c = dialog.getConcept();
+            UIUtil.putToCenter(evsDialog);
+            evsDialog.setVisible(true);
+
+            Concept c = evsDialog.getConcept();
 
             conceptUIs[index].code.setText(c.getPreferredName());
             conceptUIs[index].name.setText(c.getLongName());
