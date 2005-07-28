@@ -305,6 +305,8 @@ public class UMLDefaultHandler implements UMLHandler {
           String className = childOc.getLongName();
           int ind = className.lastIndexOf(".");
           className = className.substring(ind + 1);
+          String packageName = className.substring(0, ind);
+
           newDec.setLongName(className + ":" + propName);		
           DataElement newDe = DomainObjectFactory.newDataElement();
           newDe.setDataElementConcept(newDec);
@@ -317,10 +319,23 @@ public class UMLDefaultHandler implements UMLHandler {
             newDe.addDefinition(def);
           }
 
-          for(Iterator it2 = de.getAlternateNames().iterator(); it2.hasNext();) {
-            AlternateName an = (AlternateName)it2.next();
-            newDe.addAlternateName(an);
-          }
+
+          AlternateName fullName = DomainObjectFactory.newAlternateName();
+          fullName.setType(AlternateName.TYPE_FULL_NAME);
+          fullName.setName(packageName + "." + className + "." + propName);
+          de.addAlternateName(fullName);
+          
+          // Store alt Name for DE:
+          // ClassName:PropertyName
+          fullName = DomainObjectFactory.newAlternateName();
+          fullName.setType(AlternateName.TYPE_UML_DE);
+          fullName.setName(className + ":" + propName);
+          de.addAlternateName(fullName);
+
+//           for(Iterator it2 = de.getAlternateNames().iterator(); it2.hasNext();) {
+//             AlternateName an = (AlternateName)it2.next();
+//             newDe.addAlternateName(an);
+//           }
 
           newDe.setAcCsCsis(parentOc.getAcCsCsis());
           newDec.setAcCsCsis(parentOc.getAcCsCsis());
