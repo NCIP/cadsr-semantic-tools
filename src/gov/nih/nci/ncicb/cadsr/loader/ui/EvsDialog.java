@@ -17,10 +17,12 @@ public class EvsDialog extends JDialog implements ActionListener
 {
   private EvsDialog _this = this;
 
-  private JLabel searchLabel = new JLabel("Search String ");
+  private JLabel searchLabel = new JLabel("Search:");
   private JTextField searchField = new JTextField(10);
-  private JLabel whereToSearchLabel = new JLabel("Search In");
+  private JLabel whereToSearchLabel = new JLabel("");
   private JComboBox searchSourceCombo;
+
+  private JCheckBox includeRetiredCB = new JCheckBox("Include Retired?");
 
   private JButton searchButton = new JButton("Search");
 
@@ -32,6 +34,8 @@ public class EvsDialog extends JDialog implements ActionListener
 
   private JButton previousButton = new JButton("Previous"),
     nextButton = new JButton("Next");
+  
+  private JLabel indexLabel = new JLabel("search");
 
   private static String SEARCH = "SEARCH",
     PREVIOUS = "PREVIOUS",
@@ -48,8 +52,6 @@ public class EvsDialog extends JDialog implements ActionListener
   private static int PAGE_SIZE = 5;
 
   private int pageIndex = 0;
-
-//   private UMLElementViewPanel viewPanel = null;
 
   private Concept choiceConcept = null;
 
@@ -139,7 +141,6 @@ public class EvsDialog extends JDialog implements ActionListener
             if(row > -1) {
               choiceConcept = resultSet.get(pageIndex * PAGE_SIZE + row).getConcept();
               _this.dispose();
-//               System.out.println("Chose: " + resultSet.get(pageIndex * PAGE_SIZE + row));
             }
           }
         }
@@ -147,17 +148,19 @@ public class EvsDialog extends JDialog implements ActionListener
 
     JScrollPane scrollPane = new JScrollPane(resultTable);
 
-    insertInBag(searchPanel,searchLabel,0,0);
-    insertInBag(searchPanel,searchField, 1,0);
+    insertInBag(searchPanel,searchLabel,0, 0);
+    insertInBag(searchPanel,searchField, 1, 0);
     insertInBag(searchPanel,whereToSearchLabel, 2,0);
     insertInBag(searchPanel,searchSourceCombo, 3, 0);
-    insertInBag(searchPanel,searchButton,4,0);
+    insertInBag(searchPanel,includeRetiredCB, 4, 0);
+    insertInBag(searchPanel,searchButton, 5, 0);
 
     searchButton.addActionListener(this);
     searchButton.setActionCommand(SEARCH);
 
     JPanel browsePanel = new JPanel();
     browsePanel.add(previousButton);
+    browsePanel.add(indexLabel);
     browsePanel.add(nextButton);
 
     previousButton.setActionCommand(PREVIOUS);
@@ -180,15 +183,8 @@ public class EvsDialog extends JDialog implements ActionListener
     return choiceConcept;
   }
   
-  // might change to a more generic signature, not decided yet.
-//   void setViewPanel(UMLElementViewPanel panel) {
-//     this.viewPanel = panel;
-//   }
-  
   private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-
     insertInBag(bagComp, comp, x, y, 1, 1);
-
   }
 
   private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
@@ -209,12 +205,16 @@ public class EvsDialog extends JDialog implements ActionListener
 
       resultSet = new ArrayList();
 
+      _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
       if(selection.equals(CONCEPT_CODE)) {
-        resultSet.add(module.findByConceptCode(text));
+        resultSet.add(module.findByConceptCode(text, includeRetiredCB.isSelected()));
       }
       if(selection.equals(SYNONYMS)) {
-        resultSet.addAll(module.findBySynonym(text));
+        resultSet.addAll(module.findBySynonym(text, includeRetiredCB.isSelected()));
       }
+
+      _this.setCursor(Cursor.getDefaultCursor());
     
       updateTable();
 
@@ -225,8 +225,22 @@ public class EvsDialog extends JDialog implements ActionListener
       pageIndex++;
       updateTable();
     }
+    updateIndexLabel();
+  }
 
-
+  private void updateIndexLabel() {
+    if(resultSet.size() == 0) {
+      indexLabel.setText("");
+    } else {
+      StringBuilder sb = new StringBuilder();
+      int start = PAGE_SIZE * pageIndex;
+      int end = (int)Math.min(resultSet.size(), start + PAGE_SIZE); 
+      sb.append(start);
+      sb.append("-");
+      sb.append(end);
+      indexLabel.setText(sb.toString());
+    }
+    
   }
 
   private void updateTable() {
