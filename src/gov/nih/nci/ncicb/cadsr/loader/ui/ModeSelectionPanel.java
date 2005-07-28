@@ -72,7 +72,7 @@ public class ModeSelectionPanel extends JPanel
     buttonPanel.setLayout(new GridLayout(0, 1));
 
     buttonPanel.add
-      (new JLabel("<html>Semantic Integrator Workbench can be run in 3 modes<br>Which would you like to use?</html>"));
+      (new JLabel("<html>Semantic Integration Workbench can be run in 3 modes<br>Which would you like to use?</html>"));
 
     buttonPanel.add(reportOption);
     buttonPanel.add(curateOption);
