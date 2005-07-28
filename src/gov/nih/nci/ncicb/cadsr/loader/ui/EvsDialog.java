@@ -127,6 +127,10 @@ public class EvsDialog extends JDialog implements ActionListener
       };
 
     resultTable.setRowHeight(60);
+    
+    DefaultTableCellRenderer  tcrColumn  =  new DefaultTableCellRenderer();
+    tcrColumn.setVerticalAlignment(JTextField.TOP);
+    resultTable.getColumnModel().getColumn(3).setCellRenderer(tcrColumn);
 
     int c = 0;
     for(int width : colWidth) {
