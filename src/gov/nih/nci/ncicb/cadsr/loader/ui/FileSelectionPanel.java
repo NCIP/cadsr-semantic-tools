@@ -11,6 +11,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.*;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,11 +131,13 @@ implements ProgressListener {
 
     final UserPreferences prefs = UserPreferences.getInstance();
 
-    java.util.List<String> recentFiles = prefs.getRecentFiles();
+    final java.util.List<String> recentFiles = prefs.getRecentFiles();
     
     int y = 3;
     for(String s : recentFiles) {
-      final JLabel jl = new JLabel(s);
+      final String fileStr = new File(s).getName();
+      
+      final JLabel jl = new JLabel(fileStr);
       
       Font f = jl.getFont();
       Font newFont = new Font(f.getName(), f.getStyle(), f.getSize() - 2);
@@ -142,8 +145,11 @@ implements ProgressListener {
 
       jl.addMouseListener(new MouseAdapter() {
           public void mouseClicked(MouseEvent evt) {
-            filePathField.setText(jl.getText());
-            fireActionEvent(new ActionEvent(evt, 3, "mouseclick" ));
+            for(String search : recentFiles)
+              if(search.contains(fileStr)) {
+                filePathField.setText(search);
+                fireActionEvent(new ActionEvent(evt, 3, "mouseclick" ));
+              }
           }
         });
 
