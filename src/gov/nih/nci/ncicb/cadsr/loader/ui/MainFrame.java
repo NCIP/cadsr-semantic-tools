@@ -122,7 +122,7 @@ public class MainFrame extends JFrame
     this.getContentPane().setLayout(borderLayout1);
     this.setSize(new Dimension(830, 650));
     this.setJMenuBar(mainMenuBar);
-    this.setTitle("Semantic Integrator Workbench");
+    this.setTitle("Semantic Integration Workbench");
 
     jSplitPane2.setOrientation(JSplitPane.VERTICAL_SPLIT);
     jSplitPane1.setDividerLocation(160);
