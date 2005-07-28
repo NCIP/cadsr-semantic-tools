@@ -8,46 +8,66 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-public class UmlDefaultsPanel extends JPanel implements ActionListener
+import java.util.HashMap;
+import java.util.Map;
+
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
+
+public class UmlDefaultsPanel extends JDialog implements ActionListener
 {
+
+  private UmlDefaultsPanel _this = this;
 
   private JTable table = null;
   private JButton applyButton, revertButton;
 
-  private String values[][] = 
+  private Map<String, String> values = new HashMap();
+
+  private String rowNames[] = 
   {
-    {"Project Name", "caCORE"},
-    {"Project Version", "3.0"},
-    {"Context Name", "Test"},
-    {"Version", "1"},
-    {"WorkflowStatus", "Draft New"},
-    {"Project Long Name", "Put real Long Name here"},
-    {"Project Description", "Put description here"},
-    {"cdName", "Put cdName here"},
-    {"cdContextName", "Test"},
-    {"Package Filter", "<CSM>"}
+    "Project Name",
+    "Project Version",
+    "Context Name",
+    "Version",
+    "Workflow Status",
+    "Project Long Name",
+    "Project Description",
+    "Concepual Domain",
+    "CD Context Name",
+    "Package Filter"
   };
 
   public UmlDefaultsPanel()
   {
-    try
-    {
-      jbInit();
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
-    }
-
+    super((java.awt.Frame)null, "UML Loader Defaults", true);
+    initValues();
+    initUI();
   }
 
-  private void jbInit() throws Exception
+  private void initValues() {
+    UMLDefaults defaults = UMLDefaults.getInstance();
+    values.put(rowNames[0], defaults.getProjectCs().getPreferredName());
+    values.put(rowNames[1], defaults.getProjectCs().getVersion().toString());
+    values.put(rowNames[2], defaults.getProjectCs().getContext().getName());
+    values.put(rowNames[3], "1.0");
+    values.put(rowNames[4], defaults.getWorkflowStatus());
+    values.put(rowNames[5], defaults.getProjectCs().getLongName());
+    values.put(rowNames[6], defaults.getProjectCs().getPreferredDefinition());
+    values.put(rowNames[7], defaults.getConceptualDomain().getLongName());
+    values.put(rowNames[8], defaults.getProjectCs().getPreferredDefinition());
+    values.put(rowNames[9], defaults.getProjectCs().getPreferredDefinition());
+  }
+
+  private void initUI() 
   {
     TableModel dataModel = new AbstractTableModel() {
-        public int getColumnCount() { return values[0].length; }
-        public int getRowCount() { return values.length;}
+        public int getColumnCount() { return 2; }
+        public int getRowCount() { return rowNames.length;}
         public Object getValueAt(int row, int col) { 
-          return values[row][col];
+          if(col == 0)
+            return rowNames[row];
+          else 
+            return values.get(rowNames[row]);
         }
         public boolean isCellEditable(int row, int col) {
           if(col != 0)
@@ -57,15 +77,18 @@ public class UmlDefaultsPanel extends JPanel implements ActionListener
         }
         public void setValueAt(Object value, int row, int col) 
         {
-          values[row][col] = (String)value;
+          if(col == 1)
+            values.put(rowNames[row], value.toString());
           fireTableCellUpdated(row,col);          
         }
       };
 
-    this.setLayout(new BorderLayout());
+
+    JPanel mainPanel = new JPanel();
+    mainPanel.setLayout(new BorderLayout());
 
     JTable table = new JTable(dataModel);
-    this.add(table, BorderLayout.CENTER);
+    mainPanel.add(table, BorderLayout.CENTER);
     
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout());
@@ -79,11 +102,17 @@ public class UmlDefaultsPanel extends JPanel implements ActionListener
     applyButton.addActionListener(this);
     revertButton.addActionListener(this);
 
-    this.add(buttonPanel, BorderLayout.SOUTH);
+    mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+    this.getContentPane().setLayout(new BorderLayout());
+    this.getContentPane().add(mainPanel, BorderLayout.CENTER);
+    this.setSize(300, 225);
+
+
   }
   
   public void actionPerformed(ActionEvent event) 
   {
-    //this.dispose();
+    _this.dispose();
   }
 }

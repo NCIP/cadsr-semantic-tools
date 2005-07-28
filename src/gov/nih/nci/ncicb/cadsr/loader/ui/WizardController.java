@@ -238,8 +238,8 @@ public class WizardController implements ActionListener {
                     parser.setEventHandler(listener);
                     parser.addProgressListener(progressDesc);
                     
-//                     UMLDefaults defaults = UMLDefaults.getInstance();
-//                     defaults.initParams(filename);
+                    UMLDefaults defaults = UMLDefaults.getInstance();
+                    defaults.initParams(filename);
                     
                     parser.parse(filename);
                     
@@ -299,7 +299,7 @@ public class WizardController implements ActionListener {
                     
                     return null;
                   } catch (Exception e){
-                    logger.error(e);
+                    logger.error(e, e);
                     return null;
                   } // end of try-catch
                 }

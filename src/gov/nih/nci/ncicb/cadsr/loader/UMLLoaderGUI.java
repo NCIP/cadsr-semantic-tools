@@ -41,7 +41,7 @@ public class UMLLoaderGUI
     Frame f = new Frame();
     Wizard wizard = new Wizard(f);
 
-    wizard.getDialog().setTitle("Semantic Integrator Workbench");
+    wizard.getDialog().setTitle("Semantic Integration Workbench");
     
     WizardPanelDescriptor modeSelDesc = new ModeSelectionPanelDescriptor();
     wizard.registerWizardPanel(ModeSelectionPanelDescriptor.IDENTIFIER, modeSelDesc);

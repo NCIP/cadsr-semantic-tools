@@ -19,7 +19,7 @@ public class EvsDialog extends JDialog implements ActionListener
 
   private JLabel searchLabel = new JLabel("Search:");
   private JTextField searchField = new JTextField(10);
-  private JLabel whereToSearchLabel = new JLabel("");
+  private JLabel whereToSearchLabel = new JLabel("Search By");
   private JComboBox searchSourceCombo;
 
   private JCheckBox includeRetiredCB = new JCheckBox("Include Retired?");
@@ -35,7 +35,7 @@ public class EvsDialog extends JDialog implements ActionListener
   private JButton previousButton = new JButton("Previous"),
     nextButton = new JButton("Next");
   
-  private JLabel indexLabel = new JLabel("search");
+  private JLabel indexLabel = new JLabel("");
 
   private static String SEARCH = "SEARCH",
     PREVIOUS = "PREVIOUS",
@@ -130,6 +130,7 @@ public class EvsDialog extends JDialog implements ActionListener
     
     DefaultTableCellRenderer  tcrColumn  =  new DefaultTableCellRenderer();
     tcrColumn.setVerticalAlignment(JTextField.TOP);
+    resultTable.getColumnModel().getColumn(2).setCellRenderer(tcrColumn);
     resultTable.getColumnModel().getColumn(3).setCellRenderer(tcrColumn);
 
     int c = 0;
