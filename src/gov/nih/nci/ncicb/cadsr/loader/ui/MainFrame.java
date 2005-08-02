@@ -64,19 +64,18 @@ public class MainFrame extends JFrame
 
   private JMenuItem semanticConnectorMenuItem = new JMenuItem("Semantic Connector");
 
-  private BorderLayout borderLayout1 = new BorderLayout();
   private JSplitPane jSplitPane1 = new JSplitPane();
   private JSplitPane jSplitPane2 = new JSplitPane();
   private JTabbedPane jTabbedPane1 = new JTabbedPane();
   private CloseableTabbedPane viewTabbedPane = new CloseableTabbedPane();
   private JPanel jPanel1 = new JPanel();
-  private JPanel mainViewPanel = new JPanel();
 
-//   private UmlDefaultsPanel defaultsPanel = new UmlDefaultsPanel();
   private NavigationPanel navigationPanel = new NavigationPanel();
   private ErrorPanel errorPanel = null;
 
   private MainFrame _this = this;
+
+  private JLabel infoLabel = new JLabel(" ");
 
   private Map<String, UMLElementViewPanel> viewPanels = new HashMap();
   private AssociationViewPanel associationViewPanel = null;
@@ -114,12 +113,13 @@ public class MainFrame extends JFrame
     if(evt.getPropertyName().equals("APPLY")) {
       applyMenuItem.setEnabled((Boolean)evt.getNewValue());
       applyToAllMenuItem.setEnabled((Boolean)evt.getNewValue());
+      infoLabel.setText("Changes Applied");
     }
   }
 
   private void jbInit() throws Exception
   {
-    this.getContentPane().setLayout(borderLayout1);
+    this.getContentPane().setLayout(new BorderLayout());
     this.setSize(new Dimension(830, 650));
     this.setJMenuBar(mainMenuBar);
     this.setTitle("Semantic Integration Workbench");
@@ -177,6 +177,7 @@ public class MainFrame extends JFrame
     navigationPanel.addViewChangeListener(this);
 
     this.getContentPane().add(jSplitPane1, BorderLayout.CENTER);
+    this.getContentPane().add(infoLabel, BorderLayout.SOUTH);
     
     exitMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
@@ -221,6 +222,8 @@ public class MainFrame extends JFrame
         ElementWriter writer = BeansAccessor.getWriter();
         writer.setOutput(saveFilename);
         writer.write(ElementsLists.getInstance());
+        
+        infoLabel.setText("File Saved");
       }
     });
     
@@ -261,6 +264,7 @@ public class MainFrame extends JFrame
             writer.setOutput(filePath);
             saveFilename = filePath;
             writer.write(ElementsLists.getInstance());
+            infoLabel.setText("File Saved");
           }
       }
     });
@@ -302,7 +306,6 @@ public class MainFrame extends JFrame
       });
     applyToAllMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
-          //           JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
           UMLElementViewPanel viewPanel =
             (UMLElementViewPanel)viewTabbedPane
             .getSelectedComponent();
@@ -317,8 +320,6 @@ public class MainFrame extends JFrame
           new AboutPanel();
         }
       });
-    
-    mainViewPanel.setLayout(new BorderLayout());
   }
 
   public void viewChanged(ViewChangeEvent event) {
@@ -352,17 +353,19 @@ public class MainFrame extends JFrame
 
         viewPanel.setName(node.getFullPath());
         viewPanels.put(viewPanel.getName(), viewPanel);
+        infoLabel.setText(tabTitle);
       } else {
         UMLElementViewPanel viewPanel = (UMLElementViewPanel)
           viewTabbedPane.getSelectedComponent();
         viewPanels.remove(viewPanel.getName());
 
-        
         String tabTitle = node.getDisplay();;
         if(node instanceof AttributeNode) 
           tabTitle = node.getParent().getDisplay() 
             + "." + tabTitle;
         viewTabbedPane.setTitleAt(viewTabbedPane.getSelectedIndex(), tabTitle);
+
+        infoLabel.setText(tabTitle);
 
         viewPanel.setName(node.getFullPath());
         viewPanel.updateNode(node);
@@ -376,6 +379,7 @@ public class MainFrame extends JFrame
         associationViewPanel = new AssociationViewPanel((ObjectClassRelationship)node.getUserObject());
         viewTabbedPane.addTab("Association", associationViewPanel);
         associationViewPanel.setName("Association");
+        infoLabel.setText("Association");
       } else
         associationViewPanel.update((ObjectClassRelationship)node.getUserObject());
 
