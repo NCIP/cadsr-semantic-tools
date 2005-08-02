@@ -27,7 +27,7 @@ import javax.swing.event.*;
 
 public class UMLElementViewPanel extends JPanel
   implements ActionListener, KeyListener
-             , ItemListener, CaretListener,
+             , ItemListener,
              UserPreferencesListener, NavigationListener {
 
   private Concept[] concepts;
@@ -36,7 +36,8 @@ public class UMLElementViewPanel extends JPanel
   private UMLElementViewPanel _this = this;
 
   private UMLNode node;
-  private boolean remove = false;
+  private boolean remove = false,
+    orderChanged = false;
 
   private static final String ADD = "ADD",
     DELETE = "DELETE",
@@ -108,11 +109,11 @@ public class UMLElementViewPanel extends JPanel
     for(int i = 0; i<concepts.length; i++) {
       newConcepts[i] = concepts[i];
       // concept code has not changed
-      //if(conceptUIs[i].code.getText().equals(concepts[i].getPreferredName())) {
-      //  concepts[i].setLongName(conceptUIs[i].name.getText());
-      //  concepts[i].setPreferredDefinition(conceptUIs[i].def.getText());
-      //  concepts[i].setDefinitionSource(conceptUIs[i].defSource.getText());
-      //} else { // concept code has changed
+      if(conceptUIs[i].code.getText().equals(concepts[i].getPreferredName())) {
+        concepts[i].setLongName(conceptUIs[i].name.getText());
+        concepts[i].setPreferredDefinition(conceptUIs[i].def.getText());
+        concepts[i].setDefinitionSource(conceptUIs[i].defSource.getText());
+      } else { // concept code has changed
         Concept concept = DomainObjectFactory.newConcept();
         concept.setPreferredName(conceptUIs[i].code.getText());
         concept.setLongName(conceptUIs[i].name.getText());
@@ -121,22 +122,25 @@ public class UMLElementViewPanel extends JPanel
         newConcepts[i] = concept;
         update = true;
       }
-    //}
+    }
+    
+    update = orderChanged | update;
     
     if(update) {
       if(toAll) {
         Object o = node.getUserObject();
         if(o instanceof DataElement) {
           DataElement de = (DataElement)o;
-//           List<AlternateName> altNames = 
-//             (List<AlternateName>)de.getAlternateNames();
           ObjectUpdater.updateByAltName(de.getDataElementConcept().getProperty().getLongName(), concepts, newConcepts);
         }
       } else
         ObjectUpdater.update((AdminComponent)node.getUserObject(), concepts, newConcepts);
-    }
+    } 
+
+    orderChanged = false;
     
     setSaveButtonState(false);
+    addButton.setEnabled(true);
     reviewButton.setEnabled(true);
   }
 
@@ -227,11 +231,6 @@ public class UMLElementViewPanel extends JPanel
       conceptUIs[i].def.addKeyListener(this);
       conceptUIs[i].defSource.addKeyListener(this);
 
-      conceptUIs[i].code.addCaretListener(this);
-      conceptUIs[i].name.addCaretListener(this);
-      conceptUIs[i].defSource.addCaretListener(this);
-      conceptUIs[i].def.addCaretListener(this);
-      
       final int index = i;
       if(index == 0)
         upButton.setVisible(false);
@@ -245,11 +244,11 @@ public class UMLElementViewPanel extends JPanel
           concepts[index] = temp;
           updateConcepts(concepts);
 
-          ((AdminComponent)node.getUserObject()).setPreferredName(ObjectUpdater.preferredNameFromConcepts(concepts));
-          
-          setButtonState(saveButton);
-              
-          }
+          orderChanged = true;
+
+          setSaveButtonState(areAllFieldEntered());
+          reviewButton.setEnabled(false);
+        }
         });
       
       downButton.addActionListener(new ActionListener() {
@@ -259,10 +258,10 @@ public class UMLElementViewPanel extends JPanel
           concepts[index+1] = temp;
           updateConcepts(concepts);
 
-          ((AdminComponent)node.getUserObject()).setPreferredName(ObjectUpdater.preferredNameFromConcepts(concepts));
+          orderChanged = true;
           
-          setButtonState(saveButton);
-              
+          setSaveButtonState(areAllFieldEntered());
+          reviewButton.setEnabled(false);
         }
         });
 
@@ -282,7 +281,14 @@ public class UMLElementViewPanel extends JPanel
             conceptUIs[index].def.setText(c.getPreferredDefinition());
             conceptUIs[index].defSource.setText(c.getDefinitionSource());
 
-            setButtonState(saveButton);
+            if(areAllFieldEntered()) {
+              setSaveButtonState(true);
+              addButton.setEnabled(true);
+            } else {
+              setSaveButtonState(false);
+              addButton.setEnabled(false);
+            }
+            reviewButton.setEnabled(false);
           }
         });
       
@@ -331,79 +337,84 @@ public class UMLElementViewPanel extends JPanel
  
   }
 
-  private void initButtonPanel()
-  {
-  	addButton = new JButton("Add");
-  	deleteButton = new JButton("Remove");
-  	saveButton = new JButton("Apply");
-  	reviewButton = new JCheckBox("Reviewed");
-  	previousButton = new JButton("Previous");
-  	nextButton = new JButton("Next");
-  	
-  	reviewButton.setSelected(((ReviewableUMLNode)node).isReviewed());
-  	addButton.setActionCommand(ADD);
-  	deleteButton.setActionCommand(DELETE);
-  	saveButton.setActionCommand(SAVE);
-  	previousButton.setActionCommand(PREVIOUS);
-  	nextButton.setActionCommand(NEXT);
-  	addButton.addActionListener(this);
-  	deleteButton.addActionListener(this);
-  	saveButton.addActionListener(this);
-  	reviewButton.addItemListener(this);
-  	previousButton.addActionListener(this);
-  	nextButton.addActionListener(this);
-  	
-  	if(concepts.length < 2)
-  	  deleteButton.setEnabled(false);
-  	
-        setSaveButtonState(false);
-  	setButtonState(reviewButton);
-  	JPanel buttonPanel = new JPanel();
-  	buttonPanel.add(addButton);
-  	buttonPanel.add(deleteButton);
-  	buttonPanel.add(saveButton);
-  	buttonPanel.add(reviewButton);
-  	buttonPanel.add(previousButton);
-  	buttonPanel.add(nextButton);
+  private void initButtonPanel() {
+    addButton = new JButton("Add");
+    deleteButton = new JButton("Remove");
+    saveButton = new JButton("Apply");
+    reviewButton = new JCheckBox("Reviewed");
+    previousButton = new JButton("Previous");
+    nextButton = new JButton("Next");
+    
+    reviewButton.setSelected(((ReviewableUMLNode)node).isReviewed());
+    addButton.setActionCommand(ADD);
+    deleteButton.setActionCommand(DELETE);
+    saveButton.setActionCommand(SAVE);
+    previousButton.setActionCommand(PREVIOUS);
+    nextButton.setActionCommand(NEXT);
+    addButton.addActionListener(this);
+    deleteButton.addActionListener(this);
+    saveButton.addActionListener(this);
+    reviewButton.addItemListener(this);
+    previousButton.addActionListener(this);
+    nextButton.addActionListener(this);
+    
+    if(concepts.length < 2)
+      deleteButton.setEnabled(false);
+    
+    if(areAllFieldEntered()) {
+      reviewButton.setEnabled(true);
+      addButton.setEnabled(true);
+    } else {
+      addButton.setEnabled(false);
+      reviewButton.setEnabled(false);
+    }
+    saveButton.setEnabled(false);
 
-  	this.add(buttonPanel, BorderLayout.SOUTH);
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.add(addButton);
+    buttonPanel.add(deleteButton);
+    buttonPanel.add(saveButton);
+    buttonPanel.add(reviewButton);
+    buttonPanel.add(previousButton);
+    buttonPanel.add(nextButton);
+    
+    this.add(buttonPanel, BorderLayout.SOUTH);
   }
 
   private void setSaveButtonState(boolean b) {
     saveButton.setEnabled(b);
+
     PropertyChangeEvent evt = new PropertyChangeEvent(this, SAVE, null, b);
     firePropertyChangeEvent(evt);
   }
 
-  
-  private void setButtonState(AbstractButton button)  {
+  private boolean areAllFieldEntered() {
     for(int i=0; i < conceptUIs.length; i++) {
       if(conceptUIs[i].code.getText().trim().equals("")
          | conceptUIs[i].name.getText().trim().equals("")
          | conceptUIs[i].defSource.getText().trim().equals("")
          | conceptUIs[i].def.getText().trim().equals("")) {
-        button.setEnabled(false);
-        return;
-      }
-      
-      else
-        button.setEnabled(true);
-    }
-    PropertyChangeEvent evt = new PropertyChangeEvent(_this, button.getActionCommand(), null, button.isEnabled());
-    firePropertyChangeEvent(evt);
+        return false;
+      } 
+    }      
+    return true;
   }
 
-  public void caretUpdate(CaretEvent evt) {
-    setButtonState(reviewButton);
-    //setButtonState(addButton);
-  }
-  
   public void keyTyped(KeyEvent evt) {}
   public void keyPressed(KeyEvent evt) {}
+
+  /**
+   *  Text Change Use Case.
+   */
   public void keyReleased(KeyEvent evt) {
-    setButtonState(saveButton);
-    if(saveButton.isEnabled())
+    if(areAllFieldEntered()) {
+      addButton.setEnabled(true);
+      setSaveButtonState(true);
+    } else {
       addButton.setEnabled(false);
+      setSaveButtonState(false);
+    }
+    reviewButton.setEnabled(false);
   }
 
 
@@ -421,7 +432,6 @@ public class UMLElementViewPanel extends JPanel
     JButton button = (JButton)evt.getSource();
     if(button.getActionCommand().equals(SAVE)) {
       apply(false);
-      setButtonState(addButton);
     } else if(button.getActionCommand().equals(ADD)) {
       Concept[] newConcepts = new Concept[concepts.length + 1];
       for(int i = 0; i<concepts.length; i++) {
@@ -441,10 +451,15 @@ public class UMLElementViewPanel extends JPanel
 
       if(concepts.length > 1)
         deleteButton.setEnabled(true);
-      setButtonState(addButton);
-      setButtonState(saveButton);
-      setButtonState(reviewButton);
 
+      if(areAllFieldEntered()) {
+        addButton.setEnabled(true);
+        saveButton.setEnabled(true);
+      } else {
+        addButton.setEnabled(false);
+        saveButton.setEnabled(false);
+      }
+      reviewButton.setEnabled(false);
     } else if(button.getActionCommand().equals(DELETE)) {
       Concept[] newConcepts = new Concept[concepts.length - 1];
       for(int i = 0; i<newConcepts.length; i++) {
@@ -455,9 +470,14 @@ public class UMLElementViewPanel extends JPanel
       _this.remove(scrollPane);
       initViewPanel();
 
-      setButtonState(addButton);
-      setButtonState(saveButton);
-      setButtonState(reviewButton);
+      if(areAllFieldEntered()) {
+        addButton.setEnabled(true);
+        saveButton.setEnabled(true);
+      } else {
+        addButton.setEnabled(false);
+        saveButton.setEnabled(false);
+      }
+      reviewButton.setEnabled(false);
       
       if(concepts.length < 2)
         deleteButton.setEnabled(false);
@@ -498,9 +518,6 @@ public class UMLElementViewPanel extends JPanel
       
       event.setReviewed(ItemEvent.SELECTED == e.getStateChange());
 
-      if(event.isReviewed())
-        saveButton.doClick();
-      
       fireReviewEvent(event);
       
       //if item is reviewed go to next item in the tree
