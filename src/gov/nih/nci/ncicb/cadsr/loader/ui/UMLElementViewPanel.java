@@ -375,8 +375,8 @@ public class UMLElementViewPanel extends JPanel
     buttonPanel.add(deleteButton);
     buttonPanel.add(saveButton);
     buttonPanel.add(reviewButton);
-    buttonPanel.add(previousButton);
-    buttonPanel.add(nextButton);
+//     buttonPanel.add(previousButton);
+//     buttonPanel.add(nextButton);
     
     this.add(buttonPanel, BorderLayout.SOUTH);
   }
