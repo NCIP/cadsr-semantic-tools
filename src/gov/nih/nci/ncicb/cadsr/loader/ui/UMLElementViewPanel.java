@@ -283,10 +283,10 @@ public class UMLElementViewPanel extends JPanel
 
             if(areAllFieldEntered()) {
               setSaveButtonState(true);
-              addButton.setEnabled(true);
+//               addButton.setEnabled(true);
             } else {
               setSaveButtonState(false);
-              addButton.setEnabled(false);
+//               addButton.setEnabled(false);
             }
             reviewButton.setEnabled(false);
           }
@@ -408,10 +408,10 @@ public class UMLElementViewPanel extends JPanel
    */
   public void keyReleased(KeyEvent evt) {
     if(areAllFieldEntered()) {
-      addButton.setEnabled(true);
+//       addButton.setEnabled(true);
       setSaveButtonState(true);
     } else {
-      addButton.setEnabled(false);
+//       addButton.setEnabled(false);
       setSaveButtonState(false);
     }
     reviewButton.setEnabled(false);
@@ -453,12 +453,11 @@ public class UMLElementViewPanel extends JPanel
         deleteButton.setEnabled(true);
 
       if(areAllFieldEntered()) {
-        addButton.setEnabled(true);
         saveButton.setEnabled(true);
       } else {
-        addButton.setEnabled(false);
         saveButton.setEnabled(false);
       }
+      addButton.setEnabled(false);
       reviewButton.setEnabled(false);
     } else if(button.getActionCommand().equals(DELETE)) {
       Concept[] newConcepts = new Concept[concepts.length - 1];
@@ -471,12 +470,11 @@ public class UMLElementViewPanel extends JPanel
       initViewPanel();
 
       if(areAllFieldEntered()) {
-        addButton.setEnabled(true);
         saveButton.setEnabled(true);
       } else {
-        addButton.setEnabled(false);
         saveButton.setEnabled(false);
       }
+      addButton.setEnabled(false);
       reviewButton.setEnabled(false);
       
       if(concepts.length < 2)
