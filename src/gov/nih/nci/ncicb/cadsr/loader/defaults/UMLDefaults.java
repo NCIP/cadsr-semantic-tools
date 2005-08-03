@@ -26,10 +26,6 @@ public class UMLDefaults {
 
   private static UMLDefaults singleton = new UMLDefaults();
 
-  private String projectName, projectLongName, projectDescription;
-  private Float projectVersion;
-  private String workflowStatus;
-  private Float version;
   private Context context;
   private ConceptualDomain conceptualDomain;
   private ClassificationScheme projectCs;
@@ -43,6 +39,8 @@ public class UMLDefaults {
 
   private Map packageFilter = new HashMap();
   private String defaultPackage = null;
+
+  private LoaderDefault loaderDefault = null;
 
   private UMLDefaults() {
   }
@@ -65,22 +63,26 @@ public class UMLDefaults {
    */
 
   public void initParams(String filename) throws PersisterException  {
-    LoaderDefault loaderDefault = new AttachedFileDefaultsLoader().loadDefaults(filename);
+    loaderDefault = new AttachedFileDefaultsLoader().loadDefaults(filename);
 
     if(loaderDefault == null) 
       loaderDefault = new EmptyDefaultsLoader().loadDefaults();
 
-    initParams(loaderDefault);
+    initParams();
   }
 
   public void initParams(String projectName, Float projectVersion, String username) throws PersisterException {
-    LoaderDefault loaderDefault = new DBDefaultsLoader().loadDefaults(projectName, projectVersion);
+    loaderDefault = new DBDefaultsLoader().loadDefaults(projectName, projectVersion);
 
-    initParams(loaderDefault);
+    initParams();
 
   }
 
-  private void initParams(LoaderDefault loaderDefault) throws PersisterException {
+  public void saveParams(String filename) throws PersisterException {
+    
+  }
+
+  private void initParams() throws PersisterException {
 
     audit = DomainObjectFactory.newAudit();
 
@@ -89,9 +91,6 @@ public class UMLDefaults {
 	"Defaults not found. Please create a profile first.");
     }
 
-    this.projectName = loaderDefault.getProjectName();
-    this.projectVersion = loaderDefault.getProjectVersion();
-    
     String cName = loaderDefault.getContextName();
     
     if (cName == null) {
@@ -102,17 +101,10 @@ public class UMLDefaults {
     context.setName(cName);
 
     
-    version = new Float(loaderDefault.getVersion().toString());
-    
-    workflowStatus = loaderDefault.getWorkflowStatus();
-    
-    if (workflowStatus == null) {
+    if (loaderDefault.getWorkflowStatus() == null) {
       throw new PersisterException("WorkflowStatus not Set.");
     }
     
-    projectLongName = loaderDefault.getProjectLongName();
-    projectDescription = loaderDefault.getProjectDescription();
-
     conceptualDomain = DomainObjectFactory.newConceptualDomain();
     conceptualDomain.setPreferredName(loaderDefault.getCdName());
 
@@ -120,6 +112,18 @@ public class UMLDefaults {
     cdContext.setName(loaderDefault.getCdContextName());
 
     conceptualDomain.setContext(cdContext);
+
+    projectCs = DomainObjectFactory.newClassificationScheme();
+
+    projectCs.setPreferredName(loaderDefault.getProjectName());
+    projectCs.setVersion(loaderDefault.getProjectVersion());
+    projectCs.setContext(context);
+    projectCs.setLongName(loaderDefault.getProjectLongName());
+    projectCs.setWorkflowStatus(projectCs.WF_STATUS_DRAFT_NEW);
+    projectCs.setPreferredDefinition(loaderDefault.getProjectDescription());
+    
+    projectCs.setType("Project");
+    projectCs.setLabelType(ClassificationScheme.LABEL_TYPE_ALPHA);
 
 
     logger.info(PropertyAccessor.getProperty("listOfPackages"));
@@ -197,25 +201,17 @@ public class UMLDefaults {
     
     ClassificationSchemeDAO classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
 
-    projectCs = DomainObjectFactory.newClassificationScheme();
-    projectCs.setPreferredName(projectName);
-    projectCs.setVersion(projectVersion);
-    projectCs.setContext(context);
+    ClassificationScheme cs = DomainObjectFactory.newClassificationScheme();
+    cs.setPreferredName(projectCs.getPreferredName());
+    cs.setVersion(projectCs.getVersion());
+    cs.setContext(context);
 
     ArrayList eager = new ArrayList();
     eager.add(EagerConstants.CS_CSI);
-    List result = classificationSchemeDAO.find(projectCs, eager);
+    List result = classificationSchemeDAO.find(cs, eager);
 
     if (result.size() == 0) { // need to add projectName CS
-      projectCs.setLongName(projectLongName);
-      projectCs.setWorkflowStatus(projectCs.WF_STATUS_DRAFT_NEW);
-
-      projectCs.setPreferredDefinition(projectDescription);
-
-      // !!! TODO
-      projectCs.setType("Project");
-      projectCs.setLabelType(ClassificationScheme.LABEL_TYPE_ALPHA);
-
+      projectCs.setContext(context);
       projectCs.setAudit(audit);
       projectCs.setId(classificationSchemeDAO.create(projectCs));
 
@@ -236,7 +232,7 @@ public class UMLDefaults {
    * @return default workflow status
    */
   public String getWorkflowStatus() {
-    return workflowStatus;
+    return loaderDefault.getWorkflowStatus();
   }
   /**
    * @return default context
@@ -249,7 +245,7 @@ public class UMLDefaults {
    * @return default version
    */
   public Float getVersion() {
-    return version;
+    return new Float(loaderDefault.getVersion().toString());
   }
   /**
    * @return default CD
