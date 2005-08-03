@@ -113,7 +113,11 @@ public class MainFrame extends JFrame
     if(evt.getPropertyName().equals("APPLY")) {
       applyMenuItem.setEnabled((Boolean)evt.getNewValue());
       applyToAllMenuItem.setEnabled((Boolean)evt.getNewValue());
-      infoLabel.setText("Changes Applied");
+      
+      if((Boolean)evt.getNewValue() == true)
+        infoLabel.setText("Unsaved Changes");
+      else
+        infoLabel.setText("Changes Applied");
     }
   }
 
