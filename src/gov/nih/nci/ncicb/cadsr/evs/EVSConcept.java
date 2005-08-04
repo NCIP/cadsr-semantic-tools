@@ -6,6 +6,7 @@ public class EVSConcept  {
   private String code;
   private List synonyms;
   private List definitions;
+  private String name;
   
   public EVSConcept() {
   }
@@ -20,16 +21,21 @@ public class EVSConcept  {
     return preferredName;
   }
 
+  public void setName(String newName) {
+    this.name = newName;
+  }
+
+  public String getName() {
+    return name;
+  }
 
   public void setCode(String code) {
     this.code = code;
   }
 
-
   public String getCode() {
     return code;
   }
-
 
   public void setSynonyms(List synonyms) {
     this.synonyms = synonyms;

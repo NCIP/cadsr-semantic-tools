@@ -14,13 +14,14 @@ import java.util.*;
 public class EVSQueryService {
   private static String NCI_THESAURUS_VOCAB_NAME = "NCI_Thesaurus";
   private static String SYNONYM_PROPERTY_NAME = "Synonym";
+  private static String PREFERRED_NAME_PROP = "PREFERRED_NAME";
   private static String DEFINITION_PROPERTY_NAME = "DEFINITION";
   private ApplicationService evsService;
   private String cacoreServiceURL;
 
   public EVSQueryService() {
     this.cacoreServiceURL =
-      "http://cabio-stage.nci.nih.gov/cacore30/server/HTTPServer";
+      "http://cabio.nci.nih.gov/cacore30/server/HTTPServer";
     evsService = ApplicationService.getRemoteInstance(cacoreServiceURL);
   }
 
@@ -88,7 +89,8 @@ public class EVSQueryService {
 
         EVSConcept c = new EVSConcept();
         c.setCode(concept.getCode());
-        c.setPreferredName(conceptName);
+        c.setPreferredName(retrievePreferredName(concept));
+        c.setName(conceptName);
         c.setDefinitions(defs);
         c.setSynonyms(synonyms);
 
@@ -140,6 +142,17 @@ public class EVSQueryService {
     }
 
     return synonyms;
+  }
+
+  private String retrievePreferredName(DescLogicConcept dlc) {
+    Collection propVect = dlc.getPropertyCollection();
+    for (Iterator it = propVect.iterator(); it.hasNext();) {
+      Property p = (Property) it.next();
+      if (p.getName().equalsIgnoreCase(PREFERRED_NAME_PROP)) {
+        return p.getValue();
+      }
+    }
+    return null;
   }
 
   private List retrieveDefinitions(DescLogicConcept dlc) {
