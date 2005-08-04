@@ -44,10 +44,10 @@ public class EvsDialog extends JDialog implements ActionListener
   private java.util.List<EvsResult> resultSet = new ArrayList();
 
   private String[] columnNames = {
-    "Code", "Name", "Synonyms", "Definition", "Source"
+    "Code", "Concept Name", "Preferred Name", "Synonyms", "Definition", "Source"
   };
 
-  private int colWidth[] = {30, 30, 30, 300, 15};
+  private int colWidth[] = {30, 30, 30, 30, 300, 15};
 
   private static int PAGE_SIZE = 5;
 
@@ -88,20 +88,23 @@ public class EvsDialog extends JDialog implements ActionListener
             s = res.getConcept().getPreferredName();
             break;
           case 1:
+            s = res.getConceptName();
+            break;
+          case 2:
             s = res.getConcept().getLongName();
             break;
-          case 2: 
+          case 3: 
             s += "<html><body>";
             for(int i = 0; i<res.getSynonyms().length; i++)
               s += res.getSynonyms()[i] + "<br>";
             s += "</body></html>"; 
             break;
-          case 3:
+          case 4:
             s += "<html><body>";
             s += res.getConcept().getPreferredDefinition();
             s += "</body></html>";
             break;
-          case 4:
+          case 5:
             s = res.getConcept().getDefinitionSource();
             break;
           default:
@@ -130,8 +133,8 @@ public class EvsDialog extends JDialog implements ActionListener
     
     DefaultTableCellRenderer  tcrColumn  =  new DefaultTableCellRenderer();
     tcrColumn.setVerticalAlignment(JTextField.TOP);
-    resultTable.getColumnModel().getColumn(2).setCellRenderer(tcrColumn);
     resultTable.getColumnModel().getColumn(3).setCellRenderer(tcrColumn);
+    resultTable.getColumnModel().getColumn(4).setCellRenderer(tcrColumn);
 
     int c = 0;
     for(int width : colWidth) {

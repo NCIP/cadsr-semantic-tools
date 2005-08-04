@@ -371,14 +371,17 @@ public class UMLElementViewPanel extends JPanel
       reviewButton.setEnabled(false);
     }
     saveButton.setEnabled(false);
+    if(concepts.length == 0)
+      reviewButton.setEnabled(false);
+
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.add(addButton);
     buttonPanel.add(deleteButton);
     buttonPanel.add(saveButton);
     buttonPanel.add(reviewButton);
-//     buttonPanel.add(previousButton);
-//     buttonPanel.add(nextButton);
+    buttonPanel.add(previousButton);
+    buttonPanel.add(nextButton);
     
     this.add(buttonPanel, BorderLayout.SOUTH);
   }
@@ -455,9 +458,9 @@ public class UMLElementViewPanel extends JPanel
         deleteButton.setEnabled(true);
 
       if(areAllFieldEntered()) {
-        saveButton.setEnabled(true);
+        setSaveButtonState(true);
       } else {
-        saveButton.setEnabled(false);
+        setSaveButtonState(false);
       }
       addButton.setEnabled(false);
       reviewButton.setEnabled(false);
@@ -472,9 +475,9 @@ public class UMLElementViewPanel extends JPanel
       initViewPanel();
 
       if(areAllFieldEntered()) {
-        saveButton.setEnabled(true);
+        setSaveButtonState(true);
       } else {
-        saveButton.setEnabled(false);
+        setSaveButtonState(false);
       }
       addButton.setEnabled(false);
       reviewButton.setEnabled(false);

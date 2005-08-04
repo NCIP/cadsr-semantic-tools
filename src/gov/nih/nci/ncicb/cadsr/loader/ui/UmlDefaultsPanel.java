@@ -37,9 +37,9 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
     "Package Filter"
   };
 
-  public UmlDefaultsPanel()
+  public UmlDefaultsPanel(java.awt.Frame parent)
   {
-    super((java.awt.Frame)null, "UML Loader Defaults", true);
+    super(parent, "UML Loader Defaults", true);
     initValues();
     initUI();
   }

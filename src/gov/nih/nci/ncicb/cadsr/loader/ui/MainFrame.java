@@ -191,7 +191,7 @@ public class MainFrame extends JFrame
 
     defaultsMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
-          new UmlDefaultsPanel().show();
+          new UmlDefaultsPanel(_this).show();
         }
     });
     
