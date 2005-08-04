@@ -135,6 +135,8 @@ public class UMLElementViewPanel extends JPanel
         }
       } else
         ObjectUpdater.update((AdminComponent)node.getUserObject(), concepts, newConcepts);
+      
+      concepts = newConcepts;
     } 
 
     orderChanged = false;
