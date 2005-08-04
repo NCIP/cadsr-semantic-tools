@@ -250,6 +250,7 @@ public class UMLElementViewPanel extends JPanel
 
           setSaveButtonState(areAllFieldEntered());
           reviewButton.setEnabled(false);
+          addButton.setEnabled(false);
         }
         });
       
@@ -264,6 +265,7 @@ public class UMLElementViewPanel extends JPanel
           
           setSaveButtonState(areAllFieldEntered());
           reviewButton.setEnabled(false);
+          addButton.setEnabled(false);
         }
         });
 
