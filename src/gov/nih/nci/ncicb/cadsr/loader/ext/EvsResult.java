@@ -5,9 +5,11 @@ public class EvsResult {
   
   private Concept concept;
   private String[] synonyms;
+  private String conceptName;
 
-  public EvsResult(Concept concept, String[] synonyms) {
+  public EvsResult(Concept concept, String conceptName, String[] synonyms) {
     this.concept = concept;
+    this.conceptName = conceptName;
     this.synonyms = synonyms;
   }
 
@@ -16,6 +18,10 @@ public class EvsResult {
   }
   public String[] getSynonyms() {
     return synonyms;
+  }
+
+  public String getConceptName() {
+    return conceptName;
   }
 
 }

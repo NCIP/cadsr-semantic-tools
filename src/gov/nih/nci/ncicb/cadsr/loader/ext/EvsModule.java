@@ -57,9 +57,23 @@ public class EvsModule
 
     gov.nih.nci.evs.domain.Definition def = null;
 
-    if(evsConcept.getDefinitions().size() > 0) {
-      def = (gov.nih.nci.evs.domain.Definition)evsConcept.getDefinitions().get(0);
+
+    // if there's an NCI definition, pick that
+    // Otherwise, first one that comes
+    for(java.util.Iterator it = evsConcept.getDefinitions().iterator(); it.hasNext();) {
+      gov.nih.nci.evs.domain.Definition d = (gov.nih.nci.evs.domain.Definition)it.next();      
+
+      System.out.println("DEFINITION: " + d.getSource().getAbbreviation());
+
+      if(def == null)
+        def = d;
+      if(d.getSource().getAbbreviation().equals("NCI"))
+        def = d;
     }
+
+//     if(evsConcept.getDefinitions().size() > 0) {
+//       def = (gov.nih.nci.evs.domain.Definition)evsConcept.getDefinitions().get(0);
+//     }
 
     if(def != null) {
       c.setPreferredDefinition(def.getDefinition());
@@ -70,7 +84,7 @@ public class EvsModule
     String[] syns = new String[evsConcept.getSynonyms().size()];
     evsConcept.getSynonyms().toArray(syns);
     
-    return new EvsResult(c, syns);
+    return new EvsResult(c, evsConcept.getName() ,syns);
     
 
   }
