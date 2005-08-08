@@ -8,12 +8,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.*;
 
-public class EvsDialog extends JDialog implements ActionListener
+public class EvsDialog extends JDialog implements ActionListener, KeyListener
 {
   private EvsDialog _this = this;
 
@@ -163,7 +165,10 @@ public class EvsDialog extends JDialog implements ActionListener
     insertInBag(searchPanel,includeRetiredCB, 4, 0);
     insertInBag(searchPanel,searchButton, 5, 0);
 
+    searchField.addKeyListener(this);
+
     searchButton.addActionListener(this);
+    searchButton.addKeyListener(this);
     searchButton.setActionCommand(SEARCH);
 
     JPanel browsePanel = new JPanel();
@@ -259,11 +264,26 @@ public class EvsDialog extends JDialog implements ActionListener
     nextButton.setEnabled(resultSet.size() > (pageIndex * PAGE_SIZE + PAGE_SIZE));
 
   }
+
+  public void keyPressed(KeyEvent evt) {
+    if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+      searchButton.doClick();
+  }
+
+  public void keyTyped(KeyEvent evt) {
+    if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+      searchButton.doClick();
+  }
+
+  public void keyReleased(KeyEvent evt) {
+  }
+
   
   public static void main(String[] args) {
     EvsDialog dialog = new EvsDialog();
     dialog.setVisible(true);
   }
+
 
 }
 
