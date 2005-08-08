@@ -43,7 +43,8 @@ public class CsvParser implements Parser {
 
       NewClassEvent classEvent = null;
       NewAttributeEvent attributeEvent = null;
-      
+
+      // skip first line
       DataRow row = reader.next();
       while( (row = reader.next()) != null ) {
         if(row.getString(COL_CLASS).equals(row.getString(COL_ENTITY))) {
@@ -64,13 +65,20 @@ public class CsvParser implements Parser {
             classEvent = newClassEvent;
           }
 
-        } else {
-          // Flush class, if not already done
-          if(classEvent != null) {
-            listener.newClass(classEvent);
-            classEvent = null;
-          }
-          
+        }
+      }
+      // Flush last line
+      if(classEvent != null)
+        listener.newClass(classEvent);
+      classEvent = null;
+      
+      // second pass. We're interested in attributes now. 
+      // for lack of a .first() method, we reload the file.
+      reader.open(inputFile);
+      row = reader.next();
+      while( (row = reader.next()) != null ) {
+        // condition for an attribute
+        if(!row.getString(COL_CLASS).equals(row.getString(COL_ENTITY))) {
           NewAttributeEvent newAttributeEvent = createAttributeEvent(row);
           if(attributeEvent != null) {
             if(newAttributeEvent.getName().equals(attributeEvent.getName()) && newAttributeEvent.getClassName().equals(attributeEvent.getClassName())) {
@@ -86,13 +94,11 @@ public class CsvParser implements Parser {
         }
         
       }
-      // Flush last line
-      if(classEvent != null)
-        listener.newClass(classEvent);
+      // flush last line
       if(attributeEvent != null)
         listener.newAttribute(attributeEvent);
       
-
+      
     } catch(IOException e) {
       System.exit(1);
     } finally {
