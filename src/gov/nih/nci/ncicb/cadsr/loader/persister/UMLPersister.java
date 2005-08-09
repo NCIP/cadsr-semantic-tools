@@ -60,7 +60,8 @@ public class UMLPersister implements Persister {
     vdMapping.put("String", "java.lang.String");
     vdMapping.put("string", "java.lang.String");
 
-    vdMapping.put("Date", "java.util.Date");
+    vdMapping.put("Date", "java.util.Date")
+    vdMapping.put("DateTime", "java.util.Date");
 
     vdMapping.put("any", "java.lang.Object");
     vdMapping.put("valueany", "java.lang.Object");
