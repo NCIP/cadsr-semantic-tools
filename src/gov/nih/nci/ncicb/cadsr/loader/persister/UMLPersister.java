@@ -16,7 +16,7 @@ import java.util.*;
 public class UMLPersister implements Persister {
   private static Logger logger = Logger.getLogger(UMLPersister.class.getName());
 
-  private static Map vdMapping = new HashMap();
+  private static Map<String,String> vdMapping = DatatypeMapping.getMapping();
 
   protected static AdminComponentDAO adminComponentDAO = DAOAccessor.getAdminComponentDAO();
   protected static DataElementDAO dataElementDAO = DAOAccessor.getDataElementDAO();
@@ -39,31 +39,6 @@ public class UMLPersister implements Persister {
 //   private static final String DEF_CONCAT_CHAR = "_";
 
 //   protected static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
-
-  static {
-    vdMapping.put("int", "java.lang.Integer");
-    vdMapping.put("float", "java.lang.Float");
-    vdMapping.put("boolean", "java.lang.Boolean");
-    vdMapping.put("Integer", "java.lang.Integer");
-    vdMapping.put("Float", "java.lang.Float");
-    vdMapping.put("Boolean", "java.lang.Boolean");
-    vdMapping.put("Short", "java.lang.Short");
-    vdMapping.put("Double", "java.lang.Double");
-    vdMapping.put("Char", "java.lang.Char");
-    vdMapping.put("Byte", "java.lang.Byte");
-    vdMapping.put("Long", "java.lang.Long");
-
-    vdMapping.put("String", "java.lang.String");
-
-    vdMapping.put("Date", "java.util.Date");
-    vdMapping.put("DateTime", "java.util.Date");
-
-    vdMapping.put("any", "java.lang.Object");
-    vdMapping.put("valueany", "java.lang.Object");
-    vdMapping.put("any[][][]", "java.lang.Object");
-
-
-  }
 
   public UMLPersister() {
     
