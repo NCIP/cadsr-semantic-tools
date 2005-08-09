@@ -152,6 +152,12 @@ public class TreeBuilder implements UserPreferencesListener {
           ValidationNode vNode = new ValidationNode(item);
           node.addValidationNode(vNode);
         }
+
+        items = findValidationItems(de);
+        for(ValidationItem item : items) {
+          ValidationNode vNode = new ValidationNode(item);
+          node.addValidationNode(vNode);
+        }
       }
     }
 
