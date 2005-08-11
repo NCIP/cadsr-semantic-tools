@@ -11,9 +11,10 @@ public class AssociationNode extends AbstractUMLNode {
   public AssociationNode(ObjectClassRelationship ocr) {
     OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
     String roleName = nameBuilder.buildRoleName(ocr);
-
+    String shortRoleName = nameBuilder.buildDisplayRoleName(ocr);
+    
     fullPath = roleName;
-    display = roleName;
+    display = shortRoleName;
     
     userObject = ocr;
   }
