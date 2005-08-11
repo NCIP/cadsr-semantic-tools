@@ -126,7 +126,10 @@ public class MainFrame extends JFrame
     this.getContentPane().setLayout(new BorderLayout());
     this.setSize(new Dimension(830, 650));
     this.setJMenuBar(mainMenuBar);
-    this.setTitle("Semantic Integration Workbench");
+    
+    UserSelections selections = UserSelections.getInstance();
+    String fileName = new File((String)selections.getProperty("FILENAME")).getName();
+    this.setTitle("Semantic Integration Workbench - " + fileName);
 
     jSplitPane2.setOrientation(JSplitPane.VERTICAL_SPLIT);
     jSplitPane1.setDividerLocation(160);
