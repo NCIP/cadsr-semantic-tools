@@ -4,7 +4,18 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 
 public class OCRRoleNameBuilder  {
 
-  public String buildRoleName(ObjectClassRelationship ocr) {
+
+  public String buildRoleName(ObjectClassRelationship ocr) 
+  {
+    return buildRoleName(ocr, true);
+  }
+
+  public String buildDisplayRoleName(ObjectClassRelationship ocr) 
+  {
+    return buildRoleName(ocr, false);
+  }
+
+  private String buildRoleName(ObjectClassRelationship ocr, boolean longName) {
 
     if(ocr.getType().equals(ocr.TYPE_IS)) {
       return ocr.getSource().getLongName() + "-->" + ocr.getTarget().getLongName();
@@ -13,10 +24,14 @@ public class OCRRoleNameBuilder  {
     StringBuffer roleName = new StringBuffer();
     
     if(ocr.getDirection().equals(ObjectClassRelationship.DIRECTION_BOTH)) {
-      roleName.append(ocr.getSource().getLongName());
+      if(longName) {
+        roleName.append(ocr.getSource().getLongName()); }
       if (ocr.getSourceRole() != null) {
-        roleName.append(".")
-          .append(ocr.getSourceRole());
+        if(longName)
+          roleName.append(".")
+            .append(ocr.getSourceRole());
+        else
+          roleName.append(ocr.getSourceRole());
       }
       
       String cardinality = "" + ocr.getSourceLowCardinality();
@@ -34,11 +49,15 @@ public class OCRRoleNameBuilder  {
         .append(")::");
     }
     
-    roleName.append(ocr.getTarget().getLongName());
+    if(longName) {
+    roleName.append(ocr.getTarget().getLongName()); }
 
     if (ocr.getTargetRole() != null) {
-      roleName.append(".")
-        .append(ocr.getTargetRole());
+      if(longName)
+        roleName.append(".")
+          .append(ocr.getTargetRole());
+      else
+        roleName.append(ocr.getTargetRole());
     }
 
     String cardinality = "" + ocr.getTargetLowCardinality();
