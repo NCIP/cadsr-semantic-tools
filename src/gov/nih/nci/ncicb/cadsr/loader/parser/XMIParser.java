@@ -17,6 +17,8 @@ import gov.nih.nci.codegen.core.util.UML13Utils;
 import gov.nih.nci.codegen.core.access.UML13ModelAccess;
 import gov.nih.nci.codegen.framework.ModelAccess;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+
 import java.io.*;
 
 import java.util.*;
