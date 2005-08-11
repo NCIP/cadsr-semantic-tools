@@ -44,11 +44,11 @@ public class UMLPersister implements Persister {
     vdMapping.put("int", "java.lang.Integer");
     vdMapping.put("float", "java.lang.Float");
     vdMapping.put("boolean", "java.lang.Boolean");
-//     vdMapping.put("short", "java.lang.Short");
-//     vdMapping.put("double", "java.lang.Double");
-//     vdMapping.put("char", "java.lang.Char");
-//     vdMapping.put("byte", "java.lang.Byte");
-//     vdMapping.put("long", "java.lang.Long");
+    vdMapping.put("short", "java.lang.Short");
+    vdMapping.put("double", "java.lang.Double");
+    vdMapping.put("char", "java.lang.Char");
+    vdMapping.put("byte", "java.lang.Byte");
+    vdMapping.put("long", "java.lang.Long");
     vdMapping.put("Integer", "java.lang.Integer");
     vdMapping.put("Float", "java.lang.Float");
     vdMapping.put("Boolean", "java.lang.Boolean");
