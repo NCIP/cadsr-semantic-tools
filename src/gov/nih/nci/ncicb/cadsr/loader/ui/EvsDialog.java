@@ -193,7 +193,11 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
 
 
   public Concept getConcept() {
-    return choiceConcept;
+    try {
+      return choiceConcept;
+    } finally {
+      choiceConcept = null;
+    } 
   }
   
   private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
