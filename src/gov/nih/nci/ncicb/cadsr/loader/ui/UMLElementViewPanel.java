@@ -280,19 +280,21 @@ public class UMLElementViewPanel extends JPanel
 
             Concept c = evsDialog.getConcept();
 
-            conceptUIs[index].code.setText(c.getPreferredName());
-            conceptUIs[index].name.setText(c.getLongName());
-            conceptUIs[index].def.setText(c.getPreferredDefinition());
-            conceptUIs[index].defSource.setText(c.getDefinitionSource());
+            if(c != null) {
+              conceptUIs[index].code.setText(c.getPreferredName());
+              conceptUIs[index].name.setText(c.getLongName());
+              conceptUIs[index].def.setText(c.getPreferredDefinition());
+              conceptUIs[index].defSource.setText(c.getDefinitionSource());
 
-            if(areAllFieldEntered()) {
-              setSaveButtonState(true);
-//               addButton.setEnabled(true);
-            } else {
-              setSaveButtonState(false);
-//               addButton.setEnabled(false);
+              if(areAllFieldEntered()) {
+                setSaveButtonState(true);
+                //               addButton.setEnabled(true);
+              } else {
+                setSaveButtonState(false);
+                //               addButton.setEnabled(false);
+              }
+              reviewButton.setEnabled(false);
             }
-            reviewButton.setEnabled(false);
           }
         });
       
