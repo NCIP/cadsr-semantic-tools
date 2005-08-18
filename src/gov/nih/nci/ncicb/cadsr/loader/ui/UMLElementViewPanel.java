@@ -276,6 +276,9 @@ public class UMLElementViewPanel extends JPanel
               evsDialog = new EvsDialog();
 
             UIUtil.putToCenter(evsDialog);
+            
+            if(prefs.getEvsAutoSearch())
+              evsDialog.startSearch(conceptUIs[index].name.getText());
             evsDialog.setVisible(true);
 
             Concept c = evsDialog.getConcept();

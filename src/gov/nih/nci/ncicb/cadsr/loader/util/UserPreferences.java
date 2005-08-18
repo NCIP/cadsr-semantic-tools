@@ -38,6 +38,19 @@ public class UserPreferences {
     UserPreferencesEvent event = new UserPreferencesEvent(UserPreferencesEvent.UML_DESCRIPTION, value);
     fireUserPreferencesEvent(event);
   }
+
+  public boolean getEvsAutoSearch() 
+  {
+    return prefs.getBoolean("evsAutoSearch", true);
+  }
+  
+  public void setEvsAutoSeatch(boolean autoSearch) 
+  {
+    prefs.putBoolean("evsAutoSearch", autoSearch);
+//     UserPreferencesEvent event = new UserPreferencesEvent(UserPreferencesEvent.UML_DESCRIPTION, value);
+//     fireUserPreferencesEvent(event);
+  }
+
   
   public String getModeSelection() 
   {
