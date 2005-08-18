@@ -192,6 +192,11 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
   }
 
 
+  public void startSearch(String searchString) {
+    searchField.setText(searchString);
+    searchButton.doClick();
+  }
+
   public Concept getConcept() {
     try {
       return choiceConcept;
