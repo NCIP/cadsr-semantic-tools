@@ -5,6 +5,8 @@ import java.util.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 
 public class UMLValidator implements Validator {
 
@@ -15,7 +17,11 @@ public class UMLValidator implements Validator {
     validators = new ArrayList();
     validators.add(new ConceptCodeValidator(elements)); 
     validators.add(new AssociationValidator(elements));
-    validators.add(new DatatypeValidator(elements));
+
+    RunMode mode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
+
+    if(mode.equals(RunMode.Reviewer))
+      validators.add(new DatatypeValidator(elements));
  }
 
   /**
