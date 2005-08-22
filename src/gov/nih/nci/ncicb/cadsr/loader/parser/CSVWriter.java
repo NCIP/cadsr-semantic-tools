@@ -57,22 +57,25 @@ public class CSVWriter implements ElementWriter
 
           String [] conceptCodes = oc.getPreferredName().split(":");
           for(int i = conceptCodes.length-1; i > -1; i--) {
-          row = write.next();
-          
-          row.add(className);
-          row.add(className);
-          row.add(oc.getPreferredDefinition());
-          Concept con = LookupUtil.lookupConcept(conceptCodes[i]);
-          if(con != null) {
-          row.add(con.getLongName());
-          row.add(con.getLongName());
-          row.add("ObjectClass");
-          row.add(con.getPreferredName());
-          row.add(con.getPreferredDefinition());
-          row.add(con.getDefinitionSource());
-          row.addEmpty();
-          row.add(reviewTracker.get(oc.getLongName())?"1":"0");
-          }
+            row = write.next();
+            
+            row.add(className);
+            row.add(className);
+            row.add(oc.getPreferredDefinition());
+            Concept con = LookupUtil.lookupConcept(conceptCodes[i]);
+            if(con != null) {
+              row.add(con.getLongName());
+              row.add(con.getLongName());
+              if(i == conceptCodes.length-1)
+                row.add("ObjectClass");
+              else
+                row.add("ObjectQualifier" + ((conceptCodes.length-1) - i));
+              row.add(con.getPreferredName());
+              row.add(con.getPreferredDefinition());
+              row.add(con.getDefinitionSource());
+              row.addEmpty();
+              row.add(reviewTracker.get(oc.getLongName())?"1":"0");
+            }
           }
         
           DataElementConcept o = DomainObjectFactory.newDataElementConcept();
