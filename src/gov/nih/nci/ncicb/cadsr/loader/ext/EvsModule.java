@@ -63,8 +63,6 @@ public class EvsModule
     for(java.util.Iterator it = evsConcept.getDefinitions().iterator(); it.hasNext();) {
       gov.nih.nci.evs.domain.Definition d = (gov.nih.nci.evs.domain.Definition)it.next();      
 
-      System.out.println("DEFINITION: " + d.getSource().getAbbreviation());
-
       if(def == null)
         def = d;
       if(d.getSource().getAbbreviation().equals("NCI"))
