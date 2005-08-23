@@ -184,7 +184,7 @@ public class XMIWriter implements ElementWriter {
 
     for(ObjectClass oc : ocs) {
       Element classElement = elements.get(oc.getLongName());
-      String xpath = "//*[local-name()='TaggedValue' and @tag='HUMAN_REVIEWED' and modelElement='"
+      String xpath = "//*[local-name()='TaggedValue' and @tag='HUMAN_REVIEWED' and @modelElement='"
         + classElement.getAttributeValue("xmi.id")
         + "']";
 
@@ -198,7 +198,7 @@ public class XMIWriter implements ElementWriter {
                        classElement.getAttributeValue("xmi.id"),
                        classElement.getNamespace());
       } else {
-        tv.setAttribute("value", "1");
+        tv.setAttribute("value", reviewed?"1":"0");
       }
 
     }
@@ -211,7 +211,7 @@ public class XMIWriter implements ElementWriter {
       }
 
       Element attributeElement = elements.get(fullPropName);
-      String xpath = "//*[local-name()='TaggedValue' and @tag='HUMAN_REVIEWED' and modelElement='"
+      String xpath = "//*[local-name()='TaggedValue' and @tag='HUMAN_REVIEWED' and @modelElement='"
         + attributeElement.getAttributeValue("xmi.id")
         + "']";
 
