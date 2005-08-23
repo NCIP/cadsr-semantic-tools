@@ -239,8 +239,8 @@ public class MainFrame extends JFrame
     
     saveAsMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
-
-        JFileChooser chooser = new JFileChooser();
+        String saveDir = UserPreferences.getInstance().getRecentDir();
+        JFileChooser chooser = new JFileChooser(saveDir);
         javax.swing.filechooser.FileFilter filter = 
             new javax.swing.filechooser.FileFilter() {
               String fileExtension = null;
@@ -266,7 +266,7 @@ public class MainFrame extends JFrame
         int returnVal = chooser.showSaveDialog(null);
           if(returnVal == JFileChooser.APPROVE_OPTION) {
             String filePath = chooser.getSelectedFile().getAbsolutePath();
-//             filePath = filePath + ".csv";
+            UserPreferences.getInstance().setRecentDir(filePath);
             ElementWriter writer = BeansAccessor.getWriter();
             writer.setOutput(filePath);
             saveFilename = filePath;
