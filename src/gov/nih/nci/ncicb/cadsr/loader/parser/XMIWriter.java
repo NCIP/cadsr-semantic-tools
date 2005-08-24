@@ -4,6 +4,9 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.NewConceptEvent;
+
+
 import org.jdom.*;
 import org.jdom.input.SAXBuilder;
 import org.jaxen.JaxenException;
@@ -28,6 +31,7 @@ public class XMIWriter implements ElementWriter {
   private ElementsLists cadsrObjects = null;
 
   private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+  private ChangeTracker changeTracker = ChangeTracker.getInstance();
 
   
   public XMIWriter() {
@@ -46,6 +50,7 @@ public class XMIWriter implements ElementWriter {
     
     readModel();
     markHumanReviewed();
+    updateChangedElements();
     writeModel();
 
   }
@@ -176,30 +181,144 @@ public class XMIWriter implements ElementWriter {
     } // end of try-catch
   }
 
-  private void markHumanReviewed() {
+  private void updateChangedElements() {
+    try {
+      List<ObjectClass> ocs = (List<ObjectClass>)cadsrObjects.getElements(DomainObjectFactory.newObjectClass().getClass());
+      List<DataElementConcept> decs = (List<DataElementConcept>) cadsrObjects.getElements(DomainObjectFactory.newDataElementConcept().getClass());
+      
+      for(ObjectClass oc : ocs) {
+        Element classElement = elements.get(oc.getLongName());
+        boolean changed = changeTracker.get(oc.getLongName());
 
-    try{ 
-    List<ObjectClass> ocs = (List<ObjectClass>)cadsrObjects.getElements(DomainObjectFactory.newObjectClass().getClass());
-    List<DataElementConcept> decs = (List<DataElementConcept>) cadsrObjects.getElements(DomainObjectFactory.newDataElementConcept().getClass());
-
-    for(ObjectClass oc : ocs) {
-      Element classElement = elements.get(oc.getLongName());
-      String xpath = "//*[local-name()='TaggedValue' and @tag='HUMAN_REVIEWED' and @modelElement='"
-        + classElement.getAttributeValue("xmi.id")
-        + "']";
-
-      JDOMXPath path = new JDOMXPath(xpath);
-      Element tv = (Element)path.selectSingleNode(modelElement);
-      boolean reviewed = reviewTracker.get(oc.getLongName());
-      if(tv == null) {
-        addTaggedValue("HUMAN_REVIEWED",
-                       reviewed?"1":"0",
-                       getNewId(classElement.getAttributeValue("xmi.id")),
-                       classElement.getAttributeValue("xmi.id"),
-                       classElement.getNamespace());
-      } else {
-        tv.setAttribute("value", reviewed?"1":"0");
+        if(changed) {
+          String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'ObjectClass') or starts-with(@tag,'ObjectQualifier') )and @modelElement='"
+            + classElement.getAttributeValue("xmi.id")
+            + "']";
+          
+          JDOMXPath path = new JDOMXPath(xpath);
+          List<Element> conceptTvs = path.selectNodes(modelElement);
+          // drop all current concept tagged values
+          for(Element tvElt : conceptTvs) {
+            tvElt.getParentElement().removeContent(tvElt);
+          }
+          
+          
+          String [] conceptCodes = oc.getPreferredName().split(":");
+          
+          addConceptTvs(classElement, conceptCodes, NewConceptEvent.TYPE_CLASS);
+        }
+        
       }
+
+    for(DataElementConcept dec : decs) {
+      String fullPropName = dec.getObjectClass().getLongName() + "." + dec.getProperty().getLongName();
+      Element attributeElement = elements.get(fullPropName);
+
+      boolean changed = changeTracker.get(fullPropName);
+      if(changed) {
+        String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'Property') or starts-with(@tag,'PropertyQualifier') )and @modelElement='"
+          + attributeElement.getAttributeValue("xmi.id")
+          + "']";
+        
+        JDOMXPath path = new JDOMXPath(xpath);
+        List<Element> conceptTvs = path.selectNodes(modelElement);
+          // drop all current concept tagged values
+          for(Element tvElt : conceptTvs) {
+            tvElt.getParentElement().removeContent(tvElt);
+          }
+          
+          
+          String [] conceptCodes = dec.getProperty().getPreferredName().split(":");
+          
+          addConceptTvs(attributeElement, conceptCodes, NewConceptEvent.TYPE_PROPERTY);
+        }
+    }
+    } catch (JaxenException e){
+    } 
+    
+  }
+
+  private void addConceptTvs(Element elt, String[] conceptCodes, String type) {
+    if(conceptCodes.length == 0)
+      return;
+
+    addConceptTv(elt, conceptCodes[conceptCodes.length - 1], type, "", 0);
+
+    for(int i= 1; i < conceptCodes.length; i++) {
+      
+      addConceptTv(elt, conceptCodes[conceptCodes.length - i - 1], type, NewConceptEvent.TV_QUALIFIER, i);
+
+    }
+
+  }
+
+  private void addConceptTv(Element elt, String conceptCode, String type, String pre, int n) {
+
+    Concept con = LookupUtil.lookupConcept(conceptCode);
+
+    String tvName = type + pre + NewConceptEvent.TV_CONCEPT_CODE + ((n>0)?""+n:"");
+
+    try {
+      addTaggedValue
+        (tvName,
+         con.getPreferredName(),
+         getNewId(elt.getAttributeValue("xmi.id")),
+         elt.getAttributeValue("xmi.id"),
+         elt.getNamespace());
+      
+      tvName = type + pre + NewConceptEvent.TV_CONCEPT_DEFINITION + ((n>0)?""+n:"");
+      addTaggedValue
+        (tvName,
+         con.getPreferredDefinition(),
+         getNewId(elt.getAttributeValue("xmi.id")),
+         elt.getAttributeValue("xmi.id"),
+         elt.getNamespace());
+
+
+      tvName = type + pre + NewConceptEvent.TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:"");
+      addTaggedValue
+        (tvName,
+         con.getDefinitionSource(),
+         getNewId(elt.getAttributeValue("xmi.id")),
+         elt.getAttributeValue("xmi.id"),
+         elt.getNamespace());
+      
+      tvName = type + pre + NewConceptEvent.TV_CONCEPT_PREFERRED_NAME + ((n>0)?""+n:"");
+      addTaggedValue
+        (tvName,
+         con.getLongName(),
+         getNewId(elt.getAttributeValue("xmi.id")),
+         elt.getAttributeValue("xmi.id"),
+         elt.getNamespace());
+    } catch (JaxenException e){
+    } // end of try-catch
+
+  }
+
+
+  private void markHumanReviewed() {
+    try{ 
+      List<ObjectClass> ocs = (List<ObjectClass>)cadsrObjects.getElements(DomainObjectFactory.newObjectClass().getClass());
+      List<DataElementConcept> decs = (List<DataElementConcept>) cadsrObjects.getElements(DomainObjectFactory.newDataElementConcept().getClass());
+
+      for(ObjectClass oc : ocs) {
+        Element classElement = elements.get(oc.getLongName());
+        String xpath = "//*[local-name()='TaggedValue' and @tag='HUMAN_REVIEWED' and @modelElement='"
+          + classElement.getAttributeValue("xmi.id")
+          + "']";
+
+        JDOMXPath path = new JDOMXPath(xpath);
+        Element tv = (Element)path.selectSingleNode(modelElement);
+        boolean reviewed = reviewTracker.get(oc.getLongName());
+        if(tv == null) {
+          addTaggedValue("HUMAN_REVIEWED",
+                         reviewed?"1":"0",
+                         getNewId(classElement.getAttributeValue("xmi.id")),
+                         classElement.getAttributeValue("xmi.id"),
+                         classElement.getNamespace());
+        } else {
+          tv.setAttribute("value", reviewed?"1":"0");
+        }
 
     }
     for(DataElementConcept dec : decs) {
@@ -238,50 +357,49 @@ public class XMIWriter implements ElementWriter {
   }
   
   
-    private void doPackage(String xpath, String packageName) throws JaxenException {
-      xpath = xpath + "/*[local-name()='Namespace.ownedElement']/*[local-name()='Package']";
+  private void doPackage(String xpath, String packageName) throws JaxenException {
+    xpath = xpath + "/*[local-name()='Namespace.ownedElement']/*[local-name()='Package']";
+    
+    JDOMXPath path = new JDOMXPath(xpath);
+    Collection<Element> packages = (Collection<Element>)path.selectNodes(modelElement);
+    
+    if(packages.size() == 0)
+      return;
+
+    for(Element pkg : packages) {
+      String packName = pkg.getAttributeValue("name");
       
-      JDOMXPath path = new JDOMXPath(xpath);
-      Collection<Element> packages = (Collection<Element>)path.selectNodes(modelElement);
-      
-      if(packages.size() == 0)
-        return;
-
-      for(Element pkg : packages) {
-        String packName = pkg.getAttributeValue("name");
-
-        if(packName.indexOf(" ") != -1) {
-          doPackage(xpath, packageName);
-          return;
-        }
-
-        if (packageName.length() == 0) {
-          packageName = packName;
-        }
-        else {
-          packageName += ("." + packName);
-        }
-
+      if(packName.indexOf(" ") != -1) {
         doPackage(xpath, packageName);
+        return;
+      }
+      
+      if (packageName.length() == 0) {
+        packageName = packName;
+      }
+      else {
+        packageName += ("." + packName);
+      }
+      
+      doPackage(xpath, packageName);
+      
+      String classXpath = xpath + "/*[local-name()='Namespace.ownedElement']/*[local-name() = 'Class']";
+      path = new JDOMXPath(classXpath);
 
-        String classXpath = xpath + "/*[local-name()='Namespace.ownedElement']/*[local-name() = 'Class']";
-        path = new JDOMXPath(classXpath);
-        Collection<Element> classes = (Collection<Element>)path.selectNodes(modelElement);
+      Collection<Element> classes = (Collection<Element>)path.selectNodes(modelElement);
+      for (Element classElement : classes) {
+        String className = packageName + "." + classElement.getAttributeValue("name");
         
-        for (Element classElement : classes) {
-          String className = packageName + "." + classElement.getAttributeValue("name");
-
-          elements.put(className, classElement);
-          
-          List<Element> attributes = getElements(classElement, "Attribute");
-          
-          for(Element attributeElt : attributes) {
-            String attributeName = 
-              className + "." + attributeElt.getAttributeValue("name");
-            elements.put(attributeName, attributeElt);
-          }
+        elements.put(className, classElement);
+        
+        List<Element> attributes = getElements(classElement, "Attribute");
+        
+        for(Element attributeElt : attributes) {
+          String attributeName = 
+            className + "." + attributeElt.getAttributeValue("name");
+          elements.put(attributeName, attributeElt);
         }
       }
     }
- 
+  }
 }

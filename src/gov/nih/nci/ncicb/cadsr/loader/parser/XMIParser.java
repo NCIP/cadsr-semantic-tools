@@ -392,6 +392,19 @@ public class XMIParser implements Parser {
 //     logger.debug("A END -- " + event.getAClassName() + " " + event.getALowCardinality());
 //     logger.debug("B END -- " + event.getBClassName() + " " + event.getBLowCardinality());
 
+    // netbeans seems to read self pointing associations wrong. Such that an end is navigable but has no target role, even though it does in the model.
+    if(event.getAClassName().equals(event.getBClassName())) {
+      if(navig.equals("B") && StringUtil.isEmpty(event.getBRole())) {
+        event.setBRole(event.getARole());
+        event.setBLowCardinality(event.getALowCardinality());
+        event.setBHighCardinality(event.getAHighCardinality());
+      } else if (navig.equals("A") && StringUtil.isEmpty(event.getARole())) {
+        event.setARole(event.getBRole());
+        event.setALowCardinality(event.getBLowCardinality());
+        event.setAHighCardinality(event.getBHighCardinality());
+      }
+    }
+
     event.setDirection(navig);
 
     logger.debug("Adding association. AClassName: " + event.getAClassName());
