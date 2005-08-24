@@ -114,7 +114,12 @@ implements ProgressListener {
       public void actionPerformed(ActionEvent event) {
         fireActionEvent(event);
       }
-    });
+      });
+    filePathField.addKeyListener(new KeyAdapter() {
+        public void keyReleased(KeyEvent evt) {
+          fireActionEvent(null);
+        }
+      });
 
     JPanel browsePanel = new JPanel();
 
@@ -148,7 +153,7 @@ implements ProgressListener {
             for(String search : recentFiles)
               if(search.contains(fileStr)) {
                 filePathField.setText(search);
-                fireActionEvent(new ActionEvent(evt, 3, "mouseclick" ));
+                fireActionEvent(null);
               }
           }
         });
