@@ -1,8 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
-import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
+import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
@@ -49,9 +48,17 @@ public class UMLElementViewPanel extends JPanel
   private JButton previousButton, nextButton;
   private JCheckBox reviewButton;
 
-  private List<ReviewListener> reviewListeners = new ArrayList();
-  private List<NavigationListener> navigationListeners = new ArrayList();
-  private List<PropertyChangeListener> propChangeListeners = new ArrayList();
+  private List<ReviewListener> reviewListeners 
+    = new ArrayList<ReviewListener>();
+
+  private List<ElementChangeListener> changeListeners 
+    = new ArrayList<ElementChangeListener>();
+
+  private List<NavigationListener> navigationListeners 
+    = new ArrayList<NavigationListener>();
+
+  private List<PropertyChangeListener> propChangeListeners 
+    = new ArrayList<PropertyChangeListener>();
   
   private JPanel gridPanel;
   private JScrollPane scrollPane;
@@ -83,6 +90,10 @@ public class UMLElementViewPanel extends JPanel
 
   public void addReviewListener(ReviewListener listener) {
     reviewListeners.add(listener);
+  }
+
+  public void addElementChangeListener(ElementChangeListener listener) {
+    changeListeners.add(listener);
   }
 
   public void addNavigationListener(NavigationListener listener) 
@@ -144,6 +155,8 @@ public class UMLElementViewPanel extends JPanel
     setSaveButtonState(false);
     addButton.setEnabled(true);
     reviewButton.setEnabled(true);
+    
+    fireElementChangeEvent(new ElementChangeEvent(node));
   }
 
   private void initConcepts() 
@@ -544,7 +557,11 @@ public class UMLElementViewPanel extends JPanel
     for(ReviewListener l : reviewListeners)
       l.reviewChanged(event);
   }
-  
+
+  private void fireElementChangeEvent(ElementChangeEvent event) {
+    for(ElementChangeListener l : changeListeners)
+      l.elementChanged(event);
+  }
 
   
   private void insertInBag(JPanel bagComp, Component comp, int x, int y) {

@@ -155,8 +155,8 @@ public class MainFrame extends JFrame
     elementMenu.add(applyToAllMenuItem);
     mainMenuBar.add(elementMenu);
 
-    runMenu.add(validateMenuItem);
-    runMenu.add(uploadMenuItem);
+//     runMenu.add(validateMenuItem);
+//     runMenu.add(uploadMenuItem);
     runMenu.addSeparator();
     runMenu.add(defaultsMenuItem);
     mainMenuBar.add(runMenu);
@@ -347,6 +347,7 @@ public class MainFrame extends JFrame
         viewPanel.addPropertyChangeListener(this);
         viewPanel.addReviewListener(navigationPanel);
         viewPanel.addReviewListener(reviewTracker);
+        viewPanel.addElementChangeListener(ChangeTracker.getInstance());
         viewPanel.addNavigationListener(navigationPanel);
         navigationPanel.addNavigationListener(viewPanel);
 
