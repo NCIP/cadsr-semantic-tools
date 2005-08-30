@@ -18,7 +18,9 @@
  * 5. THIS SOFTWARE IS PROVIDED "AS IS," AND ANY EXPRESSED OR IMPLIED WARRANTIES, (INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE) ARE DISCLAIMED. IN NO EVENT SHALL THE NATIONAL CANCER INSTITUTE, ORACLE, OR THEIR AFFILIATES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -52,7 +54,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     southPanel.add(apply);
     
     JPanel centerPanel = new JPanel();
-    centerPanel.add(associationBox);
+    centerPanel.add(associationBox); 
     centerPanel.add(umlDescriptionBox);
     centerPanel.add(evsAutoSearchBox);
 
@@ -69,7 +71,14 @@ public class PreferenceDialog extends JDialog implements ActionListener
     cancel.addActionListener(this);
     ok.addActionListener(this);
     
+    UserSelections selections = UserSelections.getInstance();
+    RunMode runMode = (RunMode)(selections.getProperty("MODE"));
+    
+    if(runMode.equals(RunMode.Curator)) 
+      associationBox.setVisible(false);
+      
     UserPreferences prefs = UserPreferences.getInstance();
+      
     if(prefs.getViewAssociationType().equalsIgnoreCase("true"))
       associationBox.setSelected(true);
     else
@@ -79,7 +88,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
       umlDescriptionBox.setSelected(true);
     else
       umlDescriptionBox.setSelected(false);
-
+ 
     evsAutoSearchBox.setSelected(prefs.getEvsAutoSearch());
   }
   
