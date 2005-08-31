@@ -429,6 +429,8 @@ public class MainFrame extends JFrame
   public boolean closeTab(int index) {
 
     Component c = viewTabbedPane.getComponentAt(index);
+    if(c.equals(associationViewPanel))
+      associationViewPanel = null;
     viewPanels.remove(c.getName());
 
     return true;
