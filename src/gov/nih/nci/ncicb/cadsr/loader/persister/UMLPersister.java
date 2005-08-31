@@ -56,7 +56,7 @@ public class UMLPersister implements Persister {
 
   protected ElementsLists elements = null;
 
-  private Map valueDomains = new HashMap();
+  private Map<String, ValueDomain> valueDomains = new HashMap<String, ValueDomain>();
 
   protected UMLDefaults defaults = UMLDefaults.getInstance();
 
@@ -91,10 +91,11 @@ public class UMLPersister implements Persister {
     }
 
     // replace this name if:
-    if(vdMapping.containsKey(vd.getPreferredName().trim()))
-      vd.setPreferredName((String)vdMapping.get(vd.getPreferredName().trim()));
+    // Now taken care of if Event Handler
+//     if(vdMapping.containsKey(vd.getPreferredName().trim().toLowerCase()))
+//       vd.setPreferredName(vdMapping.get(vd.getPreferredName().trim().toLowerCase()));
 
-    ValueDomain result = (ValueDomain) valueDomains.get(vd.getPreferredName());
+    ValueDomain result = valueDomains.get(vd.getPreferredName());
 
     if (result == null) { // not in cache -- go to db
       List l = valueDomainDAO.find(vd);
