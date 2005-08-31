@@ -38,20 +38,19 @@ public class DatatypeMapping {
     vdMapping.put("int", "java.lang.Integer");
     vdMapping.put("float", "java.lang.Float");
     vdMapping.put("boolean", "java.lang.Boolean");
-    vdMapping.put("Integer", "java.lang.Integer");
-    vdMapping.put("Float", "java.lang.Float");
-    vdMapping.put("Boolean", "java.lang.Boolean");
-    vdMapping.put("Short", "java.lang.Short");
-    vdMapping.put("Double", "java.lang.Double");
-    vdMapping.put("Char", "java.lang.Char");
+    vdMapping.put("integer", "java.lang.Integer");
+    vdMapping.put("float", "java.lang.Float");
+    vdMapping.put("bool", "java.lang.Boolean");
+    vdMapping.put("short", "java.lang.Short");
+    vdMapping.put("double", "java.lang.Double");
     vdMapping.put("char", "java.lang.Char");
-    vdMapping.put("Byte", "java.lang.Byte");
-    vdMapping.put("Long", "java.lang.Long");
+    vdMapping.put("byte", "java.lang.Byte");
+    vdMapping.put("long", "java.lang.Long");
 
-    vdMapping.put("String", "java.lang.String");
+    vdMapping.put("string", "java.lang.String");
 
-    vdMapping.put("Date", "java.util.Date");
-    vdMapping.put("DateTime", "java.util.Date");
+    vdMapping.put("date", "java.util.Date");
+    vdMapping.put("datetime", "java.util.Date");
 
     vdMapping.put("any", "java.lang.Object");
     vdMapping.put("valueany", "java.lang.Object");
