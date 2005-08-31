@@ -82,6 +82,8 @@ public class XMIParser implements Parser {
 
       String s = filename.replaceAll("\\ ", "%20");
 
+      if(!s.startsWith("/"))
+        s = "/" + s;    
       String uriStr = new java.net.URI("file://" + s).toString();
       access.readModel(uriStr, "EA Model");
 
