@@ -93,7 +93,7 @@ public class CSVWriter implements ElementWriter
               if(i == conceptCodes.length-1)
                 row.add("ObjectClass");
               else
-                row.add("ObjectQualifier" + ((conceptCodes.length-1) - i));
+                row.add("ObjectClassQualifier" + ((conceptCodes.length-1) - i));
               row.add(con.getPreferredName());
               row.add(con.getPreferredDefinition());
               row.add(con.getDefinitionSource());
