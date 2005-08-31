@@ -387,7 +387,7 @@ public class UMLElementViewPanel extends JPanel
     addButton = new JButton("Add");
     deleteButton = new JButton("Remove");
     saveButton = new JButton("Apply");
-    reviewButton = new JCheckBox("Reviewed");
+    reviewButton = new JCheckBox("<html>Human<br>Verified</html>");
     previousButton = new JButton("Previous");
     nextButton = new JButton("Next");
     

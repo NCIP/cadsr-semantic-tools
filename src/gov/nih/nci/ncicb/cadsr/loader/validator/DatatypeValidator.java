@@ -49,14 +49,14 @@ public class DatatypeValidator implements Validator
       {
         String prefName = de.getValueDomain().getPreferredName();
 
-        if(!DatatypeMapping.getValues().contains(prefName) && !DatatypeMapping.getKeys().contains(prefName)) 
-          items.addItem(new ValidationError(
-                        PropertyAccessor.getProperty(
-                        "validation.type.invalid",
-                        new String[] {prefName, 
-                                      de.getDataElementConcept().getLongName()})
-                                      ,de));
-                                      
+//         if(!DatatypeMapping.getValues().contains(prefName) && !DatatypeMapping.getKeys().contains(prefName)) 
+        if(!DatatypeMapping.getValues().contains(prefName)) 
+          items.addItem(new ValidationError
+                        (PropertyAccessor.getProperty
+                         ("validation.type.invalid",
+                          new String[] {prefName, 
+                                        de.getDataElementConcept().getLongName()})
+                         ,de));
 
       }
     
