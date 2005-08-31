@@ -61,17 +61,17 @@ public class ModeSelectionPanel extends JPanel
 
     infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("xmi.gif"))));
 
-    JLabel infoLabel = new JLabel("<html>Please select the mode you want <br>the Workbench to run in</html>");
+    JLabel infoLabel = new JLabel("<html>Welcome to the Semantic Integration Workbench</html>");
     infoPanel.add(infoLabel);
     
     this.add(infoPanel, BorderLayout.NORTH);
     
     group = new ButtonGroup();
     
-    reportOption = new JRadioButton("Generate Semantic Annotation Report Only");
+    reportOption = new JRadioButton("Run Semantic Connector");
     reportOption.setActionCommand(RunMode.GenerateReport.toString());
         
-    curateOption = new JRadioButton("Curate Semantic Annotation");
+    curateOption = new JRadioButton("Curate Semantic Connector Report");
     curateOption.setActionCommand(RunMode.Curator.toString());
        
     reviewOption = new JRadioButton("Review Annotated Model");

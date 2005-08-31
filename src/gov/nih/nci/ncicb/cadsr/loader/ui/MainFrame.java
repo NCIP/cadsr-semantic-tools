@@ -114,12 +114,12 @@ public class MainFrame extends JFrame
   {
     try
     {
-      jbInit();
-
       UserSelections selections = UserSelections.getInstance();
 
       runMode = (RunMode)(selections.getProperty("MODE"));
       saveFilename = (String)selections.getProperty("FILENAME");
+
+      jbInit();
 
     }
     catch(Exception e)
@@ -180,10 +180,13 @@ public class MainFrame extends JFrame
     mainMenuBar.add(elementMenu);
 
 //     runMenu.add(validateMenuItem);
-    runMenu.add(uploadMenuItem);
-    runMenu.addSeparator();
-    runMenu.add(defaultsMenuItem);
-    mainMenuBar.add(runMenu);
+    if(runMode.equals(RunMode.Reviewer)) {
+      runMenu.add(uploadMenuItem); 
+      uploadMenuItem.setEnabled(false);
+      runMenu.addSeparator();
+      runMenu.add(defaultsMenuItem);
+      mainMenuBar.add(runMenu);
+    }
 
     helpMenu.add(indexMenuItem);
     helpMenu.addSeparator();
