@@ -164,8 +164,12 @@ public class UMLDefaultHandler implements UMLHandler {
     fullName.setName(className + ":" + propName);
     de.addAlternateName(fullName);
 
+    String datatype = event.getType().trim();
+    if(DatatypeMapping.getKeys().contains(datatype.toLowerCase())) 
+      datatype = DatatypeMapping.getMapping().get(datatype.toLowerCase());
+
     ValueDomain vd = DomainObjectFactory.newValueDomain();
-    vd.setPreferredName(event.getType());
+    vd.setPreferredName(datatype);
     de.setValueDomain(vd);
 
     if(!StringUtil.isEmpty(event.getDescription())) {
