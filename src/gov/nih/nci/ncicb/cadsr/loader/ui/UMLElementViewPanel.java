@@ -1,22 +1,3 @@
-/*
- * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
- *
- Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the disclaimer of Article 3, below. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
- *
- * 2. The end-user documentation included with the redistribution, if any, must include the following acknowledgment:
- *
- * "This product includes software developed by Oracle, Inc. and the National Cancer Institute."
- *
- * If no such end-user documentation is to be included, this acknowledgment shall appear in the software itself, wherever such third-party acknowledgments normally appear.
- *
- * 3. The names "The National Cancer Institute", "NCI" and "Oracle" must not be used to endorse or promote products derived from this software.
- *
- * 4. This license does not authorize the incorporation of this software into any proprietary programs. This license does not authorize the recipient to use any trademarks owned by either NCI or Oracle, Inc.
- *
- * 5. THIS SOFTWARE IS PROVIDED "AS IS," AND ANY EXPRESSED OR IMPLIED WARRANTIES, (INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE) ARE DISCLAIMED. IN NO EVENT SHALL THE NATIONAL CANCER INSTITUTE, ORACLE, OR THEIR AFFILIATES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- */
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
@@ -43,11 +24,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 
-/**
- * The Panel from where one can edit Annotation information
- * 
- * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>, Anwar Ahmad
- */
 public class UMLElementViewPanel extends JPanel
   implements ActionListener, KeyListener
              , ItemListener,
@@ -71,6 +47,7 @@ public class UMLElementViewPanel extends JPanel
   private JButton addButton, deleteButton, saveButton;
   private JButton previousButton, nextButton;
   private JCheckBox reviewButton;
+  private JLabel conceptLabel = new JLabel();
 
   private List<ReviewListener> reviewListeners 
     = new ArrayList<ReviewListener>();
@@ -198,6 +175,14 @@ public class UMLElementViewPanel extends JPanel
   private void initUI() {
     prefs.addUserPreferencesListener(this);
     this.setLayout(new BorderLayout());
+    
+    JPanel summaryPanel = new JPanel();
+    JLabel summaryTitle = new JLabel("UML Concept Code Summary: ");
+ 
+    summaryPanel.add(summaryTitle);
+    summaryPanel.add(conceptLabel);
+    this.add(summaryPanel,BorderLayout.NORTH); 
+    
     initViewPanel();
     initButtonPanel();
   }
@@ -211,19 +196,9 @@ public class UMLElementViewPanel extends JPanel
     conceptUIs = new ConceptUI[concepts.length];
     JPanel[] conceptPanels = new JPanel[concepts.length];
 
-    JPanel summaryPanel = new JPanel();
-    JLabel summaryTitle = new JLabel("UML Concept Code Summary: ");
-    summaryPanel.add(summaryTitle);
-    for(int i = 0; i < concepts.length; i++) {
-      conceptUIs[i] = new ConceptUI(concepts[i]);
-      JLabel label= new JLabel(concepts[i].getPreferredName());
-      summaryPanel.add(label);
-    }
-    this.add(summaryPanel,BorderLayout.NORTH);
-    
     if(prefs.getUmlDescriptionOrder().equals("first"))
       insertInBag(gridPanel, createDescriptionPanel(), 0, 0);
-      
+          
     for(int i = 0; i<concepts.length; i++) {
       conceptUIs[i] = new ConceptUI(concepts[i]);
 
@@ -340,12 +315,24 @@ public class UMLElementViewPanel extends JPanel
       
     }
     
+    updateConceptLabel();
+    
     if(prefs.getUmlDescriptionOrder().equals("last"))
       insertInBag(gridPanel, createDescriptionPanel(), 0, concepts.length + 1); 
 
     this.add(scrollPane, BorderLayout.CENTER);
     
   }
+
+  private void updateConceptLabel()
+  {
+    String s = "";
+  	for(int i = 0; i < concepts.length; i++) {
+  	  s = s + " " + conceptUIs[i].code.getText(); 
+  	}
+    conceptLabel.setText(s);
+  }
+
 
   private JPanel createDescriptionPanel() {
     JPanel umlPanel = new JPanel();
@@ -464,6 +451,7 @@ public class UMLElementViewPanel extends JPanel
       setSaveButtonState(false);
     }
     reviewButton.setEnabled(false);
+    updateConceptLabel();
   }
 
 
@@ -480,7 +468,9 @@ public class UMLElementViewPanel extends JPanel
   public void actionPerformed(ActionEvent evt) {
     JButton button = (JButton)evt.getSource();
     if(button.getActionCommand().equals(SAVE)) {
+      updateConceptLabel();
       apply(false);
+      
     } else if(button.getActionCommand().equals(ADD)) {
       Concept[] newConcepts = new Concept[concepts.length + 1];
       for(int i = 0; i<concepts.length; i++) {
@@ -514,10 +504,10 @@ public class UMLElementViewPanel extends JPanel
         newConcepts[i] = concepts[i];
       }
       concepts = newConcepts;
-
+      
       _this.remove(scrollPane);
       initViewPanel();
-
+      
       if(areAllFieldEntered()) {
         setSaveButtonState(true);
       } else {
