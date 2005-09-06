@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableColumn;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,7 @@ import gov.nih.nci.ncicb.cadsr.domain.LoaderDefault;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 public class UmlDefaultsPanel extends JDialog implements ActionListener
 {
@@ -112,11 +114,16 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
       };
 
 
+
     JPanel mainPanel = new JPanel();
     mainPanel.setLayout(new BorderLayout());
 
     JTable table = new JTable(dataModel);
     mainPanel.add(table, BorderLayout.CENTER);
+
+    TableColumn col = table.getColumnModel().getColumn(1);
+    col.setPreferredWidth(20);
+
     
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout());
@@ -138,6 +145,7 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
     this.getContentPane().add(mainPanel, BorderLayout.CENTER);
     this.setSize(300, 225);
 
+    UIUtil.putToCenter(this);
 
   }
  
