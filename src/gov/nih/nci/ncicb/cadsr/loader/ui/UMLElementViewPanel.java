@@ -401,7 +401,8 @@ public class UMLElementViewPanel extends JPanel
       addButton.setEnabled(false);
       reviewButton.setEnabled(false);
     }
-    saveButton.setEnabled(false);
+    setSaveButtonState(false);
+    
     if(concepts.length == 0)
       reviewButton.setEnabled(false);
 
