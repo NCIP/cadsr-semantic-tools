@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
+ * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -78,7 +78,7 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
     values.put(rowNames[4], defaults.getWorkflowStatus());
     values.put(rowNames[5], defaults.getProjectCs().getLongName());
     values.put(rowNames[6], defaults.getProjectCs().getPreferredDefinition());
-    values.put(rowNames[7], defaults.getConceptualDomain().getLongName());
+    values.put(rowNames[7], defaults.getConceptualDomain().getPreferredName());
     values.put(rowNames[8], defaults.getProjectCs().getPreferredDefinition());
     values.put(rowNames[9], defaults.getPackageFilterString());
   }
