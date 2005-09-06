@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
+ * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -82,19 +82,16 @@ public class XMIParser implements Parser {
 
       String s = filename.replaceAll("\\ ", "%20");
 
+      // Some file systems use absolute URIs that do 
+      // not start with '/'. 
       if(!s.startsWith("/"))
         s = "/" + s;    
       String uriStr = new java.net.URI("file://" + s).toString();
       access.readModel(uriStr, "EA Model");
 
-//       access.readModel("file:" + filename, "EA Model");
-
       uml.UmlPackage umlExtent = (uml.UmlPackage) access.getOutermostExtent();
       
       Model model = UML13Utils.getModel(umlExtent, "EA Model");
-//       fact = new MdrModelManagerFactoryImpl();
-//       mgr = fact.readModel("", filename);
-//       Model model = mgr.getModel();
 
       Iterator it = model.getOwnedElement().iterator();
 
