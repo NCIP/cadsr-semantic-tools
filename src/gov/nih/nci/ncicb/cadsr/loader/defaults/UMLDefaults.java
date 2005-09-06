@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
+ * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -38,7 +38,6 @@ import java.util.*;
  * <br/> Implements the Singleton pattern.
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
- * @version 1.0
  */
 public class UMLDefaults {
   private static Logger logger = Logger.getLogger(UMLDefaults.class.getName());
@@ -61,6 +60,8 @@ public class UMLDefaults {
 
   private LoaderDefault loaderDefault = null;
 
+  private String filename ;
+
   private UMLDefaults() {
   }
 
@@ -82,6 +83,8 @@ public class UMLDefaults {
    */
 
   public void initParams(String filename) throws PersisterException  {
+    this.filename = filename;
+
     loaderDefault = new AttachedFileDefaultsLoader().loadDefaults(filename);
 
     if(loaderDefault == null) 
@@ -95,10 +98,6 @@ public class UMLDefaults {
 
     initParams();
 
-  }
-
-  public void saveParams(String filename) throws PersisterException {
-    
   }
 
   private void initParams() throws PersisterException {
@@ -338,6 +337,9 @@ public class UMLDefaults {
     try {
       loaderDefault = defaults;
       initParams();
+
+      new AttachedFileDefaultsLoader().saveDefaults(defaults, filename);
+
     } catch (PersisterException e){
     } // end of try-catch
   }
