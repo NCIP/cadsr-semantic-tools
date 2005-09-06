@@ -166,6 +166,8 @@ public class CsvParser implements Parser {
     evt.addConcept(createConceptEvent(row));
     evt.setDescription(row.getString(COL_DESCRIPTION));
     
+    evt.setType("");
+    
     evt.setReviewed(row.getString(COL_HUMAN_VERIFIED).equals("1")?true:false);
   
     return evt;
