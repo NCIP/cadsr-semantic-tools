@@ -29,6 +29,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -115,7 +116,14 @@ public class CSVWriter implements ElementWriter
               row = write.next();
               row.add(className);
               row.add(dec.getProperty().getLongName());
-              row.addEmpty();
+
+              findDef:
+              for(Definition def : (Collection<Definition>)dec.getDefinitions()) {
+                if(def.getType().equals(Definition.TYPE_UML_DEC)) {
+                  row.add(def.getDefinition());
+                  break findDef;
+                }
+              }              
               
               Concept con = LookupUtil.lookupConcept(propConCodes[i]);
               row.add(con.getLongName());
