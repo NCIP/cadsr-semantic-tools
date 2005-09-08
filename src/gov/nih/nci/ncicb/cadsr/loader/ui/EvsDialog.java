@@ -60,13 +60,15 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
   private static final String CONCEPT_CODE = "Concept Code";
 
   private JButton previousButton = new JButton("Previous"),
-    nextButton = new JButton("Next");
+    nextButton = new JButton("Next"), 
+    closeButton = new JButton("Close");
   
   private JLabel indexLabel = new JLabel("");
 
   private static String SEARCH = "SEARCH",
     PREVIOUS = "PREVIOUS",
-    NEXT = "NEXT";
+    NEXT = "NEXT",
+    CLOSE = "CLOSE";
 
   private java.util.List<EvsResult> resultSet = new ArrayList();
 
@@ -200,13 +202,16 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
     browsePanel.add(previousButton);
     browsePanel.add(indexLabel);
     browsePanel.add(nextButton);
+    browsePanel.add(closeButton);
 
     previousButton.setActionCommand(PREVIOUS);
     nextButton.setActionCommand(NEXT);
+    closeButton.setActionCommand(CLOSE);
     previousButton.setEnabled(false);
     nextButton.setEnabled(false);
     previousButton.addActionListener(this);
     nextButton.addActionListener(this);
+    closeButton.addActionListener(this);
 
     this.getContentPane().add(searchPanel, BorderLayout.NORTH)
 ;
@@ -271,6 +276,8 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
     } else if(button.getActionCommand().equals(NEXT)) {
       pageIndex++;
       updateTable();
+    } else if(button.getActionCommand().equals(CLOSE)) {
+      this.dispose();
     }
     updateIndexLabel();
   }
