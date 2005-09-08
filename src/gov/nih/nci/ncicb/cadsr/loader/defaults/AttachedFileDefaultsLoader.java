@@ -82,10 +82,8 @@ public class AttachedFileDefaultsLoader  {
       Properties props = new MyProperties();
       File f = new File(getPropFilenameAsURI(modelFileName));
 
-      props.load(new FileInputStream(f));
-
-      if(props == null)
-        return;
+      if(f.exists())
+        props.load(new FileInputStream(f));
 
       props.setProperty("projectName", loaderDefault.getProjectName());
       props.setProperty("projectVersion", loaderDefault.getProjectVersion().toString());
