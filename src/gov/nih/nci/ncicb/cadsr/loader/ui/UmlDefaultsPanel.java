@@ -150,7 +150,7 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
     this.getContentPane().setLayout(new BorderLayout());
     this.getContentPane().add(mainPanel, BorderLayout.CENTER);
     this.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-    this.setSize(325, 475);
+    this.setSize(375, 500);
 
     UIUtil.putToCenter(this);
 
