@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
+ * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -20,6 +20,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ext;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,7 +35,7 @@ import gov.nih.nci.ncicb.cadsr.evs.*;
 public class EvsModule 
 {
 
-  private static EVSQueryService evsService = new EVSQueryService();
+  private static EVSQueryService evsService = new EVSQueryService(PropertyAccessor.getProperty("dts.url"));
 
   public EvsModule()
   {
