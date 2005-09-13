@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
+ * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -37,12 +37,6 @@ public class EVSQueryService {
   private static String DEFINITION_PROPERTY_NAME = "DEFINITION";
   private ApplicationService evsService;
   private String cacoreServiceURL;
-
-  public EVSQueryService() {
-    this.cacoreServiceURL =
-      "http://cabio.nci.nih.gov/cacore30/server/HTTPServer";
-    evsService = ApplicationService.getRemoteInstance(cacoreServiceURL);
-  }
 
   public EVSQueryService(String cacoreServiceURL) {
     this.cacoreServiceURL = cacoreServiceURL;
@@ -240,7 +234,7 @@ public class EVSQueryService {
    * @param args
    */
   public static void main(String[] args) {
-    EVSQueryService testAction = new EVSQueryService();
+    EVSQueryService testAction = new EVSQueryService("http://cabio.nci.nih.gov/cacore30/server/HTTPServer");
     try {
       //testAction.findConceptsBySynonym("gene", 100);
       testAction.findConceptsByCode("C41095", true, 100);
