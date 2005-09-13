@@ -46,14 +46,21 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
 {
 
   private UmlDefaultsPanel _this = this;
-
-  private JTable table = null;
-  private TableModel dataModel;
   private JButton applyButton, revertButton;
-
-  private Map<String, String> values = new HashMap<String, String>();
-
   private String OK = "OK", CANCEL = "CANCEL";
+  
+  private JTextField projectNameField = new JTextField(20),
+    projectVersionField = new JTextField(20),
+    contextNameField = new JTextField(20),
+    versionField = new JTextField(20),
+    workflowField = new JTextField(20),
+    longNameField = new JTextField(20),
+    conceptualDomainField = new JTextField(20),
+    cdContextNameField = new JTextField(20),
+    packageFilterField = new JTextField(20);
+    
+    private JTextArea descriptionField = new JTextArea();
+
 
   private String rowNames[] = 
   {
@@ -72,66 +79,15 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
   public UmlDefaultsPanel(java.awt.Frame parent)
   {
     super(parent, "UML Loader Defaults", true);
-    initValues();
+    this.setResizable(false);
     initUI();
   }
 
-  private void initValues() {
-    UMLDefaults defaults = UMLDefaults.getInstance();
-    values.put(rowNames[0], defaults.getProjectCs().getPreferredName());
-    values.put(rowNames[1], defaults.getProjectCs().getVersion().toString());
-    values.put(rowNames[2], defaults.getProjectCs().getContext().getName());
-    values.put(rowNames[3], "1.0");
-    values.put(rowNames[4], defaults.getWorkflowStatus());
-    values.put(rowNames[5], defaults.getProjectCs().getLongName());
-    values.put(rowNames[6], defaults.getProjectCs().getPreferredDefinition());
-    values.put(rowNames[7], defaults.getConceptualDomain().getPreferredName());
-    values.put(rowNames[8], defaults.getProjectCs().getPreferredDefinition());
-    values.put(rowNames[9], defaults.getPackageFilterString());
-  }
-
-
   private void initUI() 
   {
-    dataModel = new AbstractTableModel() {
-        public int getColumnCount() { return 2; }
-        public int getRowCount() { return rowNames.length;}
-        public Object getValueAt(int row, int col) { 
-          if(col == 0)
-            return rowNames[row];
-          else 
-            return values.get(rowNames[row]);
-        }
-        public boolean isCellEditable(int row, int col) {
-          if(col != 0)
-            return true;
-          else
-            return false;
-        }
-        public void setValueAt(Object value, int row, int col) 
-        {
-          if(col == 1) {
-            values.put(rowNames[row], value.toString());
-            System.out.println("updated");
-          }
-          fireTableCellUpdated(row,col);          
-        }
-      };
-
     JPanel mainPanel = new JPanel();
     mainPanel.setLayout(new GridBagLayout());
 
-    JTextField projectNameField = new JTextField(20);
-    JTextField projectVersionField = new JTextField(20);
-    JTextField contextNameField = new JTextField(20);
-    JTextField versionField = new JTextField(20);
-    JTextField workflowField = new JTextField(20);
-    JTextField longNameField = new JTextField(20);
-    JTextArea descriptionField = new JTextArea();
-    JTextField conceptualDomainField = new JTextField(20);
-    JTextField cdContextNameField = new JTextField(20);
-    JTextField packageFilterField = new JTextField(20);
-    
     descriptionField.setLineWrap(true);
     descriptionField.setWrapStyleWord(true);
     
@@ -147,12 +103,12 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
     projectNameField.setText(defaults.getProjectCs().getPreferredName());
     projectVersionField.setText(defaults.getProjectCs().getVersion().toString());
     contextNameField.setText(defaults.getProjectCs().getContext().getName());
-    versionField.setText("1.0");
+    versionField.setText(defaults.getVersion().toString());
     workflowField.setText(defaults.getWorkflowStatus());
     longNameField.setText(defaults.getProjectCs().getLongName());
     descriptionField.setText(defaults.getProjectCs().getPreferredDefinition());
     conceptualDomainField.setText(defaults.getConceptualDomain().getPreferredName());
-    cdContextNameField.setText(defaults.getProjectCs().getPreferredDefinition());
+    cdContextNameField.setText(defaults.getConceptualDomain().getContext().getName());
     packageFilterField.setText(defaults.getPackageFilterString());
     
     insertInBag(mainPanel, new JLabel(rowNames[0]), 0, 0);
@@ -176,13 +132,6 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
     insertInBag(mainPanel, conceptualDomainField, 1, 7);
     insertInBag(mainPanel, cdContextNameField, 1, 8);
     insertInBag(mainPanel, packageFilterField, 1, 9);
-
-//    JTable table = new JTable(dataModel);
-//    mainPanel.add(table, BorderLayout.CENTER);
-
-//    TableColumn col = table.getColumnModel().getColumn(1);
-//    col.setPreferredWidth(20);
-
     
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout());
@@ -198,8 +147,6 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
     applyButton.addActionListener(this);
     revertButton.addActionListener(this);
 
-    //mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-
     this.getContentPane().setLayout(new BorderLayout());
     this.getContentPane().add(mainPanel, BorderLayout.CENTER);
     this.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
@@ -212,17 +159,17 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
   private void fireDefaultsChanged() {
     LoaderDefault loaderDefault = DomainObjectFactory.newLoaderDefault();
     
-    loaderDefault.setProjectName((String)dataModel.getValueAt(0, 1));
-    loaderDefault.setProjectVersion(new Float((String)dataModel.getValueAt(1, 1)));
-    loaderDefault.setContextName((String)dataModel.getValueAt(2, 1));
-    loaderDefault.setVersion(new Float((String)dataModel.getValueAt(3, 1)));
-    loaderDefault.setWorkflowStatus((String)dataModel.getValueAt(4, 1));
-    loaderDefault.setProjectLongName((String)dataModel.getValueAt(5, 1));
-    loaderDefault.setProjectDescription((String)dataModel.getValueAt(6, 1));
-    loaderDefault.setCdName((String)dataModel.getValueAt(7, 1));
-    loaderDefault.setCdContextName((String)dataModel.getValueAt(8, 1));
+    loaderDefault.setProjectName(projectNameField.getText());
+    loaderDefault.setProjectVersion(new Float(projectVersionField.getText()));
+    loaderDefault.setContextName(contextNameField.getText());
+    loaderDefault.setVersion(new Float(versionField.getText()));
+    loaderDefault.setWorkflowStatus(workflowField.getText());
+    loaderDefault.setProjectLongName(longNameField.getText());
+    loaderDefault.setProjectDescription(descriptionField.getText());
+    loaderDefault.setCdName(conceptualDomainField.getText());
+    loaderDefault.setCdContextName(cdContextNameField.getText());
     
-    loaderDefault.setPackageFilter((String)dataModel.getValueAt(9, 1));
+    loaderDefault.setPackageFilter(packageFilterField.getText());
 
     UMLDefaults.getInstance().updateDefaults(loaderDefault);
 
