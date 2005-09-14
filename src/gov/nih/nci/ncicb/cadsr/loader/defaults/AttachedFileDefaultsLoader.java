@@ -26,6 +26,9 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.File;
@@ -80,10 +83,15 @@ public class AttachedFileDefaultsLoader  {
     try {
 
       Properties props = new MyProperties();
+
+      System.out.println("modelFileName as URI: " + getPropFilenameAsURI(modelFileName));
       File f = new File(getPropFilenameAsURI(modelFileName));
 
       if(f.exists())
         props.load(new FileInputStream(f));
+      else 
+        f.createNewFile();
+      
 
       props.setProperty("projectName", loaderDefault.getProjectName());
       props.setProperty("projectVersion", loaderDefault.getProjectVersion().toString());
@@ -107,7 +115,7 @@ public class AttachedFileDefaultsLoader  {
 
   }
 
-  private String getPropFilenameAsURI(String filename) {
+  private URI getPropFilenameAsURI(String filename) {
 
     int ind = filename.lastIndexOf(".");
     String propsFileName = filename.substring(0, ind);
@@ -118,8 +126,12 @@ public class AttachedFileDefaultsLoader  {
     if(!propsFileName.startsWith("/"))
       propsFileName = "/" + propsFileName;    
 
-    return propsFileName;
-
+    try {
+      return new URI("file://" + propsFileName);
+    } catch (URISyntaxException e){
+      return null;
+    } // end of try-catch
+    
   }
 
   // The default behaviour of throwing a unchecked exception
