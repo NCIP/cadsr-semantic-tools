@@ -117,14 +117,20 @@ public class CSVWriter implements ElementWriter
               row.add(className);
               row.add(dec.getProperty().getLongName());
 
+              String propDef = null;
               findDef:
               for(Definition def : (Collection<Definition>)dec.getDefinitions()) {
                 if(def.getType().equals(Definition.TYPE_UML_DEC)) {
-                  row.add(def.getDefinition());
+                  propDef = def.getDefinition();
                   break findDef;
                 }
               }              
+              if(propDef != null)
+                row.add(propDef);
+              else
+                row.addEmpty();
               
+
               Concept con = LookupUtil.lookupConcept(propConCodes[i]);
               row.add(con.getLongName());
               row.add(con.getLongName());
