@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
+ * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -25,6 +25,8 @@ import java.util.HashMap;
 import gov.nih.nci.semantic.app.ReportHandler;
 import gov.nih.nci.semantic.app.ModelAnnotator;
 import gov.nih.nci.semantic.util.Configuration;
+import gov.nih.nci.codegen.core.util.FixEAXMI;
+
 
 import org.jdom.Element;
 import org.jdom.Attribute;
@@ -59,11 +61,28 @@ public class SemanticConnectorUtil {
 
     String filepath = inputXmi.substring(0, inputXmi.lastIndexOf("/") + 1);
     
-    new ModelAnnotator(inputXmi, "_" + inputXmi, filepath);
+    new ModelAnnotator(inputXmi, inputXmi, filepath);
 
 
     return filepath + "/" + "EVSReport_" + inputXmi.substring(inputXmi.lastIndexOf("/")+1, inputXmi.lastIndexOf(".")) + ".csv";
     
+  }
+
+  public static String fixXmi(String filename) {
+    String filepath = filename.substring(0, filename.lastIndexOf("/") + 1);
+
+    String fixedXmi = filepath + "/fixed_" + filename.substring(filename.lastIndexOf("/")+1);
+
+
+//     int ind = filename.lastIndexOf(".xmi");
+//     String filenameNoExt = filename.substring(0, ind);
+//     String fixedXmi = filenameNoExt + ".xmi";
+    try {
+      new FixEAXMI().fix(filename, fixedXmi);
+    } catch (Exception e){
+      e.printStackTrace();
+    } // end of try-catch
+    return fixedXmi;
   }
 
 //   private static ArrayList readModel(Element modelElement){

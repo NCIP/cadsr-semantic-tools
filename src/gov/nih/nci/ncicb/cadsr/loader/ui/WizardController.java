@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
+ * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -205,47 +205,45 @@ public class WizardController implements ActionListener {
 
 
           if(mode.equals(RunMode.GenerateReport)) {
-            File csvFile = new File(SemanticConnectorUtil.getCsvFilename(filename));
-            boolean doIt = true;
-            if(csvFile.exists()) {
-              int result = JOptionPane
-                .showConfirmDialog
-                (null,
-                 "<html>A report already exists for this file, if you choose to continue, <br>the existing report will be lost. <br><br>Do you want to continue?", 
-                 "Continue?", JOptionPane.YES_NO_OPTION);
-              
-              if(result == JOptionPane.YES_OPTION) {
-                csvFile.delete();
-              } else {
-                doIt = false;
-                reportPanel.setFiles(null, "User cancelled Semantic Annotation");
-              }
-            }
+            SwingWorker worker = new SwingWorker() {
+                public Object construct() {
+                  try {
+                    ProgressEvent evt = new ProgressEvent();
 
-            if(doIt) {
-              SwingWorker worker = new SwingWorker() {
-                  public Object construct() {
-                    try {
-                      ProgressEvent evt = new ProgressEvent();
-                      evt.setMessage("Creating Annotation Report ...");
+                    String filenameNoExt = filename.substring(filename.lastIndexOf("/")+1);
+                    String inputXmi = filename;
+                    
+                    // Run the fixEA task if file name does not end with _fixed
+                    if(!filenameNoExt.startsWith("fixed_")) {
+                      evt.setMessage("Removing Unnecessary tags from XMI ...");
                       progressDesc.newProgressEvent(evt);
-                      
-                      outputCsv = SemanticConnectorUtil.generateReport(filename);
-                      reportPanel.setFiles(filename, outputCsv);
-                      evt = new ProgressEvent();
-                      evt.setGoal(100);
-                      evt.setStatus(100);
-                      evt.setMessage("Done");
-                      progressDesc.newProgressEvent(evt);
+                      inputXmi = SemanticConnectorUtil.fixXmi(filename);
+                    }
 
-                    } catch (SemanticConnectorException e){
-                      reportPanel.setFiles(null, "An error occured.");
-                    } // end of try-catch
-                    return null;
-                  }
-                };
-              worker.start(); 
-            }
+                    File csvFile = new File(SemanticConnectorUtil.getCsvFilename(filename));
+                    if(!csvFile.exists()) {
+                      evt.setMessage("Creating Annotation Report. This may take a minute ...");
+                      progressDesc.newProgressEvent(evt);
+                    } else {
+                      evt.setMessage("Annotating XMI File ...");
+                      progressDesc.newProgressEvent(evt);
+                    }
+
+                    outputCsv = SemanticConnectorUtil.generateReport(inputXmi);
+                    reportPanel.setFiles(inputXmi, outputCsv);
+                    evt = new ProgressEvent();
+                    evt.setGoal(100);
+                    evt.setStatus(100);
+                    evt.setMessage("Done");
+                    progressDesc.newProgressEvent(evt);
+
+                  } catch (SemanticConnectorException e){
+                    reportPanel.setFiles(null, "An error occured.");
+                  } // end of try-catch
+                  return null;
+                }
+              };
+            worker.start(); 
           }
           else if(mode.equals(RunMode.Curator)) {
             SwingWorker worker = new SwingWorker() {
