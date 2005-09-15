@@ -19,10 +19,16 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.util;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
+import org.apache.log4j.Logger;
 
 public class DatatypeMapping {
 
@@ -34,28 +40,25 @@ public class DatatypeMapping {
 
   public static Collection<String> getValues() {return vdMapping.values();}
 
+  private static Logger logger = Logger.getLogger(DatatypeMapping.class.getName());
+
   static {
-    vdMapping.put("int", "java.lang.Integer");
-    vdMapping.put("float", "java.lang.Float");
-    vdMapping.put("boolean", "java.lang.Boolean");
-    vdMapping.put("integer", "java.lang.Integer");
-    vdMapping.put("float", "java.lang.Float");
-    vdMapping.put("bool", "java.lang.Boolean");
-    vdMapping.put("short", "java.lang.Short");
-    vdMapping.put("double", "java.lang.Double");
-    vdMapping.put("char", "java.lang.Char");
-    vdMapping.put("byte", "java.lang.Byte");
-    vdMapping.put("long", "java.lang.Long");
+    // create url from xml file
 
-    vdMapping.put("string", "java.lang.String");
-
-    vdMapping.put("date", "java.util.Date");
-    vdMapping.put("datetime", "java.util.Date");
-
-    vdMapping.put("any", "java.lang.Object");
-    vdMapping.put("valueany", "java.lang.Object");
-    vdMapping.put("any[][][]", "java.lang.Object");
+     String filename = "datatype-mapping.xml";
+     
+     URL url = null;     
+     
+    try {
+      url = Thread.currentThread().getContextClassLoader().getResource(filename);
+      vdMapping = DatatypeMappingXMLUtil.readMapping(url.toURI());
+      
+    } catch (Exception e){
+      logger.fatal("Resource Properties could not be loaded (" + filename + "). Exiting now.");
+      logger.fatal(e.getMessage());
+      System.exit(1);
+    } // end of try-catch
+         
   }
-
 
 }
