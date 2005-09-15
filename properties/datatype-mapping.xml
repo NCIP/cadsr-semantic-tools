@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Datatype-mapping>
+  <alias-list name="java.lang.Float">
+    <alias name="float"/>
+  </alias-list>
+  
+<alias-list name="java.lang.Integer">
+  <alias name="int"/>
+  <alias name="integer"/>
+</alias-list>
+
+<alias-list name="java.lang.Boolean">
+  <alias name="boolean"/>
+  <alias name="bool"/>
+</alias-list>
+
+<alias-list name="java.lang.Short">
+  <alias name="short"/>
+</alias-list>
+
+<alias-list name="java.lang.Double">
+  <alias name ="double"/>
+  </alias-list>
+
+<alias-list name="java.lang.Char">
+  <alias name="char"/>
+</alias-list>
+
+<alias-list name="java.lang.Byte">
+  <alias name="byte"/>
+</alias-list>
+
+<alias-list name="java.lang.Long">
+  <alias name ="long"/>
+  </alias-list>
+
+<alias-list name="java.lang.String">
+    <alias name ="string"/>
+    </alias-list>
+
+<alias-list name="java.lang.Date">
+  <alias name="date"/>
+  <alias name="datetime"/>
+</alias-list>
+
+<alias-list name="java.lang.Object">
+  <alias name="any"/>
+  <alias name="valueany"/>
+  <alias name="any[][][]"/>
+</alias-list>
+
+
+</Datatype-mapping>
