@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
+ * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -119,7 +119,7 @@ implements ProgressListener {
     infoPanel.setBackground(Color.WHITE);
     infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("xmi.gif"))));
+    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("SIW-logo.jpg"))));
 
     JLabel infoLabel = new JLabel("<html>Please choose a file to parse<br>The file must be in " + fileExtension.toUpperCase() + " format</html>");
     infoPanel.add(infoLabel);

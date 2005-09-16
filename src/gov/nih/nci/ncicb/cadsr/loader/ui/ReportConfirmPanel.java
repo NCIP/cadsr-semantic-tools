@@ -56,11 +56,11 @@ public class ReportConfirmPanel extends JPanel {
   private void initUI() {
 
     JPanel infoPanel = new JPanel();
-    infoPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-    
+    infoPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
     infoPanel.setBackground(Color.WHITE);
     infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("xmi.gif"))), FlowLayout.LEFT);
+
+    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("SIW-logo.jpg"))));
 
     JLabel textLabel = new JLabel("<html>Confirmation</html>");
 
