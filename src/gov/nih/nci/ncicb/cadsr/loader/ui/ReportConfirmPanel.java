@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
+ * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -45,7 +45,11 @@ public class ReportConfirmPanel extends JPanel {
     if(file1 == null) {
       reportLabel.setText("<html>Report Generation Failed. <br>" + file2 + "</html>");
     } else {
-      reportLabel.setText("<html>Semantic Annotation for the file:<br><div align=center> " + file1 + " </div>was created. <br><br> The output report can be found here: <br><div align=center>" + file2 + "</div></html>");
+      if(file2 != null) {
+        reportLabel.setText("<html>Semantic Annotation for the file:<br><div align=center> " + file1 + " </div>was created. <br><br> The output report can be found here: <br><div align=center>" + file2 + "</div></html>");
+      } else {
+        reportLabel.setText("<html>Semantic Annotation for the file:<br><div align=center> " + file1 + " </div>was completed.");
+      }
     }
   }
 
