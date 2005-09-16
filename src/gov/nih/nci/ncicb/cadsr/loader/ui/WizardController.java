@@ -224,13 +224,15 @@ public class WizardController implements ActionListener {
                     if(!csvFile.exists()) {
                       evt.setMessage("Creating Annotation Report. This may take a minute ...");
                       progressDesc.newProgressEvent(evt);
+                      outputCsv = SemanticConnectorUtil.generateReport(inputXmi);
                     } else {
                       evt.setMessage("Annotating XMI File ...");
                       progressDesc.newProgressEvent(evt);
+                      SemanticConnectorUtil.generateReport(inputXmi);
                     }
 
-                    outputCsv = SemanticConnectorUtil.generateReport(inputXmi);
                     reportPanel.setFiles(inputXmi, outputCsv);
+
                     evt = new ProgressEvent();
                     evt.setGoal(100);
                     evt.setStatus(100);
