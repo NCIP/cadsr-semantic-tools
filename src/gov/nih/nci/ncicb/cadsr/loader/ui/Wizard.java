@@ -74,6 +74,8 @@ public class Wizard implements PropertyChangeListener {
     private JButton nextButton;
     private JButton cancelButton;
 
+  private Wizard _this = this;
+
     /**
      * Default constructor. This method creates a new WizardModel object and passes it
      * into the overloaded constructor.
@@ -396,6 +398,16 @@ public class Wizard implements PropertyChangeListener {
 
         wizardDialog.getContentPane().add(buttonPanel, java.awt.BorderLayout.SOUTH);
         wizardDialog.getContentPane().add(cardPanel, java.awt.BorderLayout.CENTER);
+
+        wizardDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        wizardDialog.addWindowListener(new WindowAdapter()
+          {
+            public void windowClosing(WindowEvent e)
+            {
+              _this.close(CANCEL_RETURN_CODE);
+            }
+          });
+
 
     }
 
