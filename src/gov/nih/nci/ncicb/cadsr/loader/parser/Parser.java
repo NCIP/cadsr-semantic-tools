@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
+ * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -41,7 +41,7 @@ public interface Parser {
    *
    * @param filename a <code>String</code> value
    */
-  public void parse(String filename);
+  public void parse(String filename) throws ParserException;
 
   public void addProgressListener(ProgressListener listener);
 }

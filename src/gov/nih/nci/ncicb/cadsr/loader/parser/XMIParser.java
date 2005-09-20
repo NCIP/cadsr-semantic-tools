@@ -71,7 +71,7 @@ public class XMIParser implements Parser {
     this.listener = (UMLHandler) handler;
   }
 
-  public void parse(String filename) {
+  public void parse(String filename) throws ParserException {
     try {
 
       ProgressEvent evt = new ProgressEvent();
@@ -118,8 +118,9 @@ public class XMIParser implements Parser {
       fireLastEvents();
     }
     catch (Exception e) {
-      logger.fatal("Could not parse: " + filename);
-      logger.fatal(e, e);
+//       logger.fatal("Could not parse: " + filename);
+//       logger.fatal(e, e);
+      throw new ParserException(e);
     } // end of try-catch
   }
 
