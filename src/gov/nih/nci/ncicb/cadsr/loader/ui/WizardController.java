@@ -314,13 +314,29 @@ public class WizardController implements ActionListener {
                     tb.init();
                     tb.buildTree(elements);
 
-                    wizard.close(Wizard.FINISH_RETURN_CODE);
-                    
-                    return null;
+                  } catch (ParserException e) {
+                    logger.fatal("Could not parse: " + filename);
+                    logger.fatal(e, e);
+                    String msg = "Could not parse: \n" + filename + "\n";
+
+                    Throwable cause = e.getCause();
+                    while(cause != null) {
+                      msg  = msg + cause.getMessage() + "\n";
+                      cause = cause.getCause();
+                    }
+
+                    msg  = msg + "\nPlease ensure you have used the correct options when exporting to XMI.\nThe application will now close.";
+
+                    JOptionPane.showMessageDialog((Frame)null,  msg, "Fatal Parsing Error", JOptionPane.ERROR_MESSAGE);
+                    wizard.close(Wizard.ERROR_RETURN_CODE);
                   } catch (Exception e){
                     logger.error(e, e);
                     return null;
                   } // end of try-catch
+
+                  wizard.close(Wizard.FINISH_RETURN_CODE);
+                  return null;
+
                 }
               };
             worker.start(); 
