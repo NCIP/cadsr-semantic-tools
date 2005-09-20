@@ -16,10 +16,10 @@ import org.jdom.output.XMLOutputter;
 
 public class DatatypeMappingXMLUtil {
 
-  public static Map<String, String> readMapping(URI uri) {
+  public static Map<String, String> readMapping(URL url) {
     try {
       SAXBuilder builder = new SAXBuilder();
-      Document doc = builder.build(new java.io.File(uri));
+      Document doc = builder.build(url);
       Element modelElement = doc.getRootElement();
       
       Map<String, String> vdMap = new HashMap();

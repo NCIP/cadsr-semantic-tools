@@ -51,7 +51,7 @@ public class DatatypeMapping {
      
     try {
       url = Thread.currentThread().getContextClassLoader().getResource(filename);
-      vdMapping = DatatypeMappingXMLUtil.readMapping(url.toURI());
+      vdMapping = DatatypeMappingXMLUtil.readMapping(url);
       
     } catch (Exception e){
       logger.fatal("Resource Properties could not be loaded (" + filename + "). Exiting now.");
