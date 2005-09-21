@@ -296,10 +296,10 @@ public class UMLDefaultHandler implements UMLHandler {
           
           String propName = newDec.getProperty().getLongName();
           
-          String className = childOc.getLongName();
-          int ind = className.lastIndexOf(".");
-          className = className.substring(ind + 1);
-          String packageName = className.substring(0, ind);
+          String s = childOc.getLongName();
+          int ind = s.lastIndexOf(".");
+          String className = s.substring(ind + 1);
+          String packageName = s.substring(0, ind);
           newDec.setLongName(className + ":" + propName);		
           DataElement newDe = DomainObjectFactory.newDataElement();
           newDe.setDataElementConcept(newDec);
