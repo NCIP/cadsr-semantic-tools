@@ -19,6 +19,8 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.util;
 
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -39,26 +41,70 @@ public class DatatypeMapping {
   public static Set<String> getKeys() {return vdMapping.keySet();}
 
   public static Collection<String> getValues() {return vdMapping.values();}
+  
+  
+  private static Map<String, String> systemMapping = new HashMap<String, String>();
+  
+  public static Map<String, String> getSystemMapping() { return systemMapping; }
+  
+  public static Set<String> getSystemKeys() { return systemMapping.keySet(); }
+  
+  public static Collection<String> getSystemValues() { return systemMapping.values(); }
+    
+  
+  private static Map<String, String> userMapping = new HashMap<String, String>();
+  
+  public static Map<String, String> getUserMapping() { return userMapping; }
+  
+  public static Set<String> getUserKeys() { return userMapping.keySet(); }
+  
+  public static Collection<String> getUserValues() { return userMapping.values(); }
+  
 
   private static Logger logger = Logger.getLogger(DatatypeMapping.class.getName());
 
+  private static String userFilename = "user-datatype-mapping.xml";
+
   static {
     // create url from xml file
-
-     String filename = "datatype-mapping.xml";
+     String systemFilename = "datatype-mapping.xml";
      
      URL url = null;     
      
     try {
-      url = Thread.currentThread().getContextClassLoader().getResource(filename);
-      vdMapping = DatatypeMappingXMLUtil.readMapping(url);
+      url = Thread.currentThread().getContextClassLoader().getResource(systemFilename);
+      systemMapping = DatatypeMappingXMLUtil.readMapping(url);
+    
+      UserSelections selections = UserSelections.getInstance();
+      String name = (String) selections.getProperty("FILENAME");
+      File userFile = new File(name);
+      userFile = new File(userFile.getParent()+ "/" + userFilename);
+      
+      if(userFile.exists()) {
+        url = new URL("file:///" + userFile.toString());
+        userMapping = DatatypeMappingXMLUtil.readMapping(url);
+      } else 
+        userMapping = new HashMap();
+      
+      vdMapping.putAll(systemMapping);
+      vdMapping.putAll(userMapping);
       
     } catch (Exception e){
-      logger.fatal("Resource Properties could not be loaded (" + filename + "). Exiting now.");
+      logger.fatal("Resource Properties could not be loaded (" + systemFilename + "). Exiting now.");
       logger.fatal(e.getMessage());
       System.exit(1);
     } // end of try-catch
          
+  }
+  
+  public static void writeUserMapping(Map datatypes) 
+  {
+     UserSelections selections = UserSelections.getInstance();
+     String filename =  (String) selections.getProperty("FILENAME");
+     File f = new File(filename);
+     f = new File(f.getParent()+ "/"+ userFilename);
+
+      DatatypeMappingXMLUtil.writeMapping(f.toString(), datatypes);
   }
 
 }
