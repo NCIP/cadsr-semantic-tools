@@ -40,14 +40,6 @@
 
 <alias-list name="java.lang.Date">
   <alias name="date"/>
-  <alias name="datetime"/>
 </alias-list>
-
-<alias-list name="java.lang.Object">
-  <alias name="any"/>
-  <alias name="valueany"/>
-  <alias name="any[][][]"/>
-</alias-list>
-
 
 </Datatype-mapping>
