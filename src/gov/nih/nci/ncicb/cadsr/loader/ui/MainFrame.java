@@ -370,7 +370,8 @@ public class MainFrame extends JFrame
       }
 
 
-      if((event.getInNewTab() == true) || (viewPanels.size() == 0)) {
+      if((event.getInNewTab() == true) || (viewPanels.size() == 0)
+          || viewTabbedPane.getSelectedComponent() instanceof AssociationViewPanel) {
         UMLElementViewPanel viewPanel = new UMLElementViewPanel(node);
         
         viewPanel.addPropertyChangeListener(this);
@@ -395,7 +396,7 @@ public class MainFrame extends JFrame
         UMLElementViewPanel viewPanel = (UMLElementViewPanel)
           viewTabbedPane.getSelectedComponent();
         viewPanels.remove(viewPanel.getName());
-
+             
         String tabTitle = node.getDisplay();;
         if(node instanceof AttributeNode) 
           tabTitle = node.getParent().getDisplay() 
