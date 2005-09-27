@@ -19,6 +19,8 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.DatatypeMapping;
+import gov.nih.nci.ncicb.cadsr.loader.util.DatatypeMappingXMLUtil;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -60,7 +62,7 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
     packageFilterField = new JTextField(20);
     
     private JTextArea descriptionField = new JTextArea();
-
+    final private DatatypePanel dataPanel = new DatatypePanel();
 
   private String rowNames[] = 
   {
@@ -85,9 +87,16 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
 
   private void initUI() 
   {
+    
+    
     JPanel mainPanel = new JPanel();
+    //dataPanel = new DatatypePanel();
     mainPanel.setLayout(new GridBagLayout());
-
+  
+    JTabbedPane tabPane = new JTabbedPane();
+    tabPane.addTab("Defaults", mainPanel);
+    tabPane.addTab("DataTypes", dataPanel);
+    
     descriptionField.setLineWrap(true);
     descriptionField.setWrapStyleWord(true);
     
@@ -148,9 +157,9 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
     revertButton.addActionListener(this);
 
     this.getContentPane().setLayout(new BorderLayout());
-    this.getContentPane().add(mainPanel, BorderLayout.CENTER);
+    this.getContentPane().add(tabPane, BorderLayout.CENTER);
     this.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-    this.setSize(375, 500);
+    this.setSize(450, 500);
 
     UIUtil.putToCenter(this);
 
@@ -180,6 +189,7 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
     JButton button = (JButton)event.getSource();
     if(button.getActionCommand().equals(OK)) {
       fireDefaultsChanged();
+      DatatypeMapping.writeUserMapping(dataPanel.getUserDatatypes());
     }
     _this.dispose();
   }
