@@ -199,7 +199,8 @@ public class XMIWriter implements ElementWriter {
    */
   private void readModel(){
     try {
-      String xpath = "//*[local-name()='Model']";
+      String xpath = "//*[local-name()='Model']/*[local-name()='Namespace.ownedElement']/*[local-name()='Package']";
+
       doPackage(xpath, "");
     } catch (JaxenException e){
     } // end of try-catch
@@ -391,38 +392,54 @@ public class XMIWriter implements ElementWriter {
       return;
 
     for(Element pkg : packages) {
-      String packName = pkg.getAttributeValue("name");
-      
-      if(packName.indexOf(" ") != -1) {
-        doPackage(xpath, packageName);
-        return;
-      }
-      
-      if (packageName.length() == 0) {
-        packageName = packName;
-      }
-      else {
-        packageName += ("." + packName);
-      }
-      
-      doPackage(xpath, packageName);
-      
-      String classXpath = xpath + "/*[local-name()='Namespace.ownedElement']/*[local-name() = 'Class']";
-      path = new JDOMXPath(classXpath);
+      doPackage(pkg, packageName);
+    }
 
-      Collection<Element> classes = (Collection<Element>)path.selectNodes(modelElement);
-      for (Element classElement : classes) {
-        String className = packageName + "." + classElement.getAttributeValue("name");
-        
-        elements.put(className, classElement);
-        
-        List<Element> attributes = getElements(classElement, "Attribute");
-        
-        for(Element attributeElt : attributes) {
-          String attributeName = 
-            className + "." + attributeElt.getAttributeValue("name");
-          elements.put(attributeName, attributeElt);
-        }
+  }
+  
+
+  private void doPackage(Element pkg, String packageName) throws JaxenException {
+ 
+    String packName = pkg.getAttributeValue("name");
+    
+    if(packName.indexOf(" ") != -1) {
+      Element namespaceElt = pkg.getChild("Namespace.ownedElement", pkg.getNamespace());
+      Collection<Element> packages = namespaceElt.getChildren("Package", pkg.getNamespace());
+      for(Element subPkg : packages) {
+        doPackage(subPkg, packageName);
+      } 
+      return;
+    }
+    
+    if (packageName.length() == 0) {
+      packageName = packName;
+    }
+    else {
+      packageName += ("." + packName);
+    }
+    
+
+    Element namespaceElt = pkg.getChild("Namespace.ownedElement", pkg.getNamespace());
+    Collection<Element> packages = namespaceElt.getChildren("Package", pkg.getNamespace());
+    for(Element subPkg : packages) {
+      doPackage(subPkg, packageName);
+    } 
+
+    namespaceElt = pkg.getChild("Namespace.ownedElement", pkg.getNamespace());
+    Collection<Element> classes = namespaceElt.getChildren("Class", pkg.getNamespace());
+    
+    
+    for (Element classElement : classes) {
+      String className = packageName + "." + classElement.getAttributeValue("name");
+      
+      elements.put(className, classElement);
+      
+      List<Element> attributes = getElements(classElement, "Attribute");
+      
+      for(Element attributeElt : attributes) {
+        String attributeName = 
+          className + "." + attributeElt.getAttributeValue("name");
+        elements.put(attributeName, attributeElt);
       }
     }
   }
