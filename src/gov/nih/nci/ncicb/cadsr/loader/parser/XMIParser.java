@@ -201,6 +201,12 @@ public class XMIParser implements Parser {
       logger.info(PropertyAccessor.getProperty("class.filtered", className));
       return;
     }
+    
+    if(StringUtil.isEmpty(pName)) 
+    {
+      logger.info(PropertyAccessor.getProperty("class.no.package", className));
+      return;
+    }
 
     TaggedValue tv = UML13Utils.getTaggedValue(clazz, NewConceptualEvent.TV_DOCUMENTATION);
     if(tv != null) {
