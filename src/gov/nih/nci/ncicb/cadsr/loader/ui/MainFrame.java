@@ -130,6 +130,17 @@ public class MainFrame extends JFrame
   }
 
   public void exit() {
+    int result = JOptionPane.showConfirmDialog((JFrame) null, "Would you like to save your file before quitting?");
+    switch(result) { 
+    case JOptionPane.YES_OPTION: 
+      saveMenuItem.doClick();
+      break;
+    case JOptionPane.NO_OPTION:
+      break;
+    
+    case JOptionPane.CANCEL_OPTION:
+      return;    
+    }
     System.exit(0);
   }
 
@@ -318,9 +329,15 @@ public class MainFrame extends JFrame
           Validator validator = new UMLValidator();
           validator.validate();
 
-          errorPanel.update(TreeBuilder.getInstance().getRootNode());
+          ElementsLists elements = ElementsLists.getInstance();
 
-          JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
+          TreeBuilder tb = TreeBuilder.getInstance();
+          tb.init();
+          tb.buildTree(elements);
+
+          errorPanel.update(tb.getRootNode());
+
+//           JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
         } 
       });
 
