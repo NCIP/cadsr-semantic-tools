@@ -110,8 +110,8 @@
       <fileset dir="${class.dir}">
       </fileset>
     </jar>
-    <copy file="${jnlp.dir}/uml-loader-${target.env}.jnlp"
-      tofile="${dist.dir}/uml-loader.jnlp"
+    <copy file="${jnlp.dir}/siw-${target.env}.jnlp"
+      tofile="${dist.dir}/siw.jnlp"
       >
     </copy>
     <copy todir="${dist.dir}/lib">
