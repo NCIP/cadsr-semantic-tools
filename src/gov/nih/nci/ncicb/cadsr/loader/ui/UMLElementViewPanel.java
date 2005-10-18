@@ -198,11 +198,18 @@ public class UMLElementViewPanel extends JPanel
 
     if(prefs.getUmlDescriptionOrder().equals("first"))
       insertInBag(gridPanel, createDescriptionPanel(), 0, 0);
-          
+    
+    //puts the concepts in reverse order
+    for(int i=0;i<concepts.length/2;i++){
+      Concept t = concepts[i];
+      concepts[i] = concepts[concepts.length-(1+i)];
+      concepts[concepts.length-(1+i)] = t;
+    }
+
     for(int i = 0; i<concepts.length; i++) {
       conceptUIs[i] = new ConceptUI(concepts[i]);
 
-      String title = i == 0?"Primary Concept":"Qualifier Concept" +" #" + i;
+      String title = i == concepts.length-1?"Primary Concept":"Qualifier Concept" +" #" + (concepts.length-1-i);
 
       conceptPanels[i] = new JPanel();
       conceptPanels[i].setBorder
