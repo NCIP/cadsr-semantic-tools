@@ -36,7 +36,7 @@ import javax.swing.*;
 public class PreferenceDialog extends JDialog implements ActionListener
 {
   private JCheckBox associationBox = new JCheckBox("View Associations in Class Tree");
-  private JCheckBox umlDescriptionBox = new JCheckBox("Display UML Description First");
+  private JCheckBox umlDescriptionBox = new JCheckBox("Display UML Description Last");
   private JCheckBox evsAutoSearchBox = new JCheckBox("Automatically Search EVS on EVS link");
   private JButton apply = new JButton("Apply");
   private JButton cancel = new JButton("Cancel");
@@ -85,9 +85,9 @@ public class PreferenceDialog extends JDialog implements ActionListener
       associationBox.setSelected(false);
       
     if(prefs.getUmlDescriptionOrder().equals("first"))
-      umlDescriptionBox.setSelected(true);
-    else
       umlDescriptionBox.setSelected(false);
+    else
+      umlDescriptionBox.setSelected(true);
  
     evsAutoSearchBox.setSelected(prefs.getEvsAutoSearch());
   }
@@ -104,9 +104,9 @@ public class PreferenceDialog extends JDialog implements ActionListener
         prefs.setViewAssociationType("false");
       
       if(umlDescriptionBox.isSelected())
-        prefs.setUmlDescriptionOrder("first");
-      else
         prefs.setUmlDescriptionOrder("last");
+      else
+        prefs.setUmlDescriptionOrder("first");
 
       prefs.setEvsAutoSeatch(evsAutoSearchBox.isSelected());
         
@@ -121,9 +121,9 @@ public class PreferenceDialog extends JDialog implements ActionListener
         prefs.setViewAssociationType("false");
       
       if(umlDescriptionBox.isSelected())
-        prefs.setUmlDescriptionOrder("first");
+        prefs.setUmlDescriptionOrder("last");
       else
-        prefs.setUmlDescriptionOrder("last");  
+        prefs.setUmlDescriptionOrder("first");  
       
     }
     
