@@ -2,8 +2,8 @@
 
 <jnlp
   spec="1.0+"
-  href="http://cadsr-stg.nci.nih.gov/siw/siw.jnlp"
-  codebase="http://cadsr-stg.nci.nih.gov/siw/"
+  href="http://cadsrswi-stage.nci.nih.gov/siw.jnlp"
+  codebase="http://cadsrsiw-stage.nci.nih.gov/"
   >
   
   <information>
