@@ -114,6 +114,10 @@
       tofile="${dist.dir}/siw.jnlp"
       >
     </copy>
+    <copy file="${images.dir}/SIW-logo.jpg"
+      tofile="${dist.dir}/SIW-logo.jpg"
+      >
+    </copy>
     <copy todir="${dist.dir}/lib">
       <fileset dir="${lib.dir}">
         <include name="uml-loader.jar"/>
