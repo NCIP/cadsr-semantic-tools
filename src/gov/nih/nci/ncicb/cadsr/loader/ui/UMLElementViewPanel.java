@@ -48,6 +48,7 @@ public class UMLElementViewPanel extends JPanel
   private JButton previousButton, nextButton;
   private JCheckBox reviewButton;
   private JLabel conceptLabel = new JLabel();
+  private JLabel nameLabel = new JLabel();
 
   private List<ReviewListener> reviewListeners 
     = new ArrayList<ReviewListener>();
@@ -176,11 +177,16 @@ public class UMLElementViewPanel extends JPanel
     prefs.addUserPreferencesListener(this);
     this.setLayout(new BorderLayout());
     
-    JPanel summaryPanel = new JPanel();
+    JPanel summaryPanel = new JPanel(new GridBagLayout());
     JLabel summaryTitle = new JLabel("UML Concept Code Summary: ");
- 
-    summaryPanel.add(summaryTitle);
-    summaryPanel.add(conceptLabel);
+    
+    JLabel summaryNameTitle = new JLabel("UML Concept Name Summary: ");
+    
+    insertInBag(summaryPanel, summaryTitle, 0, 0);
+    insertInBag(summaryPanel, conceptLabel, 1, 0);
+    insertInBag(summaryPanel, summaryNameTitle, 0, 1);
+    insertInBag(summaryPanel, nameLabel, 1, 1);
+
     this.add(summaryPanel,BorderLayout.NORTH); 
     
     initViewPanel();
@@ -316,6 +322,7 @@ public class UMLElementViewPanel extends JPanel
     }
     
     updateConceptLabel();
+    updateNameLabel();
     
     if(prefs.getUmlDescriptionOrder().equals("last"))
       insertInBag(gridPanel, createDescriptionPanel(), 0, concepts.length + 1); 
@@ -328,11 +335,19 @@ public class UMLElementViewPanel extends JPanel
   {
     String s = "";
   	for(int i = 0; i < concepts.length; i++) {
-  	  s = s + " " + conceptUIs[i].code.getText(); 
+  	  s = conceptUIs[i].code.getText() + " " + s; 
   	}
     conceptLabel.setText(s);
   }
 
+  private void updateNameLabel()
+  {
+     String s = "";
+  	for(int i = 0; i < concepts.length; i++) {
+  	  s = conceptUIs[i].name.getText() + " " + s; 
+  	}
+    nameLabel.setText(s);
+  }
 
   private JPanel createDescriptionPanel() {
     JPanel umlPanel = new JPanel();
