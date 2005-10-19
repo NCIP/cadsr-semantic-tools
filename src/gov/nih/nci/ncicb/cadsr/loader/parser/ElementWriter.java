@@ -22,7 +22,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 public interface ElementWriter {
 
-  public void write(ElementsLists elements);
+  public void write(ElementsLists elements) throws ParserException ;
 
 //  public void setOutput(java.io.Writer writer);
 //  
