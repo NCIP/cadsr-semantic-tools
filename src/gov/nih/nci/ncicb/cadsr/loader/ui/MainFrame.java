@@ -23,6 +23,7 @@ import gov.nih.nci.ncicb.cadsr.loader.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
+import gov.nih.nci.ncicb.cadsr.loader.parser.ParserException;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
@@ -130,6 +131,17 @@ public class MainFrame extends JFrame
   }
 
   public void exit() {
+    int result = JOptionPane.showConfirmDialog((JFrame) null, "Would you like to save your file before quitting?");
+    switch(result) { 
+    case JOptionPane.YES_OPTION: 
+      saveMenuItem.doClick();
+      break;
+    case JOptionPane.NO_OPTION:
+      break;
+    
+    case JOptionPane.CANCEL_OPTION:
+      return;    
+    }
     System.exit(0);
   }
 
@@ -250,16 +262,17 @@ public class MainFrame extends JFrame
     
     saveMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
-//         if(runMode.equals(RunMode.Reviewer)) {
-//           JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
-//           return;
-//         } 
-
         ElementWriter writer = BeansAccessor.getWriter();
         writer.setOutput(saveFilename);
-        writer.write(ElementsLists.getInstance());
-        
-        infoLabel.setText("File Saved");
+
+        try {
+          writer.write(ElementsLists.getInstance());
+          
+          infoLabel.setText("File Saved");
+        } catch (ParserException e){
+          JOptionPane.showMessageDialog(_this, "There was an error saving your File. Please contact support.", "Error Saving File", JOptionPane.ERROR_MESSAGE);
+          infoLabel.setText("Save Failed!!");
+        } // end of try-catch
       }
     });
     
@@ -299,8 +312,13 @@ public class MainFrame extends JFrame
             ElementWriter writer = BeansAccessor.getWriter();
             writer.setOutput(filePath);
             saveFilename = filePath;
-            writer.write(ElementsLists.getInstance());
-            infoLabel.setText("File Saved");
+            try {
+              writer.write(ElementsLists.getInstance());
+              infoLabel.setText("File Saved");
+            } catch (ParserException e){
+              JOptionPane.showMessageDialog(_this, "There was an error saving your File. Please contact support.", "Error Saving File", JOptionPane.ERROR_MESSAGE);
+              infoLabel.setText("Save Failed!!");
+            } // end of try-catch
           }
       }
     });
@@ -318,9 +336,15 @@ public class MainFrame extends JFrame
           Validator validator = new UMLValidator();
           validator.validate();
 
-          errorPanel.update(TreeBuilder.getInstance().getRootNode());
+          ElementsLists elements = ElementsLists.getInstance();
 
-          JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
+          TreeBuilder tb = TreeBuilder.getInstance();
+          tb.init();
+          tb.buildTree(elements);
+
+          errorPanel.update(tb.getRootNode());
+
+//           JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
         } 
       });
 
@@ -370,7 +394,8 @@ public class MainFrame extends JFrame
       }
 
 
-      if((event.getInNewTab() == true) || (viewPanels.size() == 0)) {
+      if((event.getInNewTab() == true) || (viewPanels.size() == 0)
+          || viewTabbedPane.getSelectedComponent() instanceof AssociationViewPanel) {
         UMLElementViewPanel viewPanel = new UMLElementViewPanel(node);
         
         viewPanel.addPropertyChangeListener(this);
@@ -395,7 +420,7 @@ public class MainFrame extends JFrame
         UMLElementViewPanel viewPanel = (UMLElementViewPanel)
           viewTabbedPane.getSelectedComponent();
         viewPanels.remove(viewPanel.getName());
-
+             
         String tabTitle = node.getDisplay();;
         if(node instanceof AttributeNode) 
           tabTitle = node.getParent().getDisplay() 
