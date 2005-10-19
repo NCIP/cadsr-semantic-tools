@@ -23,6 +23,7 @@ import gov.nih.nci.ncicb.cadsr.loader.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
+import gov.nih.nci.ncicb.cadsr.loader.parser.ParserException;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
@@ -261,16 +262,17 @@ public class MainFrame extends JFrame
     
     saveMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
-//         if(runMode.equals(RunMode.Reviewer)) {
-//           JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
-//           return;
-//         } 
-
         ElementWriter writer = BeansAccessor.getWriter();
         writer.setOutput(saveFilename);
-        writer.write(ElementsLists.getInstance());
-        
-        infoLabel.setText("File Saved");
+
+        try {
+          writer.write(ElementsLists.getInstance());
+          
+          infoLabel.setText("File Saved");
+        } catch (ParserException e){
+          JOptionPane.showMessageDialog(_this, "There was an error saving your File. Please contact support.", "Error Saving File", JOptionPane.ERROR_MESSAGE);
+          infoLabel.setText("Save Failed!!");
+        } // end of try-catch
       }
     });
     
@@ -310,8 +312,13 @@ public class MainFrame extends JFrame
             ElementWriter writer = BeansAccessor.getWriter();
             writer.setOutput(filePath);
             saveFilename = filePath;
-            writer.write(ElementsLists.getInstance());
-            infoLabel.setText("File Saved");
+            try {
+              writer.write(ElementsLists.getInstance());
+              infoLabel.setText("File Saved");
+            } catch (ParserException e){
+              JOptionPane.showMessageDialog(_this, "There was an error saving your File. Please contact support.", "Error Saving File", JOptionPane.ERROR_MESSAGE);
+              infoLabel.setText("Save Failed!!");
+            } // end of try-catch
           }
       }
     });
