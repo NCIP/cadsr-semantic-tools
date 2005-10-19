@@ -48,7 +48,7 @@ public class CSVWriter implements ElementWriter
     report = new File(url);
   }
   
-  public void write(ElementsLists elements) 
+  public void write(ElementsLists elements) throws ParserException 
   {
     write = DataFile.createWriter("8859_2", true);
     write.setDataFormat(new CSVFormat());
@@ -149,12 +149,12 @@ public class CSVWriter implements ElementWriter
           }          
           
         }
-      }
-      catch (IOException e)
-      {
-        e.printStackTrace();
-      }
-      finally 
+      } catch (IOException e) {
+      e.printStackTrace();
+    } catch (RuntimeException e) {
+      throw new ParserException(e);
+    }
+    finally 
       {
         write.close();
       }
