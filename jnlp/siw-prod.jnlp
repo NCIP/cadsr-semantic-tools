@@ -11,6 +11,7 @@
     <description>The Workbench streamlines the process of annotating Domain Model with Evs Concepts, then loading those models to caDSR</description>
     <offline-allowed/>
     <vendor>NCI</vendor>
+    <icon href="http://cadsrsiw.nci.nih.gov/SIW-logo.jpg"/>
   </information>
   <security>
     <all-permissions/>
@@ -19,7 +20,6 @@
     <j2se version="1.5+"/>
     <jar href="lib/uml-loader.jar" main="true"/>
     <jar href="lib/aopalliance.jar"/>
-    <jar href="lib/cacore-client.jar"/>
     <jar href="lib/cadsr-api.jar"/>
     <jar href="lib/codegen.jar"/>
     <jar href="lib/cglib-full-2.0.1.jar"/>
