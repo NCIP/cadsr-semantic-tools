@@ -119,12 +119,15 @@
       >
     </copy>
     <copy todir="${dist.dir}/lib">
+      <fileset dir="${lib.dir}/cacore">
+        <include name="codegen.jar"/>
+      </fileset>
+    </copy>
+    <copy todir="${dist.dir}/lib">
       <fileset dir="${lib.dir}">
         <include name="uml-loader.jar"/>
         <include name="aopalliance.jar"/>
-        <include name="cacore-client.jar"/>
         <include name="cadsr-api.jar"/>
-        <include name="codegen.jar"/>
         <include name="cglib-full-2.0.1.jar"/>
         <include name="commons-collections-2.1.jar"/>
         <include name="commons-logging.jar"/>
