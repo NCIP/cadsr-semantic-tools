@@ -228,7 +228,7 @@ public class WizardController implements ActionListener {
                     } else {
                       evt.setMessage("Annotating XMI File ...");
                       progressDesc.newProgressEvent(evt);
-                      SemanticConnectorUtil.generateReport(inputXmi);
+                      SemanticConnectorUtil.annotateXmi(inputXmi);
                     }
 
                     reportPanel.setFiles(inputXmi, outputCsv);

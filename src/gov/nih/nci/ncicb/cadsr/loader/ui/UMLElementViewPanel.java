@@ -650,12 +650,12 @@ class ConceptUI {
     def.setText(concept.getPreferredDefinition());
     defSource.setText(concept.getDefinitionSource());
 
-    if(!editable) {
-      code.setEnabled(false);
-      name.setEnabled(false);
-      def.setEnabled(false);
-      defSource.setEnabled(false);
-    }
+//     if(!editable) {
+//       code.setEnabled(false);
+//       name.setEnabled(false);
+//       def.setEnabled(false);
+//       defSource.setEnabled(false);
+//     }
     
   }
 
