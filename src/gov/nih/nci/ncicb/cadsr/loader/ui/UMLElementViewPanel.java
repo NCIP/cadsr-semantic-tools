@@ -321,8 +321,7 @@ public class UMLElementViewPanel extends JPanel
       
     }
     
-    updateConceptLabel();
-    updateNameLabel();
+    updateHeaderLabels();
     
     if(prefs.getUmlDescriptionOrder().equals("last"))
       insertInBag(gridPanel, createDescriptionPanel(), 0, concepts.length + 1); 
@@ -331,21 +330,18 @@ public class UMLElementViewPanel extends JPanel
     
   }
 
-  private void updateConceptLabel()
+  private void updateHeaderLabels()
   {
     String s = "";
-  	for(int i = 0; i < concepts.length; i++) {
-  	  s = conceptUIs[i].code.getText() + " " + s; 
-  	}
+    for(int i = 0; i < concepts.length; i++) {
+      s = conceptUIs[i].code.getText() + " " + s; 
+    }
     conceptLabel.setText(s);
-  }
-
-  private void updateNameLabel()
-  {
-     String s = "";
-  	for(int i = 0; i < concepts.length; i++) {
-  	  s = conceptUIs[i].name.getText() + " " + s; 
-  	}
+    
+    s = "";
+    for(int i = 0; i < concepts.length; i++) {
+      s = conceptUIs[i].name.getText() + " " + s; 
+    }
     nameLabel.setText(s);
   }
 
@@ -467,7 +463,7 @@ public class UMLElementViewPanel extends JPanel
       setSaveButtonState(false);
     }
     reviewButton.setEnabled(false);
-    updateConceptLabel();
+    updateHeaderLabels();
   }
 
 
@@ -484,7 +480,7 @@ public class UMLElementViewPanel extends JPanel
   public void actionPerformed(ActionEvent evt) {
     JButton button = (JButton)evt.getSource();
     if(button.getActionCommand().equals(SAVE)) {
-      updateConceptLabel();
+      updateHeaderLabels();
       apply(false);
       
     } else if(button.getActionCommand().equals(ADD)) {
