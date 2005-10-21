@@ -66,7 +66,7 @@ public class SemanticConnectorUtil {
     new ModelAnnotator(inputXmi, outputXmi, filepath);
 
 
-    return filepath + "/" + "EVSReport_" + inputXmi.substring(inputXmi.lastIndexOf("/")+1, inputXmi.lastIndexOf(".")) + ".csv";
+    return outputXmi;
     
   }
 
