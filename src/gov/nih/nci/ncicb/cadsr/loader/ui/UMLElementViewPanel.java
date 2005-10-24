@@ -347,8 +347,16 @@ public class UMLElementViewPanel extends JPanel
 
   private JPanel createDescriptionPanel() {
     JPanel umlPanel = new JPanel();
+
+
+    String s = "UML Class Documentation";
+    Object o = node.getUserObject();
+    if(node instanceof AttributeNode) {
+      s = "UML Attribute Description";
+    }
+    
     umlPanel.setBorder
-      (BorderFactory.createTitledBorder("UML Description"));   
+      (BorderFactory.createTitledBorder(s));   
     umlPanel.setLayout(new BorderLayout());
 
     JTextArea descriptionArea = new JTextArea(5, 54);

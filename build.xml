@@ -137,6 +137,8 @@
         <include name="freemarker.jar"/>
         <include name="hibernate2.jar"/>
         <include name="jakarta-oro-2.0.8.jar"/>
+        <include name="jaxen-jdom.jar"/>
+        <include name="jaxen-core.jar"/>
         <include name="jdom.jar"/>
         <include name="jmi.jar"/>
         <include name="jmiutils.jar"/>

@@ -31,6 +31,8 @@
     <jar href="lib/freemarker.jar"/>
     <jar href="lib/hibernate2.jar"/>
     <jar href="lib/jakarta-oro-2.0.8.jar"/>
+    <jar href="lib/jaxen-jdom.jar"/>
+    <jar href="lib/jaxen-core.jar"/>
     <jar href="lib/jdom.jar"/>
     <jar href="lib/jmi.jar"/>
     <jar href="lib/jmiutils.jar"/>
