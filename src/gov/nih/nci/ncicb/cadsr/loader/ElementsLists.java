@@ -73,11 +73,23 @@ public class ElementsLists {
     objects.put(o.getClass().getName(), list);
   }
 
+
+  /**
+   * Get the list of elements with for a particular class type.
+   *
+   * @param obj Object which class type is returned.
+   * @return a <code>List</code> of objects of class <code>obj.getClass()<code>
+   */
+  public <T> List<T> getElements(T obj) {
+    return (List<T>) getElements(obj.getClass());
+  }
+
   /**
    * Get the list of elements with for a particular class type.
    *
    * @param type The class of the list of objects to return.
    * @return a <code>List</code> of objects of class <code>type<code>
+   * @deprecated use <T> List<T> getElements(T obj) instead
    */
   public List getElements(Class type) {
     List l = (List)objects.get(type.getName());
