@@ -24,6 +24,10 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.spring.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+
+
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
@@ -63,6 +67,7 @@ public class UMLRoundtrip implements Roundtrip {
   private Float lastProjectVersion;
 
   private ClassificationScheme projectCs = null;
+  private ProgressListener progressListener = null;
 
 
   public UMLRoundtrip(String lastProjectName, Float lastProjectVersion) throws RoundtripException {
@@ -71,6 +76,11 @@ public class UMLRoundtrip implements Roundtrip {
     
     initCs();
   }
+
+  public void setProgressListener(ProgressListener l) {
+    progressListener = l;
+  }
+
   
   private void initCs() throws RoundtripException {
     projectCs = createCs(lastProjectName, lastProjectVersion);
@@ -89,16 +99,25 @@ public class UMLRoundtrip implements Roundtrip {
 
   public void roundtrip() {
     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
+    List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
+
+    ProgressEvent pEvt = new ProgressEvent();
+    pEvt.setGoal(des.size() + ocs.size());
+    pEvt.setMessage("Opening File");
+    if(progressListener != null) 
+      progressListener.newProgressEvent(pEvt);
+
     
     // cache package / csCsi
     Map<String, ClassSchemeClassSchemeItem> csCsiCache = 
       new HashMap<String, ClassSchemeClassSchemeItem>();
 
+    pEvt.setMessage("Looking up Classes");
+    for(ObjectClass oc : ocs) {
+      pEvt.setStatus(pEvt.getStatus() + 1);
+      if(progressListener != null) 
+        progressListener.newProgressEvent(pEvt);
 
-    for(DataElement de : des) {
-      ObjectClass oc = de.getDataElementConcept().getObjectClass();
-      Property prop = de.getDataElementConcept().getProperty();
-      
       String className = oc.getLongName();
       int ind = className.lastIndexOf(".");
       String packageName = className.substring(0, ind);
@@ -114,12 +133,34 @@ public class UMLRoundtrip implements Roundtrip {
           ObjectClass newOc = findObjectClass(csCsi, className);
           if(newOc != null) {
             oc.setPublicId(newOc.getPublicId());
-            System.out.println("found matching OC!" + className);
-          } else
-            System.out.println("no OC match " + className);
+            oc.setVersion(newOc.getVersion());
+          }
         }
+      }       
+    }
+    
+    pEvt.setMessage("Looking up Attributes");
+    for(DataElement de : des) {
+      ObjectClass oc = de.getDataElementConcept().getObjectClass();
+
+      pEvt.setStatus(pEvt.getStatus() + 1);
+      if(progressListener != null) 
+        progressListener.newProgressEvent(pEvt);
 
 
+      Property prop = de.getDataElementConcept().getProperty();
+      
+      String className = oc.getLongName();
+      int ind = className.lastIndexOf(".");
+      String packageName = className.substring(0, ind);
+      className = className.substring(ind + 1);
+
+      ClassSchemeClassSchemeItem csCsi = csCsiCache.get(packageName);
+      if(csCsi == null) {
+        csCsi = lookupCsCsi(packageName);
+      }
+      
+      if(csCsi != null) {  
         AlternateName altName = DomainObjectFactory.newAlternateName();
         altName.setName(de.getDataElementConcept().getLongName());
         altName.setType(AlternateName.TYPE_UML_DE);
@@ -140,6 +181,7 @@ public class UMLRoundtrip implements Roundtrip {
           System.out.println("Found Mathcing DE " + altName.getName());
           de.setValueDomain(newDe.getValueDomain());
           de.getDataElementConcept().getProperty().setPublicId(newDe.getDataElementConcept().getProperty().getPublicId());
+          de.getDataElementConcept().getProperty().setVersion(newDe.getDataElementConcept().getProperty().getVersion());
         } else
           System.out.println("NO DE MATCH " + altName.getName());
       }
