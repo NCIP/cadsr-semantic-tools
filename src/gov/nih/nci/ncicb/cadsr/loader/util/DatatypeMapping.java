@@ -33,16 +33,21 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 public class DatatypeMapping {
-
-  private static Map<String, String> vdMapping = new HashMap<String, String>();
-
-  public static Map<String, String> getMapping() { return vdMapping; }
-
-  public static Set<String> getKeys() {return vdMapping.keySet();}
-
-  public static Collection<String> getValues() {return vdMapping.values();}
   
-  
+  private static Map<String, String> vdMapping;
+
+  public static Map<String, String> getMapping() { 
+    return vdMapping;
+  }
+
+  public static Set<String> getKeys() {
+    return vdMapping.keySet();
+  }
+
+  public static Collection<String> getValues() {
+    return vdMapping.values();
+  }
+   
   private static Map<String, String> systemMapping = new HashMap<String, String>();
   
   public static Map<String, String> getSystemMapping() { return systemMapping; }
@@ -83,13 +88,14 @@ public class DatatypeMapping {
         File userFile = new File(name);
         userFile = new File(userFile.getParent()+ "/" + userFilename);
       
-        if(userFile.exists()) {
-          url = new URL("file:///" + userFile.toString());
-          userMapping = DatatypeMappingXMLUtil.readMapping(url);
-        } else 
-          userMapping = new HashMap();
-        vdMapping.putAll(userMapping);
-      }
+      if(userFile.exists()) {
+        url = new URL("file:///" + userFile.toString());
+        userMapping = DatatypeMappingXMLUtil.readMapping(url);
+      } else 
+        userMapping = new HashMap();
+      
+      updateVdMapping();
+
       
     } catch (Exception e){
       logger.fatal("Resource Properties could not be loaded (" + systemFilename + "). Exiting now.");
@@ -101,12 +107,22 @@ public class DatatypeMapping {
   
   public static void writeUserMapping(Map datatypes) 
   {
-     UserSelections selections = UserSelections.getInstance();
-     String filename =  (String) selections.getProperty("FILENAME");
-     File f = new File(filename);
-     f = new File(f.getParent()+ "/"+ userFilename);
+    UserSelections selections = UserSelections.getInstance();
+    String filename =  (String) selections.getProperty("FILENAME");
+    File f = new File(filename);
+    f = new File(f.getParent()+ "/"+ userFilename);
+    
+    DatatypeMappingXMLUtil.writeMapping(f.toString(), datatypes);
 
-      DatatypeMappingXMLUtil.writeMapping(f.toString(), datatypes);
+    userMapping = datatypes;
+    updateVdMapping();
+  }
+
+  private static void updateVdMapping() 
+  {
+    vdMapping = new HashMap<String, String>();
+    vdMapping.putAll(systemMapping);
+    vdMapping.putAll(userMapping); 
   }
 
 }
