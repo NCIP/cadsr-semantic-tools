@@ -308,6 +308,16 @@ public class MainFrame extends JFrame
         int returnVal = chooser.showSaveDialog(null);
           if(returnVal == JFileChooser.APPROVE_OPTION) {
             String filePath = chooser.getSelectedFile().getAbsolutePath();
+	    String fileExtension = "xmi";
+
+	    if(runMode.equals(RunMode.Curator)) 
+	      fileExtension = "csv";
+            else if(runMode.equals(RunMode.Reviewer)) 
+	      fileExtension = "xmi";
+
+	    if(!filePath.endsWith(fileExtension))
+	      filePath = filePath + "." + fileExtension;
+
             UserPreferences.getInstance().setRecentDir(filePath);
             ElementWriter writer = BeansAccessor.getWriter();
             writer.setOutput(filePath);

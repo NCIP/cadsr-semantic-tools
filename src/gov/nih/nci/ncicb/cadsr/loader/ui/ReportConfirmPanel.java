@@ -42,13 +42,13 @@ public class ReportConfirmPanel extends JPanel {
 
   public void setFiles(String file1, String file2) {
 
-    if(file1 == null) {
+    if(file1 == null || file2 == null) {
       reportLabel.setText("<html>Report Generation Failed. <br>" + file2 + "</html>");
     } else {
-      if(file2 != null) {
-        reportLabel.setText("<html>Semantic Annotation for the file:<br><div align=center> " + file1 + " </div>was created. <br><br> The output report can be found here: <br><div align=center>" + file2 + "</div></html>");
+      if(file2.endsWith(".csv")) {
+        reportLabel.setText("<html>Semantic Connector Report for the file:<br><div align=center> " + file1 + " </div>was created. <br><br> The output report can be found here: <br><div align=center>" + file2 + "</div></html>");
       } else {
-        reportLabel.setText("<html>Semantic Annotation for the file:<br><div align=center> " + file1 + " </div>was completed.");
+        reportLabel.setText("<html>Annotation of file <br><div align=center> " + file1 + " </div>was completed.  <br><br> The Annotated XMI can be found here: <br><div align=center>" + file2 + "</div></html>");
       }
     }
   }

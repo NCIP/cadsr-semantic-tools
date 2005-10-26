@@ -157,7 +157,7 @@ implements ProgressListener {
 
     final java.util.List<String> recentFiles = prefs.getRecentFiles();
     
-    int y = 3;
+    int y = 3, z=0;
     for(String s : recentFiles) {
       final String fileStr = new File(s).getName();
       
@@ -167,16 +167,14 @@ implements ProgressListener {
       Font newFont = new Font(f.getName(), f.getStyle(), f.getSize() - 2);
       jl.setFont(newFont);
 
+      final int index = z++;
       jl.addMouseListener(new MouseAdapter() {
           public void mouseClicked(MouseEvent evt) {
-            for(String search : recentFiles)
-              if(search.contains(fileStr)) {
-                filePathField.setText(search);
-                fireActionEvent(null);
-              }
+            filePathField.setText(recentFiles.get(index));
+            fireActionEvent(null);
           }
         });
-
+      
 
       insertInBag(browsePanel, jl, 0, y++, 2, 1);
     }

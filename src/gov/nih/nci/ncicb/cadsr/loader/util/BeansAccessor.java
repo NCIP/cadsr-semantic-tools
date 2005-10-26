@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.InputStreamResource;
 
 import org.apache.log4j.Logger;
 
@@ -52,7 +53,7 @@ public class BeansAccessor {
     try {
       if(factory != null)
         return factory;
-      return new XmlBeanFactory(Thread.currentThread().getContextClassLoader().getResourceAsStream("beans.xml"));
+      return new XmlBeanFactory(new InputStreamResource(Thread.currentThread().getContextClassLoader().getResourceAsStream("beans.xml")));
     } catch (Exception e){
       logger.error(e.getMessage());
     } // end of try-catch

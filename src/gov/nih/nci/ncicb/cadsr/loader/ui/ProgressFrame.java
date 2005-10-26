@@ -26,6 +26,8 @@ import java.awt.Container;
 
 import javax.swing.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+
 public class ProgressFrame extends JFrame 
     implements ProgressListener
 {
@@ -39,16 +41,31 @@ public class ProgressFrame extends JFrame
   }
 
   public void newProgressEvent(ProgressEvent evt) {
+    System.out.println("new progress evt...");
+    System.out.println(evt.getMessage());
+
+    System.out.println("Goal: " + evt.getGoal());
+    System.out.println("Status: " + evt.getStatus());
+
     if(evt.getGoal() != 0) {
-      progressBar.setMaximum(evt.getGoal());
+      if(progressBar.getMaximum() != evt.getGoal()) {
+
+        Container contentPane = this.getContentPane();
+        contentPane.remove(progressBar);
+        progressBar = new JProgressBar(0, evt.getGoal());
+        contentPane.add(progressBar, BorderLayout.CENTER);
+      }
+
+      if(evt.getGoal() == evt.getStatus())
+        progressBar.setIndeterminate(false);
     }
     progressBar.setValue(evt.getStatus());
-    
-    if(evt.getMessage() != null) {
+
+
+    if(!StringUtil.isEmpty(evt.getMessage())) {
       progressBar.setString(evt.getMessage());
       msgLabel.setText(evt.getMessage());
     }
-
   }
 
   private void initUI(int maximum) {

@@ -81,7 +81,6 @@ public class UMLDefaults {
    * @param username the authenticated username
    * @exception PersisterException if an error occurs
    */
-
   public void initParams(String filename) throws PersisterException  {
     this.filename = filename;
 

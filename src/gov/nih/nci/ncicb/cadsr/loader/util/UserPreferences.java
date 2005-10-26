@@ -53,7 +53,7 @@ public class UserPreferences {
 
   public String getUmlDescriptionOrder() 
   {
-    return prefs.get("UmlDescriptionOrder", "last");
+    return prefs.get("UmlDescriptionOrder", "first");
   }
   
   public void setUmlDescriptionOrder(String value) 

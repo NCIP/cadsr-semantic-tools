@@ -74,20 +74,22 @@ public class DatatypeMapping {
     try {
       url = Thread.currentThread().getContextClassLoader().getResource(systemFilename);
       systemMapping = DatatypeMappingXMLUtil.readMapping(url);
+      vdMapping.putAll(systemMapping);
     
       UserSelections selections = UserSelections.getInstance();
       String name = (String) selections.getProperty("FILENAME");
-      File userFile = new File(name);
-      userFile = new File(userFile.getParent()+ "/" + userFilename);
+
+      if (name != null) {
+        File userFile = new File(name);
+        userFile = new File(userFile.getParent()+ "/" + userFilename);
       
-      if(userFile.exists()) {
-        url = new URL("file:///" + userFile.toString());
-        userMapping = DatatypeMappingXMLUtil.readMapping(url);
-      } else 
-        userMapping = new HashMap();
-      
-      vdMapping.putAll(systemMapping);
-      vdMapping.putAll(userMapping);
+        if(userFile.exists()) {
+          url = new URL("file:///" + userFile.toString());
+          userMapping = DatatypeMappingXMLUtil.readMapping(url);
+        } else 
+          userMapping = new HashMap();
+        vdMapping.putAll(userMapping);
+      }
       
     } catch (Exception e){
       logger.fatal("Resource Properties could not be loaded (" + systemFilename + "). Exiting now.");
