@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 
 public class DatatypeMapping {
   
-  private static Map<String, String> vdMapping;
+  private static Map<String, String> vdMapping = new HashMap<String, String>();
 
   public static Map<String, String> getMapping() { 
     return vdMapping;
