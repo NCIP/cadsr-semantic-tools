@@ -1,32 +1,24 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
-import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
-import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
-import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
+
+import gov.nih.nci.ncicb.cadsr.dao.*;
+import gov.nih.nci.ncicb.cadsr.domain.*;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+
+
 
 public class CadsrDialog extends JDialog implements ActionListener, KeyListener
 {
@@ -74,6 +66,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
   public static final int MODE_OC = 1;
   public static final int MODE_PROP = 2;
   public static final int MODE_VD = 3;
+  public static final int MODE_DE = 4;
   
   private int mode;
   
@@ -83,13 +76,21 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
     
     this.mode = mode;
 
-    if(mode == MODE_OC)
-    this.setTitle("Search for Object Class");
-    if(mode == MODE_PROP)
-    this.setTitle("Search for Property");
-    if(mode == MODE_VD)
-    this.setTitle("Search for Value Domain");
-    
+    switch (mode) {
+    case MODE_OC:
+      this.setTitle("Search for Object Class");
+      break;
+    case MODE_PROP:
+      this.setTitle("Search for Property");
+      break;
+    case MODE_VD:
+      this.setTitle("Search for Value Domain");
+      break;
+    case MODE_DE:
+      this.setTitle("Search for Data Element");
+      break;
+    }
+
     this.getContentPane().setLayout(new BorderLayout());
 
     String values[] = {LONG_NAME, PUBLIC_ID};
@@ -131,7 +132,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
             s = res.getPreferredDefinition();
             break;
           case 5:
-            s = res.getContext().toString();
+            s = res.getContext().getName();
             break;
           default:
             break;
@@ -240,52 +241,56 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
   public void actionPerformed(ActionEvent event) 
   {
     JButton button = (JButton)event.getSource();
-    if(button.getActionCommand().equals(SEARCH) && mode == MODE_OC) {
+
+    if(button.getActionCommand().equals(SEARCH)) {
+      
       String selection = (String) searchSourceCombo.getSelectedItem();
       String text = searchField.getText();
 
-      CadsrModule module = new CadsrModule();
+//       CadsrModule module = new CadsrModule();
 
       resultSet = new ArrayList();
-
-      _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-      if(selection.equals(LONG_NAME)) {
-        resultSet.addAll(module.findOCByLongName(text));
-      }
-      if(selection.equals(PUBLIC_ID)) {
-        resultSet.addAll(module.findOCByPublicId(text));
-      }
-
-      _this.setCursor(Cursor.getDefaultCursor());
-    
-      updateTable();
-
-    }
-    
-    if(button.getActionCommand().equals(SEARCH) && mode == MODE_PROP) {
-      String selection = (String) searchSourceCombo.getSelectedItem();
-      String text = searchField.getText();
-
-      CadsrModule module = new CadsrModule();
-
-      resultSet = new ArrayList();
-
+      
       _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       
-      if(selection.equals(LONG_NAME)) {
-       // module.findPropByLongName(text);
-        resultSet.addAll(module.findPropByLongName(text));       
-        System.out.println("Finished the search");
-      }
-      
-      if(selection.equals(PUBLIC_ID)) {
-        resultSet.addAll(module.findPropByPublicId(text));
+      switch (mode) {
+      case MODE_OC:
+        ObjectClass oc = DomainObjectFactory.newObjectClass();
+        ObjectClassDAO ocDAO = DAOAccessor.getObjectClassDAO();
+        if(selection.equals(LONG_NAME)) {
+          oc.setLongName(text);
+        } else if(selection.equals(PUBLIC_ID)) {
+          oc.setPublicId(text);
+        }
+        resultSet.addAll(ocDAO.find(oc));
+        break;
+      case MODE_PROP:
+        Property prop = DomainObjectFactory.newProperty();
+        PropertyDAO propDAO = DAOAccessor.getPropertyDAO();
+        if(selection.equals(LONG_NAME)) {
+          prop.setLongName(text);
+        } else if(selection.equals(PUBLIC_ID)) {
+          prop.setPublicId(text);
+        }
+        resultSet.addAll(propDAO.find(prop));
+        break;
+      case MODE_DE:
+        DataElement de = DomainObjectFactory.newDataElement();
+        DataElementDAO deDAO = DAOAccessor.getDataElementDAO();
+        if(selection.equals(LONG_NAME)) {
+          de.setContext(UMLDefaults.getInstance().getContext());
+          de.setLongName(text);
+        } else if(selection.equals(PUBLIC_ID)) {
+          de.setPublicId(text);
+        }
+        resultSet.addAll(deDAO.find(de, 20));       
+        break;
       }
       
       _this.setCursor(Cursor.getDefaultCursor());
-    
+      
       updateTable();
+      
     }
     else if(button.getActionCommand().equals(PREVIOUS)) {
       pageIndex--;

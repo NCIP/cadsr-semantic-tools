@@ -62,6 +62,8 @@ public class XMIParser implements Parser {
 
   private ProgressListener progressListener = null;
 
+  private final static String VD_STEREOTYPE = "CADSR Value Domain";
+
   private String[] bannedClassNames = null;
   {
     bannedClassNames = PropertyAccessor.getProperty("banned.classNames").split(",");
@@ -181,6 +183,13 @@ public class XMIParser implements Parser {
 
     className = clazz.getName();
 
+    Stereotype st = UML13Utils.getStereotype(clazz);
+    if(st != null)
+      if(st.getName().equals(VD_STEREOTYPE)) {
+        doValueDomain(clazz);
+        return;
+      }
+
     if (pName != null) {
       className = pName + "." + className;
     }
@@ -217,6 +226,20 @@ public class XMIParser implements Parser {
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
+
+    tv = UML13Utils.getTaggedValue(clazz, NewClassEvent.TV_OC_ID);
+    if(tv != null) {
+      event.setPersistenceId(tv.getValue());
+    }
+
+    tv = UML13Utils.getTaggedValue(clazz, NewClassEvent.TV_OC_VERSION);
+    if(tv != null) {
+      try {
+        event.setPersistenceVersion(new Float(tv.getValue()));
+      } catch (NumberFormatException e){
+      } // end of try-catch
+    }
+
 
     if(isInPackageFilter(pName)) {
       listener.newClass(event);
@@ -258,6 +281,74 @@ public class XMIParser implements Parser {
     }
   }
 
+  private void doValueDomain(UmlClass clazz) {
+    UMLDefaults defaults = UMLDefaults.getInstance();
+
+    className = clazz.getName();
+
+    ProgressEvent evt = new ProgressEvent();
+    evt.setMessage("Parsing " + className);
+    fireProgressEvent(evt);
+
+    NewValueDomainEvent event = new NewValueDomainEvent(className.trim());
+//     event.setPackageName("ValueDomains");
+
+    setConceptInfo(clazz, event, NewConceptEvent.TYPE_CLASS);
+
+    logger.debug("Value Domain: " + className);
+
+    TaggedValue tv = UML13Utils.getTaggedValue(clazz, NewValueDomainEvent.TV_VD_DEFINITION);
+    if(tv != null) {
+      event.setDescription(tv.getValue());
+    }
+
+    tv = UML13Utils.getTaggedValue(clazz, NewValueDomainEvent.TV_VD_DATATYPE);
+    if(tv != null) {
+      event.setDatatype(tv.getValue());
+    }
+
+    tv = UML13Utils.getTaggedValue(clazz, NewValueDomainEvent.TV_VD_TYPE);
+    if(tv != null) {
+      event.setType(tv.getValue());
+    }
+
+    tv = UML13Utils.getTaggedValue(clazz, NewValueDomainEvent.TV_CD_ID);
+    if(tv != null) {
+      event.setCdId(tv.getValue());
+    }
+    
+    tv = UML13Utils.getTaggedValue(clazz, NewValueDomainEvent.TV_CD_VERSION);
+    if(tv != null) {
+      try {
+        event.setCdVersion(new Float(tv.getValue()));
+      } catch (NumberFormatException e){
+        logger.warn(PropertyAccessor.getProperty("version.numberFormatException", tv.getValue()));
+      } // end of try-catch
+    }
+
+
+    tv = UML13Utils.getTaggedValue(clazz, NewConceptualEvent.TV_HUMAN_REVIEWED);
+    if(tv != null) {
+      event.setReviewed(tv.getValue().equals("1")?true:false);
+    }
+
+
+    for (Object o : clazz.getFeature()) {
+      if (o instanceof Attribute) {
+        doValueMeaning((Attribute) o);
+      }
+      else {
+        logger.debug("Class child: " + o.getClass());
+      }
+    }
+
+    listener.newValueDomain(event);
+    className = "";
+
+  }
+
+
+
   private void doInterface(Interface interf) {
     className = packageName + "." + interf.getName();
 
@@ -286,7 +377,7 @@ public class XMIParser implements Parser {
     NewAttributeEvent event = new NewAttributeEvent(att.getName().trim());
     event.setClassName(className);
 
-    if(att.getType() == null) {
+    if(att.getType() == null || att.getType().getName() == null) {
       ValidationItems.getInstance()
         .addItem(new ValidationFatal
                  (PropertyAccessor
@@ -314,11 +405,38 @@ public class XMIParser implements Parser {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
 
+    tv = UML13Utils.getTaggedValue(att, NewAttributeEvent.TV_PROP_ID);
+    if(tv != null) {
+      event.setPersistenceId(tv.getValue());
+    }
+
+    tv = UML13Utils.getTaggedValue(att, NewAttributeEvent.TV_PROP_VERSION);
+    if(tv != null) {
+      try {
+        event.setPersistenceVersion(new Float(tv.getValue()));
+      } catch (NumberFormatException e){
+      } // end of try-catch
+    }
 
     setConceptInfo(att, event, NewConceptEvent.TYPE_PROPERTY);
 
     listener.newAttribute(event);
   }
+
+  private void doValueMeaning(Attribute att) {
+    NewValueMeaningEvent event = new NewValueMeaningEvent(att.getName().trim());
+    event.setValueDomainName(className);
+
+    TaggedValue tv = UML13Utils.getTaggedValue(att, NewConceptualEvent.TV_HUMAN_REVIEWED);
+    if(tv != null) {
+      event.setReviewed(tv.getValue().equals("1")?true:false);
+    }
+
+    setConceptInfo(att, event, NewConceptEvent.TYPE_PROPERTY);
+
+    listener.newValueMeaning(event);
+  }
+
 
   private void doDataType(DataType dt) {
     listener.newDataType(new NewDataTypeEvent(dt.getName()));

@@ -19,44 +19,58 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.util;
 
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
-import java.io.FileInputStream;
+import gov.nih.nci.ncicb.cadsr.domain.*;
+import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.InputStreamResource;
+import java.util.*;
 
-import org.apache.log4j.Logger;
+public class ConceptUtil {
 
-import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
-import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
-import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
-
-public class BeansAccessor {
-  
-  private static Logger logger = Logger.getLogger(BeansAccessor.class.getName());
-
-  private static XmlBeanFactory factory = null;
-
-  public static ElementWriter getWriter() {
-    RunMode mode = (RunMode)UserSelections.getInstance().getProperty("MODE");
-    if(mode.equals(RunMode.Reviewer)) {
-      return (ElementWriter)getFactory().getBean("xmiWriter");
-    } else if(mode.equals(RunMode.Curator)) {
-      return (ElementWriter)getFactory().getBean("csvWriter");
-    }
-    else return null;
-  }
+  public static String longNameFromConcepts(Concept[] concepts) {
+    StringBuffer sb = new StringBuffer();
     
-  private static BeanFactory getFactory() {
-    try {
-      if(factory != null)
-        return factory;
-      return new XmlBeanFactory(new InputStreamResource(Thread.currentThread().getContextClassLoader().getResourceAsStream("beans.xml")));
-    } catch (Exception e){
-      logger.error(e.getMessage());
-    } // end of try-catch
-    return null;
+    for(Concept con : concepts) {
+      if(sb.length() > 0)
+        sb.append(" ");
+      sb.append(StringUtil.upperFirst(con.getLongName()));
+    }
+
+    return sb.toString();
+
   }
-  
+
+  public static String longNameFromConcepts(List<Concept> concepts) {
+
+    Concept[] conArr = new Concept[concepts.size()];
+    
+    return longNameFromConcepts(concepts.toArray(conArr));
+
+  }
+
+
+  public static String preferredNameFromConcepts(List<Concept> concepts) {
+    StringBuffer sb = new StringBuffer();
+    for(Concept con : concepts) {
+      if(sb.length() > 0)
+        sb.insert(0, ":");
+      sb.insert(0, con.getPreferredName());
+    }
+    return sb.toString();
+  }
+
+
+  public static String preferredDefinitionFromConcepts(Concept[] concepts) {
+    StringBuffer sb = new StringBuffer();
+    
+    for(Concept con : concepts) {
+      if(sb.length() > 0)
+        sb.append(":");
+      sb.append(con.getPreferredDefinition());
+    }
+
+    return sb.toString();
+  }
+
+
+
 }

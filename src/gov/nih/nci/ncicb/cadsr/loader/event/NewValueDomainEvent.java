@@ -17,46 +17,104 @@
  *
  * 5. THIS SOFTWARE IS PROVIDED "AS IS," AND ANY EXPRESSED OR IMPLIED WARRANTIES, (INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE) ARE DISCLAIMED. IN NO EVENT SHALL THE NATIONAL CANCER INSTITUTE, ORACLE, OR THEIR AFFILIATES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  */
-package gov.nih.nci.ncicb.cadsr.loader.util;
+package gov.nih.nci.ncicb.cadsr.loader.event;
 
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
-import java.io.FileInputStream;
+/**
+ * Used by UMLLoader's parser to indicate a new UML Class event.
+ *
+ * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
+ */
+public class NewValueDomainEvent extends NewConceptualEvent {
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.InputStreamResource;
+  private String name;
+  private String datatype;
+  private String type;
+  private String cdId;
+  private Float cdVersion;
 
-import org.apache.log4j.Logger;
+  public static final String TV_VD_DEFINITION = "CADSR_ValueDomainDefinition";
+  public static final String TV_VD_DATATYPE = "CADSR_ValueDomainDatatype";
+  public static final String TV_VD_TYPE = "CADSR_ValueDomainType";
+  public static final String TV_CD_ID = "CADSR_ConceptualDomainPublicID";
+  public static final String TV_CD_VERSION = "CADSR_ConceptDomainVersion";
 
-import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
-import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
-import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
+  public NewValueDomainEvent(String name) {
+    this.name = name;
+  }
 
-public class BeansAccessor {
+  public String getName() {
+    return name;
+  }
+ 
+
+  /**
+   * Get the Datatype value.
+   * @return the Datatype value.
+   */
+  public String getDatatype() {
+    return datatype;
+  }
+
+  /**
+   * Set the Datatype value.
+   * @param newDatatype The new Datatype value.
+   */
+  public void setDatatype(String newDatatype) {
+    this.datatype = newDatatype;
+  }
+
+
+  /**
+   * Get the Type value.
+   * @return the Type value.
+   */
+  public String getType() {
+    return type;
+  }
+
+  /**
+   * Set the Type value.
+   * @param newType The new Type value.
+   */
+  public void setType(String newType) {
+    this.type = newType;
+  }
+
+
+
+  /**
+   * Get the CdId value.
+   * @return the CdId value.
+   */
+  public String getCdId() {
+    return cdId;
+  }
+
+  /**
+   * Set the CdId value.
+   * @param newCdId The new CdId value.
+   */
+  public void setCdId(String newCdId) {
+    this.cdId = newCdId;
+  }
+
+
+  /**
+   * Get the CdVersion value.
+   * @return the CdVersion value.
+   */
+  public Float getCdVersion() {
+    return cdVersion;
+  }
+
+  /**
+   * Set the CdVersion value.
+   * @param newCdVersion The new CdVersion value.
+   */
+  public void setCdVersion(Float newCdVersion) {
+    this.cdVersion = newCdVersion;
+  }
+
   
-  private static Logger logger = Logger.getLogger(BeansAccessor.class.getName());
-
-  private static XmlBeanFactory factory = null;
-
-  public static ElementWriter getWriter() {
-    RunMode mode = (RunMode)UserSelections.getInstance().getProperty("MODE");
-    if(mode.equals(RunMode.Reviewer)) {
-      return (ElementWriter)getFactory().getBean("xmiWriter");
-    } else if(mode.equals(RunMode.Curator)) {
-      return (ElementWriter)getFactory().getBean("csvWriter");
-    }
-    else return null;
-  }
-    
-  private static BeanFactory getFactory() {
-    try {
-      if(factory != null)
-        return factory;
-      return new XmlBeanFactory(new InputStreamResource(Thread.currentThread().getContextClassLoader().getResourceAsStream("beans.xml")));
-    } catch (Exception e){
-      logger.error(e.getMessage());
-    } // end of try-catch
-    return null;
-  }
   
 }

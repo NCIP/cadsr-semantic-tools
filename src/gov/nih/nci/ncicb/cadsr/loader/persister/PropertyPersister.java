@@ -22,7 +22,7 @@ package gov.nih.nci.ncicb.cadsr.loader.persister;
 import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import org.apache.log4j.Logger;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
@@ -71,8 +71,8 @@ public class PropertyPersister extends UMLPersister {
         String packageName = getPackageName(prop);
 
 	if (l.size() == 0) {
-          prop.setLongName(longNameFromConcepts(concepts));
-	  prop.setPreferredDefinition(preferredDefinitionFromConcepts(concepts));
+          prop.setLongName(ConceptUtil.longNameFromConcepts(concepts));
+	  prop.setPreferredDefinition(ConceptUtil.preferredDefinitionFromConcepts(concepts));
           prop.setDefinitionSource(primaryConcept.getDefinitionSource());
 
 	  prop.setVersion(new Float(1.0f));

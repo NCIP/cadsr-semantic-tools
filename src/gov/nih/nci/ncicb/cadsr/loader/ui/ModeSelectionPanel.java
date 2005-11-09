@@ -34,7 +34,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 public class ModeSelectionPanel extends JPanel 
 {
 
-  private JRadioButton reportOption, curateOption, annotateOption, reviewOption;
+  private JRadioButton roundtripOption, reportOption, curateOption, annotateOption, reviewOption;
   private ButtonGroup group;
   private JPanel _this = this;
 
@@ -67,6 +67,9 @@ public class ModeSelectionPanel extends JPanel
     this.add(infoPanel, BorderLayout.NORTH);
     
     group = new ButtonGroup();
+
+    roundtripOption = new JRadioButton("Perform XMI Roundtrip");
+    roundtripOption.setActionCommand(RunMode.Roundtrip.toString());
     
     reportOption = new JRadioButton("Run Semantic Connector (First Run)");
     reportOption.setActionCommand(RunMode.GenerateReport.toString());
@@ -91,6 +94,7 @@ public class ModeSelectionPanel extends JPanel
     else
       reportOption.setSelected(true);
       
+    group.add(roundtripOption);
     group.add(reportOption);
     group.add(curateOption);
     group.add(annotateOption);
@@ -102,6 +106,7 @@ public class ModeSelectionPanel extends JPanel
     buttonPanel.add
       (new JLabel("<html>Choose from the following SIW Options:</html>"));
 
+    buttonPanel.add(roundtripOption);
     buttonPanel.add(reportOption);
     buttonPanel.add(curateOption);
     buttonPanel.add(annotateOption);

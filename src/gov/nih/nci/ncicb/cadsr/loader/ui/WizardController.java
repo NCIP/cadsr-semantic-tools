@@ -280,8 +280,21 @@ public class WizardController implements ActionListener {
                 }
               };
             worker.start(); 
-          }
-          else if(mode.equals(RunMode.Reviewer)) {
+          } 
+          else if(mode.equals(RunMode.Roundtrip)) {
+            SwingWorker worker = new SwingWorker() {
+                public Object construct() {
+                  
+                  RoundtripAction roundtripAction = 
+                    new RoundtripAction();
+
+                  return null;
+
+                } 
+              };
+            worker.start(); 
+
+          } else if(mode.equals(RunMode.Reviewer)) {
             SwingWorker worker = new SwingWorker() {
                 public Object construct() {
                   try {

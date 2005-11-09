@@ -318,18 +318,6 @@ public class UMLPersister implements Persister {
     return null;
   }
 
-  protected String longNameFromConcepts(Concept[] concepts) {
-    StringBuffer sb = new StringBuffer();
-    
-    for(int i=0; i < concepts.length; i++) {
-      if(sb.length() > 0)
-        sb.append(" ");
-      sb.append(StringUtil.upperFirst(concepts[i].getLongName()));
-    }
-
-    return sb.toString();
-
-  }
 
   protected boolean isSameDefinition(String def, Concept[] concepts) {
     if((def == null) || def.length() == 0)
@@ -345,20 +333,6 @@ public class UMLPersister implements Persister {
 
     return def.equals(sb.toString());
     
-  }
-
-  protected String preferredDefinitionFromConcepts(Concept[] concepts) {
-    StringBuffer sb = new StringBuffer();
-    
-    for(int i=0; i < concepts.length; i++) {
-      if(sb.length() > 0)
-        sb.append(":");
-//       sb.append(concepts[i].getPreferredName());
-//       sb.append(DEF_CONCAT_CHAR);
-      sb.append(concepts[i].getPreferredDefinition());
-    }
-
-    return sb.toString();
   }
 
   protected void addPackageClassification(AdminComponent ac, String packageName) {

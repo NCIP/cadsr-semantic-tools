@@ -27,7 +27,9 @@ package gov.nih.nci.ncicb.cadsr.loader.util;
 public enum RunMode {
   GenerateReport, 
     Curator, 
-    Reviewer;
+    Reviewer, 
+    Roundtrip
+    ;
 
 
   public String toString() {

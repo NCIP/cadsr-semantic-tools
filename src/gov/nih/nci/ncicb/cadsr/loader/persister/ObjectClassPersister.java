@@ -24,7 +24,7 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -81,8 +81,8 @@ public class ObjectClassPersister extends UMLPersister {
         String newName = className;
 
 	if (l.size() == 0) {
-          oc.setLongName(longNameFromConcepts(concepts));
-	  oc.setPreferredDefinition(preferredDefinitionFromConcepts(concepts));
+          oc.setLongName(ConceptUtil.longNameFromConcepts(concepts));
+	  oc.setPreferredDefinition(ConceptUtil.preferredDefinitionFromConcepts(concepts));
           oc.setDefinitionSource(primaryConcept.getDefinitionSource());
 
 	  oc.setVersion(new Float(1.0f));

@@ -154,31 +154,35 @@ public class TreeBuilder implements UserPreferencesListener {
     DataElement o = DomainObjectFactory.newDataElement();
     List<DataElement> des = (List<DataElement>) elements.getElements(o.getClass());
 
-    for(DataElement de : des) {
-      if(de.getDataElementConcept().getObjectClass().getLongName()
-         .equals(parentNode.getFullPath())) {
-        UMLNode node = new AttributeNode(de);
+      for(DataElement de : des) {
+        try {
+        if(de.getDataElementConcept().getObjectClass().getLongName()
+           .equals(parentNode.getFullPath())) {
+          UMLNode node = new AttributeNode(de);
 
-        
-        Boolean reviewed = reviewTracker.get(node.getFullPath());
-        if(reviewed != null) {
-          parentNode.addChild(node);
-          ((AttributeNode) node).setReviewed(reviewed);
-        }
+          
+          Boolean reviewed = reviewTracker.get(node.getFullPath());
+          if(reviewed != null) {
+            parentNode.addChild(node);
+            ((AttributeNode) node).setReviewed(reviewed);
+          }
 
-        List<ValidationItem> items = findValidationItems(de.getDataElementConcept().getProperty());
-        for(ValidationItem item : items) {
-          ValidationNode vNode = new ValidationNode(item);
-          node.addValidationNode(vNode);
-        }
+          List<ValidationItem> items = findValidationItems(de.getDataElementConcept().getProperty());
+          for(ValidationItem item : items) {
+            ValidationNode vNode = new ValidationNode(item);
+            node.addValidationNode(vNode);
+          }
 
-        items = findValidationItems(de);
-        for(ValidationItem item : items) {
-          ValidationNode vNode = new ValidationNode(item);
-          node.addValidationNode(vNode);
+          items = findValidationItems(de);
+          for(ValidationItem item : items) {
+            ValidationNode vNode = new ValidationNode(item);
+            node.addValidationNode(vNode);
+          }
         }
+    } catch (NullPointerException e){
+      e.printStackTrace();
+    } // end of try-catch
       }
-    }
 
 
   }
