@@ -35,6 +35,8 @@ public interface UMLHandler extends LoaderHandler {
   public void newPackage(NewPackageEvent event);
   public void newOperation(NewOperationEvent event);
   public void newClass(NewClassEvent event);
+  public void newValueDomain(NewValueDomainEvent event);
+  public void newValueMeaning(NewValueMeaningEvent event);
   public void newAttribute(NewAttributeEvent event);
   public void newInterface(NewInterfaceEvent event);
   public void newStereotype(NewStereotypeEvent event);

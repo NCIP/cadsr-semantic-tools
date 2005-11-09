@@ -39,8 +39,50 @@ public class NewConceptualEvent implements LoaderEvent {
   private String description;
   private boolean reviewed = false;
 
-  private List<NewConceptEvent> concepts = new ArrayList();
+  private List<NewConceptEvent> concepts = new ArrayList<NewConceptEvent>();
 
+
+  private String persistenceId;
+
+  private Float persistenceVersion;
+
+  /**
+   * Indicates that the object already is persisted with this version number. 
+   * May be null if this object is new.
+   * @return the PersistenceVersion value.
+   */
+  public Float getPersistenceVersion() {
+    return persistenceVersion;
+  }
+
+  /**
+   * Set the PersistenceVersion value.
+   * @param newPersistenceVersion The new PersistenceVersion value.
+   */
+  public void setPersistenceVersion(Float newPersistenceVersion) {
+    this.persistenceVersion = newPersistenceVersion;
+  }
+
+  
+
+  /**
+   * ID representing the object if it already exists. 
+   * May be null if this object is new.
+   * @return the PersistenceId value.
+   */
+  public String getPersistenceId() {
+    return persistenceId;
+  }
+
+  /**
+   * Set the PersistenceId value.
+   * @param newPersistenceId The new PersistenceId value.
+   */
+  public void setPersistenceId(String newPersistenceId) {
+    this.persistenceId = newPersistenceId;
+  }
+
+  
 
   /**
    * Get the Description value.

@@ -30,6 +30,9 @@ public class NewAttributeEvent extends NewConceptualEvent {
   private String className;
   private String type;
 
+  public static final String TV_PROP_ID = "CADSR_OC_ID";
+  public static final String TV_PROP_VERSION = "CADSR_OC_VERSION";
+
   public NewAttributeEvent(String name) {
     this.name = name;
   }

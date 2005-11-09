@@ -18,13 +18,8 @@
  * 5. THIS SOFTWARE IS PROVIDED "AS IS," AND ANY EXPRESSED OR IMPLIED WARRANTIES, (INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE) ARE DISCLAIMED. IN NO EVENT SHALL THE NATIONAL CANCER INSTITUTE, ORACLE, OR THEIR AFFILIATES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  */
 package gov.nih.nci.ncicb.cadsr.loader.ext;
-import gov.nih.nci.ncicb.cadsr.dao.PropertyDAO;
-import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
-import gov.nih.nci.ncicb.cadsr.dao.ObjectClassDAO;
-import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
-import gov.nih.nci.ncicb.cadsr.domain.Concept;
-import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
-import gov.nih.nci.ncicb.cadsr.domain.Property;
+import gov.nih.nci.ncicb.cadsr.dao.*;
+import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import java.util.ArrayList;
@@ -85,5 +80,26 @@ public class CadsrModule
     return result;
     
   }
+
+  public List<DataElement> findDEByLongName(String longName, String contextName, String ocID) 
+  {
+    DataElementDAO dataElementDAO = DAOAccessor.getDataElementDAO();
+    
+    DataElement de = DomainObjectFactory.newDataElement();
+    de.setLongName(longName);
+    List<DataElement> result = dataElementDAO.find(de);
+    return result;
+  }
+
+  public List<DataElement> findDEByPublicId(String publicId) 
+  {
+    DataElementDAO dataElementDAO = DAOAccessor.getDataElementDAO();
+    
+    DataElement de = DomainObjectFactory.newDataElement();
+    de.setPublicId(publicId);
+    List<DataElement> result = dataElementDAO.find(de);
+    return result;
+  }
+
 
 }

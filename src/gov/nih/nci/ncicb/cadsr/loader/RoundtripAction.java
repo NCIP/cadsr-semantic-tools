@@ -29,11 +29,12 @@ import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.persister.PersisterException;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
-import gov.nih.nci.ncicb.cadsr.loader.ui.ProgressFrame;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 
 public class RoundtripAction {
 
+  private ProgressListener progressListener = null;
   
   public void doRoundtrip(String projectName, 
                           float projectVersion, 
@@ -47,18 +48,16 @@ public class RoundtripAction {
 
     UMLDefaults defaults = UMLDefaults.getInstance();
 
-    ProgressFrame pf = new ProgressFrame(-1);
-
     try {
       defaults.initParams(inputFile);
       parser.parse(inputFile);
 
       UMLRoundtrip roundtrip = new UMLRoundtrip(projectName, projectVersion);
-      roundtrip.setProgressListener(pf);
+      roundtrip.setProgressListener(progressListener);
       roundtrip.roundtrip();
 
       RoundtripWriter writer = new RoundtripWriter(inputFile);
-      writer.setProgressListener(pf);
+      writer.setProgressListener(progressListener);
       writer.setOutput(outputFile);
       writer.write(ElementsLists.getInstance());
 
@@ -69,10 +68,11 @@ public class RoundtripAction {
     } catch (RoundtripException e) {
 
     }
+  }
 
 
-    
-    
+  public void setProgressListener(ProgressListener l) {
+    progressListener = l;
   }
 
   public static void main(String[] args) {

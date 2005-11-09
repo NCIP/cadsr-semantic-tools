@@ -57,6 +57,43 @@ public class UMLDefaultHandler implements UMLHandler {
                  event.getName());
   }
 
+  public void newValueDomain(NewValueDomainEvent event) {
+    logger.debug("Value Domain: " + event.getName());
+    
+    List<Concept> concepts = createConcepts(event);
+
+    ValueDomain vd = DomainObjectFactory.newValueDomain();
+
+    vd.setLongName(event.getName());
+    vd.setPreferredDefinition(event.getDescription());
+    vd.setVdType(event.getType());
+    vd.setDataType(event.getDatatype());
+
+    ConceptualDomain cd = DomainObjectFactory.newConceptualDomain();
+    cd.setPublicId(event.getCdId());
+    cd.setVersion(event.getCdVersion());
+
+    vd.setConceptualDomain(cd);
+    
+    vd.setConceptDerivationRule(createConceptDerivationRule(concepts));
+
+    elements.addElement(vd);
+
+  }
+
+  public void newValueMeaning(NewValueMeaningEvent event) {
+
+    logger.debug("Value Domain: " + event.getName());
+    
+    List<Concept> concepts = createConcepts(event);
+
+    ValueMeaning vm = DomainObjectFactory.newValueMeaning();
+    vm.setShortMeaning(ConceptUtil.longNameFromConcepts(concepts));
+
+    elements.addElement(vm);
+
+  }
+  
   public void newClass(NewClassEvent event) {
     logger.debug("Class: " + event.getName());
     
@@ -64,10 +101,13 @@ public class UMLDefaultHandler implements UMLHandler {
 
     ObjectClass oc = DomainObjectFactory.newObjectClass();
 
-//     verifyConcepts(oc, concepts);
-
     // store concept codes in preferredName
-    oc.setPreferredName(preferredNameFromConcepts(concepts));
+    oc.setPreferredName(ConceptUtil.preferredNameFromConcepts(concepts));
+
+    if(event.getPersistenceId() != null) {
+      oc.setPublicId(event.getPersistenceId());
+      oc.setVersion(event.getPersistenceVersion());
+    }
 
     oc.setLongName(event.getName());
     if(event.getDescription() != null && event.getDescription().length() > 0)
@@ -107,10 +147,14 @@ public class UMLDefaultHandler implements UMLHandler {
     List concepts = createConcepts(event);
 
     Property prop = DomainObjectFactory.newProperty();
-//     verifyConcepts(prop, concepts);
+
+    if(event.getPersistenceId() != null) {
+      prop.setPublicId(event.getPersistenceId());
+      prop.setVersion(event.getPersistenceVersion());
+    }
 
     // store concept codes in preferredName
-    prop.setPreferredName(preferredNameFromConcepts(concepts));
+    prop.setPreferredName(ConceptUtil.preferredNameFromConcepts(concepts));
 
     //     prop.setPreferredName(event.getName());
     prop.setLongName(event.getName());
@@ -401,26 +445,29 @@ public class UMLDefaultHandler implements UMLHandler {
     return concept;
   }
 
-  private List createConcepts(NewConceptualEvent event) {
-    List concepts = new ArrayList();
-    List conEvs = event.getConcepts();
-    for(Iterator it = conEvs.iterator(); it.hasNext(); ) {
-      NewConceptEvent conEv = (NewConceptEvent)it.next();
+  private List<Concept> createConcepts(NewConceptualEvent event) {
+    List<Concept> concepts = new ArrayList<Concept>();
+    List<NewConceptEvent> conEvs = event.getConcepts();
+    for(NewConceptEvent conEv : conEvs) {
       concepts.add(newConcept(conEv));
     }
 
     return concepts;
   }
 
-  private String preferredNameFromConcepts(List concepts) {
-    StringBuffer sb = new StringBuffer();
-    for(Iterator it = concepts.iterator(); it.hasNext(); ) {
-      Concept con = (Concept)it.next();
-      if(sb.length() > 0)
-        sb.insert(0, ":");
-      sb.insert(0, con.getPreferredName());
+  private ConceptDerivationRule createConceptDerivationRule(List<Concept> concepts) {
+
+    List<ComponentConcept> compConcepts = new ArrayList<ComponentConcept>();
+
+    for(Concept con : concepts) {
+      ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
     }
-    return sb.toString();
+
+    ConceptDerivationRule conDerRule = DomainObjectFactory.newConceptDerivationRule();
+    conDerRule.setComponentConcepts(compConcepts);
+    return conDerRule;
+    
+
   }
 
   private void verifyConcepts(AdminComponent cause, List concepts) {
