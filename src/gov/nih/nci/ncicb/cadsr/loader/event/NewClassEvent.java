@@ -29,9 +29,6 @@ public class NewClassEvent extends NewConceptualEvent {
   private String name;
   private String packageName;
 
-  public static final String TV_OC_ID = "CADSR_OC_ID";
-  public static final String TV_OC_VERSION = "CADSR_OC_VERSION";
-
   public NewClassEvent(String name) {
     this.name = name;
   }

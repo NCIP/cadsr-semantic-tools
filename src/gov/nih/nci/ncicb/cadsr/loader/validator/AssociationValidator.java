@@ -25,6 +25,7 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 public class AssociationValidator implements Validator {
 
@@ -33,6 +34,11 @@ public class AssociationValidator implements Validator {
   public AssociationValidator(ElementsLists elements) {
     this.elements = elements;
   }
+
+  public void addProgressListener(ProgressListener l) {
+
+  }
+
 
   /**
    * returns a list of Validation errors.

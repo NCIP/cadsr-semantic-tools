@@ -25,6 +25,8 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.util.DatatypeMapping;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import java.util.List;
 public class DatatypeValidator implements Validator
 {
@@ -36,7 +38,11 @@ public class DatatypeValidator implements Validator
   {
     this.elements = elements;
   }
-  
+
+  public void addProgressListener(ProgressListener l) {
+
+  }
+
   /**
    * @return a list of Validation errors.
    */
@@ -47,17 +53,25 @@ public class DatatypeValidator implements Validator
     if(des != null)
       for(DataElement de : des) 
       {
-        String prefName = de.getValueDomain().getPreferredName();
+        String prefName = de.getValueDomain().getLongName();
 
-//         if(!DatatypeMapping.getValues().contains(prefName) && !DatatypeMapping.getKeys().contains(prefName)) 
-        if(!DatatypeMapping.getValues().contains(prefName)) 
-          items.addItem(new ValidationError
-                        (PropertyAccessor.getProperty
-                         ("validation.type.invalid",
-                          new String[] {prefName, 
-                                        de.getDataElementConcept().getLongName()})
-                         ,de));
-
+        // Is the datatype a simple datatype?
+        if(DatatypeMapping.getValues().contains(prefName)) 
+          continue;
+        
+        // If mapping this DE to a VD Name, check that the VD
+        // is in the model
+        ValueDomain vd = LookupUtil.lookupValueDomain(de.getValueDomain().getLongName());
+        if(vd != null)
+          continue;
+        
+        items.addItem(new ValidationError
+             (PropertyAccessor.getProperty
+              ("validation.type.invalid",
+               new String[] {prefName, 
+                             de.getDataElementConcept().getLongName()})
+              ,de));
+        
       }
     
     return items;

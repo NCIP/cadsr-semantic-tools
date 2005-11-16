@@ -187,6 +187,7 @@ public class WizardController implements ActionListener {
           FileSelectionPanel panel = 
             (FileSelectionPanel)descriptor.getPanelComponent();
           filename = panel.getSelection();
+          userSelections.setProperty("SKIP_VD_VALIDATION", panel.getSkipVdValidation());
 
           prefs.addRecentFile(filename);
 
@@ -287,6 +288,10 @@ public class WizardController implements ActionListener {
                   
                   RoundtripAction roundtripAction = 
                     new RoundtripAction();
+
+                  roundtripAction.addProgressListener(progressDesc);
+                  // !! TODO
+                  roundtripAction.doRoundtrip("caBIG", 1, filename, outputFile);
 
                   return null;
 

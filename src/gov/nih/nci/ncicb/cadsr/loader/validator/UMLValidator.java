@@ -26,6 +26,7 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 public class UMLValidator implements Validator {
 
@@ -36,13 +37,24 @@ public class UMLValidator implements Validator {
     validators = new ArrayList();
     validators.add(new ConceptCodeValidator(elements)); 
     validators.add(new AssociationValidator(elements));
+    
+    UserSelections userSelections = UserSelections.getInstance();
 
-    RunMode mode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
-
+    RunMode mode = (RunMode)(userSelections.getProperty("MODE"));
+    
     if(mode.equals(RunMode.Reviewer))
       validators.add(new DatatypeValidator(elements));
- }
 
+    if(!(Boolean)userSelections.getProperty("SKIP_VD_VALIDATION")) {
+      validators.add(new ValueDomainValidator(elements));
+    }
+  }
+  
+  public void addProgressListener(ProgressListener l) {
+    
+  }
+  
+  
   /**
    * returns a list of Validation errors.
    */

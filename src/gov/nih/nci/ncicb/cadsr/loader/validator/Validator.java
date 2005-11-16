@@ -20,6 +20,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.validator;
 
 import java.util.List;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 /**
  * Validators need to implement this interface. Validators must be run before persistance occurs. 
@@ -32,5 +33,7 @@ public interface Validator {
    * @return a list of Validation errors.
    */
   public ValidationItems validate();  
+
+  public void addProgressListener(ProgressListener l);
 
 }

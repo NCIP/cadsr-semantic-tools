@@ -32,12 +32,6 @@ public class NewValueDomainEvent extends NewConceptualEvent {
   private String cdId;
   private Float cdVersion;
 
-  public static final String TV_VD_DEFINITION = "CADSR_ValueDomainDefinition";
-  public static final String TV_VD_DATATYPE = "CADSR_ValueDomainDatatype";
-  public static final String TV_VD_TYPE = "CADSR_ValueDomainType";
-  public static final String TV_CD_ID = "CADSR_ConceptualDomainPublicID";
-  public static final String TV_CD_VERSION = "CADSR_ConceptDomainVersion";
-
   public NewValueDomainEvent(String name) {
     this.name = name;
   }

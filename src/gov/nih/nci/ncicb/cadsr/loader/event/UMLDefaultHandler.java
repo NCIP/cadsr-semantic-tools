@@ -83,12 +83,19 @@ public class UMLDefaultHandler implements UMLHandler {
 
   public void newValueMeaning(NewValueMeaningEvent event) {
 
-    logger.debug("Value Domain: " + event.getName());
+    logger.debug("Value Meaning: " + event.getName());
     
     List<Concept> concepts = createConcepts(event);
 
+    ValueDomain vd = LookupUtil.lookupValueDomain(event.getValueDomainName());
+
     ValueMeaning vm = DomainObjectFactory.newValueMeaning();
     vm.setShortMeaning(ConceptUtil.longNameFromConcepts(concepts));
+
+    PermissibleValue pv = DomainObjectFactory.newPermissibleValue();
+    pv.setValueMeaning(vm);
+    
+    vd.addPermissibleValue(pv);
 
     elements.addElement(vm);
 
@@ -213,7 +220,7 @@ public class UMLDefaultHandler implements UMLHandler {
       datatype = DatatypeMapping.getMapping().get(datatype.toLowerCase());
 
     ValueDomain vd = DomainObjectFactory.newValueDomain();
-    vd.setPreferredName(datatype);
+    vd.setLongName(datatype);
     de.setValueDomain(vd);
 
     if(!StringUtil.isEmpty(event.getDescription())) {

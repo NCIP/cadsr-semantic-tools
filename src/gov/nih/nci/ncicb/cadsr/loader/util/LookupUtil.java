@@ -56,4 +56,15 @@ public class LookupUtil {
 
   }
 
+  public static ValueDomain lookupValueDomain(String longName) {
+    List<ValueDomain> vds = ElementsLists.getInstance().getElements(DomainObjectFactory.newValueDomain());
+
+    for(ValueDomain vd : vds) 
+      if(vd.getLongName().equals(longName))
+        return vd;
+    
+    return null;
+
+  }
+
 }

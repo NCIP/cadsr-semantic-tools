@@ -29,12 +29,6 @@ import java.util.ArrayList;
  */
 public class NewConceptualEvent implements LoaderEvent {
 
-  /**
-   * Tagged Value name for Documentation
-   */
-  public static final String TV_DOCUMENTATION = "documentation";
-  public static final String TV_DESCRIPTION = "description";
-  public static final String TV_HUMAN_REVIEWED = "HUMAN_REVIEWED";
 
   private String description;
   private boolean reviewed = false;

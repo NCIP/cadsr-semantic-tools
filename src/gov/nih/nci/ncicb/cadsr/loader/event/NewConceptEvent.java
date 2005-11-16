@@ -26,41 +26,6 @@ package gov.nih.nci.ncicb.cadsr.loader.event;
  */
 public class NewConceptEvent implements LoaderEvent {
 
-  /**
-   * Tagged Value name for Concept Code
-   */
-  public static final String TV_CONCEPT_CODE = "ConceptCode";
-
-  /**
-   * Tagged Value name for Concept Preferred Name
-   */
-  public static final String TV_CONCEPT_PREFERRED_NAME = "ConceptPreferredName";
-
-  /**
-   * Tagged Value name for Concept Definition
-   */
-  public static final String TV_CONCEPT_DEFINITION = "ConceptDefinition";
-
-  /**
-   * Tagged Value name for Concept Definition Source
-   */
-  public static final String TV_CONCEPT_DEFINITION_SOURCE = "ConceptDefinitionSource";
-
-
-  /**
-   * Qualifier Tagged Value prepender. 
-   */
-  public static final String TV_QUALIFIER = "Qualifier";
-
-  /**
-   * Qualifier Tagged Value prepender. 
-   */
-  public static final String TYPE_CLASS = "ObjectClass";
-
-  /**
-   * Qualifier Tagged Value prepender. 
-   */
-  public static final String TYPE_PROPERTY = "Property";
   
 
   private String code;

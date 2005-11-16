@@ -64,6 +64,72 @@ public class XMIParser implements Parser {
 
   private final static String VD_STEREOTYPE = "CADSR Value Domain";
 
+  public static final String TV_PROP_ID = "CADSR_PROP_ID";
+  public static final String TV_PROP_VERSION = "CADSR_PROP_VERSION";
+
+  public static final String TV_DE_ID = "CADSR_DE_ID";
+  public static final String TV_DE_VERSION = "CADSR_DE_VERSION";
+
+  public static final String TV_VALUE_DOMAIN = "Value Domain";
+
+  public static final String TV_VD_ID = "CADSR_VD_ID";
+  public static final String TV_VD_VERSION = "CADSR_VD_VERSION";
+  public static final String TV_OC_ID = "CADSR_OC_ID";
+  public static final String TV_OC_VERSION = "CADSR_OC_VERSION";
+
+
+  public static final String TV_VD_DEFINITION = "CADSR_ValueDomainDefinition";
+  public static final String TV_VD_DATATYPE = "CADSR_ValueDomainDatatype";
+  public static final String TV_VD_TYPE = "CADSR_ValueDomainType";
+  public static final String TV_CD_ID = "CADSR_ConceptualDomainPublicID";
+  public static final String TV_CD_VERSION = "CADSR_ConceptDomainVersion";
+
+  /**
+   * Tagged Value name for Concept Code
+   */
+  public static final String TV_CONCEPT_CODE = "ConceptCode";
+
+  /**
+   * Tagged Value name for Concept Preferred Name
+   */
+  public static final String TV_CONCEPT_PREFERRED_NAME = "ConceptPreferredName";
+
+  /**
+   * Tagged Value name for Concept Definition
+   */
+  public static final String TV_CONCEPT_DEFINITION = "ConceptDefinition";
+
+  /**
+   * Tagged Value name for Concept Definition Source
+   */
+  public static final String TV_CONCEPT_DEFINITION_SOURCE = "ConceptDefinitionSource";
+
+
+  /**
+   * Qualifier Tagged Value prepender. 
+   */
+  public static final String TV_QUALIFIER = "Qualifier";
+
+  /**
+   * Qualifier Tagged Value prepender. 
+   */
+  public static final String TV_TYPE_CLASS = "ObjectClass";
+
+  /**
+   * Qualifier Tagged Value prepender. 
+   */
+  public static final String TV_TYPE_PROPERTY = "Property";
+
+
+
+  /**
+   * Tagged Value name for Documentation
+   */
+  public static final String TV_DOCUMENTATION = "documentation";
+  public static final String TV_DESCRIPTION = "description";
+  public static final String TV_HUMAN_REVIEWED = "HUMAN_REVIEWED";
+
+
   private String[] bannedClassNames = null;
   {
     bannedClassNames = PropertyAccessor.getProperty("banned.classNames").split(",");
@@ -201,7 +267,7 @@ public class XMIParser implements Parser {
     NewClassEvent event = new NewClassEvent(className.trim());
     event.setPackageName(pName);
 
-    setConceptInfo(clazz, event, NewConceptEvent.TYPE_CLASS);
+    setConceptInfo(clazz, event, TV_TYPE_CLASS);
 
     logger.debug("CLASS: " + className);
     logger.debug("CLASS PACKAGE: " + getPackageName(clazz));
@@ -217,22 +283,22 @@ public class XMIParser implements Parser {
       return;
     }
 
-    TaggedValue tv = UML13Utils.getTaggedValue(clazz, NewConceptualEvent.TV_DOCUMENTATION);
+    TaggedValue tv = UML13Utils.getTaggedValue(clazz, TV_DOCUMENTATION);
     if(tv != null) {
       event.setDescription(tv.getValue());
     }
 
-    tv = UML13Utils.getTaggedValue(clazz, NewConceptualEvent.TV_HUMAN_REVIEWED);
+    tv = UML13Utils.getTaggedValue(clazz, TV_HUMAN_REVIEWED);
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
 
-    tv = UML13Utils.getTaggedValue(clazz, NewClassEvent.TV_OC_ID);
+    tv = UML13Utils.getTaggedValue(clazz, TV_OC_ID);
     if(tv != null) {
       event.setPersistenceId(tv.getValue());
     }
 
-    tv = UML13Utils.getTaggedValue(clazz, NewClassEvent.TV_OC_VERSION);
+    tv = UML13Utils.getTaggedValue(clazz, TV_OC_VERSION);
     if(tv != null) {
       try {
         event.setPersistenceVersion(new Float(tv.getValue()));
@@ -293,31 +359,31 @@ public class XMIParser implements Parser {
     NewValueDomainEvent event = new NewValueDomainEvent(className.trim());
 //     event.setPackageName("ValueDomains");
 
-    setConceptInfo(clazz, event, NewConceptEvent.TYPE_CLASS);
+    setConceptInfo(clazz, event, TV_TYPE_CLASS);
 
     logger.debug("Value Domain: " + className);
 
-    TaggedValue tv = UML13Utils.getTaggedValue(clazz, NewValueDomainEvent.TV_VD_DEFINITION);
+    TaggedValue tv = UML13Utils.getTaggedValue(clazz, TV_VD_DEFINITION);
     if(tv != null) {
       event.setDescription(tv.getValue());
     }
 
-    tv = UML13Utils.getTaggedValue(clazz, NewValueDomainEvent.TV_VD_DATATYPE);
+    tv = UML13Utils.getTaggedValue(clazz, TV_VD_DATATYPE);
     if(tv != null) {
       event.setDatatype(tv.getValue());
     }
 
-    tv = UML13Utils.getTaggedValue(clazz, NewValueDomainEvent.TV_VD_TYPE);
+    tv = UML13Utils.getTaggedValue(clazz, TV_VD_TYPE);
     if(tv != null) {
       event.setType(tv.getValue());
     }
 
-    tv = UML13Utils.getTaggedValue(clazz, NewValueDomainEvent.TV_CD_ID);
+    tv = UML13Utils.getTaggedValue(clazz, TV_CD_ID);
     if(tv != null) {
       event.setCdId(tv.getValue());
     }
     
-    tv = UML13Utils.getTaggedValue(clazz, NewValueDomainEvent.TV_CD_VERSION);
+    tv = UML13Utils.getTaggedValue(clazz, TV_CD_VERSION);
     if(tv != null) {
       try {
         event.setCdVersion(new Float(tv.getValue()));
@@ -327,7 +393,7 @@ public class XMIParser implements Parser {
     }
 
 
-    tv = UML13Utils.getTaggedValue(clazz, NewConceptualEvent.TV_HUMAN_REVIEWED);
+    tv = UML13Utils.getTaggedValue(clazz, TV_HUMAN_REVIEWED);
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
@@ -388,29 +454,35 @@ public class XMIParser implements Parser {
       return;
     }
 
-    event.setType(att.getType().getName());
+    // See if datatype is a simple datatype or a value domain.
+    TaggedValue tv = UML13Utils.getTaggedValue(att, TV_VALUE_DOMAIN);
+    if(tv != null) {       // Use Value Domain
+      event.setType(tv.getValue());
+    } else {               // Use datatype
+      event.setType(att.getType().getName());
+    }
 
-    TaggedValue tv = UML13Utils.getTaggedValue(att, NewConceptualEvent.TV_DESCRIPTION);
+    tv = UML13Utils.getTaggedValue(att, TV_DESCRIPTION);
     if(tv != null) {
       event.setDescription(tv.getValue());
     } else {
-      tv = UML13Utils.getTaggedValue(att, NewConceptualEvent.TV_DOCUMENTATION);
+      tv = UML13Utils.getTaggedValue(att, TV_DOCUMENTATION);
       if(tv != null) {
         event.setDescription(tv.getValue());
       }
     }
 
-    tv = UML13Utils.getTaggedValue(att, NewConceptualEvent.TV_HUMAN_REVIEWED);
+    tv = UML13Utils.getTaggedValue(att, TV_HUMAN_REVIEWED);
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
 
-    tv = UML13Utils.getTaggedValue(att, NewAttributeEvent.TV_PROP_ID);
+    tv = UML13Utils.getTaggedValue(att, TV_PROP_ID);
     if(tv != null) {
       event.setPersistenceId(tv.getValue());
     }
 
-    tv = UML13Utils.getTaggedValue(att, NewAttributeEvent.TV_PROP_VERSION);
+    tv = UML13Utils.getTaggedValue(att, TV_PROP_VERSION);
     if(tv != null) {
       try {
         event.setPersistenceVersion(new Float(tv.getValue()));
@@ -418,7 +490,7 @@ public class XMIParser implements Parser {
       } // end of try-catch
     }
 
-    setConceptInfo(att, event, NewConceptEvent.TYPE_PROPERTY);
+    setConceptInfo(att, event, TV_TYPE_PROPERTY);
 
     listener.newAttribute(event);
   }
@@ -427,12 +499,12 @@ public class XMIParser implements Parser {
     NewValueMeaningEvent event = new NewValueMeaningEvent(att.getName().trim());
     event.setValueDomainName(className);
 
-    TaggedValue tv = UML13Utils.getTaggedValue(att, NewConceptualEvent.TV_HUMAN_REVIEWED);
+    TaggedValue tv = UML13Utils.getTaggedValue(att, TV_HUMAN_REVIEWED);
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
 
-    setConceptInfo(att, event, NewConceptEvent.TYPE_PROPERTY);
+    setConceptInfo(att, event, TV_TYPE_PROPERTY);
 
     listener.newValueMeaning(event);
   }
@@ -610,7 +682,7 @@ public class XMIParser implements Parser {
       event.addConcept(concept);
     
     concept = new NewConceptEvent();
-    for(int i=1;setConceptInfo(elt, concept, type, NewConceptEvent.TV_QUALIFIER, i); i++) {
+    for(int i=1;setConceptInfo(elt, concept, type, TV_QUALIFIER, i); i++) {
 
       if(!StringUtil.isEmpty(concept.getConceptCode()))
         event.addConcept(concept);
@@ -622,23 +694,23 @@ public class XMIParser implements Parser {
 
   private boolean setConceptInfo(ModelElement elt, NewConceptEvent event, String type, String pre, int n) {
 
-    TaggedValue tv = UML13Utils.getTaggedValue(elt, type + pre + NewConceptEvent.TV_CONCEPT_CODE + ((n>0)?""+n:""));
+    TaggedValue tv = UML13Utils.getTaggedValue(elt, type + pre + TV_CONCEPT_CODE + ((n>0)?""+n:""));
     if (tv != null) {
       event.setConceptCode(tv.getValue().trim());
     } else 
       return false;
 
-    tv = UML13Utils.getTaggedValue(elt, type + pre + NewConceptEvent.TV_CONCEPT_DEFINITION + ((n>0)?""+n:""));
+    tv = UML13Utils.getTaggedValue(elt, type + pre + TV_CONCEPT_DEFINITION + ((n>0)?""+n:""));
     if (tv != null) {
       event.setConceptDefinition(tv.getValue().trim());
     }
 
-    tv = UML13Utils.getTaggedValue(elt, type + pre + NewConceptEvent.TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:""));
+    tv = UML13Utils.getTaggedValue(elt, type + pre + TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:""));
     if (tv != null) {
       event.setConceptDefinitionSource(tv.getValue().trim());
     }
     
-    tv = UML13Utils.getTaggedValue(elt, type + pre + NewConceptEvent.TV_CONCEPT_PREFERRED_NAME + ((n>0)?""+n:""));
+    tv = UML13Utils.getTaggedValue(elt, type + pre + TV_CONCEPT_PREFERRED_NAME + ((n>0)?""+n:""));
     if (tv != null) {
       event.setConceptPreferredName(tv.getValue().trim());
     }

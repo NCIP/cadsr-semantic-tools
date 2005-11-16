@@ -56,7 +56,7 @@ public class UMLPersister implements Persister {
 
   protected ElementsLists elements = null;
 
-  private Map<String, ValueDomain> valueDomains = new HashMap<String, ValueDomain>();
+  protected Map<String, ValueDomain> valueDomains = new HashMap<String, ValueDomain>();
 
   protected UMLDefaults defaults = UMLDefaults.getInstance();
 
@@ -86,27 +86,23 @@ public class UMLPersister implements Persister {
   protected ValueDomain lookupValueDomain(ValueDomain vd)
     throws PersisterException {
 
-    if(vd.getPreferredName().startsWith("enum")) {
-      vd.setPreferredName("java.lang.String");
+    if(vd.getLongName().startsWith("enum")) {
+      vd.setLongName("java.lang.String");
     }
 
-    // replace this name if:
-    // Now taken care of if Event Handler
-//     if(vdMapping.containsKey(vd.getPreferredName().trim().toLowerCase()))
-//       vd.setPreferredName(vdMapping.get(vd.getPreferredName().trim().toLowerCase()));
-
-    ValueDomain result = valueDomains.get(vd.getPreferredName());
+    ValueDomain result = valueDomains.get(vd.getLongName());
 
     if (result == null) { // not in cache -- go to db
-      List l = valueDomainDAO.find(vd);
+      List<ValueDomain> l = valueDomainDAO.find(vd);
 
       if (l.size() == 0) {
 	throw new PersisterException("Value Domain " +
-				     vd.getPreferredName() + " does not exist.");
+				     vd.getLongName() + " does not exist.");
       }
 
-      result = (ValueDomain) l.get(0);
-      valueDomains.put(result.getPreferredName(), result);
+      result = l.get(0);
+      // store to cache
+      valueDomains.put(result.getLongName(), result);
     }
 
     return result;

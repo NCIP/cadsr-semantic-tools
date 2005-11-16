@@ -67,6 +67,9 @@ implements ProgressListener {
 
   private RunMode runMode = null;
   private String fileExtension = "xmi";
+
+  private JCheckBox skipVdValidationCheckBox = 
+    new JCheckBox("Skip Value Domain Validation");
   
   private List<ActionListener> actionListeners = new ArrayList();
 
@@ -102,6 +105,10 @@ implements ProgressListener {
   public String getSelection() {
     String s = filePathField.getText().replace('\\', '/');
     return s;
+  }
+
+  public boolean getSkipVdValidation() {
+    return skipVdValidationCheckBox.isSelected();
   }
 
   public void addFileActionListener(ActionListener l) {
@@ -153,6 +160,7 @@ implements ProgressListener {
     insertInBag(browsePanel, 
                 new JLabel("Recent Files:"), 0, 2, 2, 1);
 
+
     final UserPreferences prefs = UserPreferences.getInstance();
 
     final java.util.List<String> recentFiles = prefs.getRecentFiles();
@@ -178,6 +186,12 @@ implements ProgressListener {
 
       insertInBag(browsePanel, jl, 0, y++, 2, 1);
     }
+
+    if(runMode != null && runMode.equals(RunMode.Reviewer)) {
+      insertInBag(browsePanel,
+                  skipVdValidationCheckBox, 0, y, 2, 1);
+    }
+
 
     browsePanel.setPreferredSize(new Dimension(400, 250));
 

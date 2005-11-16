@@ -71,7 +71,7 @@ public class RoundtripAction {
   }
 
 
-  public void setProgressListener(ProgressListener l) {
+  public void addProgressListener(ProgressListener l) {
     progressListener = l;
   }
 

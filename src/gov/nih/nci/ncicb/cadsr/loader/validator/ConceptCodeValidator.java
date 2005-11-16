@@ -24,6 +24,7 @@ import java.util.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
@@ -36,6 +37,11 @@ public class ConceptCodeValidator implements Validator {
   public ConceptCodeValidator(ElementsLists elements) {
     this.elements = elements;
   }
+
+  public void addProgressListener(ProgressListener l) {
+
+  }
+
 
   /**
    * returns a list of Validation errors.
