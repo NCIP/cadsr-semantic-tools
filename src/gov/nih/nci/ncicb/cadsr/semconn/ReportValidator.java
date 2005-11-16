@@ -1,12 +1,15 @@
 package gov.nih.nci.ncicb.cadsr.semconn;
 
-import gov.nih.nci.semantic.util.Configuration;
+//import gov.nih.nci.semantic.util.Configuration;
+
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 import org.apache.log4j.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
 
@@ -51,13 +54,12 @@ import java.util.TreeSet;
  * @author caBIO Team
  * @version 1.0
  */
-public final class ReportValidator {
+public final class ReportValidator  extends SubjectClass{
   private static Logger log = Logger.getLogger(ReportValidator.class.getName());
-  private String reportLocation;
   private EVSImpl evsImpl;
-  private ArrayList newEntityList;
-  private ArrayList updateEntityList;
-  private ArrayList newReportList;
+  private List newEntityList;
+  private List updateEntityList;
+  private List newReportList;
   private String conceptCode = null;
   private String preferredName = null;
   private String definition = null;
@@ -72,7 +74,7 @@ public final class ReportValidator {
   /**
    * Constructor for ReportValidator
    */
-  public ReportValidator() {
+  public ReportValidator(){
     evsImpl = new EVSImpl();
 
     //properties = new Configuration();
@@ -97,6 +99,19 @@ public final class ReportValidator {
 
     classification = Configuration.getClassificationCol();
   }
+  
+    public void addProgressListener(ProgressListener pl){
+        super.addProgressListener(pl);
+        if (evsImpl!=null){
+            evsImpl.addProgressListener(pl);
+        }
+    }
+    public void removeProgressListener(ProgressListener pl){
+          super.removeProgressListener(pl);
+          if (evsImpl!=null){
+              evsImpl.removeProgressListener(pl);
+          }
+    }
 
   /**
    * @param cui
@@ -136,8 +151,8 @@ public final class ReportValidator {
    * @param reportList
    */
   public void compare(
-    ArrayList modelList,
-    ArrayList reportList) throws Exception {
+    List modelList,
+    List reportList) throws Exception {
     newEntityList = new ArrayList();
 
     updateEntityList = new ArrayList();
@@ -161,7 +176,7 @@ public final class ReportValidator {
    */
   private void compareWithReport(
     HashMap modelElementsMap,
-    ArrayList reportList) throws Exception {
+    List reportList) throws Exception {
     HashMap reportValuesMap = null;
 
     boolean newEntry = true;
@@ -234,8 +249,7 @@ public final class ReportValidator {
       log.error(
         "Exception occured in " + getClass().getName() + ": " + e.getMessage());
 
-      throw new Exception(
-        "Exception occured in " + getClass().getName() + ": " + e.getMessage());
+      throw new Exception("Could not compare with report.", e);      
     }
 
     if (newEntry) {
@@ -252,9 +266,7 @@ public final class ReportValidator {
    */
   private void addToUpdateList(HashMap reportValuesMap) {
     HashMap map = new HashMap();
-
     String classification1 = (String) reportValuesMap.get(classification);
-
     String id = "";
 
     if (
@@ -315,7 +327,7 @@ public final class ReportValidator {
    *
    * @return
    */
-  public ArrayList getNewEntityList() {
+  public List getNewEntityList() {
     return newEntityList;
   }
 
@@ -326,7 +338,7 @@ public final class ReportValidator {
    *
    * @return
    */
-  public ArrayList getUpdatedEntityList() {
+  public List getUpdatedEntityList() {
     return updateEntityList;
   }
 
@@ -336,7 +348,7 @@ public final class ReportValidator {
    *
    * @return
    */
-  public ArrayList getNewReportList() {
+  public List getNewReportList() {
     return newReportList;
   }
 

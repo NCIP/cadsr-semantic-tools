@@ -3,7 +3,8 @@ package gov.nih.nci.ncicb.cadsr.semconn;
 import gov.nih.nci.common.net.*;
 import gov.nih.nci.evs.domain.*;
 import gov.nih.nci.evs.query.*;
-import gov.nih.nci.semantic.util.Configuration;
+//import gov.nih.nci.semantic.util.Configuration;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.system.applicationservice.*;
 import gov.nih.nci.system.dao.EVSDAOFactory;
 import gov.nih.nci.system.delegator.*;
@@ -18,11 +19,10 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 
-public class EVSImpl {
+public class EVSImpl extends SubjectClass{
   private static String vocabularyName;
   private static Logger log = Logger.getLogger(EVSImpl.class.getName());
   private ArrayList evsValues;
-  private boolean flag = false;
   private EVSQuery evsQuery;
   private String serverURL;
   private ArrayList possibleOptions;
@@ -32,17 +32,7 @@ public class EVSImpl {
   //private Configuration properties;
   public EVSImpl() {
     vocabularyName = Configuration.getVocabularyName();
-
     serverURL = Configuration.getServerURL();
-
-    evsValues = new ArrayList();
-
-    evsQuery = new EVSQueryImpl();
-
-    possibleOptions = new ArrayList();
-
-    separateWords = new ArrayList();
-
     appService = ApplicationService.getRemoteInstance(serverURL);
   }
 
@@ -53,12 +43,23 @@ public class EVSImpl {
    *
    * @return
    */
-  public ArrayList getTaggedValues(ArrayList umlEntities)
+  public List getTaggedValues(List umlEntities)
     throws Exception {
+
+    evsValues = new ArrayList();
+    evsQuery = new EVSQueryImpl();
+    possibleOptions = new ArrayList();
+    separateWords = new ArrayList();
+    
     try {
       HashMap map = null;
 
+      ProgressEvent event = new ProgressEvent();
+      event.setMessage("Searching EVS...");
+      event.setGoal(umlEntities.size());
       for (int i = 0; i < umlEntities.size(); i++) {
+        event.setStatus(i+1);
+        notify(event);
         map = (HashMap) umlEntities.get(i);
 
         String name = (String) map.get(Configuration.getUMLEntityCol());
@@ -84,6 +85,8 @@ public class EVSImpl {
 
         separateWords.clear();
       }
+      
+      notifyEventDone("Searching EVS finished");
 
       //debug
       //testOutput(evsValues);
@@ -549,7 +552,7 @@ public class EVSImpl {
    *
    * @return
    */
-  public String[] getSynonyms(String name) throws Exception {
+  private String[] getSynonyms(String name) throws Exception {
     //System.out.println("getSynonyms...");
     String[] concepts = null;
 
@@ -1060,7 +1063,7 @@ public class EVSImpl {
     return objectArray;
   }
 
-  public List getResults(EVSQuery evsQuery) throws Exception {
+  private List getResults(EVSQuery evsQuery) throws Exception {
     List results = new ArrayList();
 
     try {

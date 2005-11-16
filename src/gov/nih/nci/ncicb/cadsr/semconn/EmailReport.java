@@ -1,7 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.semconn;
 
-import gov.nih.nci.semantic.util.Configuration;
-import gov.nih.nci.semantic.util.Email;
+//import gov.nih.nci.semantic.util.Configuration;
+//import gov.nih.nci.semantic.util.Email;
 
 import org.apache.log4j.*;
 
