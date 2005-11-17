@@ -150,8 +150,17 @@ public class CsvParser implements Parser {
   }
 
   private NewClassEvent createClassEvent(DataRow row) {
-    NewClassEvent evt = new NewClassEvent(DEFAULT_PACKAGE_NAME + "." + row.getString(COL_CLASS));
-    evt.setPackageName(DEFAULT_PACKAGE_NAME);
+//     NewClassEvent evt = new NewClassEvent(DEFAULT_PACKAGE_NAME + "." + row.getString(COL_CLASS));
+//     evt.setPackageName(DEFAULT_PACKAGE_NAME);
+
+    String fullClassName = row.getString(COL_CLASS);
+    int ind = fullClassName.lastIndexOf(".");
+    String packageName = fullClassName.substring(0, ind);
+    String className = fullClassName.substring(ind + 1);
+    
+    NewClassEvent evt = new NewClassEvent(fullClassName);
+    evt.setPackageName(packageName);
+
     evt.addConcept(createConceptEvent(row));
     evt.setDescription(row.getString(COL_DESCRIPTION));
     
@@ -161,7 +170,8 @@ public class CsvParser implements Parser {
   }
   private NewAttributeEvent createAttributeEvent(DataRow row) {
     NewAttributeEvent evt = new NewAttributeEvent(row.getString(COL_ENTITY));
-    evt.setClassName(DEFAULT_PACKAGE_NAME + "." + row.getString(COL_CLASS));
+//     evt.setClassName(DEFAULT_PACKAGE_NAME + "." + row.getString(COL_CLASS));
+    evt.setClassName(row.getString(COL_CLASS));
     
     evt.addConcept(createConceptEvent(row));
     evt.setDescription(row.getString(COL_DESCRIPTION));

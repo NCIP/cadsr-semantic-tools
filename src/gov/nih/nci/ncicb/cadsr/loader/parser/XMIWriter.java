@@ -231,7 +231,7 @@ public class XMIWriter implements ElementWriter {
           
           String [] conceptCodes = oc.getPreferredName().split(":");
           
-          addConceptTvs(classElement, conceptCodes, NewConceptEvent.TYPE_CLASS);
+          addConceptTvs(classElement, conceptCodes, XMIParser.TV_TYPE_CLASS);
         }
         
       }
@@ -256,7 +256,7 @@ public class XMIWriter implements ElementWriter {
           
           String [] conceptCodes = dec.getProperty().getPreferredName().split(":");
           
-          addConceptTvs(attributeElement, conceptCodes, NewConceptEvent.TYPE_PROPERTY);
+          addConceptTvs(attributeElement, conceptCodes, XMIParser.TV_TYPE_PROPERTY);
         }
     }
     } catch (JaxenException e){
@@ -273,7 +273,7 @@ public class XMIWriter implements ElementWriter {
 
     for(int i= 1; i < conceptCodes.length; i++) {
       
-      addConceptTv(elt, conceptCodes[conceptCodes.length - i - 1], type, NewConceptEvent.TV_QUALIFIER, i);
+      addConceptTv(elt, conceptCodes[conceptCodes.length - i - 1], type, XMIParser.TV_QUALIFIER, i);
 
     }
 
@@ -283,7 +283,7 @@ public class XMIWriter implements ElementWriter {
 
     Concept con = LookupUtil.lookupConcept(conceptCode);
 
-    String tvName = type + pre + NewConceptEvent.TV_CONCEPT_CODE + ((n>0)?""+n:"");
+    String tvName = type + pre + XMIParser.TV_CONCEPT_CODE + ((n>0)?""+n:"");
 
     try {
       addTaggedValue
@@ -293,7 +293,7 @@ public class XMIWriter implements ElementWriter {
          elt.getAttributeValue("xmi.id"),
          elt.getNamespace());
       
-      tvName = type + pre + NewConceptEvent.TV_CONCEPT_DEFINITION + ((n>0)?""+n:"");
+      tvName = type + pre + XMIParser.TV_CONCEPT_DEFINITION + ((n>0)?""+n:"");
       addTaggedValue
         (tvName,
          con.getPreferredDefinition(),
@@ -302,7 +302,7 @@ public class XMIWriter implements ElementWriter {
          elt.getNamespace());
 
 
-      tvName = type + pre + NewConceptEvent.TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:"");
+      tvName = type + pre + XMIParser.TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:"");
       addTaggedValue
         (tvName,
          con.getDefinitionSource(),
@@ -310,7 +310,7 @@ public class XMIWriter implements ElementWriter {
          elt.getAttributeValue("xmi.id"),
          elt.getNamespace());
       
-      tvName = type + pre + NewConceptEvent.TV_CONCEPT_PREFERRED_NAME + ((n>0)?""+n:"");
+      tvName = type + pre + XMIParser.TV_CONCEPT_PREFERRED_NAME + ((n>0)?""+n:"");
       addTaggedValue
         (tvName,
          con.getLongName(),

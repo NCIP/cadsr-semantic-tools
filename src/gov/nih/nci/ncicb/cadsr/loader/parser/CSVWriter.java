@@ -78,7 +78,7 @@ public class CSVWriter implements ElementWriter
         for(ObjectClass oc : (List<ObjectClass>) ocs) {
 
           String className = oc.getLongName();
-          className = className.substring(className.lastIndexOf(".") + 1);
+//           className = className.substring(className.lastIndexOf(".") + 1);
 
           String [] conceptCodes = oc.getPreferredName().split(":");
           for(int i = conceptCodes.length-1; i > -1; i--) {
