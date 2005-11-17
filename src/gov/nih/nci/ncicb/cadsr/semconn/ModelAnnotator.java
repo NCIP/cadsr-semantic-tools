@@ -99,7 +99,7 @@ public final class ModelAnnotator extends SubjectClass{
     umlEntities = readModel(inputXMIFileName);        
 
     //report is written in the ReportHandler.
-    reportHandler.generateEVSReport(umlEntities, outputCsvFileName, override);
+    generateEVSReport(outputCsvFileName, override);
   }//end of method;
 
    /**
