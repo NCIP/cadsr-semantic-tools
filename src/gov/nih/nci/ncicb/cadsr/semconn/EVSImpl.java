@@ -13,8 +13,10 @@ import org.apache.log4j.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -875,8 +877,8 @@ public class EVSImpl extends SubjectClass{
    * @param name
    */
   private void evaluateString(String name) {
-    //System.out.println("Inside evaluateString.... name: " + name);
-    possibleOptions.add(name);
+    Set optionSet = new HashSet();
+    optionSet.add(name);
 
     char firstChar = name.charAt(0);
 
@@ -884,13 +886,12 @@ public class EVSImpl extends SubjectClass{
 
     if (name.indexOf("_") > 0) {
       String temp = Character.toString(firstChar) + name.substring(1);
-
-      possibleOptions.add(temp);
+      optionSet.add(temp);
     }
+    String temp = firstChar + name.substring(1).toLowerCase();
+    optionSet.add(temp);
 
-    possibleOptions.add(firstChar + name.substring(1).toLowerCase());
-
-    String evaluatedString = null;
+    String evaluatedString = null;;
 
     StringBuffer wholeWords = new StringBuffer();
 
@@ -963,11 +964,8 @@ public class EVSImpl extends SubjectClass{
       wholeWords.insert(0, c1);
     }
 
-    possibleOptions.add(sb);
-
-    if (sb.toString().compareToIgnoreCase(wholeWords.toString()) != 0) {
-      possibleOptions.add(wholeWords);
-    }
+    optionSet.add(sb.toString());
+    optionSet.add(wholeWords.toString());
 
     if (separateWords.size() > 0) {
       /*
@@ -983,15 +981,15 @@ public class EVSImpl extends SubjectClass{
       String temp2 = separateWords.get(separateWords.size() - 1).toString();
 
       if (tempSeparateWord != null) {
-        String temp = tempSeparateWord.toString();
+        temp = tempSeparateWord.toString();
 
         if (temp2.compareToIgnoreCase(temp) != 0) {
           separateWords.add(temp);
         }
       }
     }
-
-    //return sb.toString();
+    possibleOptions = new ArrayList(optionSet);
+    optionSet = null;//garbage collection ready
   }
 
   /////////////////testing////////////////////
