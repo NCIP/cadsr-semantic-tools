@@ -238,8 +238,6 @@ public class WizardController implements ActionListener {
 
                     reportPanel.setFiles(inputXmi, outputFile);
 
-                    progressDesc.newProgressEvent(evt);
-
                   } catch (SemanticConnectorException e){
                     e.printStackTrace();
                     reportPanel.setFiles(null, "An error occured.");
