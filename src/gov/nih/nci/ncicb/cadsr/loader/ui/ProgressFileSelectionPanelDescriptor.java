@@ -42,7 +42,7 @@ public class ProgressFileSelectionPanelDescriptor extends WizardPanelDescriptor
 
     panel.newProgressEvent(evt);
     if(evt.getStatus() > 0)
-      if(evt.getGoal() == evt.getStatus()) {
+      if(evt.getGoal() == evt.getStatus() && evt.getGoal() > 0) {
         getWizardModel().setNextButtonEnabled(Boolean.TRUE);
         getWizard().doClickNext();
       }

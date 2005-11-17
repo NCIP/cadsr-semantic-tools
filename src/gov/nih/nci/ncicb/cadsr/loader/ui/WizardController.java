@@ -215,34 +215,37 @@ public class WizardController implements ActionListener {
                     String inputXmi = filename;
                     
                     // Run the fixEA task if file name does not end with _fixed
+                    SemanticConnectorUtil semConn = new SemanticConnectorUtil();
+                    semConn.addProgressListener(progressDesc);
+
                     if(!filenameNoExt.startsWith("fixed_")) {
                       evt.setMessage("Removing Unnecessary tags from XMI ...");
                       progressDesc.newProgressEvent(evt);
-                      inputXmi = SemanticConnectorUtil.fixXmi(filename);
+
+                      inputXmi = semConn.fixXmi(filename);
                     }
 
                     File csvFile = new File(SemanticConnectorUtil.getCsvFilename(filename));
                     if(!csvFile.exists()) {
                       evt.setMessage("Creating Semantic Connector Report. This may take a minute ...");
                       progressDesc.newProgressEvent(evt);
-                      outputFile = SemanticConnectorUtil.generateReport(inputXmi);
+                      outputFile = semConn.generateReport(inputXmi);
                     } else {
                       evt.setMessage("Annotating XMI File ...");
                       progressDesc.newProgressEvent(evt);
-                      outputFile = SemanticConnectorUtil.annotateXmi(inputXmi);
+                      outputFile = semConn.annotateXmi(inputXmi);
                     }
 
                     reportPanel.setFiles(inputXmi, outputFile);
 
-                    evt = new ProgressEvent();
-                    evt.setGoal(100);
-                    evt.setStatus(100);
-                    evt.setMessage("Done");
                     progressDesc.newProgressEvent(evt);
 
                   } catch (SemanticConnectorException e){
+                    e.printStackTrace();
                     reportPanel.setFiles(null, "An error occured.");
-                  } // end of try-catch
+                  } catch (Throwable t)  {// end of try-catch
+                    t.printStackTrace();
+                  }
                   return null;
                 }
               };

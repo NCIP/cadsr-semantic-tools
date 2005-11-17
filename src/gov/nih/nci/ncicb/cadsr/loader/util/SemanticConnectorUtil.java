@@ -22,11 +22,12 @@ package gov.nih.nci.ncicb.cadsr.loader.util;
 import java.io.File;
 import java.util.HashMap;
 
-import gov.nih.nci.semantic.app.ReportHandler;
-import gov.nih.nci.semantic.app.ModelAnnotator;
-import gov.nih.nci.semantic.util.Configuration;
+import gov.nih.nci.ncicb.cadsr.semconn.ReportHandler;
+import gov.nih.nci.ncicb.cadsr.semconn.ModelAnnotator;
+import gov.nih.nci.ncicb.cadsr.semconn.Configuration;
 import gov.nih.nci.codegen.core.util.FixEAXMI;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 import org.jdom.Element;
 import org.jdom.Attribute;
@@ -42,6 +43,12 @@ import java.util.*;
 
 public class SemanticConnectorUtil {
 
+  ProgressListener progressListener;
+
+  public void addProgressListener(ProgressListener l) {
+    progressListener = l;
+  }
+
   public static String getCsvFilename(String xmiFilename) {
     
     return xmiFilename.substring(0, xmiFilename.lastIndexOf("/") + 1)
@@ -55,7 +62,7 @@ public class SemanticConnectorUtil {
   /**
    * @return the location of the generated report.
    */  
-  public static String annotateXmi(String inputXmi) 
+  public String annotateXmi(String inputXmi) 
     throws SemanticConnectorException {
     
 
@@ -63,8 +70,18 @@ public class SemanticConnectorUtil {
     
     String outputXmi = filepath + "Annotated_" + inputXmi.substring(inputXmi.lastIndexOf("/") + 1);
 
-    new ModelAnnotator(inputXmi, outputXmi, filepath);
+    ModelAnnotator annotator = new ModelAnnotator();
+    annotator.addProgressListener(progressListener);
 
+    try {
+      annotator.annotateXMI(
+                            inputXmi,
+                            getCsvFilename(inputXmi),
+                            outputXmi,
+                            true
+                            );
+    } catch (Exception e){
+    } // end of try-catch
 
     return outputXmi;
     
@@ -74,20 +91,32 @@ public class SemanticConnectorUtil {
   /**
    * @return the location of the generated report.
    */  
-  public static String generateReport(String inputXmi) 
+  public String generateReport(String inputXmi) 
     throws SemanticConnectorException {
     
 
     String filepath = inputXmi.substring(0, inputXmi.lastIndexOf("/") + 1);
     
-    new ModelAnnotator(inputXmi, "Annotated_" + inputXmi, filepath);
+    ModelAnnotator annotator = new ModelAnnotator();
+    annotator.addProgressListener(progressListener);
 
+    String outputCsv = getCsvFilename(inputXmi);
 
-    return filepath + "/" + "EVSReport_" + inputXmi.substring(inputXmi.lastIndexOf("/")+1, inputXmi.lastIndexOf(".")) + ".csv";
+    try {
+      annotator.generateEVSReport(
+                                  inputXmi,
+                                  outputCsv,
+                                  true) ;
+    } catch (Exception e){
+    } // end of try-catch
+      
+    return outputCsv;
+
+//     return filepath + "/" + "EVSReport_" + inputXmi.substring(inputXmi.lastIndexOf("/")+1, inputXmi.lastIndexOf(".")) + ".csv";
     
   }
 
-  public static String fixXmi(String filename) {
+  public String fixXmi(String filename) {
     String filepath = filename.substring(0, filename.lastIndexOf("/") + 1);
 
     String fixedXmi = filepath + "/fixed_" + filename.substring(filename.lastIndexOf("/")+1);

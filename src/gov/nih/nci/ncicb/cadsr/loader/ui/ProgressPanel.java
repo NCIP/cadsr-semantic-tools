@@ -42,8 +42,9 @@ public class ProgressPanel extends JPanel
   public void newProgressEvent(ProgressEvent evt) {
     if(evt.getGoal() != 0) {
       progressBar.setMaximum(evt.getGoal());
-      if(evt.getGoal() == evt.getStatus())
+      if(evt.getGoal() == evt.getStatus() || evt.getGoal() > 0)
         progressBar.setIndeterminate(false);
+        
     }
     progressBar.setValue(evt.getStatus());
 

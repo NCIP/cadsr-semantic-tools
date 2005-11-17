@@ -99,7 +99,6 @@ public final class ModelAnnotator extends SubjectClass{
     umlEntities = readModel(inputXMIFileName);        
 
     //report is written in the ReportHandler.
-    ReportHandler reportHandler = getReportHandler();
     reportHandler.generateEVSReport(umlEntities, outputCsvFileName, override);
   }//end of method;
 
@@ -232,7 +231,7 @@ public final class ModelAnnotator extends SubjectClass{
         umlEntities = new ArrayList();
 
         ProgressEvent event = new ProgressEvent();
-        event.setGoal(classes.size());
+        event.setGoal(classes.size() + 1);
         event.setMessage("Reading Model...");
         
         int index = 0;
