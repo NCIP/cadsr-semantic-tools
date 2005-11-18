@@ -78,10 +78,10 @@ public class EVSImpl extends SubjectClass{
 
         //get evs values
         //getEVSValues(name, map);
-        getEVSValues(map);
+        List ret = getEVSValues(map);
 
         //add this map to the list
-        evsValues.add(map);
+        evsValues.addAll(ret);
 
         possibleOptions.clear();
 
@@ -101,125 +101,6 @@ public class EVSImpl extends SubjectClass{
     }
 
     return evsValues;
-  }
-
-  /**
-   * Gets evs values
-   *
-   * @param name
-   * @param entitiesMap
-   *
-   * @throws Exception
-   */
-  private void getEVSValues(
-    String name,
-    HashMap entitiesMap) throws Exception {
-    System.out.print(".");
-
-    //System.out.println("getEVSValues....");
-    //get uml class and uml entity
-    String umlClass = (String) entitiesMap.get(Configuration.getUMLClassCol());
-
-    String umlEntity =
-      (String) entitiesMap.get(Configuration.getUMLEntityCol());
-
-    String classification = null;
-
-    //if the umlclass and uml entity are equal, then it is class.. else it is attribute
-    if (umlClass.equalsIgnoreCase(umlEntity)) {
-      classification = Configuration.getClassTag();
-    }
-
-    else
-    {
-      classification = Configuration.getAttributeTag();
-    }
-
-    //System.out.println("Classification: "+classification);
-    //get concept code
-    //System.out.println("calling getConceptCode.......");
-    String conceptCode = getConceptCode(name);
-
-    //String[] conceptCs = getConceptCodes(name);
-    //check whether is concept code is null
-    //if null, get synonyms for this concept name
-    //else add this to the entitiesMap
-    if (conceptCode != null) {
-      entitiesMap.put(Configuration.getConceptCodeCol(), conceptCode);
-
-      entitiesMap.put(Configuration.getConceptName(), name);
-
-      entitiesMap.put(Configuration.getClassificationCol(), classification);
-
-      //System.out.println("calling getProperties...."+ conceptCode);
-      getProperties(name, entitiesMap);
-
-      //Future: multiple code enhancement..
-      //Assuming that we get the secondary concept codes from the properties
-    }
-
-    else {
-      System.out.println(
-        "\n11111calling get synonyms... when conceptcode is null");
-
-      //concept is null.... get synonyms
-      String[] concepts = getSynonyms(name);
-
-      boolean first = true;
-
-      HashMap newMap = null;
-
-      //add each concept (synonym) as a new record
-      for (int i = 0; i < concepts.length; i++) {
-        name = concepts[i];
-
-        //get conceptcode for each concept
-        //conceptCode = getConceptCode(name);
-        //System.out.println("calling getConcept code...(for synonyms)");
-        conceptCode = getConceptCode(name);
-
-        if (conceptCode != null) {
-          //System.out.println("Concept code = "+ conceptCode+ "\tname= "+ name);
-          if (first) {
-            //add first one to the existing map
-            entitiesMap.put(Configuration.getConceptCodeCol(), conceptCode);
-
-            entitiesMap.put(Configuration.getConceptName(), name);
-
-            entitiesMap.put(
-              Configuration.getClassificationCol(), classification);
-
-            //System.out.println("getProperties...");
-            getProperties(name, entitiesMap);
-
-            first = false;
-          }
-
-          else {
-            //since, multiple synonyms, create new map and add to it
-            //create new HashMap
-            newMap = new HashMap();
-
-            //copy all other values from the above entitiesMap
-            copyHash(entitiesMap, newMap);
-
-            //System.out.println("adding EVS values....");
-            newMap.put(Configuration.getConceptCodeCol(), conceptCode);
-
-            newMap.put(Configuration.getConceptName(), name);
-
-            newMap.put(Configuration.getClassificationCol(), classification);
-
-            //getProperties
-            //System.out.println("getProperties...");
-            getProperties(name, newMap);
-
-            //add this new map to the list
-            evsValues.add(newMap);
-          }
-        }
-      }
-    }
   }
 
   /**
@@ -278,6 +159,7 @@ public class EVSImpl extends SubjectClass{
 
     return code;
   }
+  
 
   /**
    * Gets evs values
@@ -286,7 +168,239 @@ public class EVSImpl extends SubjectClass{
    *
    * @throws Exception
    */
-  private void getEVSValues(HashMap entitiesMap) throws Exception {
+   private List getEVSValues(HashMap entitiesMap) throws Exception {
+     //System.out.print(".");
+     //System.out.println("getEVSValues....");
+     //get uml class and uml entity
+     String umlClass = (String) entitiesMap.get(Configuration.getUMLClassCol());
+
+     String umlEntity =
+       (String) entitiesMap.get(Configuration.getUMLEntityCol());
+
+     String classification = null;
+
+     //if the umlclass and uml entity are equal, then it is class.. else it is attribute
+     if (umlClass.equalsIgnoreCase(umlEntity)) {
+       classification = Configuration.getClassTag();
+     }
+     else
+     {
+       classification = Configuration.getAttributeTag();
+     }
+
+     HashMap newlyFound = new HashMap();
+     
+     // go through loops of possible options
+     String name = "";
+
+     boolean search = false; // only want to search individual term once
+
+     //System.out.println("possibleOptions size = " + possibleOptions.size());
+     for (int i = 0; i < possibleOptions.size(); i++) {
+       name = (String) possibleOptions.get(i);
+       //System.out.println("possibleOptions: " + name);
+        if (newlyFound.containsKey(name)){
+            continue; //loop to next option.
+        }
+        
+       String conceptCode = getConceptCode(name);
+       //System.out.println("conceptCode = " + conceptCode);
+       if (conceptCode != null) {
+         HashMap found = new HashMap();
+         copyHash(entitiesMap, found);
+         found.put(Configuration.getConceptCodeCol(), conceptCode);
+         found.put(Configuration.getConceptName(), name);
+         found.put(Configuration.getClassificationCol(), classification);
+         //System.out.println("calling getProperties...."+ conceptCode);
+         getProperties(name, found);
+         newlyFound.put(name, found);
+         //Future: multiple code enhancement..
+         //Assuming that we get the secondary concept codes from the properties
+       }
+       else {
+         //System.out.println("\n11111calling get synonyms... when conceptcode is null");
+         //concept is null.... get synonyms
+         String[] concepts = getSynonyms(name);
+
+         boolean first = true;
+
+         HashMap newMap = null;
+
+         //System.out.println("concepts length = " + concepts.length);
+         //add each concept (synonym) as a new record
+         if ((concepts.length == 0) && !search) {
+           search = true;
+
+           //System.out.println("search individual word when concept code synonyms is null");
+           for (int j = 0; j < separateWords.size(); j++) {
+             name = separateWords.get(j).toString();
+
+             //System.out.println("separate word: " + name);
+             if (newlyFound.containsKey(name)){
+                 continue; //loop to next seperate words.
+             }
+             conceptCode = getConceptCode(name);
+
+             //System.out.println("concept code = " + conceptCode);
+             if (conceptCode != null) {
+               HashMap found = new HashMap();
+               copyHash(entitiesMap, found);                 
+               found.put(Configuration.getConceptCodeCol(), conceptCode);
+               found.put(Configuration.getConceptName(), name);
+               found.put(Configuration.getClassificationCol(), classification);
+               //System.out.println("calling getProperties...."+ conceptCode);
+               getProperties(name, found);
+               newlyFound.put(name, found);
+             }
+             else {
+               String[] concepts1 = getSynonyms(name);
+               boolean first1 = true;
+               HashMap newMap1 = null;
+
+               //System.out.println("concepts1 length = " + concepts1.length);
+               for (int k = 0; k < concepts1.length; k++) {
+                 name = concepts1[k];
+
+                 //get conceptcode for each concept
+                 //conceptCode = getConceptCode(name);
+                 //System.out.println("calling getConcept code...(for synonyms)... name: " + name );
+                  if (newlyFound.containsKey(name)){
+                      continue; //loop to next seperate words.
+                  }
+                 conceptCode = getConceptCode(name);
+
+                 //System.out.println("\n22222concept code = " + conceptCode);
+                 if (conceptCode != null) {
+                   //System.out.println("Concept code = "+ conceptCode+ "\tname= "+ name);
+                   if (first1) {
+                     //System.out.println("first1.. block adding to entitiesMap");
+                     //add first one to the existing map
+                     HashMap found = new HashMap();
+                     copyHash(entitiesMap, found);
+                     found.put(
+                       Configuration.getConceptCodeCol(), conceptCode);
+                     found.put(Configuration.getConceptName(), name);
+                     found.put(
+                       Configuration.getClassificationCol(), classification);
+                     //System.out.println("getProperties...");
+                     getProperties(name, found);
+                     newlyFound.put(name, found);
+                     first1 = false;
+                   }
+
+                   else {
+                     //since, multiple synonyms, create new map and add to it
+                     //create new HashMap
+                     HashMap found = new HashMap();
+                     //copy all other values from the above entitiesMap
+                     copyHash(entitiesMap, found);
+
+                     //System.out.println("adding EVS values....");
+                     found.put(Configuration.getConceptCodeCol(), conceptCode);
+                     found.put(Configuration.getConceptName(), name);
+                     found.put(
+                       Configuration.getClassificationCol(), classification);
+
+                     //getProperties
+                     //System.out.println("getProperties...");
+                     getProperties(name, found);
+                     //add this new map to the list
+                      newlyFound.put(name, found);
+                   }
+                 }
+               }
+             }
+           }
+         }
+
+         else {
+           for (int k = 0; k < concepts.length; k++) {
+             name = concepts[k];
+
+             //get conceptcode for each concept
+              if (newlyFound.containsKey(name)){
+                  continue; //loop to next seperate words.
+              }
+             conceptCode = getConceptCode(name);
+
+             //System.out.println("\n22222concept code = " + conceptCode);
+             if (conceptCode != null) {
+               //System.out.println("Concept code = "+ conceptCode+ "\tname= "+ name);
+               if (first) {
+                 //add first one to the existing map
+                 HashMap found = new HashMap();
+                 copyHash(entitiesMap, found);
+                 found.put(Configuration.getConceptCodeCol(), conceptCode);
+                 found.put(Configuration.getConceptName(), name);
+                 found.put(
+                   Configuration.getClassificationCol(), classification);
+                 //System.out.println("getProperties...");
+                 getProperties(name, found);
+                 newlyFound.put(name, found);
+                 first = false;
+               }
+
+               else {
+                 //since, multiple synonyms, create new map and add to it
+                 //create new HashMap
+                 HashMap found = new HashMap();
+                 //copy all other values from the above entitiesMap
+                 copyHash(entitiesMap, found);
+
+                 //System.out.println("adding EVS values....");
+                 found.put(Configuration.getConceptCodeCol(), conceptCode);
+                 found.put(Configuration.getConceptName(), name);
+                 found.put(
+                   Configuration.getClassificationCol(), classification);
+
+                 //getProperties
+                 //System.out.println("getProperties...");
+                 getProperties(name, found);
+                 //add this new map to the list
+                  newlyFound.put(name, found);
+               }
+             }
+
+             else // go through loop of individual words
+              {
+               //System.out.println("search individual word when concept code is null");
+               for (int j = 0; j < separateWords.size(); j++) {
+                 name = separateWords.get(j).toString();
+
+                 //System.out.println("separate word: " + name);
+                  if (newlyFound.containsKey(name)){
+                      continue; //loop to next seperate words.
+                  }
+                 conceptCode = getConceptCode(name);
+
+                 if (conceptCode != null) {
+                   HashMap found = new HashMap();
+                   copyHash(entitiesMap, found);
+                   found.put(
+                     Configuration.getConceptCodeCol(), conceptCode);
+                   found.put(Configuration.getConceptName(), name);
+                   found.put(
+                     Configuration.getClassificationCol(), classification);
+                   //System.out.println("calling getProperties...."+ conceptCode);
+                   getProperties(name, found);
+                   newlyFound.put(name, found);
+                 }
+               }
+             }
+           }
+         }
+       }
+     } // end for loop
+      //for testing
+     if (newlyFound==null || newlyFound.isEmpty()){
+         return null;
+     }else{
+        return new ArrayList(newlyFound.values());
+     }
+   }     
+
+
+/*  private void getEVSValues(HashMap entitiesMap) throws Exception {
     //System.out.print(".");
     //System.out.println("getEVSValues....");
     //get uml class and uml entity
@@ -513,7 +627,7 @@ public class EVSImpl extends SubjectClass{
       }
     } // end for loop
   }
-
+*/
   private String[] getConceptCodes(String name) throws Exception {
     //System.out.println("EVSImpl - getConceptCodes...");
     String[] codes = null;
@@ -990,7 +1104,16 @@ public class EVSImpl extends SubjectClass{
     }
     possibleOptions = new ArrayList(optionSet);
     optionSet = null;//garbage collection ready
-  }
+    
+    //testing
+     for (int i=0; i<possibleOptions.size();i++){
+         System.out.println("options["+i+"]=" + possibleOptions.get(i));
+     }
+     for (int i=0; i<separateWords.size();i++){
+         System.out.println("separateWords["+i+"]=" + separateWords.get(i));
+       }     
+    return;
+ }
 
   /////////////////testing////////////////////
   private void testOutput(ArrayList attList) {
