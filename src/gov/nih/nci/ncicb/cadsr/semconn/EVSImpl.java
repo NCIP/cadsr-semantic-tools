@@ -81,7 +81,9 @@ public class EVSImpl extends SubjectClass{
         List ret = getEVSValues(map);
 
         //add this map to the list
-        evsValues.addAll(ret);
+        if (ret!=null && (!ret.isEmpty())){
+            evsValues.addAll(ret);
+        }    
 
         possibleOptions.clear();
 
@@ -96,6 +98,7 @@ public class EVSImpl extends SubjectClass{
 
     catch (Exception e) {
       log.error("Exception in getTaggedValues: " + e.getMessage());
+      e.printStackTrace();
 
       throw new Exception("Exception in getTaggedValues: " + e.getMessage());
     }
@@ -991,6 +994,11 @@ public class EVSImpl extends SubjectClass{
    * @param name
    */
   private void evaluateString(String name) {
+    //remove package name if the name is a class name
+    if (name!=null){
+        int index = name.lastIndexOf(".");
+        name = name.substring(index+1);
+    }    
     Set optionSet = new HashSet();
     optionSet.add(name);
 
