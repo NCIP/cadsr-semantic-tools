@@ -37,6 +37,8 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
+import gov.nih.nci.ncicb.cadsr.semconn.SemanticConnectorException;
+
 import java.io.File;
 
 import org.apache.log4j.Logger;
