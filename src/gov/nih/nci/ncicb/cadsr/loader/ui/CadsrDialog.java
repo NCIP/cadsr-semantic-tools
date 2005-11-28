@@ -67,6 +67,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
   public static final int MODE_PROP = 2;
   public static final int MODE_VD = 3;
   public static final int MODE_DE = 4;
+  public static final int MODE_CD = 5;
   
   private int mode;
   
@@ -88,6 +89,9 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
       break;
     case MODE_DE:
       this.setTitle("Search for Data Element");
+      break;
+    case MODE_CD:
+      this.setTitle("Search for Conceptual Domain");
       break;
     }
 
@@ -278,7 +282,6 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
         DataElement de = DomainObjectFactory.newDataElement();
         DataElementDAO deDAO = DAOAccessor.getDataElementDAO();
         if(selection.equals(LONG_NAME)) {
-          de.setContext(UMLDefaults.getInstance().getContext());
           de.setLongName(text);
         } else if(selection.equals(PUBLIC_ID)) {
           de.setPublicId(text);
@@ -343,7 +346,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
   
   public static void main(String[] args) 
   {
-    CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_OC);
+    CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_CD);
     dialog.setVisible(true);
   }
 }
