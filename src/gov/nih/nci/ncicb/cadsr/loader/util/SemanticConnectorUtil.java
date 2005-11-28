@@ -39,6 +39,8 @@ import org.jaxen.jdom.JDOMXPath;
 
 import org.jdom.input.SAXBuilder;
 
+import gov.nih.nci.ncicb.cadsr.semconn.SemanticConnectorException;
+
 import java.util.*;
 
 public class SemanticConnectorUtil {
