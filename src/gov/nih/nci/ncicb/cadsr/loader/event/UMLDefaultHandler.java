@@ -28,6 +28,8 @@ import org.apache.log4j.Logger;
 import java.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
+import gov.nih.nci.ncicb.cadsr.dao.DataElementDAO;
+
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationError;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
 
@@ -43,6 +45,11 @@ public class UMLDefaultHandler implements UMLHandler {
   private List packageList = new ArrayList();
   
   private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+
+  // keeps track of the mapping between an oc and the DE that set it's public id
+  // key = oc Id / version
+  // Value = the DE that set oc id / version
+  private Map<String, DataElement> ocMapping = new HashMap<String, DataElement>();
   
   public UMLDefaultHandler(ElementsLists elements) {
     this.elements = elements;
@@ -151,14 +158,34 @@ public class UMLDefaultHandler implements UMLHandler {
     logger.debug("Attribute: " + event.getClassName() + "." +
                  event.getName());
 
-    List concepts = createConcepts(event);
 
-    Property prop = DomainObjectFactory.newProperty();
+    DataElement de = DomainObjectFactory.newDataElement();
 
+    // populate if there is valid existing mapping
+    DataElement existingDe = null;
     if(event.getPersistenceId() != null) {
-      prop.setPublicId(event.getPersistenceId());
-      prop.setVersion(event.getPersistenceVersion());
-    }
+      de.setPublicId(event.getPersistenceId());
+      de.setVersion(event.getPersistenceVersion());
+
+      DataElementDAO deDAO = DAOAccessor.getDataElementDAO();
+      List<DataElement> result =  deDAO.find(de);
+
+      if(result.size() == 0) {
+        ValidationItems.getInstance()
+          .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", new String[] 
+            {event.getClassName() + "." + event.getName(),
+             de.getPublicId() + "v" + de.getVersion()}), de));
+        
+        de.setPublicId(null);
+        de.setVersion(null);
+      } else {
+        existingDe = result.get(0);
+      }
+    } 
+
+    List concepts = createConcepts(event);
+    
+    Property prop = DomainObjectFactory.newProperty();
 
     // store concept codes in preferredName
     prop.setPreferredName(ConceptUtil.preferredNameFromConcepts(concepts));
@@ -190,12 +217,35 @@ public class UMLDefaultHandler implements UMLHandler {
       }
     }
 
+    // Verify conflicts
+    if(existingDe != null) {
+      if(oc.getPublicId() != null) {
+        if(!existingDe.getDataElementConcept().getObjectClass().getPublicId().equals(oc.getPublicId()) || !existingDe.getDataElementConcept().getObjectClass().getVersion().equals(oc.getVersion())) {
+          // Oc was already mapped by an existing DE. This DE conflicts with the previous mapping. 
+
+        ValidationItems.getInstance()
+          .addItem(new ValidationError(PropertyAccessor.getProperty("de.conflict", new String[] 
+            {event.getClassName() + "." + event.getName(),
+             ocMapping.get(oc.getPublicId() + "v" + oc.getVersion()).getLongName()}), de));
+          
+
+        }
+      } else {
+        oc.setPublicId(existingDe.getDataElementConcept().getObjectClass().getPublicId());
+        oc.setVersion(existingDe.getDataElementConcept().getObjectClass().getVersion());
+        // Keep track so if there's conflict, we know both ends of the conflict
+        ocMapping.put(oc.getPublicId() + "v" + oc.getVersion(), de);
+      }
+    }
+
     dec.setObjectClass(oc);
 
-    DataElement de = DomainObjectFactory.newDataElement();
-
-    de.setLongName(dec.getLongName() + event.getType());
-//     de.setPreferredDefinition(event.getDescription());
+    if(existingDe != null) {
+      de.setLongName(existingDe.getLongName());
+      de.setContext(existingDe.getContext());
+    } else
+      de.setLongName(dec.getLongName() + event.getType());
+    //     de.setPreferredDefinition(event.getDescription());
 
     logger.debug("DE LONG_NAME: " + de.getLongName());
 
