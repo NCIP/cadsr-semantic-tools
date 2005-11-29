@@ -26,12 +26,12 @@ import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
  *
  */
 public class InitClass implements Runnable {
-//   Object parent;
+  Object parent;
   boolean done = false;
   
-//   InitClass(Object parent) {
-//     this.parent = parent;
-//   }
+  InitClass(Object parent) {
+    this.parent = parent;
+  }
   
   public void run() {
     DAOAccessor p = new DAOAccessor();

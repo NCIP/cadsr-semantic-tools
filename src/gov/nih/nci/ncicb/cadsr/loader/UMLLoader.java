@@ -208,32 +208,6 @@ public class UMLLoader {
 
   }
 
-  /**
-   * <code>UMLLoader</code> starts a separate thread for initializing the environement, while users enter their username and password. 
-   *
-   */
-  class InitClass implements Runnable {
-    Object parent;
-    boolean done = false;
-
-    InitClass(Object parent) {
-      this.parent = parent;
-    }
-    
-    public void run() {
-      DAOAccessor p = new DAOAccessor();
-      synchronized (this) {
-	done = true;
-	notifyAll();
-      }
-    }
-    
-    public boolean isDone() {
-      return done;
-    }
-
-
-  }
 
 }
 

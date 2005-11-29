@@ -63,6 +63,12 @@ public class UMLLoaderGUI
   public UMLLoaderGUI()
   {
 
+    InitClass initClass = new InitClass(this);
+    Thread t = new Thread(initClass);
+    t.setPriority(Thread.MAX_PRIORITY);
+    t.start();
+
+
     System.setProperty("java.security.auth.login.config", Thread.currentThread().getContextClassLoader().getResource("jaas.config").toExternalForm());
 
     Frame f = new Frame();

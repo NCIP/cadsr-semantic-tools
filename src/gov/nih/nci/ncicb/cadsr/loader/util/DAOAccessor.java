@@ -22,6 +22,9 @@ package gov.nih.nci.ncicb.cadsr.loader.util;
 import gov.nih.nci.ncicb.cadsr.spring.ApplicationContextFactory;
 import gov.nih.nci.ncicb.cadsr.dao.*;
 
+import org.apache.log4j.Logger;
+
+
 public class DAOAccessor {
 
   private static AdminComponentDAO adminComponentDAO;
@@ -39,63 +42,65 @@ public class DAOAccessor {
   private static ContextDAO contextDAO;
   private static ConceptualDomainDAO conceptualDomainDAO;
 
+  private static Logger logger = Logger.getLogger(DAOAccessor.class.getName());
+
   static {
     ApplicationContextFactory.init("applicationContext.xml");
 
-    //     logger.debug("Loading DataElementDAO bean");
+    logger.info("Loading DataElementDAO bean");
     dataElementDAO = (DataElementDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("dataElementDAO");
 
-    //     logger.debug("Loading AdminComponentDAO bean");
+    logger.info("Loading AdminComponentDAO bean");
     adminComponentDAO = (AdminComponentDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("adminComponentDAO");
 
-    //     logger.debug("Loading DataElementConceptDAO bean");
+    logger.info("Loading DataElementConceptDAO bean");
     dataElementConceptDAO = (DataElementConceptDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("dataElementConceptDAO");
 
 
-    //     logger.debug("Loading VDDAO bean");
+    logger.info("Loading VDDAO bean");
     valueDomainDAO = (ValueDomainDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("valueDomainDAO");
 
-    //     logger.debug("Loading PropertyDAO bean");
+    logger.info("Loading PropertyDAO bean");
     propertyDAO = (PropertyDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("propertyDAO");
 
-    //     logger.debug("Loading ObjectClassDAO bean");
+    logger.info("Loading ObjectClassDAO bean");
     objectClassDAO = (ObjectClassDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("objectClassDAO");
 
-    //     logger.debug("Loading ObjectClassRelationshipDAO bean");
+    logger.info("Loading ObjectClassRelationshipDAO bean");
     objectClassRelationshipDAO = (ObjectClassRelationshipDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("objectClassRelationshipDAO");
 
-    //     logger.debug("Loading CSDAO bean");
+    logger.info("Loading CSDAO bean");
     classificationSchemeDAO = (ClassificationSchemeDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("classificationSchemeDAO");
 
-    //     logger.debug("Loading CSIDAO bean");
+    logger.info("Loading CSIDAO bean");
     classificationSchemeItemDAO = (ClassificationSchemeItemDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("classificationSchemeItemDAO");
 
-    //     logger.debug("Loading CSIDAO bean");
+    logger.info("Loading CSIDAO bean");
     classSchemeClassSchemeItemDAO = (ClassSchemeClassSchemeItemDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("classSchemeClassSchemeItemDAO");
 
-    //     logger.debug("Loading ConceptDAO bean");
+    logger.info("Loading ConceptDAO bean");
     conceptDAO = (ConceptDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("conceptDAO");
 
-
+    logger.info("Loading ContextDAO bean");
     contextDAO = (ContextDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("contextDAO");
 
-    //     logger.debug("Loading CDDAO bean");
+    logger.info("Loading CDDAO bean");
     conceptualDomainDAO = (ConceptualDomainDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("conceptualDomainDAO");
 
-    //     logger.debug("Loading LoaderDAO bean");
+    logger.info("Loading LoaderDAO bean");
     loaderDAO = (LoaderDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("loaderDAO");
 
