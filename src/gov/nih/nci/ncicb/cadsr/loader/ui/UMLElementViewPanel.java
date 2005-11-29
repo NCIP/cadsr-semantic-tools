@@ -36,16 +36,23 @@ public class UMLElementViewPanel extends JPanel
     = new ArrayList<NavigationListener>();
 
   private ConceptEditorPanel conceptEditorPanel;
+  private DEPanel dePanel;
   private ButtonPanel buttonPanel;
 
+
+
+  private JPanel cardPanel;
   // initialize once the mode in which we're running
 
   public UMLElementViewPanel(UMLNode node) 
   {
   
     conceptEditorPanel = new ConceptEditorPanel(node);
-    buttonPanel = new ButtonPanel(conceptEditorPanel);
+    dePanel = new DEPanel(node);
+    buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);
     conceptEditorPanel.addPropertyChangeListener(buttonPanel);
+    dePanel.addPropertyChangeListener(buttonPanel);
+    cardPanel = new JPanel();
     initUI();
   }
   
@@ -53,16 +60,45 @@ public class UMLElementViewPanel extends JPanel
 
     conceptEditorPanel.initUI();
     
+    cardPanel.setLayout(new CardLayout());
+    cardPanel.add(conceptEditorPanel, "Concept");
+    cardPanel.add(dePanel, "DEPanel");
+    
     setLayout(new BorderLayout());
-    this.add(conceptEditorPanel, BorderLayout.CENTER);
+    this.add(cardPanel, BorderLayout.CENTER);
     this.add(buttonPanel, BorderLayout.SOUTH);
     
+  }
+  
+  public void switchCards(String text) 
+  {
+    CardLayout layout = (CardLayout)cardPanel.getLayout();
+    layout.show(cardPanel, text);
   }
   
   //new 
   public void updateNode(UMLNode node) 
   {
+    // is UMLNode a de?
+    Object o = node.getUserObject();
+    if(o instanceof DataElement) { //if it is, does it have pubID
+      DataElement de = (DataElement)o;
+      if(!StringUtil.isEmpty(de.getPublicId())) 
+      {
+        switchCards("DEPanel");
+        buttonPanel.changeSwitchButton("Switch to Concept");
+      } else 
+      {
+        switchCards("Concept");
+        buttonPanel.changeSwitchButton("Switch to DE");
+      }
+    } else { // not a DE, it's an OC
+      switchCards("Concept");
+      buttonPanel.changeSwitchButton("Switch to DE");
+    }
+  
     conceptEditorPanel.updateNode(node);
+    dePanel.updateNode(node);
   }
   
   //new
@@ -94,6 +130,7 @@ public class UMLElementViewPanel extends JPanel
   public void addPropertyChangeListener(PropertyChangeListener l) {
     conceptEditorPanel.addPropertyChangeListener(l);
     buttonPanel.addPropertyChangeListener(l);
+    dePanel.addPropertyChangeListener(l);
   }
 
 
