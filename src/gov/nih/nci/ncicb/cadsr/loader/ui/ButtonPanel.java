@@ -1,10 +1,13 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
+import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,7 +24,7 @@ import java.util.*;
 public class ButtonPanel extends JPanel implements ActionListener, 
   ItemListener, PropertyChangeListener
 {
-  private JButton addButton, deleteButton, saveButton, acButton;
+  private JButton addButton, deleteButton, saveButton, deButton;
   private JButton previousButton, nextButton;
   private JCheckBox reviewButton;
   
@@ -35,6 +38,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
     = new ArrayList<PropertyChangeListener>();
   
   private ConceptEditorPanel conceptEditorPanel;
+  private UMLElementViewPanel viewPanel;
+  private DEPanel dePanel;
   
   static final String ADD = "ADD",
     DELETE = "DELETE",
@@ -50,15 +55,17 @@ public class ButtonPanel extends JPanel implements ActionListener,
     propChangeListeners.add(l);
   }
   
-  public ButtonPanel(ConceptEditorPanel conceptEditorPanel) 
+  public ButtonPanel(ConceptEditorPanel conceptEditorPanel, 
+    UMLElementViewPanel viewPanel, DEPanel dePanel) 
   {
     this.conceptEditorPanel = conceptEditorPanel;
-  
+    this.viewPanel = viewPanel;
+    this.dePanel = dePanel;
     
     addButton = new JButton("Add");
     deleteButton = new JButton("Remove");
     saveButton = new JButton("Apply");
-    acButton = new JButton("Switch to AC");
+    deButton = new JButton("Switch to DE");
     reviewButton = new JCheckBox("<html>Human<br>Verified</html>");
     previousButton = new JButton("Previous");
     nextButton = new JButton("Next");
@@ -69,14 +76,14 @@ public class ButtonPanel extends JPanel implements ActionListener,
     saveButton.setActionCommand(SAVE);
     previousButton.setActionCommand(PREVIOUS);
     nextButton.setActionCommand(NEXT);
-    acButton.setActionCommand(AC);
+    deButton.setActionCommand(AC);
     addButton.addActionListener(this);
     deleteButton.addActionListener(this);
     saveButton.addActionListener(this);
     reviewButton.addItemListener(this);
     previousButton.addActionListener(this);
     nextButton.addActionListener(this);
-    acButton.addActionListener(this);
+    deButton.addActionListener(this);
 
     //JPanel buttonPanel = new JPanel();
     this.add(addButton);
@@ -85,9 +92,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
     this.add(reviewButton);
     this.add(previousButton);
     this.add(nextButton);
-    this.add(acButton);
-    
-    
+    this.add(deButton);
+
     //this.add(buttonPanel, BorderLayout.SOUTH);
   }
   
@@ -117,6 +123,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     else if(e.getPropertyName().equals(SAVE)) 
     {
       setSaveButtonState((Boolean)e.getNewValue());
+      
         
     }   
     
@@ -134,6 +141,11 @@ public class ButtonPanel extends JPanel implements ActionListener,
   {
     for(NavigationListener l : navigationListeners)
       l.navigate(event);
+  }
+  
+  public void changeSwitchButton(String text) 
+  {
+    deButton.setText(text);
   }
   
   private void initButtonPanel() {  
@@ -154,7 +166,11 @@ public class ButtonPanel extends JPanel implements ActionListener,
     
     if(concepts.length == 0)
       reviewButton.setEnabled(false);
-
+    
+    if(conceptEditorPanel.getNode() instanceof AttributeNode)
+      deButton.setVisible(true);
+    else
+      deButton.setVisible(false);
 
 //    JPanel buttonPanel = new JPanel();
 //    buttonPanel.add(addButton);
@@ -167,6 +183,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
 //    this.add(buttonPanel, BorderLayout.SOUTH);
   }
   
+  
+  
   private void setSaveButtonState(boolean b) {
     saveButton.setEnabled(b);
 
@@ -176,8 +194,11 @@ public class ButtonPanel extends JPanel implements ActionListener,
   
   public void navigate(NavigationEvent evt) {  
     if(saveButton.isEnabled()) {
-      if(JOptionPane.showConfirmDialog(this, "There are unsaved changes in this concept, would you like to apply the changes now?", "Unsaved Changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+      if(JOptionPane.showConfirmDialog(this, "There are unsaved changes in this concept, would you like to apply the changes now?", "Unsaved Changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) 
+      {
         conceptEditorPanel.apply(false);
+        dePanel.apply();
+      }
     }
   }
   
@@ -190,6 +211,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     JButton button = (JButton)evt.getSource();
     if(button.getActionCommand().equals(SAVE)) {
       conceptEditorPanel.applyPressed();
+      dePanel.applyPressed();
       //updateHeaderLabels();
       //apply(false);
     } else if(button.getActionCommand().equals(ADD)) {
@@ -258,7 +280,17 @@ public class ButtonPanel extends JPanel implements ActionListener,
       conceptEditorPanel.setRemove(false);
       //remove = false;
     }
-
+      else if(button.getActionCommand().equals(AC)) {
+        if(deButton.getText().equals("Switch to DE")) {
+        viewPanel.switchCards("DEPanel");
+        deButton.setText("Switch to Concept");
+        }
+      else if (deButton.getText().equals("Switch to Concept")) {
+        viewPanel.switchCards("Concept");
+        deButton.setText("Switch to DE");
+      }
+      
+      }
   }
   
   public void itemStateChanged(ItemEvent e) {
@@ -272,6 +304,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
       event.setReviewed(ItemEvent.SELECTED == e.getStateChange());
 
       fireReviewEvent(event);
+      
       
       //if item is reviewed go to next item in the tree
       if(e.getStateChange() == ItemEvent.SELECTED) 
