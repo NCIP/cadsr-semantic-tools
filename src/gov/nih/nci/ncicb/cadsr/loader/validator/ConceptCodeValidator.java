@@ -59,14 +59,19 @@ public class ConceptCodeValidator implements Validator {
       }    
 
 
-    List<Property> props = (List<Property>)elements.getElements(DomainObjectFactory.newProperty().getClass());
-    if(props != null)
-      for(Property o : props ) 
-        if(StringUtil.isEmpty(o.getPreferredName()))
-          items.addItem(new ValidationError("Attribute: " + o.getLongName() + " has no concept code.", o));
-        else {
-          checkConcepts(o);
+    List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());
+    if(des != null)
+      for(DataElement de : des ) {
+        if(StringUtil.isEmpty(de.getPublicId()) || de.getVersion() == null) {
+          // no existing DE mapping -- check for concepts
+          Property prop = de.getDataElementConcept().getProperty();
+          if(StringUtil.isEmpty(prop.getPreferredName()))
+            items.addItem(new ValidationError("Attribute: " + prop.getLongName() + " has no concept code.", prop));
+          else {
+            checkConcepts(prop);
+          }
         }
+      }
     
 //     List<Concept> concepts = (List<Concept>)elements.getElements(DomainObjectFactory.newConcept().getClass());
 //     if(concepts != null) {
