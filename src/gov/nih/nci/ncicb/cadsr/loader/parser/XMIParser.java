@@ -293,18 +293,20 @@ public class XMIParser implements Parser {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
 
-    tv = UML13Utils.getTaggedValue(clazz, TV_OC_ID);
-    if(tv != null) {
-      event.setPersistenceId(tv.getValue());
-    }
+    // Hold on this for now
 
-    tv = UML13Utils.getTaggedValue(clazz, TV_OC_VERSION);
-    if(tv != null) {
-      try {
-        event.setPersistenceVersion(new Float(tv.getValue()));
-      } catch (NumberFormatException e){
-      } // end of try-catch
-    }
+//     tv = UML13Utils.getTaggedValue(clazz, TV_OC_ID);
+//     if(tv != null) {
+//       event.setPersistenceId(tv.getValue());
+//     }
+
+//     tv = UML13Utils.getTaggedValue(clazz, TV_OC_VERSION);
+//     if(tv != null) {
+//       try {
+//         event.setPersistenceVersion(new Float(tv.getValue()));
+//       } catch (NumberFormatException e){
+//       } // end of try-catch
+//     }
 
 
     if(isInPackageFilter(pName)) {
@@ -477,12 +479,13 @@ public class XMIParser implements Parser {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
 
-    tv = UML13Utils.getTaggedValue(att, TV_PROP_ID);
+    // Is this attribute mapped to an existing CDE?
+    tv = UML13Utils.getTaggedValue(att, TV_DE_ID);
     if(tv != null) {
       event.setPersistenceId(tv.getValue());
     }
 
-    tv = UML13Utils.getTaggedValue(att, TV_PROP_VERSION);
+    tv = UML13Utils.getTaggedValue(att, TV_DE_VERSION);
     if(tv != null) {
       try {
         event.setPersistenceVersion(new Float(tv.getValue()));
