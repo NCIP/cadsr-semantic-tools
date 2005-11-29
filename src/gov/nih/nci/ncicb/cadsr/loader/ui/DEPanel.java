@@ -1,4 +1,8 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
+import gov.nih.nci.ncicb.cadsr.dao.DataElementDAO;
+import gov.nih.nci.ncicb.cadsr.domain.DataElement;
+import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -6,12 +10,16 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import java.util.List;
+import java.util.ArrayList;
 public class DEPanel extends JPanel
 {
 
@@ -26,16 +34,24 @@ public class DEPanel extends JPanel
     deContextNameTitleLabel = new JLabel("Data Element Context"),
     deContextNameValueLabel = new JLabel(),
     vdLongNameTitleLabel = new JLabel("Value Domain Long Name"), vdLongNameValueLabel = new JLabel();
-    
+  
+  DataElement tempDE;
+  UMLNode node;
+
+  private List<PropertyChangeListener> propChangeListeners 
+    = new ArrayList<PropertyChangeListener>();  
 
   private static final String SEARCH = "SEARCH";
   
-  public DEPanel()
+  public DEPanel(UMLNode node)
   {
+    this.node = node;
+  
+
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
 
-    insertInBag(mainPanel, searchDeButton, 0, 0, 2, 1);
+    insertInBag(mainPanel, searchDeButton, 1, 5, 2, 1);
 
 
      insertInBag(mainPanel, deLongNameTitleLabel, 0, 1);
@@ -58,8 +74,12 @@ public class DEPanel extends JPanel
 //     insertInBag(mainPanel, deVersionLabel, 0, 1);
 //     insertInBag(mainPanel, deVersionField, 1, 1);
 //     insertInBag(mainPanel, searchDeButton, 2, 0);
+    JPanel titlePanel = new JPanel();
+    JLabel title = new JLabel("Map to CDE");
+    titlePanel.add(title);
 
     this.add(mainPanel);
+    this.add(titlePanel, BorderLayout.NORTH);
     this.setSize(300, 300);
     
     searchDeButton.setActionCommand(SEARCH);
@@ -70,10 +90,69 @@ public class DEPanel extends JPanel
           if(button.getActionCommand().equals(SEARCH)) {
             CadsrDialog cd = new CadsrDialog(CadsrDialog.MODE_DE);
             cd.setVisible(true);
+            
+            DataElement de = (DataElement)cd.getAdminComponent();
+            tempDE = de;
+            
+            if(de != null){
+              deLongNameValueLabel.setText(de.getLongName());
+              deIdValueLabel.setText(de.getPublicId());
+              deContextNameValueLabel.setText(de.getContext().getName());
+              vdLongNameValueLabel.setText(de.getValueDomain().getLongName());
+            
+              firePropertyChangeEvent(
+                new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
+            }
           }
           
         }
       });
+    
+  }
+  
+  public void updateNode(UMLNode node) 
+  {
+  
+    this.node = node;
+    if((node.getUserObject() instanceof DataElement)) {
+      DataElement de = (DataElement)node.getUserObject();
+    
+    if(de.getPublicId() != null) {
+      deLongNameValueLabel.setText(de.getLongName());
+      deIdValueLabel.setText(de.getPublicId());
+      deContextNameValueLabel.setText(de.getContext().getName());
+      vdLongNameValueLabel.setText(de.getValueDomain().getLongName());
+    }
+    else 
+    {
+      deLongNameValueLabel.setText("");
+      deIdValueLabel.setText("");
+      deContextNameValueLabel.setText("");
+      vdLongNameValueLabel.setText("");
+    }
+    }
+  }
+  
+  public void addPropertyChangeListener(PropertyChangeListener l) {
+    propChangeListeners.add(l);
+  }
+
+  private void firePropertyChangeEvent(PropertyChangeEvent evt) {
+    for(PropertyChangeListener l : propChangeListeners) 
+      l.propertyChange(evt);
+  }
+  
+  public void applyPressed() 
+  {
+    apply();
+  }
+  
+  public void apply() 
+  {
+    ((DataElement)node.getUserObject()).setLongName(tempDE.getLongName());
+    ((DataElement)node.getUserObject()).setPublicId(tempDE.getPublicId());
+    ((DataElement)node.getUserObject()).setContext(tempDE.getContext());
+    ((DataElement)node.getUserObject()).setValueDomain(tempDE.getValueDomain());
     
   }
 
@@ -90,11 +169,11 @@ public class DEPanel extends JPanel
 
   public static void main(String[] args)
   {
-    JFrame frame = new JFrame();
-    DEPanel dePanel = new DEPanel();
-    dePanel.setVisible(true);
-    frame.add(dePanel);
-    frame.setVisible(true);
-    frame.setSize(450, 350);
+//    JFrame frame = new JFrame();
+//    DEPanel dePanel = new DEPanel();
+//    dePanel.setVisible(true);
+//    frame.add(dePanel);
+//    frame.setVisible(true);
+//    frame.setSize(450, 350);
   }
 }
