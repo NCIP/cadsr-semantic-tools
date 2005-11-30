@@ -35,8 +35,8 @@ public class DEPanel extends JPanel
     deContextNameValueLabel = new JLabel(),
     vdLongNameTitleLabel = new JLabel("Value Domain Long Name"), vdLongNameValueLabel = new JLabel();
   
-  DataElement tempDE;
-  UMLNode node;
+  private DataElement tempDE;
+  private UMLNode node;
 
   private List<PropertyChangeListener> propChangeListeners 
     = new ArrayList<PropertyChangeListener>();  
@@ -96,7 +96,7 @@ public class DEPanel extends JPanel
             
             if(de != null){
               deLongNameValueLabel.setText(de.getLongName());
-              deIdValueLabel.setText(de.getPublicId());
+              deIdValueLabel.setText(de.getPublicId() + "v" + de.getVersion());
               deContextNameValueLabel.setText(de.getContext().getName());
               vdLongNameValueLabel.setText(de.getValueDomain().getLongName());
             
