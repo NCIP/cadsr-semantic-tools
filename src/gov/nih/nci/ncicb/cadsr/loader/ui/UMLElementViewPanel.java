@@ -39,13 +39,14 @@ public class UMLElementViewPanel extends JPanel
   private DEPanel dePanel;
   private ButtonPanel buttonPanel;
 
-
+  private UMLNode node;
 
   private JPanel cardPanel;
   // initialize once the mode in which we're running
 
   public UMLElementViewPanel(UMLNode node) 
   {
+    this.node = node;
   
     conceptEditorPanel = new ConceptEditorPanel(node);
     dePanel = new DEPanel(node);
@@ -79,6 +80,8 @@ public class UMLElementViewPanel extends JPanel
   //new 
   public void updateNode(UMLNode node) 
   {
+  
+    this.node = node;
     // is UMLNode a de?
     Object o = node.getUserObject();
     if(o instanceof DataElement) { //if it is, does it have pubID
@@ -99,8 +102,15 @@ public class UMLElementViewPanel extends JPanel
   
     conceptEditorPanel.updateNode(node);
     dePanel.updateNode(node);
+
+    buttonPanel.update();
+    
   }
-  
+
+  public boolean isReviewed() 
+  {
+    return ((ReviewableUMLNode)node).isReviewed();
+  }
   //new
   public void apply(boolean value) 
   {
