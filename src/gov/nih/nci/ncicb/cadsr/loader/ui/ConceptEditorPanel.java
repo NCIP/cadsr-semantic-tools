@@ -104,10 +104,10 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
    return concepts; 
   }
   //new
-  public boolean isReviewed() 
-  {
-    return ((ReviewableUMLNode)node).isReviewed();
-  }
+//  public boolean isReviewed() 
+//  {
+//    return ((ReviewableUMLNode)node).isReviewed();
+//  }
   //new
   public UMLNode getNode() 
   {
