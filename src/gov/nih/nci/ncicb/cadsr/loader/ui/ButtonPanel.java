@@ -15,6 +15,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
@@ -22,7 +23,7 @@ import javax.swing.JPanel;
 import java.util.*;
 
 public class ButtonPanel extends JPanel implements ActionListener, 
-  ItemListener, PropertyChangeListener
+  PropertyChangeListener
 {
   private JButton addButton, deleteButton, saveButton, deButton;
   private JButton previousButton, nextButton;
@@ -70,7 +71,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
     previousButton = new JButton("Previous");
     nextButton = new JButton("Next");
     
-    reviewButton.setSelected(conceptEditorPanel.isReviewed());
+    reviewButton.setSelected(viewPanel.isReviewed());
+    reviewButton.setActionCommand(REVIEW);
     addButton.setActionCommand(ADD);
     deleteButton.setActionCommand(DELETE);
     saveButton.setActionCommand(SAVE);
@@ -80,7 +82,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
     addButton.addActionListener(this);
     deleteButton.addActionListener(this);
     saveButton.addActionListener(this);
-    reviewButton.addItemListener(this);
+//    reviewButton.addItemListener(this);
+    reviewButton.addActionListener(this);
     previousButton.addActionListener(this);
     nextButton.addActionListener(this);
     deButton.addActionListener(this);
@@ -95,6 +98,11 @@ public class ButtonPanel extends JPanel implements ActionListener,
     this.add(deButton);
 
     //this.add(buttonPanel, BorderLayout.SOUTH);
+  }
+  
+  public void update() 
+  {
+    reviewButton.setSelected(viewPanel.isReviewed());
   }
   
   public void addReviewListener(ReviewListener listener) {
@@ -208,7 +216,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
   }
   
     public void actionPerformed(ActionEvent evt) {
-    JButton button = (JButton)evt.getSource();
+    AbstractButton button = (AbstractButton)evt.getSource();
     if(button.getActionCommand().equals(SAVE)) {
       conceptEditorPanel.applyPressed();
       dePanel.applyPressed();
@@ -216,59 +224,9 @@ public class ButtonPanel extends JPanel implements ActionListener,
       //apply(false);
     } else if(button.getActionCommand().equals(ADD)) {
         conceptEditorPanel.addPressed();
-    
-        
-//      Concept[] newConcepts = new Concept[concepts.length + 1];
-//      for(int i = 0; i<concepts.length; i++) {
-//        newConcepts[i] = concepts[i];
-//      }
-//      Concept concept = DomainObjectFactory.newConcept();
-//      concept.setPreferredName("");
-//      concept.setLongName("");
-//      concept.setDefinitionSource("");
-//      concept.setPreferredDefinition("");
-//      newConcepts[newConcepts.length - 1] = concept;
-//      concepts = newConcepts;
-//
-//      this.remove(scrollPane);
-//      initViewPanel();
-//      this.updateUI();
-//
-//      if(concepts.length > 1)
-//        deleteButton.setEnabled(true);
-//
-//      if(areAllFieldEntered()) {
-//        setSaveButtonState(true);
-//      } else {
-//        setSaveButtonState(false);
-//      }
-//      addButton.setEnabled(false);
-//      reviewButton.setEnabled(false);
+ 
     } else if(button.getActionCommand().equals(DELETE)) {
         conceptEditorPanel.removePressed();
-//      Concept[] newConcepts = new Concept[concepts.length - 1];
-//      for(int i = 0; i<newConcepts.length; i++) {
-//        newConcepts[i] = concepts[i];
-//      }
-//      concepts = newConcepts;
-//      
-//      _this.remove(scrollPane);
-//      initViewPanel();
-//      
-//      if(areAllFieldEntered()) {
-//        setSaveButtonState(true);
-//      } else {
-//        setSaveButtonState(false);
-//      }
-//      addButton.setEnabled(false);
-//      reviewButton.setEnabled(false);
-//      
-//      if(concepts.length < 2)
-//        deleteButton.setEnabled(false);
-//      this.updateUI();
-//
-//      remove = true;
-
     } else if(button.getActionCommand().equals(PREVIOUS)) {
       NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_PREVIOUS);
       fireNavigationEvent(event);
@@ -279,35 +237,25 @@ public class ButtonPanel extends JPanel implements ActionListener,
       fireNavigationEvent(event);
       conceptEditorPanel.setRemove(false);
       //remove = false;
-    }
-      else if(button.getActionCommand().equals(AC)) {
+    } else if(button.getActionCommand().equals(AC)) {
         if(deButton.getText().equals("Switch to DE")) {
         viewPanel.switchCards("DEPanel");
         deButton.setText("Switch to Concept");
-        }
-      else if (deButton.getText().equals("Switch to Concept")) {
-        viewPanel.switchCards("Concept");
-        deButton.setText("Switch to DE");
-      }
-      
-      }
-  }
-  
-  public void itemStateChanged(ItemEvent e) {
-    if(e.getStateChange() == ItemEvent.SELECTED
-       || e.getStateChange() == ItemEvent.DESELECTED
-       ) {
+        } else if (deButton.getText().equals("Switch to Concept")) {
+      viewPanel.switchCards("Concept");
+      deButton.setText("Switch to DE");
+        } 
+    } else if(button.getActionCommand().equals(REVIEW)) 
+    {
+
       ReviewEvent event = new ReviewEvent();
-      event.setUserObject(conceptEditorPanel.getNode());
-      //event.setUserObject(node);
-      
-      event.setReviewed(ItemEvent.SELECTED == e.getStateChange());
+      event.setUserObject(conceptEditorPanel.getNode()); 
+      event.setReviewed(reviewButton.isSelected());
 
       fireReviewEvent(event);
       
-      
       //if item is reviewed go to next item in the tree
-      if(e.getStateChange() == ItemEvent.SELECTED) 
+      if(reviewButton.isSelected()) 
       {
         NavigationEvent goToNext = new NavigationEvent(NavigationEvent.NAVIGATE_NEXT);
         fireNavigationEvent(goToNext);
@@ -315,6 +263,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
         
     }
   }
+ 
   
   private void fireReviewEvent(ReviewEvent event) {
     for(ReviewListener l : reviewListeners)
