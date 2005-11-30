@@ -595,6 +595,7 @@ public final class ModelAnnotator extends SubjectClass{
         
         taggedValuesMap = (HashMap) evsValues.get(i);
         UMLClass = (String) taggedValuesMap.get(Configuration.getUMLClassCol());
+
         UMLEntity =
           (String) taggedValuesMap.get(Configuration.getUMLEntityCol());
         if (UMLClass.equals(UMLEntity)) {
@@ -692,15 +693,16 @@ public final class ModelAnnotator extends SubjectClass{
       String exp =
         "//*[local-name()='TaggedValue' and @modelElement='" + xmiid + "']";
 
-      List tvs = (List) (new JDOMXPath(exp)).selectNodes(rootElement);
+      List tvs = null;
+      Object obj = (new JDOMXPath(exp)).selectNodes(rootElement);
+      if (obj != null){
+          tvs = (List)obj;
+      }
 
       //need to verify...
       if (tvs != null && tvs.size()>0){
-          Element tv = (Element) tvs.get(tvs.size() - 1);
-    
-          if (tv != null) {
-            id = (String) tv.getAttributeValue("xmi.id") + "_tag";
-          }
+          Element tv = (Element) tvs.get(tvs.size() - 1);    
+          id = (String) tv.getAttributeValue("xmi.id") + "_tag";
       }
       else
       {

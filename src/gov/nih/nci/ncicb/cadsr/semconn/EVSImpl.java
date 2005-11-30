@@ -80,10 +80,13 @@ public class EVSImpl extends SubjectClass{
         //getEVSValues(name, map);
         List ret = getEVSValues(map);
 
-        //add this map to the list
+        //add the return result to the list. If no result returned, must add
+        //the original map.
         if (ret!=null && (!ret.isEmpty())){
             evsValues.addAll(ret);
-        }    
+        }else{
+            evsValues.add(map);   
+        }
 
         possibleOptions.clear();
 
