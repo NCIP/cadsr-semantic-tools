@@ -21,7 +21,7 @@ package gov.nih.nci.ncicb.cadsr.loader.parser;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.*;
-import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.NewConceptEvent;
 
@@ -176,16 +176,20 @@ public class XMIWriter implements ElementWriter {
       {
         String exp = "//*[local-name()='TaggedValue' and @modelElement='"+ xmiid +"']";
         List tvs = (List)(new JDOMXPath(exp)).selectNodes(modelElement);
-        Element tv = (Element)tvs.get(tvs.size()-1);
-        
-        if(tv != null)
-          id = (String)tv.getAttributeValue("xmi.id")+"_tag";
-        else
+
+        if(tvs.size() > 0) {
+          Element tv = (Element)tvs.get(tvs.size()-1);
+          
+          if(tv != null)
+            id = (String)tv.getAttributeValue("xmi.id")+"_tag";
+          else
+            id = xmiid+"_tag";
+        } else
           id = xmiid+"_tag";
-        
       }
     catch(Exception e)
       {
+        e.printStackTrace();
         throw new RuntimeException("Exception while creating getNewId"+e.getMessage());
       }
     
@@ -209,13 +213,13 @@ public class XMIWriter implements ElementWriter {
 
   private void updateChangedElements() throws ParserException {
     try {
-      List<ObjectClass> ocs = (List<ObjectClass>)cadsrObjects.getElements(DomainObjectFactory.newObjectClass().getClass());
-      List<DataElementConcept> decs = (List<DataElementConcept>) cadsrObjects.getElements(DomainObjectFactory.newDataElementConcept().getClass());
+      List<ObjectClass> ocs = cadsrObjects.getElements(DomainObjectFactory.newObjectClass());
+      List<DataElement> des = cadsrObjects.getElements(DomainObjectFactory.newDataElement());
       
       for(ObjectClass oc : ocs) {
         Element classElement = elements.get(oc.getLongName());
         boolean changed = changeTracker.get(oc.getLongName());
-
+        
         if(changed) {
           String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'ObjectClass') or starts-with(@tag,'ObjectQualifier') )and @modelElement='"
             + classElement.getAttributeValue("xmi.id")
@@ -235,28 +239,46 @@ public class XMIWriter implements ElementWriter {
         }
         
       }
-
-    for(DataElementConcept dec : decs) {
-      String fullPropName = dec.getObjectClass().getLongName() + "." + dec.getProperty().getLongName();
-      Element attributeElement = elements.get(fullPropName);
-
-      boolean changed = changeTracker.get(fullPropName);
-      if(changed) {
-        String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'Property') or starts-with(@tag,'PropertyQualifier') )and @modelElement='"
-          + attributeElement.getAttributeValue("xmi.id")
-          + "']";
+      
+      for(DataElement de : des) {
+        DataElementConcept dec = de.getDataElementConcept();
+        String fullPropName = dec.getObjectClass().getLongName() + "." + dec.getProperty().getLongName();
+        Element attributeElement = elements.get(fullPropName);
         
-        JDOMXPath path = new JDOMXPath(xpath);
-        List<Element> conceptTvs = path.selectNodes(modelElement);
+        boolean changed = changeTracker.get(fullPropName);
+        if(changed) {
+          String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'Property') or starts-with(@tag,'PropertyQualifier') )and @modelElement='"
+            + attributeElement.getAttributeValue("xmi.id")
+            + "']";
+          
+          JDOMXPath path = new JDOMXPath(xpath);
+          List<Element> conceptTvs = path.selectNodes(modelElement);
           // drop all current concept tagged values
           for(Element tvElt : conceptTvs) {
             tvElt.getParentElement().removeContent(tvElt);
           }
           
-          
           String [] conceptCodes = dec.getProperty().getPreferredName().split(":");
-          
           addConceptTvs(attributeElement, conceptCodes, XMIParser.TV_TYPE_PROPERTY);
+
+          // Map to Existing DE
+          if(!StringUtil.isEmpty(de.getPublicId()) && de.getVersion() != null) {
+            addTaggedValue
+              (XMIParser.TV_DE_ID,
+               de.getPublicId(),
+               getNewId(attributeElement.getAttributeValue("xmi.id")),
+               attributeElement.getAttributeValue("xmi.id"),
+               attributeElement.getNamespace());
+
+            addTaggedValue
+              (XMIParser.TV_DE_VERSION,
+               de.getVersion().toString(),
+               getNewId(attributeElement.getAttributeValue("xmi.id")),
+               attributeElement.getAttributeValue("xmi.id"),
+               attributeElement.getNamespace());
+
+          }
+
         }
     }
     } catch (JaxenException e){
@@ -282,6 +304,8 @@ public class XMIWriter implements ElementWriter {
   private void addConceptTv(Element elt, String conceptCode, String type, String pre, int n) {
 
     Concept con = LookupUtil.lookupConcept(conceptCode);
+    if(con == null)
+      return;
 
     String tvName = type + pre + XMIParser.TV_CONCEPT_CODE + ((n>0)?""+n:"");
 

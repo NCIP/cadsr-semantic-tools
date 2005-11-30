@@ -217,9 +217,10 @@ public class UMLDefaultHandler implements UMLHandler {
       }
     }
 
-    // Verify conflicts
     if(existingDe != null) {
       if(oc.getPublicId() != null) {
+        // Verify conflicts
+
         if(!existingDe.getDataElementConcept().getObjectClass().getPublicId().equals(oc.getPublicId()) || !existingDe.getDataElementConcept().getObjectClass().getVersion().equals(oc.getVersion())) {
           // Oc was already mapped by an existing DE. This DE conflicts with the previous mapping. 
 
@@ -236,6 +237,11 @@ public class UMLDefaultHandler implements UMLHandler {
         // Keep track so if there's conflict, we know both ends of the conflict
         ocMapping.put(oc.getPublicId() + "v" + oc.getVersion(), de);
       }
+
+      prop.setPublicId(existingDe.getDataElementConcept().getProperty().getPublicId());
+      prop.setVersion(existingDe.getDataElementConcept().getProperty().getVersion());
+      
+
     }
 
     dec.setObjectClass(oc);

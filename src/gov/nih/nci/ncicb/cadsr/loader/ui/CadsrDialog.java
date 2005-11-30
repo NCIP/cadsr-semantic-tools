@@ -4,6 +4,7 @@ import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -48,7 +49,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
     NEXT = "NEXT",
     CLOSE = "CLOSE";
     
-  private java.util.List resultSet = new ArrayList();
+  private java.util.List<AdminComponent> resultSet = new ArrayList<AdminComponent>();
 
   private String[] columnNames = {
     "LongName", "Preferred Name", "Public Id", "Version", 
@@ -71,11 +72,11 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
   
   private int mode;
   
-  public CadsrDialog(int mode)
+  public CadsrDialog(int runMode)
   {
     super((JFrame)null, true);
     
-    this.mode = mode;
+    this.mode = runMode;
 
     switch (mode) {
     case MODE_OC:
@@ -116,7 +117,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
           if(row >= resultSet.size())
             return "";
 
-          AdminComponent res = (AdminComponent)resultSet.get(row);
+          AdminComponent res = resultSet.get(row);
           
           String s = "";
           switch (col) {
@@ -175,7 +176,19 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
           if(evt.getClickCount() == 2) {
             int row = resultTable.getSelectedRow();
             if(row > -1) {
-              choiceAdminComponent = ((AdminComponent)resultSet.get(pageIndex * PAGE_SIZE + row));
+              choiceAdminComponent = (resultSet.get(pageIndex * PAGE_SIZE + row));
+              if(mode == MODE_DE) {
+                DataElement de = (DataElement)choiceAdminComponent;
+                // is this DE valid?
+                // i.e does it have an Object Class and Property?
+                // if not, throw error message
+                if(de.getDataElementConcept().getObjectClass() == null || de.getDataElementConcept().getProperty() == null) {
+                  JOptionPane.showMessageDialog
+                    (null, PropertyAccessor.getProperty("de.invalid"), "Invalid Selection", JOptionPane.ERROR_MESSAGE);
+                  return;
+                }
+              }
+              
               _this.dispose();
             }
           }
@@ -250,8 +263,6 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
       
       String selection = (String) searchSourceCombo.getSelectedItem();
       String text = searchField.getText();
-
-//       CadsrModule module = new CadsrModule();
 
       resultSet = new ArrayList();
       

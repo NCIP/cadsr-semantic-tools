@@ -43,37 +43,28 @@ public class DEPanel extends JPanel
 
   private static final String SEARCH = "SEARCH";
   
-  public DEPanel(UMLNode node)
-  {
+  public DEPanel(UMLNode node)  {
     this.node = node;
-  
-
+    
+    
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
-
+    
     insertInBag(mainPanel, searchDeButton, 1, 5, 2, 1);
+    
+    
+    insertInBag(mainPanel, deLongNameTitleLabel, 0, 1);
+    insertInBag(mainPanel, deLongNameValueLabel, 1, 1);
 
+    insertInBag(mainPanel, deIdTitleLabel, 0, 2);
+    insertInBag(mainPanel, deIdValueLabel, 1, 2);
 
-     insertInBag(mainPanel, deLongNameTitleLabel, 0, 1);
-     insertInBag(mainPanel, deLongNameValueLabel, 1, 1);
+    insertInBag(mainPanel, deContextNameTitleLabel, 0, 3);
+    insertInBag(mainPanel, deContextNameValueLabel, 1, 3);
 
-     insertInBag(mainPanel, deIdTitleLabel, 0, 2);
-     insertInBag(mainPanel, deIdValueLabel, 1, 2);
+    insertInBag(mainPanel, vdLongNameTitleLabel, 0, 4);
+    insertInBag(mainPanel, vdLongNameValueLabel, 1, 4);
 
-//      insertInBag(mainPanel, deVersionTitleLabel, 0, 0);
-//      insertInBag(mainPanel, deVersionValueLabel, 1, 0);
-
-     insertInBag(mainPanel, deContextNameTitleLabel, 0, 3);
-     insertInBag(mainPanel, deContextNameValueLabel, 1, 3);
-
-     insertInBag(mainPanel, vdLongNameTitleLabel, 0, 4);
-     insertInBag(mainPanel, vdLongNameValueLabel, 1, 4);
-
-
-//     insertInBag(mainPanel, deIDField, 1, 0);
-//     insertInBag(mainPanel, deVersionLabel, 0, 1);
-//     insertInBag(mainPanel, deVersionField, 1, 1);
-//     insertInBag(mainPanel, searchDeButton, 2, 0);
     JPanel titlePanel = new JPanel();
     JLabel title = new JLabel("Map to CDE");
     titlePanel.add(title);
@@ -91,14 +82,14 @@ public class DEPanel extends JPanel
             CadsrDialog cd = new CadsrDialog(CadsrDialog.MODE_DE);
             cd.setVisible(true);
             
-            DataElement de = (DataElement)cd.getAdminComponent();
-            tempDE = de;
+            tempDE = (DataElement)cd.getAdminComponent();
             
-            if(de != null){
-              deLongNameValueLabel.setText(de.getLongName());
-              deIdValueLabel.setText(de.getPublicId() + "v" + de.getVersion());
-              deContextNameValueLabel.setText(de.getContext().getName());
-              vdLongNameValueLabel.setText(de.getValueDomain().getLongName());
+            if(tempDE != null){
+
+              deLongNameValueLabel.setText(tempDE.getLongName());
+              deIdValueLabel.setText(tempDE.getPublicId() + "v" + tempDE.getVersion());
+              deContextNameValueLabel.setText(tempDE.getContext().getName());
+              vdLongNameValueLabel.setText(tempDE.getValueDomain().getLongName());
             
               firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
@@ -151,6 +142,7 @@ public class DEPanel extends JPanel
   {
     ((DataElement)node.getUserObject()).setLongName(tempDE.getLongName());
     ((DataElement)node.getUserObject()).setPublicId(tempDE.getPublicId());
+    ((DataElement)node.getUserObject()).setVersion(tempDE.getVersion());
     ((DataElement)node.getUserObject()).setContext(tempDE.getContext());
     ((DataElement)node.getUserObject()).setValueDomain(tempDE.getValueDomain());
     

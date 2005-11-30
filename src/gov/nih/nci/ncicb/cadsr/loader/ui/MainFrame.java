@@ -51,6 +51,8 @@ import java.util.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.apache.log4j.Logger;
+
 
 /**
  * The main Frame containing other frames
@@ -110,6 +112,9 @@ public class MainFrame extends JFrame
   private RunMode runMode = null;
 
   private String saveFilename = "";
+
+  private static Logger logger = Logger.getLogger(MainFrame.class);
+
 
   public MainFrame()
   {
@@ -272,6 +277,8 @@ public class MainFrame extends JFrame
         } catch (ParserException e){
           JOptionPane.showMessageDialog(_this, "There was an error saving your File. Please contact support.", "Error Saving File", JOptionPane.ERROR_MESSAGE);
           infoLabel.setText("Save Failed!!");
+          logger.error(e);
+          e.printStackTrace();
         } // end of try-catch
       }
     });
