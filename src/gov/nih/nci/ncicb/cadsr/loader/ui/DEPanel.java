@@ -3,6 +3,8 @@ import gov.nih.nci.ncicb.cadsr.dao.DataElementDAO;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -17,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JOptionPane;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -29,14 +32,14 @@ public class DEPanel extends JPanel
     deLongNameValueLabel = new JLabel(),
     deIdTitleLabel = new JLabel("Public ID / Version"),
     deIdValueLabel = new JLabel(),
-//     deVersionTitleLabel = new JLabel("Data Element Version"),
-//     deVersionValueLabel = new JLabel(),
     deContextNameTitleLabel = new JLabel("Data Element Context"),
     deContextNameValueLabel = new JLabel(),
     vdLongNameTitleLabel = new JLabel("Value Domain Long Name"), vdLongNameValueLabel = new JLabel();
   
-  private DataElement tempDE;
+  private DataElement tempDE, de;
   private UMLNode node;
+
+  private DataElement nodeDe;
 
   private List<PropertyChangeListener> propChangeListeners 
     = new ArrayList<PropertyChangeListener>();  
@@ -45,7 +48,9 @@ public class DEPanel extends JPanel
   
   public DEPanel(UMLNode node)  {
     this.node = node;
-    
+
+    if((node.getUserObject() instanceof DataElement))
+      de = (DataElement)node.getUserObject();
     
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
@@ -83,8 +88,16 @@ public class DEPanel extends JPanel
             cd.setVisible(true);
             
             tempDE = (DataElement)cd.getAdminComponent();
-            
+
             if(tempDE != null){
+              // Check for conflict
+              DataElement confDe = DEMappingUtil.checkConflict(de ,tempDE);
+              if(confDe != null) {
+                JOptionPane.showMessageDialog
+                  (null, PropertyAccessor.getProperty("de.conflict", new String[] {de.getDataElementConcept().getProperty().getLongName(), confDe.getDataElementConcept().getProperty().getLongName()}), "Conflict", JOptionPane.ERROR_MESSAGE);
+                return;
+              }
+
 
               deLongNameValueLabel.setText(tempDE.getLongName());
               deIdValueLabel.setText(tempDE.getPublicId() + "v" + tempDE.getVersion());
@@ -106,7 +119,7 @@ public class DEPanel extends JPanel
   
     this.node = node;
     if((node.getUserObject() instanceof DataElement)) {
-      DataElement de = (DataElement)node.getUserObject();
+      de = (DataElement)node.getUserObject();
     
     if(de.getPublicId() != null) {
       deLongNameValueLabel.setText(de.getLongName());
@@ -140,12 +153,16 @@ public class DEPanel extends JPanel
   
   public void apply() 
   {
-    ((DataElement)node.getUserObject()).setLongName(tempDE.getLongName());
-    ((DataElement)node.getUserObject()).setPublicId(tempDE.getPublicId());
-    ((DataElement)node.getUserObject()).setVersion(tempDE.getVersion());
-    ((DataElement)node.getUserObject()).setContext(tempDE.getContext());
-    ((DataElement)node.getUserObject()).setValueDomain(tempDE.getValueDomain());
+    de.setLongName(tempDE.getLongName());
+    de.setPublicId(tempDE.getPublicId());
+    de.setVersion(tempDE.getVersion());
+    de.setContext(tempDE.getContext());
+    de.setValueDomain(tempDE.getValueDomain());
+
+    de.getDataElementConcept().getObjectClass().setPublicId(tempDE.getDataElementConcept().getObjectClass().getPublicId());
+    de.getDataElementConcept().getObjectClass().setVersion(tempDE.getDataElementConcept().getObjectClass().getVersion());
     
+
   }
 
   private void insertInBag(JPanel bagComp, Component comp, int x, int y) {

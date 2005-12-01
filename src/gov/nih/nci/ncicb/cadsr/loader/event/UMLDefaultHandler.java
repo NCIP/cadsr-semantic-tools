@@ -203,20 +203,18 @@ public class UMLDefaultHandler implements UMLHandler {
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
     dec.setLongName(className + ":" + propName);
     dec.setProperty(prop);
-
+    
     logger.debug("DEC LONG_NAME: " + dec.getLongName());
-
+    
     ObjectClass oc = DomainObjectFactory.newObjectClass();
-    List ocs = elements.getElements(oc.getClass());
-
-    for (int i = 0; i < ocs.size(); i++) {
-      ObjectClass o = (ObjectClass) ocs.get(i);
-
+    List<ObjectClass> ocs = elements.getElements(oc);
+    
+    for (ObjectClass o : ocs) {
       if (o.getLongName().equals(event.getClassName())) {
         oc = o;
       }
     }
-
+    
     if(existingDe != null) {
       if(oc.getPublicId() != null) {
         // Verify conflicts
