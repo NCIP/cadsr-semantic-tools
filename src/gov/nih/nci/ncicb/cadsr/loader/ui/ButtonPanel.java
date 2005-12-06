@@ -6,6 +6,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import java.awt.BorderLayout;
@@ -25,7 +26,7 @@ import java.util.*;
 public class ButtonPanel extends JPanel implements ActionListener, 
   PropertyChangeListener
 {
-  private JButton addButton, deleteButton, saveButton, deButton;
+  private JButton addButton, deleteButton, saveButton, deButton, ocButton;
   private JButton previousButton, nextButton;
   private JCheckBox reviewButton;
   
@@ -50,6 +51,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
     AC = "AC",
     REVIEW = "REVIEW",
     SETUP = "SETUP",
+    SWITCH = "SWITCH",
+    OC = "OC",
     DELETEBUTTON = "DELETEBUTTON";
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
@@ -67,6 +70,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     deleteButton = new JButton("Remove");
     saveButton = new JButton("Apply");
     deButton = new JButton("Switch to DE");
+    ocButton = new JButton("Switch to OC");
     reviewButton = new JCheckBox("<html>Human<br>Verified</html>");
     previousButton = new JButton("Previous");
     nextButton = new JButton("Next");
@@ -96,6 +100,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     this.add(previousButton);
     this.add(nextButton);
     this.add(deButton);
+    this.add(ocButton);
 
     //this.add(buttonPanel, BorderLayout.SOUTH);
   }
@@ -143,6 +148,10 @@ public class ButtonPanel extends JPanel implements ActionListener,
     {
       initButtonPanel();
     }
+    else if (e.getPropertyName().equals(SWITCH)) 
+    {
+      deButton.setEnabled((Boolean)e.getNewValue());
+    }
   }
   
   private void fireNavigationEvent(NavigationEvent event) 
@@ -179,6 +188,11 @@ public class ButtonPanel extends JPanel implements ActionListener,
       deButton.setVisible(true);
     else
       deButton.setVisible(false);
+    
+    if(conceptEditorPanel.getNode() instanceof ClassNode)
+      ocButton.setVisible(true);
+    else
+      ocButton.setVisible(false);
 
 //    JPanel buttonPanel = new JPanel();
 //    buttonPanel.add(addButton);
