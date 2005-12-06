@@ -27,6 +27,7 @@ public class DEPanel extends JPanel
 {
 
   private JButton searchDeButton = new JButton("Search Data Element");
+  private JButton clearButton = new JButton("Clear");
 
   private JLabel deLongNameTitleLabel = new JLabel("Data Element Long Name"),
     deLongNameValueLabel = new JLabel(),
@@ -44,7 +45,7 @@ public class DEPanel extends JPanel
   private List<PropertyChangeListener> propChangeListeners 
     = new ArrayList<PropertyChangeListener>();  
 
-  private static final String SEARCH = "SEARCH";
+  private static final String SEARCH = "SEARCH", CLEAR = "CLEAR";
   
   public DEPanel(UMLNode node)  {
     this.node = node;
@@ -55,7 +56,8 @@ public class DEPanel extends JPanel
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
     
-    insertInBag(mainPanel, searchDeButton, 1, 5, 2, 1);
+    insertInBag(mainPanel, clearButton, 0, 5, 2 ,1);
+    insertInBag(mainPanel, searchDeButton, 1, 5);
     
     
     insertInBag(mainPanel, deLongNameTitleLabel, 0, 1);
@@ -79,6 +81,7 @@ public class DEPanel extends JPanel
     this.setSize(300, 300);
     
     searchDeButton.setActionCommand(SEARCH);
+    clearButton.setActionCommand(CLEAR);
     
     searchDeButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
@@ -100,10 +103,10 @@ public class DEPanel extends JPanel
 
 
               deLongNameValueLabel.setText(tempDE.getLongName());
-              deIdValueLabel.setText(tempDE.getPublicId() + "v" + tempDE.getVersion());
+              deIdValueLabel.setText(tempDE.getPublicId() + " v" + tempDE.getVersion());
               deContextNameValueLabel.setText(tempDE.getContext().getName());
               vdLongNameValueLabel.setText(tempDE.getValueDomain().getLongName());
-            
+                           
               firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
             }
@@ -111,9 +114,26 @@ public class DEPanel extends JPanel
           
         }
       });
-    
+      
+      clearButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent event) {
+          JButton button = (JButton)event.getSource();
+          if(button.getActionCommand().equals(CLEAR)) {
+            if(de.getPublicId() != null) {
+              de.setPublicId(null);              
+              deLongNameValueLabel.setText("");
+              deIdValueLabel.setText("");
+              deContextNameValueLabel.setText("");
+              vdLongNameValueLabel.setText("");
+              
+              firePropertyChangeEvent(
+                new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, true));
+              
+            }
+      }
   }
-  
+      });
+}
   public void updateNode(UMLNode node) 
   {
   
@@ -123,7 +143,7 @@ public class DEPanel extends JPanel
     
     if(de.getPublicId() != null) {
       deLongNameValueLabel.setText(de.getLongName());
-      deIdValueLabel.setText(de.getPublicId());
+      deIdValueLabel.setText(de.getPublicId() + " v" + de.getVersion());
       deContextNameValueLabel.setText(de.getContext().getName());
       vdLongNameValueLabel.setText(de.getValueDomain().getLongName());
     }
@@ -149,6 +169,9 @@ public class DEPanel extends JPanel
   public void applyPressed() 
   {
     apply();
+    firePropertyChangeEvent(
+      new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
+      
   }
   
   public void apply() 
@@ -176,13 +199,13 @@ public class DEPanel extends JPanel
     bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
 
-  public static void main(String[] args)
-  {
-//    JFrame frame = new JFrame();
-//    DEPanel dePanel = new DEPanel();
-//    dePanel.setVisible(true);
-//    frame.add(dePanel);
-//    frame.setVisible(true);
-//    frame.setSize(450, 350);
-  }
+//  public static void main(String[] args)
+//  {
+////    JFrame frame = new JFrame();
+////    DEPanel dePanel = new DEPanel();
+////    dePanel.setVisible(true);
+////    frame.add(dePanel);
+////    frame.setVisible(true);
+////    frame.setSize(450, 350);
+//  }
 }
