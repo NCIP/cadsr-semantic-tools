@@ -55,6 +55,7 @@ public class UMLElementViewPanel extends JPanel
     dePanel.addPropertyChangeListener(buttonPanel);
     cardPanel = new JPanel();
     initUI();
+    updateNode(node);
   }
   
   private void initUI() {
