@@ -63,6 +63,7 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
     orderChanged = false;
     
   private static EvsDialog evsDialog;
+  private VDPanel vdPanel;
     
   private static boolean editable = false;
   static {
@@ -76,10 +77,12 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
   {
     this.node = node;
     initConcepts();
+    vdPanel = new VDPanel(node);
   }
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
     propChangeListeners.add(l);
+    vdPanel.addPropertyChangeListener(l);
   }
 
   private void firePropertyChangeEvent(PropertyChangeEvent evt) {
@@ -92,6 +95,7 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
     this.node = node;
     initConcepts();
     updateConcepts(concepts);
+    vdPanel.updateNode(node);
   }
   
   private void initConcepts() 
@@ -357,7 +361,7 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
         });
       
     }
-    
+    insertInBag(gridPanel, vdPanel, 0, concepts.length + 2);
     updateHeaderLabels();
     
     if(prefs.getUmlDescriptionOrder().equals("last"))
@@ -429,7 +433,8 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
   public void applyPressed() 
   {
     updateHeaderLabels();
-    apply(false);      
+    apply(false);
+    //vdPanel.applyPressed();
   }
   
   public void addPressed() 
