@@ -299,6 +299,16 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
         }
         resultSet.addAll(deDAO.find(de, 20));       
         break;
+      case MODE_VD:
+        ValueDomain vd = DomainObjectFactory.newValueDomain();
+        ValueDomainDAO vdDAO = DAOAccessor.getValueDomainDAO();
+        if(selection.equals(LONG_NAME)) {
+          vd.setLongName(text);
+        } else if(selection.equals(PUBLIC_ID)) {
+          vd.setPublicId(text);
+        }
+        resultSet.addAll(vdDAO.find(vd));       
+
       }
       
       _this.setCursor(Cursor.getDefaultCursor());
@@ -357,7 +367,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
   
   public static void main(String[] args) 
   {
-    CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_CD);
+    CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_VD);
     dialog.setVisible(true);
   }
 }
