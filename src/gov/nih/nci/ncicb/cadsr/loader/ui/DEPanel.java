@@ -103,7 +103,7 @@ public class DEPanel extends JPanel
 
 
               deLongNameValueLabel.setText(tempDE.getLongName());
-              deIdValueLabel.setText(tempDE.getPublicId() + " v" + tempDE.getVersion());
+              deIdValueLabel.setText(ConventionUtil.publicIdVersion(tempDE));
               deContextNameValueLabel.setText(tempDE.getContext().getName());
               vdLongNameValueLabel.setText(tempDE.getValueDomain().getLongName());
                            
