@@ -42,6 +42,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
   private ConceptEditorPanel conceptEditorPanel;
   private UMLElementViewPanel viewPanel;
   private DEPanel dePanel;
+  private OCPanel ocPanel;
   
   static final String ADD = "ADD",
     DELETE = "DELETE",
@@ -60,11 +61,12 @@ public class ButtonPanel extends JPanel implements ActionListener,
   }
   
   public ButtonPanel(ConceptEditorPanel conceptEditorPanel, 
-    UMLElementViewPanel viewPanel, DEPanel dePanel) 
+    UMLElementViewPanel viewPanel, DEPanel dePanel, OCPanel ocPanel) 
   {
     this.conceptEditorPanel = conceptEditorPanel;
     this.viewPanel = viewPanel;
     this.dePanel = dePanel;
+    this.ocPanel = ocPanel;
     
     addButton = new JButton("Add");
     deleteButton = new JButton("Remove");
@@ -83,6 +85,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     previousButton.setActionCommand(PREVIOUS);
     nextButton.setActionCommand(NEXT);
     deButton.setActionCommand(AC);
+    ocButton.setActionCommand(OC);
     addButton.addActionListener(this);
     deleteButton.addActionListener(this);
     saveButton.addActionListener(this);
@@ -91,7 +94,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
     previousButton.addActionListener(this);
     nextButton.addActionListener(this);
     deButton.addActionListener(this);
-
+    ocButton.addActionListener(this);
+    
     //JPanel buttonPanel = new JPanel();
     this.add(addButton);
     this.add(deleteButton);
@@ -160,9 +164,14 @@ public class ButtonPanel extends JPanel implements ActionListener,
       l.navigate(event);
   }
   
-  public void changeSwitchButton(String text) 
+  public void switchDeButton(String text) 
   {
     deButton.setText(text);
+  }
+  
+  public void switchOcButton(String text) 
+  {
+    ocButton.setText(text);
   }
   
   private void initButtonPanel() {  
@@ -231,9 +240,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
   
     public void actionPerformed(ActionEvent evt) {
     AbstractButton button = (AbstractButton)evt.getSource();
-    if(button.getActionCommand().equals(SAVE)) {
-      conceptEditorPanel.applyPressed();
-      dePanel.applyPressed();
+    if(button.getActionCommand().equals(SAVE)) {   
+      viewPanel.applyPressed();
       //updateHeaderLabels();
       //apply(false);
     } else if(button.getActionCommand().equals(ADD)) {
@@ -253,12 +261,21 @@ public class ButtonPanel extends JPanel implements ActionListener,
       //remove = false;
     } else if(button.getActionCommand().equals(AC)) {
         if(deButton.getText().equals("Switch to DE")) {
-        viewPanel.switchCards("DEPanel");
+        viewPanel.switchCards(UMLElementViewPanel.DE_PANEL_KEY);
         deButton.setText("Switch to Concept");
         } else if (deButton.getText().equals("Switch to Concept")) {
-      viewPanel.switchCards("Concept");
-      deButton.setText("Switch to DE");
-        } 
+          viewPanel.switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
+          deButton.setText("Switch to DE");
+        }
+    }
+      else if(button.getActionCommand().equals(OC)) {
+        if(ocButton.getText().equals("Switch to OC")) {
+        viewPanel.switchCards(UMLElementViewPanel.OC_PANEL_KEY);
+        ocButton.setText("Switch to Concept");
+      } else if (ocButton.getText().equals("Switch to Concept")) {
+          viewPanel.switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
+          ocButton.setText("Switch to OC");
+      }
     } else if(button.getActionCommand().equals(REVIEW)) 
     {
 

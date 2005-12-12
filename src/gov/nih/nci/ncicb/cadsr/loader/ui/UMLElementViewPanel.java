@@ -16,9 +16,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
 import java.awt.event.ItemEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -32,17 +30,26 @@ public class UMLElementViewPanel extends JPanel
 
   private UMLElementViewPanel _this = this;
 
-  private List<NavigationListener> navigationListeners 
+  private java.util.List<NavigationListener> navigationListeners 
     = new ArrayList<NavigationListener>();
 
   private ConceptEditorPanel conceptEditorPanel;
   private DEPanel dePanel;
+  private OCPanel ocPanel;
   private ButtonPanel buttonPanel;
 
   private UMLNode node;
 
   private JPanel cardPanel;
   // initialize once the mode in which we're running
+  
+  private JPanel displayedPanel;
+
+  static final String DE_PANEL_KEY = "dePanel", 
+    OC_PANEL_KEY = "ocPanel",
+    CONCEPT_PANEL_KEY = "conceptPanel";
+    
+  private Map<String, JPanel> panelKeyMap = new HashMap<String, JPanel>();
 
   public UMLElementViewPanel(UMLNode node) 
   {
@@ -50,9 +57,11 @@ public class UMLElementViewPanel extends JPanel
   
     conceptEditorPanel = new ConceptEditorPanel(node);
     dePanel = new DEPanel(node);
-    buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);
+    ocPanel = new OCPanel(node);
+    buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel, ocPanel);
     conceptEditorPanel.addPropertyChangeListener(buttonPanel);
     dePanel.addPropertyChangeListener(buttonPanel);
+    ocPanel.addPropertyChangeListener(buttonPanel);
     cardPanel = new JPanel();
     initUI();
     updateNode(node);
@@ -63,19 +72,25 @@ public class UMLElementViewPanel extends JPanel
     conceptEditorPanel.initUI();
     
     cardPanel.setLayout(new CardLayout());
-    cardPanel.add(conceptEditorPanel, "Concept");
-    cardPanel.add(dePanel, "DEPanel");
+    cardPanel.add(conceptEditorPanel, CONCEPT_PANEL_KEY);
+    cardPanel.add(dePanel, DE_PANEL_KEY);
+    cardPanel.add(ocPanel, OC_PANEL_KEY);
     
+    panelKeyMap.put(CONCEPT_PANEL_KEY, conceptEditorPanel);
+    panelKeyMap.put(DE_PANEL_KEY, dePanel);
+    panelKeyMap.put(OC_PANEL_KEY, ocPanel);
+
     setLayout(new BorderLayout());
     this.add(cardPanel, BorderLayout.CENTER);
     this.add(buttonPanel, BorderLayout.SOUTH);
     
   }
   
-  public void switchCards(String text) 
+  public void switchCards(String key) 
   {
     CardLayout layout = (CardLayout)cardPanel.getLayout();
-    layout.show(cardPanel, text);
+    layout.show(cardPanel, key);
+    displayedPanel = panelKeyMap.get(key);
   }
   
   //new 
@@ -89,20 +104,34 @@ public class UMLElementViewPanel extends JPanel
       DataElement de = (DataElement)o;
       if(!StringUtil.isEmpty(de.getPublicId())) 
       {
-        switchCards("DEPanel");
-        buttonPanel.changeSwitchButton("Switch to Concept");
+        switchCards(DE_PANEL_KEY);
+        buttonPanel.switchDeButton("Switch to Concept");
       } else 
       {
-        switchCards("Concept");
-        buttonPanel.changeSwitchButton("Switch to DE");
+        switchCards(CONCEPT_PANEL_KEY);
+        buttonPanel.switchDeButton("Switch to DE");
       }
-    } else { // not a DE, it's an OC
-      switchCards("Concept");
-      buttonPanel.changeSwitchButton("Switch to DE");
-    }
+    } else if(o instanceof ObjectClass) {
+      ObjectClass oc = (ObjectClass)o;
+      if(!StringUtil.isEmpty(oc.getPublicId())) 
+      {
+        switchCards(OC_PANEL_KEY);
+        buttonPanel.switchOcButton("Switch to Concept");
+      }
+      else 
+      {
+        switchCards(CONCEPT_PANEL_KEY);
+        buttonPanel.switchOcButton("Switch to OC");
+      }
+    } 
+//    else { // not a DE, it's an OC
+//      switchCards("Concept");
+//      buttonPanel.switchDeButton("Switch to DE");
+//    }
   
     conceptEditorPanel.updateNode(node);
     dePanel.updateNode(node);
+    ocPanel.updateNode(node);
 
     buttonPanel.update();
     
@@ -142,6 +171,16 @@ public class UMLElementViewPanel extends JPanel
     conceptEditorPanel.addPropertyChangeListener(l);
     buttonPanel.addPropertyChangeListener(l);
     dePanel.addPropertyChangeListener(l);
+    ocPanel.addPropertyChangeListener(l);
+  }
+  
+  public void applyPressed() 
+  {
+    if(displayedPanel instanceof Editable) 
+    {
+     ((Editable)displayedPanel).applyPressed();
+    }
+    
   }
 
 
