@@ -1,25 +1,11 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
-import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
-import gov.nih.nci.ncicb.cadsr.domain.Concept;
-import gov.nih.nci.ncicb.cadsr.domain.DataElement;
-import gov.nih.nci.ncicb.cadsr.domain.Definition;
-import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
-import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
+import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeListener;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.NodeUtil;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
-import gov.nih.nci.ncicb.cadsr.loader.util.ObjectUpdater;
-import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
-import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesEvent;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesListener;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -38,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConceptEditorPanel extends JPanel implements KeyListener,
-  UserPreferencesListener
+  UserPreferencesListener, Editable
 {
 
   private List<PropertyChangeListener> propChangeListeners 
@@ -77,12 +63,14 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
   {
     this.node = node;
     initConcepts();
-    vdPanel = new VDPanel(node);
+    //if(node.getUserObject() instanceof DataElement)
+      vdPanel = new VDPanel(node);
   }
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
     propChangeListeners.add(l);
-    vdPanel.addPropertyChangeListener(l);
+    //if(node.getUserObject() instanceof DataElement)
+      vdPanel.addPropertyChangeListener(l);
   }
 
   private void firePropertyChangeEvent(PropertyChangeEvent evt) {
@@ -95,7 +83,8 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
     this.node = node;
     initConcepts();
     updateConcepts(concepts);
-    vdPanel.updateNode(node);
+    //if(node.getUserObject() instanceof DataElement)
+      vdPanel.updateNode(node);
   }
   
   private void initConcepts() 
@@ -331,7 +320,7 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
             UIUtil.putToCenter(evsDialog);
             
             if(prefs.getEvsAutoSearch())
-              evsDialog.startSearch(conceptUIs[index].name.getText());
+              evsDialog.startSearch(conceptUIs[index].name.getText(), EVSDialog.SYNONYMS);
             evsDialog.setVisible(true);
 
             Concept c = evsDialog.getConcept();
@@ -361,7 +350,8 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
         });
       
     }
-    insertInBag(gridPanel, vdPanel, 0, concepts.length + 2);
+    if(node.getUserObject() instanceof DataElement)
+      insertInBag(gridPanel, vdPanel, 0, concepts.length + 2);
     updateHeaderLabels();
     
     if(prefs.getUmlDescriptionOrder().equals("last"))
@@ -434,7 +424,8 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
   {
     updateHeaderLabels();
     apply(false);
-    //vdPanel.applyPressed();
+    if(node.getUserObject() instanceof DataElement)
+      vdPanel.applyPressed();
   }
   
   public void addPressed() 
