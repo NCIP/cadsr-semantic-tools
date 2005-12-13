@@ -36,11 +36,11 @@
   </taskdef>
 -->
 
-  <target name="sign" if="keystore" depends="dist">
-        <signjar alias="${alias}" storepass="${storepass}" keystore="${keystore}">
-    <fileset dir="${dist.dir}/lib" includes="*.jar"/>
-        </signjar>
-      </target>
+  <target name="sign" if="keystore">
+    <signjar alias="${alias}" storepass="${storepass}" keystore="${keystore}">
+      <fileset dir="${dist.dir}/lib" includes="*.jar"/>
+    </signjar>
+  </target>
 
   <target name="format" depends="compile">
    <jalopy fileformat="auto"
@@ -162,6 +162,9 @@
         <include name="uml-1.3.jar"/>
       </fileset>
     </copy>
+    
+    <antcall target="sign"/>
+
   </target>
 
   <target name="doc">
