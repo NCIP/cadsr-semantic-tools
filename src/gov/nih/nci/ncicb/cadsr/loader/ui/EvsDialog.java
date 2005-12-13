@@ -56,8 +56,8 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
   private AbstractTableModel tableModel = null;
   private JTable resultTable = null;
 
-  private static final String SYNONYMS = "Synonyms";
-  private static final String CONCEPT_CODE = "Concept Code";
+  static final String SYNONYMS = "Synonyms";
+  static final String CONCEPT_CODE = "Concept Code";
 
   private JButton previousButton = new JButton("Previous"),
     nextButton = new JButton("Next"), 
@@ -222,8 +222,9 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
   }
 
 
-  public void startSearch(String searchString) {
+  public void startSearch(String searchString, String searchBy) {
     searchField.setText(searchString);
+    searchSourceCombo.setSelectedItem(searchBy);
     searchButton.doClick();
   }
 

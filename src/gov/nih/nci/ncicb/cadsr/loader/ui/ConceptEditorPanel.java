@@ -320,7 +320,7 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
             UIUtil.putToCenter(evsDialog);
             
             if(prefs.getEvsAutoSearch())
-              evsDialog.startSearch(conceptUIs[index].name.getText(), EVSDialog.SYNONYMS);
+              evsDialog.startSearch(conceptUIs[index].name.getText(), EvsDialog.SYNONYMS);
             evsDialog.setVisible(true);
 
             Concept c = evsDialog.getConcept();
