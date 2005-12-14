@@ -27,11 +27,9 @@ import java.util.*;
 public class LookupUtil {
 
   public static Concept lookupConcept(String conceptCode) {
-    List concepts = (List) ElementsLists.getInstance().getElements(DomainObjectFactory.newConcept().getClass());
+    List<Concept> concepts = ElementsLists.getInstance().getElements(DomainObjectFactory.newConcept());
     
-    for (Iterator it = concepts.iterator(); it.hasNext();) {
-      Concept con = (Concept)it.next();
-      
+    for (Concept con : concepts) {
       if(con.getPreferredName() != null)
         if(con.getPreferredName().equals(conceptCode))
           return con;
