@@ -117,6 +117,7 @@ public class UMLDefaultHandler implements UMLHandler {
 
     // store concept codes in preferredName
     oc.setPreferredName(ConceptUtil.preferredNameFromConcepts(concepts));
+    
 
     if(event.getPersistenceId() != null) {
       oc.setPublicId(event.getPersistenceId());
@@ -174,7 +175,7 @@ public class UMLDefaultHandler implements UMLHandler {
         ValidationItems.getInstance()
           .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", new String[] 
             {event.getClassName() + "." + event.getName(),
-             de.getPublicId() + "v" + de.getVersion()}), de));
+             ConventionUtil.publicIdVersion(de)}), de));
         
         de.setPublicId(null);
         de.setVersion(null);
@@ -225,7 +226,7 @@ public class UMLDefaultHandler implements UMLHandler {
         ValidationItems.getInstance()
           .addItem(new ValidationError(PropertyAccessor.getProperty("de.conflict", new String[] 
             {event.getClassName() + "." + event.getName(),
-             ocMapping.get(oc.getPublicId() + "v" + oc.getVersion()).getLongName()}), de));
+             ocMapping.get(ConventionUtil.publicIdVersion(oc)).getLongName()}), de));
           
 
         }
@@ -233,12 +234,11 @@ public class UMLDefaultHandler implements UMLHandler {
         oc.setPublicId(existingDe.getDataElementConcept().getObjectClass().getPublicId());
         oc.setVersion(existingDe.getDataElementConcept().getObjectClass().getVersion());
         // Keep track so if there's conflict, we know both ends of the conflict
-        ocMapping.put(oc.getPublicId() + "v" + oc.getVersion(), de);
+        ocMapping.put(ConventionUtil.publicIdVersion(oc), de);
       }
 
       prop.setPublicId(existingDe.getDataElementConcept().getProperty().getPublicId());
       prop.setVersion(existingDe.getDataElementConcept().getProperty().getVersion());
-      
 
     }
 

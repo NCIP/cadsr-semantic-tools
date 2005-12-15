@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 import java.util.List;
 import java.util.ArrayList;
 public class OCPanel extends JPanel
-{
+ implements Editable {
   private OCPanel _this = this;
 
   private JButton searchOcButton = new JButton("Search Object Class");

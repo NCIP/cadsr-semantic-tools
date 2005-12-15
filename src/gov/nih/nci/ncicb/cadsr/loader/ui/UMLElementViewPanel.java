@@ -23,10 +23,7 @@ import java.awt.event.*;
 import javax.swing.event.*;
 
 public class UMLElementViewPanel extends JPanel
-  implements //ActionListener, KeyListener
-             //, ItemListener,
-             //UserPreferencesListener, 
-             NavigationListener {
+  implements NavigationListener {
 
   private UMLElementViewPanel _this = this;
 
@@ -58,7 +55,12 @@ public class UMLElementViewPanel extends JPanel
     conceptEditorPanel = new ConceptEditorPanel(node);
     dePanel = new DEPanel(node);
     ocPanel = new OCPanel(node);
-    buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel, ocPanel);
+
+    if(node instanceof AttributeNode)
+      buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);
+    else 
+      buttonPanel = new ButtonPanel(conceptEditorPanel, this, ocPanel);
+
     conceptEditorPanel.addPropertyChangeListener(buttonPanel);
     dePanel.addPropertyChangeListener(buttonPanel);
     ocPanel.addPropertyChangeListener(buttonPanel);
@@ -105,34 +107,34 @@ public class UMLElementViewPanel extends JPanel
       if(!StringUtil.isEmpty(de.getPublicId())) 
       {
         switchCards(DE_PANEL_KEY);
-        buttonPanel.switchDeButton("Switch to Concept");
-      } else 
-      {
+      } else {
         switchCards(CONCEPT_PANEL_KEY);
-        buttonPanel.switchDeButton("Switch to DE");
       }
     } else if(o instanceof ObjectClass) {
       ObjectClass oc = (ObjectClass)o;
       if(!StringUtil.isEmpty(oc.getPublicId())) 
       {
         switchCards(OC_PANEL_KEY);
-        buttonPanel.switchOcButton("Switch to Concept");
       }
       else 
       {
         switchCards(CONCEPT_PANEL_KEY);
-        buttonPanel.switchOcButton("Switch to OC");
       }
     } 
-//    else { // not a DE, it's an OC
-//      switchCards("Concept");
-//      buttonPanel.switchDeButton("Switch to DE");
-//    }
-  
+
     conceptEditorPanel.updateNode(node);
     dePanel.updateNode(node);
     ocPanel.updateNode(node);
 
+    if(node instanceof AttributeNode)
+      buttonPanel.setEditablePanel(dePanel);
+    else 
+      buttonPanel.setEditablePanel(ocPanel);
+
+
+    buttonPanel.propertyChange
+      (new PropertyChangeEvent(this, ButtonPanel.SETUP, null, true));
+    
     buttonPanel.update();
     
   }

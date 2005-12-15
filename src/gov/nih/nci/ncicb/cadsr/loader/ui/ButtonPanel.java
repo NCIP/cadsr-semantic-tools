@@ -1,7 +1,5 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
-import gov.nih.nci.ncicb.cadsr.domain.Concept;
-import gov.nih.nci.ncicb.cadsr.domain.DataElement;
-import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
+import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
@@ -9,6 +7,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,7 +25,7 @@ import java.util.*;
 public class ButtonPanel extends JPanel implements ActionListener, 
   PropertyChangeListener
 {
-  private JButton addButton, deleteButton, saveButton, deButton, ocButton;
+  private JButton addButton, deleteButton, saveButton, switchButton;
   private JButton previousButton, nextButton;
   private JCheckBox reviewButton;
   
@@ -41,77 +40,95 @@ public class ButtonPanel extends JPanel implements ActionListener,
   
   private ConceptEditorPanel conceptEditorPanel;
   private UMLElementViewPanel viewPanel;
-  private DEPanel dePanel;
-  private OCPanel ocPanel;
+  private Editable editable;
   
   static final String ADD = "ADD",
     DELETE = "DELETE",
     SAVE = "APPLY", 
     PREVIOUS = "PREVIOUS",
     NEXT = "NEXT",
-    AC = "AC",
     REVIEW = "REVIEW",
     SETUP = "SETUP",
     SWITCH = "SWITCH",
-    OC = "OC",
     DELETEBUTTON = "DELETEBUTTON";
+
+  static final String 
+    SWITCH_TO_DE = "Map to DE",
+    SWITCH_TO_OC = "Map to OC",
+    SWITCH_TO_CONCEPT = "Map to Concepts";
+    
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
     propChangeListeners.add(l);
   }
   
   public ButtonPanel(ConceptEditorPanel conceptEditorPanel, 
-    UMLElementViewPanel viewPanel, DEPanel dePanel, OCPanel ocPanel) 
+    UMLElementViewPanel viewPanel, Editable editable) 
   {
+
     this.conceptEditorPanel = conceptEditorPanel;
     this.viewPanel = viewPanel;
-    this.dePanel = dePanel;
-    this.ocPanel = ocPanel;
+    this.editable = editable;
     
     addButton = new JButton("Add");
     deleteButton = new JButton("Remove");
     saveButton = new JButton("Apply");
-    deButton = new JButton("Switch to DE");
-    ocButton = new JButton("Switch to OC");
+    switchButton = new JButton();
     reviewButton = new JCheckBox("<html>Human<br>Verified</html>");
     previousButton = new JButton("Previous");
     nextButton = new JButton("Next");
-    
     reviewButton.setSelected(viewPanel.isReviewed());
+
     reviewButton.setActionCommand(REVIEW);
     addButton.setActionCommand(ADD);
     deleteButton.setActionCommand(DELETE);
     saveButton.setActionCommand(SAVE);
     previousButton.setActionCommand(PREVIOUS);
     nextButton.setActionCommand(NEXT);
-    deButton.setActionCommand(AC);
-    ocButton.setActionCommand(OC);
+    switchButton.setActionCommand(SWITCH);
+
     addButton.addActionListener(this);
     deleteButton.addActionListener(this);
     saveButton.addActionListener(this);
-//    reviewButton.addItemListener(this);
     reviewButton.addActionListener(this);
     previousButton.addActionListener(this);
     nextButton.addActionListener(this);
-    deButton.addActionListener(this);
-    ocButton.addActionListener(this);
+
+    switchButton.addActionListener(this);
     
-    //JPanel buttonPanel = new JPanel();
     this.add(addButton);
     this.add(deleteButton);
     this.add(saveButton);
     this.add(reviewButton);
     this.add(previousButton);
     this.add(nextButton);
-    this.add(deButton);
-    this.add(ocButton);
+    this.add(switchButton);
 
-    //this.add(buttonPanel, BorderLayout.SOUTH);
   }
   
   public void update() 
   {
     reviewButton.setSelected(viewPanel.isReviewed());
+    if(editable instanceof DEPanel) {
+      DataElement de = (DataElement)conceptEditorPanel.getNode().getUserObject();
+      if(!StringUtil.isEmpty(de.getPublicId())) 
+      {
+        setSwitchButtonText(ButtonPanel.SWITCH_TO_CONCEPT);
+      } else {
+        setSwitchButtonText(ButtonPanel.SWITCH_TO_DE);
+      }
+    } else if(editable instanceof OCPanel) {
+      ObjectClass oc = (ObjectClass)conceptEditorPanel.getNode().getUserObject();
+      if(!StringUtil.isEmpty(oc.getPublicId())) 
+      {
+        setSwitchButtonText(ButtonPanel.SWITCH_TO_CONCEPT);
+      }
+      else 
+      {
+        setSwitchButtonText(ButtonPanel.SWITCH_TO_OC);
+      }
+    } 
+
   }
   
   public void addReviewListener(ReviewListener listener) {
@@ -125,36 +142,18 @@ public class ButtonPanel extends JPanel implements ActionListener,
   
   public void propertyChange(PropertyChangeEvent e) 
   {
-    if(e.getPropertyName().equals(DELETE))
-    {
-      //Concept[] concepts = (Concept[])e.getNewValue();
-      //if(concepts.length < 2)
-        deleteButton.setEnabled((Boolean)e.getNewValue());      
-    }
-    
-    else if(e.getPropertyName().equals(ADD)) 
-    {
+    if(e.getPropertyName().equals(DELETE)) {
+      deleteButton.setEnabled((Boolean)e.getNewValue());      
+    } else if(e.getPropertyName().equals(ADD)) {
       addButton.setEnabled((Boolean)e.getNewValue());
-    }
-    
-    else if(e.getPropertyName().equals(SAVE)) 
-    {
+    } else if(e.getPropertyName().equals(SAVE)) {
       setSaveButtonState((Boolean)e.getNewValue());
-      
-        
-    }   
-    
-    else if(e.getPropertyName().equals(REVIEW)) 
-    {
+    } else if(e.getPropertyName().equals(REVIEW)) {
       reviewButton.setEnabled((Boolean)e.getNewValue());
-    }
-    else if (e.getPropertyName().equals(SETUP)) 
-    {
+    } else if (e.getPropertyName().equals(SETUP)) {
       initButtonPanel();
-    }
-    else if (e.getPropertyName().equals(SWITCH)) 
-    {
-      deButton.setEnabled((Boolean)e.getNewValue());
+    } else if (e.getPropertyName().equals(SWITCH)) {
+      switchButton.setEnabled((Boolean)e.getNewValue());
     }
   }
   
@@ -164,14 +163,9 @@ public class ButtonPanel extends JPanel implements ActionListener,
       l.navigate(event);
   }
   
-  public void switchDeButton(String text) 
+  private void setSwitchButtonText(String text) 
   {
-    deButton.setText(text);
-  }
-  
-  public void switchOcButton(String text) 
-  {
-    ocButton.setText(text);
+    switchButton.setText(text);
   }
   
   private void initButtonPanel() {  
@@ -192,26 +186,19 @@ public class ButtonPanel extends JPanel implements ActionListener,
     
     if(concepts.length == 0)
       reviewButton.setEnabled(false);
-    
-    if(conceptEditorPanel.getNode() instanceof AttributeNode)
-      deButton.setVisible(true);
-    else
-      deButton.setVisible(false);
-    
-    if(conceptEditorPanel.getNode() instanceof ClassNode)
-      ocButton.setVisible(true);
-    else
-      ocButton.setVisible(false);
 
-//    JPanel buttonPanel = new JPanel();
-//    buttonPanel.add(addButton);
-//    buttonPanel.add(deleteButton);
-//    buttonPanel.add(saveButton);
-//    buttonPanel.add(reviewButton);
-//    buttonPanel.add(previousButton);
-//    buttonPanel.add(nextButton);
-//    
-//    this.add(buttonPanel, BorderLayout.SOUTH);
+    
+    switchButton.setVisible(editable instanceof DEPanel);
+
+    // disable add if DEPanel is showing
+    if(editable instanceof DEPanel) {
+      DataElement de = (DataElement)conceptEditorPanel.getNode().getUserObject();
+      if(!StringUtil.isEmpty(de.getPublicId())) {
+        deleteButton.setEnabled(false);
+        addButton.setEnabled(false);
+      }
+    }
+
   }
   
   
@@ -223,12 +210,16 @@ public class ButtonPanel extends JPanel implements ActionListener,
     firePropertyChangeEvent(evt);
   }
   
+  public void setEditablePanel(Editable editable) {
+    this.editable = editable;
+  }
+
   public void navigate(NavigationEvent evt) {  
     if(saveButton.isEnabled()) {
       if(JOptionPane.showConfirmDialog(this, "There are unsaved changes in this concept, would you like to apply the changes now?", "Unsaved Changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) 
       {
         conceptEditorPanel.apply(false);
-        dePanel.apply();
+        editable.applyPressed();
       }
     }
   }
@@ -259,25 +250,42 @@ public class ButtonPanel extends JPanel implements ActionListener,
       fireNavigationEvent(event);
       conceptEditorPanel.setRemove(false);
       //remove = false;
-    } else if(button.getActionCommand().equals(AC)) {
-        if(deButton.getText().equals("Switch to DE")) {
+    } else if(button.getActionCommand().equals(SWITCH)) {
+      if(switchButton.getText().equals(SWITCH_TO_DE)) {
         viewPanel.switchCards(UMLElementViewPanel.DE_PANEL_KEY);
-        deButton.setText("Switch to Concept");
-        } else if (deButton.getText().equals("Switch to Concept")) {
-          viewPanel.switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
-          deButton.setText("Switch to DE");
+        switchButton.setText(SWITCH_TO_CONCEPT);
+      } else if (switchButton.getText().equals(SWITCH_TO_CONCEPT)) {
+        viewPanel.switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
+        if(editable instanceof DEPanel) {
+          switchButton.setText(SWITCH_TO_DE);
+        } else if(editable instanceof OCPanel) {
+          switchButton.setText(SWITCH_TO_OC);
         }
-    }
-      else if(button.getActionCommand().equals(OC)) {
-        if(ocButton.getText().equals("Switch to OC")) {
-        viewPanel.switchCards(UMLElementViewPanel.OC_PANEL_KEY);
-        ocButton.setText("Switch to Concept");
-      } else if (ocButton.getText().equals("Switch to Concept")) {
-          viewPanel.switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
-          ocButton.setText("Switch to OC");
+      } else if(switchButton.getText().equals(SWITCH_TO_OC)) {
+         viewPanel.switchCards(UMLElementViewPanel.OC_PANEL_KEY);
+         switchButton.setText(SWITCH_TO_CONCEPT);
       }
-    } else if(button.getActionCommand().equals(REVIEW)) 
-    {
+    }
+
+//     else if(button.getActionCommand().equals(AC)) {
+//         if(deButton.getText().equals("Switch to DE")) {
+//         viewPanel.switchCards(UMLElementViewPanel.DE_PANEL_KEY);
+//         deButton.setText("Switch to Concept");
+//         } else if (deButton.getText().equals("Switch to Concept")) {
+//           viewPanel.switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
+//           deButton.setText("Switch to DE");
+//         }
+//     } else if(button.getActionCommand().equals(OC)) {
+//         if(ocButton.getText().equals("Switch to OC")) {
+//         viewPanel.switchCards(UMLElementViewPanel.OC_PANEL_KEY);
+//         ocButton.setText("Switch to Concept");
+//       } else if (ocButton.getText().equals("Switch to Concept")) {
+//           viewPanel.switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
+//           ocButton.setText("Switch to OC");
+//       }
+//     }
+
+    else if(button.getActionCommand().equals(REVIEW)) {
 
       ReviewEvent event = new ReviewEvent();
       event.setUserObject(conceptEditorPanel.getNode()); 

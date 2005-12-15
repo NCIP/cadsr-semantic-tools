@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
 import java.util.List;
 import java.util.ArrayList;
 public class DEPanel extends JPanel
-{
+  implements Editable {
 
   private JButton searchDeButton = new JButton("Search Data Element");
   private JButton clearButton = new JButton("Clear");
@@ -52,6 +52,12 @@ public class DEPanel extends JPanel
 
     if((node.getUserObject() instanceof DataElement))
       de = (DataElement)node.getUserObject();
+
+    initUI();
+
+  }
+
+  private void initUI() {
     
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
@@ -130,30 +136,40 @@ public class DEPanel extends JPanel
                 new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, true));
               
             }
-      }
+          }
+        }
+        });
+
+      if((node.getUserObject() instanceof DataElement))
+        firePropertyChangeEvent
+          (new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, StringUtil.isEmpty(de.getPublicId())));
+      
+
   }
-      });
-}
+
   public void updateNode(UMLNode node) 
   {
   
     this.node = node;
     if((node.getUserObject() instanceof DataElement)) {
       de = (DataElement)node.getUserObject();
-    
-    if(de.getPublicId() != null) {
-      deLongNameValueLabel.setText(de.getLongName());
-      deIdValueLabel.setText(de.getPublicId() + " v" + de.getVersion());
-      deContextNameValueLabel.setText(de.getContext().getName());
-      vdLongNameValueLabel.setText(de.getValueDomain().getLongName());
-    }
-    else 
-    {
-      deLongNameValueLabel.setText("");
-      deIdValueLabel.setText("");
-      deContextNameValueLabel.setText("");
-      vdLongNameValueLabel.setText("");
-    }
+      
+      if(de.getPublicId() != null) {
+        deLongNameValueLabel.setText(de.getLongName());
+        deIdValueLabel.setText(de.getPublicId() + " v" + de.getVersion());
+        deContextNameValueLabel.setText(de.getContext().getName());
+        vdLongNameValueLabel.setText(de.getValueDomain().getLongName());
+      }
+      else {
+        deLongNameValueLabel.setText("");
+        deIdValueLabel.setText("");
+        deContextNameValueLabel.setText("");
+        vdLongNameValueLabel.setText("");
+      }
+      
+      firePropertyChangeEvent
+        (new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, StringUtil.isEmpty(de.getPublicId())));
+      
     }
   }
   

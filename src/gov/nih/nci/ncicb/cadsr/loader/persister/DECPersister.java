@@ -23,7 +23,7 @@ import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -49,13 +49,13 @@ public class DECPersister extends UMLPersister {
 
   public void persist() throws PersisterException {
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
-    List decs = (List) elements.getElements(dec.getClass());
+    List<DataElementConcept> decs = elements.getElements(dec);
 
     logger.debug("decs... ");
     if (decs != null) {
-      for (ListIterator it = decs.listIterator(); it.hasNext();) {
+      for (ListIterator<DataElementConcept> it = decs.listIterator(); it.hasNext();) {
         DataElementConcept newDec = DomainObjectFactory.newDataElementConcept();
-	dec = (DataElementConcept) it.next();
+	dec = it.next();
         
         String packageName = getPackageName(dec);
         
@@ -93,14 +93,10 @@ public class DECPersister extends UMLPersister {
             
             );
 
-	  dec.setPreferredName(
-            dec.getObjectClass().getPublicId() 
-            + DEC_PREFERRED_NAME_DELIMITER
-            + dec.getObjectClass().getVersion()
-            + DEC_PREFERRED_NAME_CONCAT_CHAR
-            + dec.getProperty().getPublicId()
-            + DEC_PREFERRED_NAME_DELIMITER
-            + dec.getProperty().getVersion());
+	  dec.setPreferredName
+            (ConventionUtil.publicIdVersion(dec.getObjectClass())
+             + DEC_PREFERRED_NAME_CONCAT_CHAR
+             + ConventionUtil.publicIdVersion(dec.getProperty()));
 
 	  dec.setVersion(new Float(1.0f));
 	  dec.setWorkflowStatus(defaults.getWorkflowStatus());

@@ -45,15 +45,15 @@ public class ObjectClassPersister extends UMLPersister {
 
   public void persist() throws PersisterException {
     ObjectClass oc = DomainObjectFactory.newObjectClass();
-    List ocs = (List) elements.getElements(oc.getClass());
+    List<ObjectClass> ocs = elements.getElements(oc);
 
     String packageName = null;
 
     if (ocs != null) {
-      for (ListIterator it = ocs.listIterator(); it.hasNext();) {
+      for (ListIterator<ObjectClass> it = ocs.listIterator(); it.hasNext();) {
         ObjectClass newOc = null;
 
-	oc = (ObjectClass) it.next();
+	oc = it.next();
         logger.debug(oc.getLongName());
 	oc.setContext(defaults.getMainContext());
 
@@ -61,6 +61,17 @@ public class ObjectClassPersister extends UMLPersister {
 	int ind = className.lastIndexOf(".");
 	packageName = className.substring(0, ind);
 	className = className.substring(ind + 1);
+        String newDef = oc.getPreferredDefinition();
+        String newName = className;
+
+        // Use case for existing Element
+        if(!StringUtil.isEmpty(oc.getPublicId()) && oc.getVersion() != null) {
+          newOc = existingMapping(oc, newName, newDef, packageName);
+          it.set(newOc);
+          addPackageClassification(newOc, packageName);
+          continue;
+        }
+
 
 	// does this oc exist?
 	List eager = new ArrayList();
@@ -72,20 +83,23 @@ public class ObjectClassPersister extends UMLPersister {
             concepts[i] = lookupConcept(conceptCodes[i++])
             );
         
-        List l = objectClassDAO.findByConceptCodes(conceptCodes, oc.getContext(), eager);
+        List<ObjectClass> l = null;
+
+        // 
+
+        // otherwise search by concepts
+                  l = objectClassDAO.findByConceptCodes(conceptCodes, oc.getContext(), eager);
 
         Concept primaryConcept = concepts[concepts.length - 1];
 
 	boolean packageFound = false;
-        String newDef = oc.getPreferredDefinition();
-        String newName = className;
 
 	if (l.size() == 0) {
           oc.setLongName(ConceptUtil.longNameFromConcepts(concepts));
 	  oc.setPreferredDefinition(ConceptUtil.preferredDefinitionFromConcepts(concepts));
           oc.setDefinitionSource(primaryConcept.getDefinitionSource());
 
-	  oc.setVersion(new Float(1.0f));
+	  oc.setVersion(1.0f);
 	  oc.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
 	  oc.setAudit(defaults.getAudit());
 
@@ -102,7 +116,7 @@ public class ObjectClassPersister extends UMLPersister {
 	} else {
           String newDefSource = primaryConcept.getDefinitionSource();
           String newConceptDef = primaryConcept.getPreferredDefinition();
-	  newOc = (ObjectClass) l.get(0);
+	  newOc = l.get(0);
 	  logger.info(PropertyAccessor.getProperty("existed.oc"));
 
           // is concept source the same?
@@ -126,11 +140,8 @@ public class ObjectClassPersister extends UMLPersister {
         addAlternateName(newOc, newName, AlternateName.TYPE_UML_CLASS ,packageName);
 
 
-// 	addProjectCs(newOc);
 	it.set(newOc);
-        
         oc.setLongName(newOc.getLongName());
-
         addPackageClassification(newOc, packageName);
 
       }
@@ -138,5 +149,23 @@ public class ObjectClassPersister extends UMLPersister {
 
   }
 
+  private ObjectClass existingMapping(ObjectClass oc, String newName, String newDef, String packageName) throws PersisterException {
+
+    List<String> eager = new ArrayList<String>();
+    eager.add(EagerConstants.AC_CS_CSI);
+    
+    List<ObjectClass> l = objectClassDAO.find(oc, eager);
+
+    if(l.size() == 0)
+      throw new PersisterException(PropertyAccessor.getProperty("oc.existing.error", ConventionUtil.publicIdVersion(oc)));
+    
+    ObjectClass existingOc = l.get(0);
+
+    addAlternateName(existingOc, newName, AlternateName.TYPE_UML_CLASS ,packageName);
+    addAlternateDefinition(existingOc, newDef, Definition.TYPE_UML_CLASS, packageName);
+
+    return existingOc;
+
+  }
 
 }

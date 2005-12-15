@@ -40,6 +40,8 @@ public class ElementsLists {
 
   private static ElementsLists instance = new ElementsLists();
 
+  private Map<Object, Map<String, String>> userValues = new HashMap<Object, Map<String, String>>();
+
   private ElementsLists() {}
 
   public static ElementsLists getInstance() {
@@ -99,5 +101,24 @@ public class ElementsLists {
       return new ArrayList();
   }
 
+  
+  public String getUserValues(Object o, String key) {
+    Map<String, String> map = userValues.get(o);
+    if(map == null)
+      return null;
+
+    return map.get(key);
+  }
+
+  public void addUserValue(Object o, String key, String value) {
+    Map map = userValues.get(o);
+    if(map == null) {
+      map = new HashMap<String, String>();
+      userValues.put(o, map);
+    }    
+
+    map.put(key, value);
+
+  }
 
 }

@@ -11,10 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -54,6 +51,10 @@ public class VDPanel extends JPanel
     insertInBag(mainPanel, vdVersionValueLabel, 1, 2);
     
     insertInBag(mainPanel, searchVdButton, 1, 3, 2, 1);
+
+    mainPanel.setBorder
+        (BorderFactory.createTitledBorder("Value Domain"));
+
     
     this.add(mainPanel);
     this.setSize(300, 300);

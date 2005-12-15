@@ -23,7 +23,7 @@ import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -156,13 +156,10 @@ public class DEPersister extends UMLPersister {
   //Will need to declare this method as abstract method in UMLPersistor
   protected String derivePreferredName (AdminComponent ac ) {
     DataElement de = (DataElement)ac;
-    String preferredName = de.getDataElementConcept().getPublicId() 
-                          +DE_PREFERRED_NAME_DELIMITER
-                          +de.getDataElementConcept().getVersion() 
-                          +DE_PREFERRED_NAME_CONCAT_CHAR
-                          +de.getValueDomain().getPublicId() 
-                          +DE_PREFERRED_NAME_DELIMITER
-                          +de.getValueDomain().getVersion();
+    String preferredName =
+      ConventionUtil.publicIdVersion(de.getDataElementConcept())
+      +DE_PREFERRED_NAME_CONCAT_CHAR
+      +ConventionUtil.publicIdVersion(de.getValueDomain());
     return preferredName;
   }
   

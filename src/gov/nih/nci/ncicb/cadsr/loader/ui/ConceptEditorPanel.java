@@ -23,7 +23,8 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConceptEditorPanel extends JPanel implements KeyListener,
+public class ConceptEditorPanel extends JPanel 
+  implements KeyListener,
   UserPreferencesListener, Editable
 {
 
@@ -199,8 +200,6 @@ public class ConceptEditorPanel extends JPanel implements KeyListener,
     this.add(summaryPanel,BorderLayout.NORTH); 
     
     initViewPanel();
-    firePropertyChangeEvent(
-            new PropertyChangeEvent(this, ButtonPanel.SETUP, null, true));
     //initButtonPanel();
 
   }

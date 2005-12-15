@@ -45,20 +45,32 @@ public class PropertyPersister extends UMLPersister {
 
   public void persist() throws PersisterException {
     Property prop = DomainObjectFactory.newProperty();
-    List props = (List) elements.getElements(prop.getClass());
+    List<Property> props = elements.getElements(prop);
 
     if (props != null) {
-      for (ListIterator it = props.listIterator(); it.hasNext();) {
-	prop = (Property) it.next();
+      for (ListIterator<Property> it = props.listIterator(); it.hasNext();) {
+	prop = it.next();
         logger.debug(prop.getLongName());
         logger.debug(prop.getPreferredName());
 
         Property newProp = null;
 
+        String packageName = getPackageName(prop);
+        String newDef = prop.getPreferredDefinition();
+        String newName = prop.getLongName();
+
 	prop.setContext(defaults.getMainContext());
 
         String[] conceptCodes = prop.getPreferredName().split(":");
-        List l = propertyDAO.findByConceptCodes(conceptCodes, prop.getContext());
+        List<Property> l = null;
+        
+        if(!StringUtil.isEmpty(prop.getPublicId()) && prop.getVersion() != null) {
+          newProp = existingMapping(prop, newName, newDef, packageName);
+          it.set(newProp);
+          addPackageClassification(newProp, packageName);
+          continue;
+        }
+
 
         Concept[] concepts = new Concept[conceptCodes.length];
         for(int i=0; i<concepts.length; 
@@ -66,16 +78,13 @@ public class PropertyPersister extends UMLPersister {
             );
 
         Concept primaryConcept = concepts[concepts.length - 1];
-        String newDef = prop.getPreferredDefinition();
-        String newName = prop.getLongName();
-        String packageName = getPackageName(prop);
 
 	if (l.size() == 0) {
           prop.setLongName(ConceptUtil.longNameFromConcepts(concepts));
 	  prop.setPreferredDefinition(ConceptUtil.preferredDefinitionFromConcepts(concepts));
           prop.setDefinitionSource(primaryConcept.getDefinitionSource());
 
-	  prop.setVersion(new Float(1.0f));
+	  prop.setVersion(1.0f);
 	  prop.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
 	  prop.setAudit(defaults.getAudit());
 
@@ -113,6 +122,26 @@ public class PropertyPersister extends UMLPersister {
         prop.setLongName(newProp.getLongName());
       }
     }
+
+  }
+
+
+  private Property existingMapping(Property prop, String newName, String newDef, String packageName) throws PersisterException {
+
+    List<String> eager = new ArrayList<String>();
+    eager.add(EagerConstants.AC_CS_CSI);
+    
+    List<Property> l = propertyDAO.find(prop, eager);
+
+    if(l.size() == 0)
+      throw new PersisterException(PropertyAccessor.getProperty("prop.existing.error", ConventionUtil.publicIdVersion(prop)));
+    
+    Property existingProp = l.get(0);
+
+    addAlternateName(existingProp, newName, AlternateName.TYPE_UML_CLASS ,packageName);
+    addAlternateDefinition(existingProp, newDef, Definition.TYPE_UML_CLASS, packageName);
+
+    return existingProp;
 
   }
 
