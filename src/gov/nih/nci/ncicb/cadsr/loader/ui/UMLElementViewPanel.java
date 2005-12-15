@@ -167,6 +167,7 @@ public class UMLElementViewPanel extends JPanel
   
   public void addElementChangeListener(ElementChangeListener listener) {
     conceptEditorPanel.addElementChangeListener(listener);
+    dePanel.addElementChangeListener(listener);
   }
 
   public void addPropertyChangeListener(PropertyChangeListener l) {
