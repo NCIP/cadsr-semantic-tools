@@ -247,7 +247,7 @@ public class XMIWriter implements ElementWriter {
         
         boolean changed = changeTracker.get(fullPropName);
         if(changed) {
-          String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'Property') or starts-with(@tag,'PropertyQualifier') )and @modelElement='"
+          String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'Property') or starts-with(@tag,'PropertyQualifier') or @tag='" + XMIParser.TV_DE_ID +"' or @tag='"+ XMIParser.TV_DE_VERSION +"' )and @modelElement='"
             + attributeElement.getAttributeValue("xmi.id")
             + "']";
           
