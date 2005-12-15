@@ -5,6 +5,7 @@ import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -23,6 +24,7 @@ import javax.swing.JOptionPane;
 
 import java.util.List;
 import java.util.ArrayList;
+
 public class DEPanel extends JPanel
   implements Editable {
 
@@ -44,6 +46,10 @@ public class DEPanel extends JPanel
 
   private List<PropertyChangeListener> propChangeListeners 
     = new ArrayList<PropertyChangeListener>();  
+
+  private List<ElementChangeListener> changeListeners 
+    = new ArrayList<ElementChangeListener>();
+
 
   private static final String SEARCH = "SEARCH", CLEAR = "CLEAR";
   
@@ -112,6 +118,8 @@ public class DEPanel extends JPanel
               deIdValueLabel.setText(ConventionUtil.publicIdVersion(tempDE));
               deContextNameValueLabel.setText(tempDE.getContext().getName());
               vdLongNameValueLabel.setText(tempDE.getValueDomain().getLongName());
+
+              
                            
               firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
@@ -134,7 +142,9 @@ public class DEPanel extends JPanel
               
               firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, true));
-              
+
+              fireElementChangeEvent(new ElementChangeEvent(node));
+                  
             }
           }
         }
@@ -177,6 +187,10 @@ public class DEPanel extends JPanel
     propChangeListeners.add(l);
   }
 
+  public void addElementChangeListener(ElementChangeListener listener) {
+    changeListeners.add(listener);
+  }
+
   private void firePropertyChangeEvent(PropertyChangeEvent evt) {
     for(PropertyChangeListener l : propChangeListeners) 
       l.propertyChange(evt);
@@ -201,6 +215,8 @@ public class DEPanel extends JPanel
     de.getDataElementConcept().getObjectClass().setPublicId(tempDE.getDataElementConcept().getObjectClass().getPublicId());
     de.getDataElementConcept().getObjectClass().setVersion(tempDE.getDataElementConcept().getObjectClass().getVersion());
     
+    fireElementChangeEvent(new ElementChangeEvent(node));
+
 
   }
 
@@ -214,6 +230,12 @@ public class DEPanel extends JPanel
 
     bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
+
+  private void fireElementChangeEvent(ElementChangeEvent event) {
+    for(ElementChangeListener l : changeListeners)
+      l.elementChanged(event);
+  }
+
 
 //  public static void main(String[] args)
 //  {
