@@ -170,20 +170,18 @@ public class ConceptEditorPanel extends JPanel
     
     firePropertyChangeEvent(
       new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false));
-    //setSaveButtonState(false);
     firePropertyChangeEvent(
       new PropertyChangeEvent(this, ButtonPanel.ADD, null, true));
-    //addButton.setEnabled(true);
     firePropertyChangeEvent(
       new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, true));
-    //reviewButton.setEnabled(true);
+    firePropertyChangeEvent(
+      new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
     
     fireElementChangeEvent(new ElementChangeEvent(node));
   }
     
     
   void initUI() {
-    //private void initUI() {
     prefs.addUserPreferencesListener(this);
     this.setLayout(new BorderLayout());
     
@@ -200,8 +198,6 @@ public class ConceptEditorPanel extends JPanel
     this.add(summaryPanel,BorderLayout.NORTH); 
     
     initViewPanel();
-    //initButtonPanel();
-
   }
   
   private void initViewPanel() {
@@ -279,13 +275,10 @@ public class ConceptEditorPanel extends JPanel
 
           firePropertyChangeEvent(
             new PropertyChangeEvent(this, ButtonPanel.SAVE, null, areAllFieldEntered()));
-          //setSaveButtonState(areAllFieldEntered());
           firePropertyChangeEvent(
             new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false));
-          //reviewButton.setEnabled(false);
           firePropertyChangeEvent(
             new PropertyChangeEvent(this, ButtonPanel.ADD, null, false));          
-          //addButton.setEnabled(false);
         }
         });
       
@@ -333,17 +326,12 @@ public class ConceptEditorPanel extends JPanel
               if(areAllFieldEntered()) {
               firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true)); 
-                //setSaveButtonState(true);
-                //               addButton.setEnabled(true);
               } else {
                 firePropertyChangeEvent(
                   new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false)); 
-                //setSaveButtonState(false);
-                //               addButton.setEnabled(false);
               }
               firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false)); 
-              //reviewButton.setEnabled(false);
             }
           }
         });
@@ -446,25 +434,14 @@ public class ConceptEditorPanel extends JPanel
       this.updateUI();
 
       if(concepts.length > 1)
-        firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.DELETE, null, true));
-        //deleteButton.setEnabled(true);
-
-      if(areAllFieldEntered()) {
-        firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
-        //setSaveButtonState(true);
-      } else {
-        firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false));
-        //setSaveButtonState(false);
-      }
+        firePropertyChangeEvent
+          (new PropertyChangeEvent(this, ButtonPanel.DELETE, null, true));
+      firePropertyChangeEvent
+        (new PropertyChangeEvent(this, ButtonPanel.SAVE, null, areAllFieldEntered()));
       firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.ADD, null, false));
-      //addButton.setEnabled(false);
       firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false));
-      //reviewButton.setEnabled(false);
   }
   
   public void removePressed() 
@@ -481,23 +458,18 @@ public class ConceptEditorPanel extends JPanel
       if(areAllFieldEntered()) {
         firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
-        //setSaveButtonState(true);
       } else {
         firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false));
-        //setSaveButtonState(false);
       }
       firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.ADD, null, false));
-      //addButton.setEnabled(false);
       firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false));
-      //reviewButton.setEnabled(false);
       
       if(concepts.length < 2)
         firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.DELETE, null, false));
-        //deleteButton.setEnabled(false);
       this.updateUI();
 
       remove = true;
@@ -516,19 +488,14 @@ public class ConceptEditorPanel extends JPanel
    */
   public void keyReleased(KeyEvent evt) {
     if(areAllFieldEntered()) {
-//       addButton.setEnabled(true);
       firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
-      //setSaveButtonState(true);
     } else {
-//       addButton.setEnabled(false);
       firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false));
-      //setSaveButtonState(false);
     }
     firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false));
-    //reviewButton.setEnabled(false);
     updateHeaderLabels();
   }
   

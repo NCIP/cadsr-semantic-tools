@@ -114,15 +114,12 @@ public class DEPanel extends JPanel
               }
 
 
-              deLongNameValueLabel.setText(tempDE.getLongName());
-              deIdValueLabel.setText(ConventionUtil.publicIdVersion(tempDE));
-              deContextNameValueLabel.setText(tempDE.getContext().getName());
-              vdLongNameValueLabel.setText(tempDE.getValueDomain().getLongName());
-
-              
+              updateFields();
                            
               firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
+              firePropertyChangeEvent(
+                new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
             }
           }
           
@@ -134,14 +131,12 @@ public class DEPanel extends JPanel
           JButton button = (JButton)event.getSource();
           if(button.getActionCommand().equals(CLEAR)) {
             if(de.getPublicId() != null) {
-              de.setPublicId(null);              
-              deLongNameValueLabel.setText("");
-              deIdValueLabel.setText("");
-              deContextNameValueLabel.setText("");
-              vdLongNameValueLabel.setText("");
-              
+              clear();
+//               updateFields();
+
               firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, true));
+                new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
+
 
               fireElementChangeEvent(new ElementChangeEvent(node));
                   
@@ -171,10 +166,7 @@ public class DEPanel extends JPanel
         vdLongNameValueLabel.setText(de.getValueDomain().getLongName());
       }
       else {
-        deLongNameValueLabel.setText("");
-        deIdValueLabel.setText("");
-        deContextNameValueLabel.setText("");
-        vdLongNameValueLabel.setText("");
+        clear();
       }
       
       firePropertyChangeEvent
@@ -195,13 +187,35 @@ public class DEPanel extends JPanel
     for(PropertyChangeListener l : propChangeListeners) 
       l.propertyChange(evt);
   }
+
+  private void clear() {
+    tempDE = DomainObjectFactory.newDataElement();
+
+    deLongNameValueLabel.setText("");
+    deIdValueLabel.setText("");
+    deContextNameValueLabel.setText("");
+    vdLongNameValueLabel.setText("");
+    
+  }
+
+  private void updateFields() {
+    deLongNameValueLabel.setText(tempDE.getLongName());
+    deIdValueLabel.setText(ConventionUtil.publicIdVersion(tempDE));
+    if(tempDE.getContext() != null)
+      deContextNameValueLabel.setText(tempDE.getContext().getName());
+    else 
+      deContextNameValueLabel.setText("");
+    
+    if(tempDE.getValueDomain() != null)
+      vdLongNameValueLabel.setText(tempDE.getValueDomain().getLongName());
+    else 
+      vdLongNameValueLabel.setText("");
+
+  }
   
   public void applyPressed() 
   {
     apply();
-    firePropertyChangeEvent(
-      new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
-      
   }
   
   public void apply() 
@@ -212,10 +226,22 @@ public class DEPanel extends JPanel
     de.setContext(tempDE.getContext());
     de.setValueDomain(tempDE.getValueDomain());
 
-    de.getDataElementConcept().getObjectClass().setPublicId(tempDE.getDataElementConcept().getObjectClass().getPublicId());
-    de.getDataElementConcept().getObjectClass().setVersion(tempDE.getDataElementConcept().getObjectClass().getVersion());
-    
     fireElementChangeEvent(new ElementChangeEvent(node));
+
+    if(!StringUtil.isEmpty(de.getPublicId())) {
+      de.getDataElementConcept().getObjectClass().setPublicId(tempDE.getDataElementConcept().getObjectClass().getPublicId());
+      de.getDataElementConcept().getObjectClass().setVersion(tempDE.getDataElementConcept().getObjectClass().getVersion());
+    } else { // may need to clear OC ID / Version
+      
+      
+
+    }
+
+
+    firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, true));
+
+    firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false));
+    
 
 
   }

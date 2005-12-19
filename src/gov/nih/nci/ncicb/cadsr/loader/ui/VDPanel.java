@@ -2,6 +2,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -100,18 +101,19 @@ public class VDPanel extends JPanel
     this.node = node;
     if(node.getUserObject() instanceof DataElement) {
        vd = ((DataElement)node.getUserObject()).getValueDomain();
-    
-    if(vd.getPublicId() != null) {
-      vdLongNameValueLabel.setText(vd.getLongName());
-      vdContextNameValueLabel.setText(vd.getContext().getName());
-      vdVersionValueLabel.setText(vd.getVersion().toString());
-    }
-    else 
-    {
-      vdLongNameValueLabel.setText("");
-      vdContextNameValueLabel.setText("");
-      vdVersionValueLabel.setText("");
-    }
+       
+       
+       if(vd != null && !StringUtil.isEmpty(vd.getPublicId())) {
+         vdLongNameValueLabel.setText(vd.getLongName());
+         vdContextNameValueLabel.setText(vd.getContext().getName());
+         vdVersionValueLabel.setText(vd.getVersion().toString());
+       }
+       else 
+         {
+           vdLongNameValueLabel.setText("");
+           vdContextNameValueLabel.setText("");
+           vdVersionValueLabel.setText("");
+         }
     }
   }
 
