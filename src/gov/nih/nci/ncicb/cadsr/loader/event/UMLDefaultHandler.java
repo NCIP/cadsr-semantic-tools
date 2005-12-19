@@ -56,7 +56,7 @@ public class UMLDefaultHandler implements UMLHandler {
   }
 
   public void newPackage(NewPackageEvent event) {
-    logger.debug("Package: " + event.getName());
+    logger.info("Package: " + event.getName());
   }
 
   public void newOperation(NewOperationEvent event) {
