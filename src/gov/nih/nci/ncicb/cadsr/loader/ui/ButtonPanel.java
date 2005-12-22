@@ -194,8 +194,11 @@ public class ButtonPanel extends JPanel implements ActionListener,
     if(editable instanceof DEPanel) {
       DataElement de = (DataElement)conceptEditorPanel.getNode().getUserObject();
       if(!StringUtil.isEmpty(de.getPublicId())) {
-        deleteButton.setEnabled(false);
-        addButton.setEnabled(false);
+//         deleteButton.setEnabled(false);
+//         addButton.setEnabled(false);
+        addButton.setVisible(false);
+      } else {
+        addButton.setVisible(true);
       }
     }
 
@@ -254,6 +257,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
       if(switchButton.getText().equals(SWITCH_TO_DE)) {
         viewPanel.switchCards(UMLElementViewPanel.DE_PANEL_KEY);
         switchButton.setText(SWITCH_TO_CONCEPT);
+        addButton.setVisible(false);
       } else if (switchButton.getText().equals(SWITCH_TO_CONCEPT)) {
         viewPanel.switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
         if(editable instanceof DEPanel) {
@@ -261,6 +265,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
         } else if(editable instanceof OCPanel) {
           switchButton.setText(SWITCH_TO_OC);
         }
+        addButton.setVisible(true);
       } else if(switchButton.getText().equals(SWITCH_TO_OC)) {
          viewPanel.switchCards(UMLElementViewPanel.OC_PANEL_KEY);
          switchButton.setText(SWITCH_TO_CONCEPT);

@@ -132,7 +132,6 @@ public class DEPanel extends JPanel
           if(button.getActionCommand().equals(CLEAR)) {
             if(de.getPublicId() != null) {
               clear();
-//               updateFields();
 
               firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
@@ -228,15 +227,20 @@ public class DEPanel extends JPanel
 
     fireElementChangeEvent(new ElementChangeEvent(node));
 
-    if(!StringUtil.isEmpty(de.getPublicId())) {
-      de.getDataElementConcept().getObjectClass().setPublicId(tempDE.getDataElementConcept().getObjectClass().getPublicId());
-      de.getDataElementConcept().getObjectClass().setVersion(tempDE.getDataElementConcept().getObjectClass().getVersion());
-    } else { // may need to clear OC ID / Version
-      
-      
+    // Set the OC ID / Version
+    // iterate over all DE sibblings. 
+    String pubId = null;
+    Float version = null;
+    List<DataElement> des = ElementsLists.getInstance().getElements(de);
 
+    for(DataElement curDe : des) {
+      if(!StringUtil.isEmpty(curDe.getPublicId())) {
+        if(de.getDataElementConcept().getObjectClass() == curDe.getDataElementConcept().getObjectClass()) {
+          pubId = curDe.getDataElementConcept().getObjectClass().getPublicId();
+          version = curDe.getDataElementConcept().getObjectClass().getVersion();
+        }
+      }
     }
-
 
     firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, true));
 
