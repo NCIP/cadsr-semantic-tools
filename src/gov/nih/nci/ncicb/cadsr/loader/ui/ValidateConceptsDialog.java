@@ -37,8 +37,6 @@ public class ValidateConceptsDialog extends JDialog
   
   private JSplitPane jSplitPane1 = new JSplitPane();
   
-  private JLabel jLabel1 = new JLabel();
-  private JLabel jLabel2 = new JLabel();
   private JEditorPane editorPane1 = new JEditorPane("text/html", "");
   private JEditorPane editorPane2 = new JEditorPane("text/html", "");
     
@@ -97,7 +95,7 @@ public class ValidateConceptsDialog extends JDialog
           if(result != null) 
           {
             if(!con.getLongName().equals(result.getConcept().getLongName())
-            || !con.getPreferredDefinition().equals(result.getConcept().getPreferredDefinition()))
+            || !con.getPreferredDefinition().trim().equals(result.getConcept().getPreferredDefinition().trim()))
               errorList.put(con, result.getConcept());             
           }
         }
@@ -152,15 +150,14 @@ public class ValidateConceptsDialog extends JDialog
         instructions.setBounds(new Rectangle(110, 0, 220, 20));
         mainPanel.setSize(new Dimension(400, 340));
         mainPanel.setLayout(null);
-        list.setBounds(new Rectangle(10, 30, 140, 300));
+        scrollPane.setBounds(new Rectangle(10, 30, 140, 300));
         jSplitPane1.setBounds(new Rectangle(160, 30, 220, 300));
         jSplitPane1.setDividerLocation(135);
         jSplitPane1.setBackground(Color.WHITE);
         jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
         
-        jLabel1.setBackground(Color.WHITE);
-        jLabel1.setBorder(javax.swing.BorderFactory.createTitledBorder("EVS Concept"));
-        jLabel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Element Concept"));
+        editorPane2.setBorder(javax.swing.BorderFactory.createTitledBorder("EVS Concept"));
+        editorPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Element Concept"));
 
         editorPane1.setEditable(false);
         editorPane2.setEditable(false);
@@ -171,7 +168,7 @@ public class ValidateConceptsDialog extends JDialog
         jSplitPane1.add(editorScrollPane2, JSplitPane.LEFT);
         
         mainPanel.add(jSplitPane1, null);
-        mainPanel.add(list, null);
+        mainPanel.add(scrollPane, null);
         mainPanel.add(instructions);
         
         
@@ -194,7 +191,7 @@ public class ValidateConceptsDialog extends JDialog
       if (list.getSelectedIndex() != -1) {
         value = (AcListElementWrapper)list.getSelectedValue(); 
         editorPane1.setText(getConceptHtml(value.getConcept()));
-        editorPane2.setText(getConceptHtml(value.getConcept()));
+        editorPane2.setText(getConceptHtml(errorList.get(value.getConcept())));
         //tableModel.fireTableDataChanged();
    
       }
