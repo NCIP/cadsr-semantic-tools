@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.List;
 
 import gov.nih.nci.ncicb.cadsr.evs.*;
+import org.apache.log4j.Logger;
 
 /**
  * Layer to the EVS external API.
@@ -34,6 +35,8 @@ import gov.nih.nci.ncicb.cadsr.evs.*;
  */
 public class EvsModule 
 {
+
+  private Logger logger = Logger.getLogger(EvsModule.class.getName());
 
   private static EVSQueryService evsService = new EVSQueryService(PropertyAccessor.getProperty("dts.url"));
 
@@ -51,7 +54,7 @@ public class EvsModule
         return evsConceptToEvsResult(evsConcept);
       }
     } catch (Exception e){
-      e.printStackTrace();
+      logger.warn(e.getMessage());
     } // end of try-catch
 
     return null;
