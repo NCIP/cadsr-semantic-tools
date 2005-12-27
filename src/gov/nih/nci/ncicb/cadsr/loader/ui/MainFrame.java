@@ -84,6 +84,7 @@ public class MainFrame extends JFrame
   private JMenuItem validateMenuItem = new JMenuItem("Validate");
   private JMenuItem uploadMenuItem = new JMenuItem("Upload");
   private JMenuItem defaultsMenuItem = new JMenuItem("Defaults");
+  private JMenuItem validateConceptsMenuItem = new JMenuItem("Validate Concepts");
 
   private JMenu helpMenu = new JMenu("Help");
   private JMenuItem aboutMenuItem = new JMenuItem("About");
@@ -202,6 +203,7 @@ public class MainFrame extends JFrame
       uploadMenuItem.setEnabled(false);
       runMenu.addSeparator();
       runMenu.add(defaultsMenuItem);
+      runMenu.add(validateConceptsMenuItem);
       mainMenuBar.add(runMenu);
     }
 
@@ -364,6 +366,18 @@ public class MainFrame extends JFrame
 //           JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
         } 
       });
+      
+    validateConceptsMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent event) {
+        int n = JOptionPane.showConfirmDialog(_this, 
+          "This process may take some time. Would you like to continue? ",
+          "Validate Concepts", JOptionPane.YES_NO_OPTION);
+        if(n == JOptionPane.YES_OPTION) {
+          ValidateConceptsDialog vcd = new ValidateConceptsDialog(_this);
+          vcd.setVisible(true);
+        }
+      }
+    });
 
     uploadMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
