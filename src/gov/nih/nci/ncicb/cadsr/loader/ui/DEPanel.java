@@ -242,6 +242,9 @@ public class DEPanel extends JPanel
       }
     }
 
+    de.getDataElementConcept().getObjectClass().setPublicId(pubId);
+    de.getDataElementConcept().getProperty().setVersion(version);
+
     firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, true));
 
     firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false));

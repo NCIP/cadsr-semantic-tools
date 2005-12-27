@@ -47,13 +47,16 @@ public class DEMappingUtil {
           .getElements(DomainObjectFactory.newDataElement());
         
         for(DataElement de : des) {
+          if(de.getDataElementConcept().getObjectClass() != oldDe.getDataElementConcept().getObjectClass())
+            continue;
+
           String ocId = de.getDataElementConcept().getObjectClass().getPublicId();
           if(oldDe != de && ocId != null && !ocId.equals(oc.getPublicId())) {
             return de;
           }
         }
         // we shouldn't be here
-        return newDe;
+        return null;
       }
     }
     return null;

@@ -225,4 +225,14 @@
     </java>    
   </target>
 
+  <target name="test-class" depends="prepare">
+    <java classname="gov.nih.nci.ncicb.cadsr.${testClass}" classpathref="proj.class.path" 
+      fork="yes"
+      jvm="${java}"
+      maxmemory="512m"
+      >
+    </java>    
+  </target>
+
+
 </project>
