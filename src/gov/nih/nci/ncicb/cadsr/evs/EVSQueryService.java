@@ -25,6 +25,9 @@ import gov.nih.nci.ncicb.cadsr.evs.EVSConcept;
 import gov.nih.nci.system.applicationservice.*;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Expression;
+
 import java.io.IOException;
 
 import java.util.*;
@@ -47,7 +50,29 @@ public class EVSQueryService {
     this.cacoreServiceURL = cacoreServiceURL;
   }
 
-  public List findConceptsBySynonym(
+
+  /* CL: Redo. No time atm. */
+  /**
+   * returns by list of concepts by preferredName
+   * <br> Usually, it means one concept, not always...
+   */
+  public List<EVSConcept> findConceptsByPreferredName(
+    String searchTerm,
+    boolean includeRetiredConcepts) throws Exception {
+    
+    // CL: this is bad. replace by true query. who guaranties the result is in the 1st 500 rows? 
+    List<EVSConcept> consBySyn = findConceptsBySynonym(searchTerm, includeRetiredConcepts, 500);
+    
+    List<EVSConcept> results = new ArrayList<EVSConcept>();
+    for(EVSConcept con : consBySyn) {
+      if(con.getPreferredName().equalsIgnoreCase(searchTerm))
+        results.add(con);
+    }
+
+    return results;
+  }
+
+  public List<EVSConcept> findConceptsBySynonym(
     String searchTerm,
     boolean includeRetiredConcepts,
     int rowCount) throws Exception {
@@ -55,42 +80,22 @@ public class EVSQueryService {
       throw new Exception("Please specify a valid caCORE Service URL");
     }
 
-    List results = new ArrayList();
     EVSQuery query = new EVSQueryImpl();
     query.getConceptWithPropertyMatching(
       NCI_THESAURUS_VOCAB_NAME, SYNONYM_PROPERTY_NAME, searchTerm, rowCount);
 
     List conceptNames = evsService.evsSearch(query);
 
-    results =
-      this.findConceptDetailsByName(conceptNames, includeRetiredConcepts);
+    return this.findConceptDetailsByName(conceptNames, includeRetiredConcepts);
 
-    /*for (Iterator it = conceptNames.iterator(); it.hasNext();) {
-       String conceptName = (String) it.next();
-       System.out.println("Element: " + conceptName);
-       DescLogicConcept concept =
-         this.findConceptByName(NCI_THESAURUS_VOCAB_NAME, conceptName);
-       System.out.println("Concept code: " + concept.getCode());
-       List synonyms = this.retrieveSynonyms(concept);
-       List defs = this.retrieveDefinitions(concept);
-    
-       EVSConcept c = new EVSConcept();
-       c.setCode(concept.getCode());
-       c.setPreferredName(conceptName);
-       c.setDefinitions(defs);
-       c.setSynonyms(synonyms);
-    
-       results.add(c);
-       }*/
-    return results;
   }
 
-  public List findConceptDetailsByName(
-    List conceptNames,
+  public List<EVSConcept> findConceptDetailsByName(
+    List<String> conceptNames,
     boolean includeRetiredConcepts) throws Exception {
-    List results = new ArrayList();
-    for (Iterator it = conceptNames.iterator(); it.hasNext();) {
-      String conceptName = (String) it.next();
+    List<EVSConcept> results = new ArrayList<EVSConcept>();
+
+    for (String conceptName : conceptNames) {
       DescLogicConcept concept =
         this.findDescLogicConceptByName(NCI_THESAURUS_VOCAB_NAME, conceptName);
 
@@ -237,7 +242,27 @@ public class EVSQueryService {
     EVSQueryService testAction = new EVSQueryService("http://cabio.nci.nih.gov/cacore30/server/HTTPServer");
     try {
       //testAction.findConceptsBySynonym("gene", 100);
-      testAction.findConceptsByCode("C41095", true, 100);
+//       testAction.findConceptsByCode("C41095", true, 100);
+
+      List<EVSConcept> cons = testAction.findConceptsByPreferredName("name", false);
+
+      for(EVSConcept con : cons) {
+        System.out.println(con.getPreferredName());
+      }
+
+//       ApplicationService evsService = ApplicationService.getRemoteInstance("http://cabio.nci.nih.gov/cacore30/server/HTTPServer");
+
+//       gov.nih.nci.evs.domain.DescLogicConcept concept = new gov.nih.nci.evs.domain.DescLogicConcept();
+//       DetachedCriteria criteria = DetachedCriteria.forClass(gov.nih.nci.evs.domain.DescLogicConcept.class, "concept");
+
+//       criteria.add(Expression.eq("name", "Name"));
+      
+//       List<DescLogicConcept> l = evsService.query(criteria, gov.nih.nci.evs.domain.DescLogicConcept.class.getName());
+
+//       for(DescLogicConcept con : l) {
+//         System.out.println(con.getName());
+//       }
+
     }
     catch (Exception e) {
       e.printStackTrace();
