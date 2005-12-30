@@ -60,12 +60,12 @@ public class EvsModule
     return null;
   }
   
-  public Collection<EvsResult> findBySynonym(String s, boolean includeRetired) 
+  public Collection<EvsResult> findByPreferredName(String s, boolean includeRetired) 
   {
-    Collection<EvsResult> result = new ArrayList();
+    Collection<EvsResult> result = new ArrayList<EvsResult>();
 
     try {
-      List<EVSConcept> evsConcepts = (List<EVSConcept>)evsService.findConceptsBySynonym(s, includeRetired, 100);
+      List<EVSConcept> evsConcepts = evsService.findConceptsByPreferredName(s, includeRetired);
       
       for(EVSConcept evsConcept : evsConcepts) {
         result.add(evsConceptToEvsResult(evsConcept));
@@ -76,6 +76,24 @@ public class EvsModule
 
     return result;
   }
+
+  public Collection<EvsResult> findBySynonym(String s, boolean includeRetired) 
+  {
+    Collection<EvsResult> result = new ArrayList<EvsResult>();
+
+    try {
+      List<EVSConcept> evsConcepts = evsService.findConceptsBySynonym(s, includeRetired, 100);
+      
+      for(EVSConcept evsConcept : evsConcepts) {
+        result.add(evsConceptToEvsResult(evsConcept));
+      }
+    } catch (Exception e){
+      e.printStackTrace();
+    } // end of try-catch
+
+    return result;
+  }
+
 
   private EvsResult evsConceptToEvsResult(EVSConcept evsConcept) {
 
