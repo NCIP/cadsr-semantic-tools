@@ -22,6 +22,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.text.Highlighter;
 
 
 
@@ -30,19 +31,25 @@ public class ValidateConceptsDialog extends JDialog
 {
   private EvsModule module = new EvsModule();
   private Map<Concept, Concept> errorList = new HashMap<Concept, Concept>();
+  private Map<Concept, Concept> errorNameList = new HashMap<Concept, Concept>();
 //  private List<ObjectClass> ocList = new ArrayList();
 //  private List<DataElementConcept> decList = new ArrayList();
   private List<AcListElementWrapper> wrapperList = 
     new ArrayList<AcListElementWrapper>();
   
   private JSplitPane jSplitPane1 = new JSplitPane();
+  private JSplitPane jSplitPaneEvs = new JSplitPane();
   
-  private JEditorPane editorPane1 = new JEditorPane("text/html", "");
-  private JEditorPane editorPane2 = new JEditorPane("text/html", "");
+  private JEditorPane elementPane = new JEditorPane("text/html", "");
+  private JEditorPane evsByCodePane = new JEditorPane("text/html", "");
+  private JEditorPane evsByNamePane = new JEditorPane("text/html", "");
     
   private DefaultListModel listModel = new DefaultListModel();
   private JList list;
-  private JScrollPane scrollPane;
+  private JScrollPane listScrollPane;
+  
+  private Map<Concept, String> highlightName = new HashMap<Concept, String>();
+  private Map<Concept, String> highlightDef = new HashMap<Concept, String>();
   
   private AbstractTableModel tableModel = null;
   private JTable resultTable = null;
@@ -62,6 +69,8 @@ public class ValidateConceptsDialog extends JDialog
   private java.util.List<AdminComponent> resultSet = new ArrayList<AdminComponent>();
   
   private AcListElementWrapper value;
+  
+  //private JLabel instructions;
   
   public ValidateConceptsDialog(JFrame owner)
   {
@@ -95,8 +104,22 @@ public class ValidateConceptsDialog extends JDialog
           if(result != null) 
           {
             if(!con.getLongName().equals(result.getConcept().getLongName())
-            || !con.getPreferredDefinition().trim().equals(result.getConcept().getPreferredDefinition().trim()))
-              errorList.put(con, result.getConcept());             
+            || !con.getPreferredDefinition().trim().equals(result.getConcept().getPreferredDefinition().trim())) {
+              errorList.put(con, result.getConcept());   
+              if(!con.getLongName().equals(result.getConcept().getLongName()))
+                highlightName.put(con, con.getLongName());
+              if(!con.getPreferredDefinition().trim().equals(result.getConcept().getPreferredDefinition().trim()))
+                highlightDef.put(con, con.getPreferredDefinition());
+            }
+          }
+          
+          Collection<EvsResult> nameResult = module.findByPreferredName(con.getLongName(), false);
+          if(nameResult != null && nameResult.size() == 1) 
+          {
+            for(EvsResult name : nameResult) 
+            if(!con.getPreferredDefinition().trim().equals(name.getConcept().getPreferredDefinition().trim()))
+              errorNameList.put(con, name.getConcept());
+            
           }
         }
         
@@ -124,6 +147,21 @@ public class ValidateConceptsDialog extends JDialog
                 wrapperList.add(new AcListElementWrapper(dec, concept));
           }
         
+        for(ObjectClass oc : ocs)
+          for(Concept concept : errorNameList.keySet()) {
+            String temp = oc.getLongName();
+              if(temp.equals(concept.getLongName()))
+                wrapperList.add(new AcListElementWrapper(oc, concept));
+          }
+        
+        for(DataElementConcept dec : decs)
+          for(Concept concept : errorNameList.keySet()) {
+            String temp = dec.getProperty().getLongName();
+              if(temp.equals(concept.getLongName()))
+                wrapperList.add(new AcListElementWrapper(dec, concept));
+          }
+        
+        
         event = new ProgressEvent();
         event.setMessage("Done ");
         event.setStatus(100);
@@ -138,9 +176,11 @@ public class ValidateConceptsDialog extends JDialog
     };
     worker.start();
         
+        final int LIST_SIZE = 390;
+        
         list = new JList(listModel);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        scrollPane = new JScrollPane(list);        
+        listScrollPane = new JScrollPane(list);        
         
         list.addListSelectionListener(this);
         list.setCellRenderer(new MyCellRenderer());
@@ -148,50 +188,68 @@ public class ValidateConceptsDialog extends JDialog
         JPanel mainPanel = new JPanel();
         JLabel instructions = new JLabel("Review the concepts' information");
         instructions.setBounds(new Rectangle(110, 0, 220, 20));
-        mainPanel.setSize(new Dimension(400, 340));
+        mainPanel.setSize(new Dimension(400, 440));
         mainPanel.setLayout(null);
-        scrollPane.setBounds(new Rectangle(10, 30, 140, 300));
-        jSplitPane1.setBounds(new Rectangle(160, 30, 220, 300));
-        jSplitPane1.setDividerLocation(135);
-        jSplitPane1.setBackground(Color.WHITE);
-        jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        listScrollPane.setBounds(new Rectangle(10, 30, 140, LIST_SIZE));
         
-        editorPane2.setBorder(javax.swing.BorderFactory.createTitledBorder("EVS Concept"));
-        editorPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Element Concept"));
+        jSplitPane1.setBounds(new Rectangle(160, 30, 220, LIST_SIZE));
 
-        editorPane1.setEditable(false);
-        editorPane2.setEditable(false);
+        jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+
+        jSplitPane1.setDividerLocation((int)(LIST_SIZE * 2 / 3));
+        jSplitPaneEvs.setOrientation(JSplitPane.VERTICAL_SPLIT);
         
-        JScrollPane editorScrollPane = new JScrollPane(editorPane1);
-        JScrollPane editorScrollPane2 = new JScrollPane(editorPane2);
-        jSplitPane1.add(editorScrollPane, JSplitPane.RIGHT);
-        jSplitPane1.add(editorScrollPane2, JSplitPane.LEFT);
+        
+        evsByCodePane.setBorder(javax.swing.BorderFactory.createTitledBorder("EVS Concept By Code"));
+        elementPane.setBorder(javax.swing.BorderFactory.createTitledBorder("Element Concept"));
+        evsByNamePane.setBorder(javax.swing.BorderFactory.createTitledBorder("EVS Concept By Name"));
+        
+        elementPane.setEditable(false);
+        evsByCodePane.setEditable(false);
+        evsByNamePane.setEditable(false);
+        
+        JScrollPane elementScrollPane = new JScrollPane(elementPane);
+        JScrollPane evsByCodeScrollPane = new JScrollPane(evsByCodePane);
+        JScrollPane evsByNameScrollPane = new JScrollPane(evsByNamePane);
+        
+        
+        jSplitPaneEvs.setDividerLocation(LIST_SIZE / 3);
+        jSplitPaneEvs.add(evsByCodeScrollPane, JSplitPane.BOTTOM);
+        jSplitPaneEvs.add(evsByNameScrollPane, JSplitPane.TOP);
+        
+        jSplitPane1.add(elementScrollPane, JSplitPane.BOTTOM);
+        jSplitPane1.add(jSplitPaneEvs, JSplitPane.TOP);
         
         mainPanel.add(jSplitPane1, null);
-        mainPanel.add(scrollPane, null);
+        mainPanel.add(listScrollPane, null);
         mainPanel.add(instructions);
         
         
         this.getContentPane().setLayout(new BorderLayout());
         this.getContentPane().add(mainPanel, BorderLayout.CENTER);
-        
-//        this.getContentPane().add(tablePanel, BorderLayout.CENTER);
-//        this.getContentPane().add(listPanel, BorderLayout.WEST);
-//        
+            
         this.getContentPane().add(new JLabel("Select an element from the list to view the concepts' information"));
-        this.setSize(400, 410);
+        this.setSize(400, 510);
         this.getContentPane().add(progressPanel, BorderLayout.SOUTH);
         this.setResizable(false);
         UIUtil.putToCenter(this);
+        
+
   }
   
   public void valueChanged(ListSelectionEvent e) 
   {
     if (e.getValueIsAdjusting() == false) {
       if (list.getSelectedIndex() != -1) {
-        value = (AcListElementWrapper)list.getSelectedValue(); 
-        editorPane1.setText(getConceptHtml(value.getConcept()));
-        editorPane2.setText(getConceptHtml(errorList.get(value.getConcept())));
+        value = (AcListElementWrapper)list.getSelectedValue();
+//        Highlighter hilite;
+//        if(highlightName.get((Concept)value)) {
+//          hilite = elementPane.getHighlighter();
+//        }
+        //instructions.setText(value.getOrder());
+        elementPane.setText(getConceptHtml(value.getConcept()));
+        evsByCodePane.setText(getConceptHtml(errorList.get(value.getConcept())));
+        evsByNamePane.setText(getConceptHtml(errorNameList.get(value.getConcept())));
         //tableModel.fireTableDataChanged();
    
       }
@@ -201,11 +259,13 @@ public class ValidateConceptsDialog extends JDialog
   private String getConceptHtml(Concept con) 
   {
     StringBuilder sb = new StringBuilder();
+    if(con != null) {
     sb.append("<html><body>");
     sb.append("<b>Code: </b>" + con.getPreferredName() + "<br>");
     sb.append("<b>Name: </b>" + con.getLongName() + "<br>");
     sb.append("<b>Definition: </b>" + con.getPreferredDefinition() + "<br>");
     sb.append("</body></html>");
+    }
     
     return sb.toString();
   }
@@ -214,6 +274,7 @@ public class ValidateConceptsDialog extends JDialog
 {
   private T ac;
   private Concept con;
+  
   AcListElementWrapper(T ac, Concept con) 
   {
     this.ac = ac;
@@ -227,6 +288,25 @@ public class ValidateConceptsDialog extends JDialog
   Concept getConcept() 
   {
     return con;
+  }
+  
+  String getOrder() 
+  {
+    String order = "";
+    String index = "";
+    String prefName = ac.getPreferredName();
+    String split[] = prefName.split(":");
+    if(split.length > 0)
+      for(int i = 0; i < split.length; i++)
+        if(split[i].equals(con.getPreferredName()))
+          index = split[i];
+    
+      if(split.length > 0)
+        order = "Qualifier" + index;
+      else
+        order = "Primary";
+    
+    return index;
   }
   
 }
