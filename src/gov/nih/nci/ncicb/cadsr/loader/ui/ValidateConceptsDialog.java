@@ -70,7 +70,7 @@ public class ValidateConceptsDialog extends JDialog
   
   private AcListElementWrapper value;
   
-  //private JLabel instructions;
+  private JLabel order;
   
   public ValidateConceptsDialog(JFrame owner)
   {
@@ -186,8 +186,8 @@ public class ValidateConceptsDialog extends JDialog
         list.setCellRenderer(new MyCellRenderer());
         
         JPanel mainPanel = new JPanel();
-        JLabel instructions = new JLabel("Review the concepts' information");
-        instructions.setBounds(new Rectangle(110, 0, 220, 20));
+        order = new JLabel("");
+        order.setBounds(new Rectangle(110, 0, 220, 20));
         mainPanel.setSize(new Dimension(400, 440));
         mainPanel.setLayout(null);
         listScrollPane.setBounds(new Rectangle(10, 30, 140, LIST_SIZE));
@@ -222,7 +222,7 @@ public class ValidateConceptsDialog extends JDialog
         
         mainPanel.add(jSplitPane1, null);
         mainPanel.add(listScrollPane, null);
-        mainPanel.add(instructions);
+        mainPanel.add(order);
         
         
         this.getContentPane().setLayout(new BorderLayout());
@@ -246,7 +246,7 @@ public class ValidateConceptsDialog extends JDialog
 //        if(highlightName.get((Concept)value)) {
 //          hilite = elementPane.getHighlighter();
 //        }
-        //instructions.setText(value.getOrder());
+        order.setText(value.getOrder());
         elementPane.setText(getConceptHtml(value.getConcept()));
         evsByCodePane.setText(getConceptHtml(errorList.get(value.getConcept())));
         evsByNamePane.setText(getConceptHtml(errorNameList.get(value.getConcept())));
@@ -293,20 +293,35 @@ public class ValidateConceptsDialog extends JDialog
   String getOrder() 
   {
     String order = "";
-    String index = "";
-    String prefName = ac.getPreferredName();
-    String split[] = prefName.split(":");
-    if(split.length > 0)
+    int index = -1;
+    if(ac instanceof ObjectClass) {
+      String prefName = ac.getPreferredName();
+      String split[] = prefName.split(":");
+  
       for(int i = 0; i < split.length; i++)
         if(split[i].equals(con.getPreferredName()))
-          index = split[i];
+          index = i;
     
-      if(split.length > 0)
-        order = "Qualifier" + index;
+      if(split.length -1 == index)
+        order = "Class Primary Concept";
       else
-        order = "Primary";
+        order = "Class Qualifier Concept #" + (split.length - 1 - index);
+    }
     
-    return index;
+    if(ac instanceof DataElementConcept) {
+      String prefName = ((DataElementConcept)ac).getProperty().getPreferredName();;
+      String split[] = prefName.split(":");
+
+      for(int i = 0; i < split.length; i++)
+        if(split[i].equals(con.getPreferredName()))
+          index = i;
+    
+      if(split.length -1 == index)
+        order = "Attribute Primary Concept";
+      else
+        order = "Attribute Qualifier Concept #" + (split.length - 1 - index);
+    }
+    return order;
   }
   
 }
