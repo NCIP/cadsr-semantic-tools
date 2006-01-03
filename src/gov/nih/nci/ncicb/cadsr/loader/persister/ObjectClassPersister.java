@@ -70,8 +70,7 @@ public class ObjectClassPersister extends UMLPersister {
           it.set(newOc);
           addPackageClassification(newOc, packageName);
           continue;
-        }
-
+        } // otherwise search by concepts
 
 	// does this oc exist?
 	List eager = new ArrayList();
@@ -83,12 +82,7 @@ public class ObjectClassPersister extends UMLPersister {
             concepts[i] = lookupConcept(conceptCodes[i++])
             );
         
-        List<ObjectClass> l = null;
-
-        // 
-
-        // otherwise search by concepts
-                  l = objectClassDAO.findByConceptCodes(conceptCodes, oc.getContext(), eager);
+        List<ObjectClass> l = objectClassDAO.findByConceptCodes(conceptCodes, oc.getContext(), eager);
 
         Concept primaryConcept = concepts[concepts.length - 1];
 

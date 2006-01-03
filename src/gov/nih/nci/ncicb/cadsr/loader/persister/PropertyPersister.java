@@ -62,7 +62,6 @@ public class PropertyPersister extends UMLPersister {
 	prop.setContext(defaults.getMainContext());
 
         String[] conceptCodes = prop.getPreferredName().split(":");
-        List<Property> l = null;
         
         if(!StringUtil.isEmpty(prop.getPublicId()) && prop.getVersion() != null) {
           newProp = existingMapping(prop, newName, newDef, packageName);
@@ -71,6 +70,11 @@ public class PropertyPersister extends UMLPersister {
           continue;
         }
 
+
+	List eager = new ArrayList();
+	eager.add(EagerConstants.AC_CS_CSI);
+
+        List<Property> l = propertyDAO.findByConceptCodes(conceptCodes, prop.getContext(), eager);
 
         Concept[] concepts = new Concept[conceptCodes.length];
         for(int i=0; i<concepts.length; 

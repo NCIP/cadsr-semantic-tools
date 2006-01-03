@@ -28,7 +28,8 @@ public enum RunMode {
   GenerateReport, 
     Curator, 
     Reviewer, 
-    Roundtrip
+    Roundtrip,
+    Loader
     ;
 
 

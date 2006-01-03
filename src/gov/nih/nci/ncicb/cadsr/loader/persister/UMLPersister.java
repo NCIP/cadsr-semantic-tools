@@ -110,11 +110,13 @@ public class UMLPersister implements Persister {
 
   protected void addAlternateName(AdminComponent ac, String newName, String type, String packageName) {
 
-    List altNames = adminComponentDAO.getAlternateNames(ac);
+    List<String> eager = new ArrayList<String>();
+    eager.add("csCsis");
+
+    List<AlternateName> altNames = adminComponentDAO.getAlternateNames(ac, eager);
     boolean found = false;
     ClassSchemeClassSchemeItem packageCsCsi = (ClassSchemeClassSchemeItem)defaults.getPackageCsCsis().get(packageName);
-    for(Iterator it = altNames.iterator(); it.hasNext(); ) {
-      AlternateName an = (AlternateName)it.next();
+    for(AlternateName an : altNames) {
       if(an.getType().equals(type) && an.getName().equals(newName)) {
         found = true;
         logger.info(PropertyAccessor.getProperty(
@@ -125,8 +127,7 @@ public class UMLPersister implements Persister {
         
         boolean csFound = false;
         boolean parentFound = false;
-        for(Iterator it2 = an.getCsCsis().iterator(); it2.hasNext();) {
-          ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
+        for(ClassSchemeClassSchemeItem csCsi : an.getCsCsis()) {
           if(csCsi.equals(packageCsCsi)) {
             csFound = true;
           } else if(csCsi.equals(packageCsCsi.getParent())) 
@@ -344,7 +345,7 @@ public class UMLPersister implements Persister {
     for (ListIterator it = l.listIterator(); it.hasNext();) {
       ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it.next();
 
-      if(csCsi.equals(packageCsCsi))
+      if(csCsi.getId().equals(packageCsCsi.getId()))
         found = true;
       else if(csCsi.equals(packageCsCsi.getParent())) 
         parentFound = true;

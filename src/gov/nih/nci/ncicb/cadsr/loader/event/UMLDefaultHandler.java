@@ -317,15 +317,13 @@ public class UMLDefaultHandler implements UMLHandler {
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     
-    List ocs = elements.getElements(oc.getClass());
+    List<ObjectClass> ocs = elements.getElements(oc);
     logger.debug("direction: " + event.getDirection());
 
     boolean aDone = false, 
       bDone = false;
 
-    for(Iterator it = ocs.iterator(); it.hasNext(); ) {
-      ObjectClass o = (ObjectClass) it.next();
-      
+    for(ObjectClass o : ocs) {
       if (!aDone && (o.getLongName().equals(event.getAClassName()))) {
         if (event.getDirection().equals("B")) {
           ocr.setSource(o);
@@ -386,11 +384,9 @@ public class UMLDefaultHandler implements UMLHandler {
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
     ObjectClass oc = DomainObjectFactory.newObjectClass();
 
-    List ocs = elements.getElements(oc.getClass());
+    List<ObjectClass> ocs = elements.getElements(oc);
 
-    for(Iterator it = ocs.iterator(); it.hasNext(); ) {
-      ObjectClass o = (ObjectClass) it.next();
-      
+    for(ObjectClass o : ocs ) {
       if (o.getLongName().equals(event.getParentClassName())) {
         ocr.setTarget(o);
       } else if (o.getLongName().equals(event.getChildClassName())) {
@@ -406,10 +402,9 @@ public class UMLDefaultHandler implements UMLHandler {
       childOc = ocr.getSource();
 
     List newElts = new ArrayList();
-    List des = elements.getElements(DomainObjectFactory.newDataElement().getClass());
+    List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
     if(des != null)
-      for(Iterator it = des.iterator(); it.hasNext(); ) {
-        DataElement de = (DataElement)it.next();
+      for(DataElement de : des) {
         DataElementConcept dec = de.getDataElementConcept();
         if(dec.getObjectClass() == parentOc) {
           // We found property belonging to parent
@@ -422,9 +417,8 @@ public class UMLDefaultHandler implements UMLHandler {
           DataElementConcept newDec = DomainObjectFactory.newDataElementConcept();
           newDec.setProperty(dec.getProperty());
           newDec.setObjectClass(childOc);
-          for(Iterator it2 = dec.getDefinitions().iterator();
-              it2.hasNext();) {
-            Definition def = (Definition)it2.next();
+
+          for(Definition def : dec.getDefinitions()) {
             newDec.addDefinition(def);
           }
           
@@ -441,24 +435,22 @@ public class UMLDefaultHandler implements UMLHandler {
           newDe.setValueDomain(de.getValueDomain());
           newDe.setLongName(newDec.getLongName() + de.getValueDomain().getPreferredName());
 
-          for(Iterator it2 = de.getDefinitions().iterator();
-              it2.hasNext();) {
-            Definition def = (Definition)it2.next();
+          
+          for(Definition def : de.getDefinitions()) {
             newDe.addDefinition(def);
           }
-
 
           AlternateName fullName = DomainObjectFactory.newAlternateName();
           fullName.setType(AlternateName.TYPE_FULL_NAME);
           fullName.setName(packageName + "." + className + "." + propName);
-          de.addAlternateName(fullName);
+          newDe.addAlternateName(fullName);
           
           // Store alt Name for DE:
           // ClassName:PropertyName
           fullName = DomainObjectFactory.newAlternateName();
           fullName.setType(AlternateName.TYPE_UML_DE);
           fullName.setName(className + ":" + propName);
-          de.addAlternateName(fullName);
+          newDe.addAlternateName(fullName);
 
 //           for(Iterator it2 = de.getAlternateNames().iterator(); it2.hasNext();) {
 //             AlternateName an = (AlternateName)it2.next();
@@ -491,8 +483,16 @@ public class UMLDefaultHandler implements UMLHandler {
       logger.error("Target does not exist: ");
       logger.error("Parent: " + event.getParentClassName());
     }
+
       
   }
+
+//   private void doInheritanceAncestors(ObjectClass parentClass) {
+//     List<ObjectClassRelationship> ocrs = ElementsLists.getElements(DomainObjectFactory.newObjectClassRelationship());
+
+    
+
+//   }
 
   private Concept newConcept(NewConceptEvent event) {
     Concept concept = DomainObjectFactory.newConcept();

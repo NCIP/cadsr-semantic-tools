@@ -56,6 +56,10 @@ public class DECPersister extends UMLPersister {
       for (ListIterator<DataElementConcept> it = decs.listIterator(); it.hasNext();) {
         DataElementConcept newDec = DomainObjectFactory.newDataElementConcept();
 	dec = it.next();
+
+        List<Definition> modelDefinitions = dec.getDefinitions();
+        List<AlternateName> modelAltNames = dec.getAlternateNames();
+
         
         String packageName = getPackageName(dec);
         
@@ -74,8 +78,11 @@ public class DECPersister extends UMLPersister {
 	logger.debug("dec name: " + dec.getLongName());
         logger.debug("alt Name: " + newName);
 
+        List<String> eager = new ArrayList<String>();
+        eager.add("definitions");
+
 	// does this dec exist?
-	List l = dataElementConceptDAO.find(newDec);
+	List l = dataElementConceptDAO.find(newDec, eager);
 
 //         String newDef = dec.getPreferredDefinition();
 	if (l.size() == 0) {
@@ -115,21 +122,21 @@ public class DECPersister extends UMLPersister {
 
 	  dec.setAudit(defaults.getAudit());
 
-          List altDefs = new ArrayList(dec.getDefinitions());
-          List altNames = new ArrayList(dec.getAlternateNames());
+//           List altDefs = new ArrayList(dec.getDefinitions());
+//           List altNames = new ArrayList(dec.getAlternateNames());
 
           newDec = dataElementConceptDAO.create(dec);
 
-          // restore altNames
-          for(Iterator it2 = altNames.iterator(); it2.hasNext();) {
-            AlternateName an = (AlternateName)it2.next();
-            dec.addAlternateName(an);
-          }
-          // restore altDefs
-          for(Iterator it2 = altDefs.iterator(); it2.hasNext();) {
-            Definition def = (Definition)it2.next();
-            dec.addDefinition(def);
-          }
+//           // restore altNames
+//           for(Iterator it2 = altNames.iterator(); it2.hasNext();) {
+//             AlternateName an = (AlternateName)it2.next();
+//             dec.addAlternateName(an);
+//           }
+//           // restore altDefs
+//           for(Iterator it2 = altDefs.iterator(); it2.hasNext();) {
+//             Definition def = (Definition)it2.next();
+//             dec.addDefinition(def);
+//           }
 
 	  logger.info(PropertyAccessor.getProperty("created.dec"));
 
@@ -149,8 +156,8 @@ public class DECPersister extends UMLPersister {
 
         addAlternateName(newDec, newName, AlternateName.TYPE_UML_DEC, packageName);
 
-        for(Iterator it2 = dec.getDefinitions().iterator(); it2.hasNext(); ) {
-          Definition def = (Definition)it2.next();
+//         for(Iterator it2 = dec.getDefinitions().iterator(); it2.hasNext(); ) {
+        for(Definition def : modelDefinitions) {
           addAlternateDefinition(
             newDec, def.getDefinition(), 
             def.getType(), packageName);

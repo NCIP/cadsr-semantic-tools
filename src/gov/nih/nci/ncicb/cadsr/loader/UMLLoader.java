@@ -36,6 +36,7 @@ import gov.nih.nci.ncicb.cadsr.loader.persister.*;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
@@ -100,6 +101,12 @@ public class UMLLoader {
     } catch (Exception e){
     } // end of try-catch
 
+    UserSelections userSelections = UserSelections.getInstance();
+    RunMode mode = RunMode.Loader;
+    userSelections.setProperty("MODE", mode);
+    userSelections.setProperty("SKIP_VD_VALIDATION", true);
+
+
     String[] filenames = new File(args[0]).list(new FilenameFilter() {
 	public boolean accept(File dir, String name) {
 	  return name.endsWith(".xmi");
@@ -163,6 +170,9 @@ public class UMLLoader {
       UMLDefaults defaults = UMLDefaults.getInstance();
       defaults.initParams(projectName, projectVersion, username);
 //       defaults.initClassifications();
+      defaults.initWithDB();
+      defaults.setUsername(username);
+
 
       XMIParser  parser = new XMIParser();
       parser.setEventHandler(listener);

@@ -55,10 +55,16 @@ public class XMIParser implements Parser {
 
   private String packageName = "";
   private String className = "";
-  private List associations = new ArrayList();
   private Logger logger = Logger.getLogger(XMIParser.class.getName());
-  private List generalizationEvents = new ArrayList();
-  private List associationEvents = new ArrayList();
+//   private List<NewGeneralizationEvent> generalizationEvents = new ArrayList<NewGeneralizationEvent>();
+
+
+  private List<NewAssociationEvent> associationEvents = new ArrayList<NewAssociationEvent>();
+  
+  // Key = child class Name
+  Map<String, NewGeneralizationEvent> childGeneralizationMap = 
+    new HashMap<String, NewGeneralizationEvent>();
+
 
   private ProgressListener progressListener = null;
 
@@ -344,7 +350,9 @@ public class XMIParser implements Parser {
         gEvent.setChildClassName(
           getPackageName(clazz) + "." + clazz.getName());
 
-        generalizationEvents.add(gEvent);
+//         generalizationEvents.add(gEvent);
+        childGeneralizationMap.put(gEvent.getChildClassName(), gEvent);
+
       }
     }
   }
@@ -633,6 +641,7 @@ public class XMIParser implements Parser {
 
     logger.debug("Adding association. AClassName: " + event.getAClassName());
     associationEvents.add(event);
+
   }
 
   private void doComponent(Component comp) {
@@ -661,12 +670,18 @@ public class XMIParser implements Parser {
   }
 
   private void fireLastEvents() {
-    for (Iterator it = associationEvents.iterator(); it.hasNext();) {
-      listener.newAssociation((NewAssociationEvent) it.next());
+    for (Iterator<NewAssociationEvent> it = associationEvents.iterator(); it.hasNext();) {
+      listener.newAssociation(it.next());
     }
 
-    for (Iterator it = generalizationEvents.iterator(); it.hasNext();) {
-      listener.newGeneralization((NewGeneralizationEvent) it.next());
+
+    for(Iterator<String> it = childGeneralizationMap.keySet().iterator(); it.hasNext(); ) {
+      String childClass = it.next();
+      recurseInheritance(childClass);
+      
+//       listener.newGeneralization(childGeneralizationMap.get(childClass));
+      it = childGeneralizationMap.keySet().iterator(); it.hasNext();
+
     }
 
     ProgressEvent evt = new ProgressEvent();
@@ -674,6 +689,17 @@ public class XMIParser implements Parser {
     evt.setStatus(100);
     evt.setMessage("Done");
     fireProgressEvent(evt);
+
+  }
+
+  private void recurseInheritance(String childClass) {
+    NewGeneralizationEvent genz = childGeneralizationMap.get(childClass);
+    if(childGeneralizationMap.containsKey(genz.getParentClassName())) {
+      recurseInheritance(genz.getParentClassName());
+    }
+
+    listener.newGeneralization(genz);
+    childGeneralizationMap.remove(childClass);
 
   }
 
