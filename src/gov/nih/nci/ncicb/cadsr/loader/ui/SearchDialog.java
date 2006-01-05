@@ -77,7 +77,7 @@ public class SearchDialog extends JDialog implements ActionListener, KeyListener
     {
       String s = searchField.getText();
       SearchEvent searchEvent = new SearchEvent(s, searchFromBottom.isSelected(),
-        searchByLongName.isSelected());
+        searchByLongName.isSelected(), false);
       fireSearchEvent(searchEvent);
       //this.setVisible(false);
     }
