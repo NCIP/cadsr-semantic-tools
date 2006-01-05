@@ -24,12 +24,15 @@ public class SearchEvent
   String searchString;
   boolean searchFromBottom;
   boolean searchByLongName;
+  boolean searchFromBeginning;
   
-  public SearchEvent(String find, boolean searchFromBottom, boolean searchByLongName)
+  public SearchEvent(String find, boolean searchFromBottom, boolean searchByLongName,
+    boolean searchFromBeginning)
   {
     searchString = find;
     this.searchFromBottom = searchFromBottom;
     this.searchByLongName = searchByLongName;
+    this.searchFromBeginning = searchFromBeginning;
   }
   
   public String getSearchString() 
@@ -45,5 +48,10 @@ public class SearchEvent
   public boolean getSearchByLongName() 
   {
     return searchByLongName;
+  }
+  
+  public boolean getSearchFromBeginning() 
+  {
+    return searchFromBeginning;
   }
 }
