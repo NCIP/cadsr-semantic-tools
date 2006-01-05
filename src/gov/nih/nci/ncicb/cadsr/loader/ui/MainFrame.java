@@ -374,6 +374,7 @@ public class MainFrame extends JFrame
           "Validate Concepts", JOptionPane.YES_NO_OPTION);
         if(n == JOptionPane.YES_OPTION) {
           ValidateConceptsDialog vcd = new ValidateConceptsDialog(_this);
+          vcd.addSearchListener(navigationPanel);
           vcd.setVisible(true);
         }
       }
