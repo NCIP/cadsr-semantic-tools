@@ -8,6 +8,8 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchEvent;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -50,6 +52,7 @@ public class ValidateConceptsDialog extends JDialog
   
   private Map<Concept, String> highlightName = new HashMap<Concept, String>();
   private Map<Concept, String> highlightDef = new HashMap<Concept, String>();
+  private Map<Concept, String> highlightCode = new HashMap<Concept, String>();
   
   private AbstractTableModel tableModel = null;
   private JTable resultTable = null;
@@ -71,6 +74,8 @@ public class ValidateConceptsDialog extends JDialog
   private AcListElementWrapper value;
   
   private JLabel order;
+  
+  private List<SearchListener> searchListeners = new ArrayList();
   
   public ValidateConceptsDialog(JFrame owner)
   {
@@ -116,13 +121,20 @@ public class ValidateConceptsDialog extends JDialog
           Collection<EvsResult> nameResult = module.findByPreferredName(con.getLongName(), false);
           if(nameResult != null && nameResult.size() == 1) 
           {
-            for(EvsResult name : nameResult) 
+            for(EvsResult name : nameResult) { 
             if(!con.getPreferredDefinition().trim().equals(name.getConcept().getPreferredDefinition().trim()))
               errorNameList.put(con, name.getConcept());
-            
+            if(!con.getPreferredName().equals(name.getConcept().getPreferredName())) {
+              highlightCode.put(name.getConcept(), name.getConcept().getPreferredName());
+              highlightCode.put(con, con.getPreferredName());
+            }
+//            if(!con.getPreferredDefinition().trim().equals(name.getConcept().getPreferredDefinition().trim())) {
+//              highlightCode.put(con, con.getPreferredDefinition());
+//              
+//            }
+            }
           }
         }
-        
         List<ObjectClass> ocs = ElementsLists.getInstance().
             getElements(DomainObjectFactory.newObjectClass());
         
@@ -251,7 +263,23 @@ public class ValidateConceptsDialog extends JDialog
         evsByCodePane.setText(getConceptHtml(errorList.get(value.getConcept())));
         evsByNamePane.setText(getConceptHtml(errorNameList.get(value.getConcept())));
         //tableModel.fireTableDataChanged();
-   
+        
+                
+        int ind = value.getAc().getLongName().lastIndexOf(".");
+        String className = value.getAc().getLongName().substring(ind + 1);
+        String split[] = className.split(":");
+        if(split.length > 1) {
+          className = split[0];
+          SearchEvent searchEvent = new SearchEvent(className, false,false,true);
+          fireSearchEvent(searchEvent);
+          className = split[1];
+          SearchEvent searchEvent2 = new SearchEvent(className, false,false,false);
+          fireSearchEvent(searchEvent2);
+        }  
+        else {
+          SearchEvent searchEvent = new SearchEvent(className, false,false,true);
+          fireSearchEvent(searchEvent);
+        }
       }
     }
   }
@@ -261,13 +289,33 @@ public class ValidateConceptsDialog extends JDialog
     StringBuilder sb = new StringBuilder();
     if(con != null) {
     sb.append("<html><body>");
-    sb.append("<b>Code: </b>" + con.getPreferredName() + "<br>");
-    sb.append("<b>Name: </b>" + con.getLongName() + "<br>");
-    sb.append("<b>Definition: </b>" + con.getPreferredDefinition() + "<br>");
+    if(highlightCode.containsKey(con))
+      sb.append("<div bgcolor='yellow'>" + "<b>Code: </b>" + con.getPreferredName() +"</div>" + "<br>");
+    else
+      sb.append("<b>Code: </b>" + con.getPreferredName() + "<br>");
+    if(highlightName.containsKey(con))
+      sb.append("<div bgcolor='yellow'>" + "<b>Preferred Name: </b>" + con.getLongName() + "</div>" + "<br>");
+    else
+      sb.append("<b>Preferred Name: </b>" + con.getLongName() + "<br>");
+    if(highlightDef.containsKey(con))
+      sb.append("<div bgcolor='yellow'>" + "<b>Definition: </b>" + con.getPreferredDefinition() + "</div>" + "<br>");
+    else
+      sb.append("<b>Definition: </b>" + con.getPreferredDefinition() + "<br>");
     sb.append("</body></html>");
     }
     
     return sb.toString();
+  }
+  
+  public void addSearchListener(SearchListener listener) 
+  {
+    searchListeners.add(listener);
+  }
+  
+  public void fireSearchEvent(SearchEvent event) 
+  {
+    for(SearchListener l : searchListeners)
+      l.search(event);
   }
   
   class AcListElementWrapper<T extends AdminComponent>
