@@ -329,7 +329,8 @@ public class NavigationPanel extends JPanel
      (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 
     TreePath path = null;
-    
+    if(event.getSearchFromBeginning())
+      selected = null;
     //if(event.getSearchByLongName()) {
     //search the tree in a forward direction from top to bottom
     if(!event.getSearchFromBottom()) {
