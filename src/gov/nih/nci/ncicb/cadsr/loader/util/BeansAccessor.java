@@ -29,8 +29,8 @@ import org.springframework.core.io.InputStreamResource;
 import org.apache.log4j.Logger;
 
 import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
-import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
-import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
+import gov.nih.nci.ncicb.cadsr.loader.*;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
 
 public class BeansAccessor {
   
@@ -48,6 +48,19 @@ public class BeansAccessor {
     else return null;
   }
     
+
+  public static CadsrPublicApiModule getCadsrPublicApiModule() {
+    return (CadsrPublicApiModule)getFactory().getBean("cadsrPublicApiModule");
+  }
+
+  public static UMLLoaderGUI getUMLLoaderGUI() {
+    return (UMLLoaderGUI)getFactory().getBean("umlLoaderGui");
+  }
+
+  public static RoundtripAction getRoundtripAction() {
+    return (RoundtripAction)getFactory().getBean("roundtripAction");
+  }
+
   private static BeanFactory getFactory() {
     try {
       if(factory != null)
@@ -58,5 +71,7 @@ public class BeansAccessor {
     } // end of try-catch
     return null;
   }
+ 
   
+ 
 }
