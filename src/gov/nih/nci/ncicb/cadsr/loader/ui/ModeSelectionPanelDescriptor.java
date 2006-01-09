@@ -20,9 +20,11 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import java.awt.event.*;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 
 public class ModeSelectionPanelDescriptor 
-  extends WizardPanelDescriptor {
+  extends WizardPanelDescriptor 
+  implements ActionListener {
   
   public static final String IDENTIFIER = "MODE_SELECTION_PANEL";
   private ModeSelectionPanel panel;
@@ -31,20 +33,19 @@ public class ModeSelectionPanelDescriptor
     panel =  new ModeSelectionPanel();
     setPanelDescriptorIdentifier(IDENTIFIER);
     setPanelComponent(panel);
+    panel.addActionListener(this);
+
+    nextPanelDescriptor = FileSelectionPanelDescriptor.IDENTIFIER;
+    backPanelDescriptor = ModeSelectionPanelDescriptor.IDENTIFIER;
+
   }
   
-  public Object getNextPanelDescriptor() {
-    return FileSelectionPanelDescriptor.IDENTIFIER;
+  public void actionPerformed(ActionEvent evt) {
+    if(evt.getActionCommand().equals(RunMode.Roundtrip.toString())) {
+      setNextPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
+    } else {
+      setNextPanelDescriptor(FileSelectionPanelDescriptor.IDENTIFIER);
+    }
   }
-  
-  public Object getBackPanelDescriptor() {
-    return null;
-  }  
-  
-//   public void actionPerformed(ActionEvent evt) {
-//     String path = panel.getSelection();
-//     File f = new File(path);
-//     getWizardModel().setNextButtonEnabled(new Boolean(f.exists()));
-//   }
     
 }

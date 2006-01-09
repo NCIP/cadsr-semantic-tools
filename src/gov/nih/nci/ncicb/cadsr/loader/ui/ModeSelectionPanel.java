@@ -31,8 +31,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class ModeSelectionPanel extends JPanel 
-{
+public class ModeSelectionPanel extends JPanel {
 
   private JRadioButton roundtripOption, reportOption, curateOption, annotateOption, reviewOption;
   private ButtonGroup group;
@@ -44,6 +43,14 @@ public class ModeSelectionPanel extends JPanel
   public ModeSelectionPanel()
   {
     initUI();
+  }
+
+  public void addActionListener(ActionListener l) {
+    roundtripOption.addActionListener(l);
+    reportOption.addActionListener(l);
+    curateOption.addActionListener(l);
+    annotateOption.addActionListener(l);
+    reviewOption.addActionListener(l);
   }
 
   public String getSelection() {
@@ -130,6 +137,5 @@ public class ModeSelectionPanel extends JPanel
 
     bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
-
-
+  
 }

@@ -53,6 +53,10 @@ public class ReportConfirmPanel extends JPanel {
     }
   }
 
+  public void setOutputText(String text) {
+    reportLabel.setText(text);
+  }
+
   private void initUI() {
 
     JPanel infoPanel = new JPanel();

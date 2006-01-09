@@ -99,15 +99,14 @@ public class WizardController implements ActionListener {
     }
 
     private void nextButtonPressed() {
- 
-        WizardModel model = wizard.getModel();
-        WizardPanelDescriptor descriptor = model.getCurrentPanelDescriptor();
-
-        Object nextPanelDescriptor = descriptor.getNextPanelDescriptor();
-//         if(descriptor.getPanelDescriptorIdentifier().equals(LoginPanelDescriptor.IDENTIFIER)) {
-//           final LoginPanel panel = (LoginPanel)descriptor.getPanelComponent();
-//           final ProgressLoginPanelDescriptor thisDesc =
-//             (ProgressLoginPanelDescriptor)model
+      WizardModel model = wizard.getModel();
+      WizardPanelDescriptor descriptor = model.getCurrentPanelDescriptor();
+      
+      Object nextPanelDescriptor = descriptor.getNextPanelDescriptor();
+      //         if(descriptor.getPanelDescriptorIdentifier().equals(LoginPanelDescriptor.IDENTIFIER)) {
+      //           final LoginPanel panel = (LoginPanel)descriptor.getPanelComponent();
+      //           final ProgressLoginPanelDescriptor thisDesc =
+      //             (ProgressLoginPanelDescriptor)model
 //             .getPanelDescriptor(nextPanelDescriptor);
 
 //           final SwingWorker worker = new SwingWorker() {
@@ -155,37 +154,57 @@ public class WizardController implements ActionListener {
 //           worker.start(); 
 //         }
 
-        if(descriptor.getPanelDescriptorIdentifier().equals(ModeSelectionPanelDescriptor.IDENTIFIER)) {
-          ModeSelectionPanel panel = 
-            (ModeSelectionPanel)descriptor.getPanelComponent();
-          
-          
-          mode = Enum.valueOf(RunMode.class, panel.getSelection());
-
-          userSelections.setProperty("MODE", mode);
-
-          prefs.setModeSelection(mode.toString());
-
-          FileSelectionPanelDescriptor fileDesc =
-            (FileSelectionPanelDescriptor)model
-            .getPanelDescriptor(FileSelectionPanelDescriptor.IDENTIFIER);
-          fileDesc.init();
-
-          ProgressFileSelectionPanelDescriptor desc =
+      if(descriptor.getPanelDescriptorIdentifier().equals(ModeSelectionPanelDescriptor.IDENTIFIER)) {
+        ModeSelectionPanel panel = 
+          (ModeSelectionPanel)descriptor.getPanelComponent();
+        
+        
+        mode = Enum.valueOf(RunMode.class, panel.getSelection());
+        
+        userSelections.setProperty("MODE", mode);
+        
+        prefs.setModeSelection(mode.toString());
+        
+        FileSelectionPanelDescriptor fileDesc =
+          (FileSelectionPanelDescriptor)model
+          .getPanelDescriptor(FileSelectionPanelDescriptor.IDENTIFIER);
+        fileDesc.init();
+        
+        ProgressFileSelectionPanelDescriptor desc =
             (ProgressFileSelectionPanelDescriptor)model
             .getPanelDescriptor(ProgressFileSelectionPanelDescriptor.IDENTIFIER);
 
-          if(mode.equals(RunMode.GenerateReport)) {
-            desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-          } else if(mode.equals(RunMode.Reviewer)) {
-            desc.setNextPanelDescriptor("FINISH");
-          } else if(mode.equals(RunMode.Curator)) {
-            desc.setNextPanelDescriptor("FINISH");
-          }
 
+        ModeSelectionPanelDescriptor mspDesc =
+            (ModeSelectionPanelDescriptor)model
+            .getPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
+        
+
+        if(mode.equals(RunMode.GenerateReport)) {
+          desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+        } else if(mode.equals(RunMode.Reviewer)) {
+          desc.setNextPanelDescriptor("FINISH");
+        } else if(mode.equals(RunMode.Curator)) {
+          desc.setNextPanelDescriptor("FINISH");
+        } else if(mode.equals(RunMode.Roundtrip)) {
+          desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+          desc.setBackPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
         }
+        
+      }
 
-        if(descriptor.getPanelDescriptorIdentifier().equals(FileSelectionPanelDescriptor.IDENTIFIER)) {
+      if(descriptor.getPanelDescriptorIdentifier().equals(RoundtripPanelDescriptor.IDENTIFIER)) {
+        RoundtripPanel panel = 
+          (RoundtripPanel)descriptor.getPanelComponent();
+        userSelections.setProperty("PROJECT_NAME", panel.getProjectName());
+        userSelections.setProperty("PROJECT_VERSION", new Float(panel.getProjectVersion()));
+
+
+        
+
+      }
+
+      if(descriptor.getPanelDescriptorIdentifier().equals(FileSelectionPanelDescriptor.IDENTIFIER)) {
           FileSelectionPanel panel = 
             (FileSelectionPanel)descriptor.getPanelComponent();
           filename = panel.getSelection();
@@ -289,12 +308,20 @@ public class WizardController implements ActionListener {
             SwingWorker worker = new SwingWorker() {
                 public Object construct() {
                   
-                  RoundtripAction roundtripAction = 
-                    new RoundtripAction();
+
+                  RoundtripAction roundtripAction = BeansAccessor.getRoundtripAction();
 
                   roundtripAction.addProgressListener(progressDesc);
-                  // !! TODO
-                  roundtripAction.doRoundtrip("caBIG", 1, filename, outputFile);
+
+                  String projectName = (String)userSelections.getProperty("PROJECT_NAME");
+                  Float projectVersion = (Float)(userSelections.getProperty("PROJECT_VERSION"));
+                  
+                  File f = new File(filename);
+                  outputFile = f.getParent() + "/" + "roundtrip.xmi";
+
+                  roundtripAction.doRoundtrip(projectName, projectVersion, filename, outputFile);
+
+                  reportPanel.setOutputText("<html><body>Roundtrip was completed. The output file can be found here: <br>" + outputFile + "</body></html>");
 
                   return null;
 
