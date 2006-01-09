@@ -95,10 +95,18 @@ public class CadsrPublicApiModule {
 //     subCriteria.add(Example.create(CadsrTransformer.altNamePrivateToPublic(altName)));
     subCriteria.add(Expression.eq("name", altName.getName()));
     subCriteria.add(Expression.eq("type", altName.getType()));
-    
-    subCriteria.createCriteria("designationClassSchemeItemCollection")
+
+
+    DetachedCriteria csCsiCriteria = subCriteria.createCriteria("designationClassSchemeItemCollection")
       .createCriteria("classSchemeClassSchemeItem")
       .add(Expression.eq("id", csCsi.getId()));
+
+//     csCsiCriteria.createCriteria("classificationScheme")
+//       .add(Expression.eq("id", csCsi.getCs().getId()));
+
+//     csCsiCriteria.createCriteria("classificationSchemeItem")
+//       .add(Expression.eq("type", csCsi.getCsi().getType()))
+//       .add(Expression.eq("name", csCsi.getCsi().getName()));
     
     List listResult = service.query(deCriteria, gov.nih.nci.cadsr.domain.impl.DataElementImpl.class.getName());
     
@@ -106,7 +114,7 @@ public class CadsrPublicApiModule {
 //       gov.nih.nci.cadsr.domain.DataElement qResult = (gov.nih.nci.cadsr.domain.DataElement)listResult.get(0);
       return CadsrTransformer.deListPublicToPrivate(listResult);
     } else
-      return null;
+      return new ArrayList();
   }
   
 
@@ -143,7 +151,7 @@ public class CadsrPublicApiModule {
       queryFields.put("version", new Float(1));
       
       List<String> eager = new ArrayList<String>();
-      eager.add("classSchemeClassSchemeItemCollection");
+//       eager.add("classSchemeClassSchemeItemCollection");
 
       Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme> csList = testModule.findClassificationScheme(queryFields, eager);
       
