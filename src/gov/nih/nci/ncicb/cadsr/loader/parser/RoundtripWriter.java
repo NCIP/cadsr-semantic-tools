@@ -22,6 +22,7 @@ package gov.nih.nci.ncicb.cadsr.loader.parser;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.NewConceptEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
@@ -230,52 +231,52 @@ public class RoundtripWriter implements ElementWriter {
 
   private void updateElements() {
     try {
-      List<ObjectClass> ocs = elementsList.getElements(DomainObjectFactory.newObjectClass().getClass());
-      List<DataElement> des = elementsList.getElements(DomainObjectFactory.newDataElement().getClass());
+//       List<ObjectClass> ocs = elementsList.getElements(DomainObjectFactory.newObjectClass().getClass());
+      List<DataElement> des = elementsList.getElements(DomainObjectFactory.newDataElement());
 
       ProgressEvent pEvt = new ProgressEvent();
-      pEvt.setGoal(ocs.size() + des.size());
+      pEvt.setGoal(des.size() + 1);
       pEvt.setMessage("Injecting CaDSR Public IDs");
       pEvt.setStatus(0);
       if(progressListener != null)
         progressListener.newProgressEvent(pEvt);
       
-      for(ObjectClass oc : ocs) {
-        pEvt.setStatus(pEvt.getStatus() + 1);
-        if(progressListener != null)
-          progressListener.newProgressEvent(pEvt);
+//       for(ObjectClass oc : ocs) {
+//         pEvt.setStatus(pEvt.getStatus() + 1);
+//         if(progressListener != null)
+//           progressListener.newProgressEvent(pEvt);
 
-        Element classElement = elements.get(oc.getLongName());
+//         Element classElement = elements.get(oc.getLongName());
 
-        // does OC have a pub id ?
-        if((oc.getPublicId() != null) && (oc.getPublicId().length() > 0) ) {
-          String xpath = "//*[local-name()='TaggedValue' and starts-with(@tag, 'CADSR_OC_') and @modelElement='"
-            + classElement.getAttributeValue("xmi.id")
-            + "']";
+//         // does OC have a pub id ?
+//         if((oc.getPublicId() != null) && (oc.getPublicId().length() > 0) ) {
+//           String xpath = "//*[local-name()='TaggedValue' and starts-with(@tag, 'CADSR_OC_') and @modelElement='"
+//             + classElement.getAttributeValue("xmi.id")
+//             + "']";
           
-          JDOMXPath path = new JDOMXPath(xpath);
-          List<Element> conceptTvs = path.selectNodes(modelElement);
-          // drop all current concept tagged values
-          for(Element tvElt : conceptTvs) {
-            tvElt.getParentElement().removeContent(tvElt);
-          }
+//           JDOMXPath path = new JDOMXPath(xpath);
+//           List<Element> conceptTvs = path.selectNodes(modelElement);
+//           // drop all current concept tagged values
+//           for(Element tvElt : conceptTvs) {
+//             tvElt.getParentElement().removeContent(tvElt);
+//           }
           
-          addTaggedValue
-            ("CADSR_OC_ID",
-             oc.getPublicId(),
-             getNewId(classElement.getAttributeValue("xmi.id")),
-             classElement.getAttributeValue("xmi.id"),
-             classElement.getNamespace());
+//           addTaggedValue
+//             ("CADSR_OC_ID",
+//              oc.getPublicId(),
+//              getNewId(classElement.getAttributeValue("xmi.id")),
+//              classElement.getAttributeValue("xmi.id"),
+//              classElement.getNamespace());
 
-          addTaggedValue
-            ("CADSR_OC_VERSION",
-             oc.getVersion().toString(),
-             getNewId(classElement.getAttributeValue("xmi.id")),
-             classElement.getAttributeValue("xmi.id"),
-             classElement.getNamespace());
+//           addTaggedValue
+//             ("CADSR_OC_VERSION",
+//              oc.getVersion().toString(),
+//              getNewId(classElement.getAttributeValue("xmi.id")),
+//              classElement.getAttributeValue("xmi.id"),
+//              classElement.getNamespace());
 
-        }
-      }
+//         }
+//       }
 
       for(DataElement de : des) {
         pEvt.setStatus(pEvt.getStatus() + 1);
@@ -285,52 +286,81 @@ public class RoundtripWriter implements ElementWriter {
         String fullPropName = de.getDataElementConcept().getObjectClass().getLongName() + "." + de.getDataElementConcept().getProperty().getLongName();
         Element attributeElement = elements.get(fullPropName);
         
-
-        if((de.getValueDomain().getPublicId() != null) && (de.getValueDomain().getPublicId().length() > 0)) {
-          
-          String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag, 'CADSR_VD_') or (starts-with(@tag, 'CADSR_PROP_') )  and @modelElement='"
+        if(!StringUtil.isEmpty(de.getPublicId())) {
+          String xpath = "//*[local-name()='TaggedValue' and starts-with(@tag, 'CADSR_DE_')  and @modelElement='"
             + attributeElement.getAttributeValue("xmi.id")
             + "']";
-          
+
+
           JDOMXPath path = new JDOMXPath(xpath);
           List<Element> tvs = path.selectNodes(modelElement);
 
           for(Element tv : tvs) {
             tv.getParentElement().removeContent(tv);
           }
-
-          addTaggedValue
-            ("CADSR_VD_ID",
-             de.getValueDomain().getPublicId(),
-             getNewId(attributeElement.getAttributeValue("xmi.id")),
-             attributeElement.getAttributeValue("xmi.id"),
-             attributeElement.getNamespace());
-
-          addTaggedValue
-            ("CADSR_VD_VERSION",
-             de.getValueDomain().getVersion().toString(),
-             getNewId(attributeElement.getAttributeValue("xmi.id")),
-             attributeElement.getAttributeValue("xmi.id"),
-             attributeElement.getNamespace());
-
-
-          addTaggedValue
-            ("CADSR_PROP_ID",
-             de.getDataElementConcept().getProperty().getPublicId(),
-             getNewId(attributeElement.getAttributeValue("xmi.id")),
-             attributeElement.getAttributeValue("xmi.id"),
-             attributeElement.getNamespace());
-
-          addTaggedValue
-            ("CADSR_PROP_VERSION",
-             de.getDataElementConcept().getProperty().getVersion().toString(),
-             getNewId(attributeElement.getAttributeValue("xmi.id")),
-             attributeElement.getAttributeValue("xmi.id"),
-             attributeElement.getNamespace());
           
+          addTaggedValue
+            ("CADSR_DE_ID",
+             de.getPublicId(),
+             getNewId(attributeElement.getAttributeValue("xmi.id")),
+             attributeElement.getAttributeValue("xmi.id"),
+             attributeElement.getNamespace());
+
+          addTaggedValue
+            ("CADSR_DE_VERSION",
+             de.getVersion().toString(),
+             getNewId(attributeElement.getAttributeValue("xmi.id")),
+             attributeElement.getAttributeValue("xmi.id"),
+             attributeElement.getNamespace());
+
           
         }
-    }
+
+      }
+
+//         if((de.getValueDomain().getPublicId() != null) && (de.getValueDomain().getPublicId().length() > 0)) {
+          
+//           String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag, 'CADSR_VD_') or (starts-with(@tag, 'CADSR_PROP_') )  and @modelElement='"
+//             + attributeElement.getAttributeValue("xmi.id")
+//             + "']";
+          
+//           JDOMXPath path = new JDOMXPath(xpath);
+//           List<Element> tvs = path.selectNodes(modelElement);
+
+//           for(Element tv : tvs) {
+//             tv.getParentElement().removeContent(tv);
+//           }
+
+//           addTaggedValue
+//             ("CADSR_VD_ID",
+//              de.getValueDomain().getPublicId(),
+//              getNewId(attributeElement.getAttributeValue("xmi.id")),
+//              attributeElement.getAttributeValue("xmi.id"),
+//              attributeElement.getNamespace());
+
+//           addTaggedValue
+//             ("CADSR_VD_VERSION",
+//              de.getValueDomain().getVersion().toString(),
+//              getNewId(attributeElement.getAttributeValue("xmi.id")),
+//              attributeElement.getAttributeValue("xmi.id"),
+//              attributeElement.getNamespace());
+
+
+//           addTaggedValue
+//             ("CADSR_PROP_ID",
+//              de.getDataElementConcept().getProperty().getPublicId(),
+//              getNewId(attributeElement.getAttributeValue("xmi.id")),
+//              attributeElement.getAttributeValue("xmi.id"),
+//              attributeElement.getNamespace());
+
+//           addTaggedValue
+//             ("CADSR_PROP_VERSION",
+//              de.getDataElementConcept().getProperty().getVersion().toString(),
+//              getNewId(attributeElement.getAttributeValue("xmi.id")),
+//              attributeElement.getAttributeValue("xmi.id"),
+//              attributeElement.getNamespace());
+          
+          
     } catch (JaxenException e){
     } 
     
