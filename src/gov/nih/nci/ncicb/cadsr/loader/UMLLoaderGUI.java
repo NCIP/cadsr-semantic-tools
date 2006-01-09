@@ -60,13 +60,13 @@ public class UMLLoaderGUI
 
   private UserSelections userSelections = UserSelections.getInstance();
 
+  private RoundtripPanelDescriptor roundtripDesc;
+
   public UMLLoaderGUI()
   {
+  }
 
-    InitClass initClass = new InitClass(this);
-    Thread t = new Thread(initClass);
-    t.setPriority(Thread.MIN_PRIORITY);
-    t.start();
+  public void start() {
 
 
     System.setProperty("java.security.auth.login.config", Thread.currentThread().getContextClassLoader().getResource("jaas.config").toExternalForm());
@@ -81,6 +81,9 @@ public class UMLLoaderGUI
 
     WizardPanelDescriptor descriptor2 = new FileSelectionPanelDescriptor();
     wizard.registerWizardPanel(FileSelectionPanelDescriptor.IDENTIFIER, descriptor2);
+
+//     WizardPanelDescriptor roundtrip = new RoundtripPanelDescriptor();
+    wizard.registerWizardPanel(RoundtripPanelDescriptor.IDENTIFIER, roundtripDesc);
 
     WizardPanelDescriptor fileProgress = new ProgressFileSelectionPanelDescriptor();
     wizard.registerWizardPanel(ProgressFileSelectionPanelDescriptor.IDENTIFIER, fileProgress);
@@ -123,24 +126,35 @@ public class UMLLoaderGUI
         }
       });
     frame.setVisible(true);
+
+//     InitClass initClass = new InitClass(this);
+//     Thread t = new Thread(initClass);
+//     t.setPriority(Thread.MIN_PRIORITY);
+//     t.start();
+
+
   }
 
-  /**
-   * 
-   * @param args
-   */
-  public static void main(String[] args)
-  {
-    try
-    {
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
-    }
+//   /**
+//    * 
+//    * @param args
+//    */
+//   public static void main(String[] args)
+//   {
+//     try
+//     {
+//       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//     }
+//     catch(Exception e)
+//     {
+//       e.printStackTrace();
+//     }
 
-    new UMLLoaderGUI();
+//     new UMLLoaderGUI();
+//   }
+
+  public void setRoundtripDescriptor(RoundtripPanelDescriptor desc) {
+    roundtripDesc = desc;
   }
 
   private void putToCenter(Component comp) {
