@@ -3,6 +3,18 @@
  
 <beans>
 
+  <bean name="umlLoaderGui"
+    class="gov.nih.nci.ncicb.cadsr.loader.UMLLoaderGUI"
+    >
+
+    <property name="roundtripDescriptor">
+      <ref bean="roundtripDescriptor"/>
+    </property>
+    
+  </bean>
+
+
+  <!-- Services -->
   <bean name="csvWriter"
     class="gov.nih.nci.ncicb.cadsr.loader.parser.CSVWriter" 
     singleton="true">
@@ -12,5 +24,45 @@
     class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIWriter" 
     singleton="true">
   </bean>
+
+  <bean name="cadsrModule"
+    class="gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule" 
+    singleton="true">
+    <property name="serviceURL"> <value>http://cabio.nci.nih.gov/cacore30/server/HTTPServer</value></property>
+  </bean>
+
+  <bean name="umlRoundtrip"
+    class="gov.nih.nci.ncicb.cadsr.loader.roundtrip.UMLRoundtrip" 
+    singleton="true"
+    >
+    <property name="cadsrModule"><ref bean="cadsrModule"/></property>
+  </bean>
+
+  <bean name="roundtripAction"
+    class="gov.nih.nci.ncicb.cadsr.loader.RoundtripAction" 
+    singleton="true"
+    >
+    <property name="roundtrip"><ref bean="umlRoundtrip"/></property>
+  </bean>
+
+
+  <!-- Wizard Panels -->
+  <bean name="roundtripPanel"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.RoundtripPanel">
+    <property name="cadsrModule">
+      <ref bean="cadsrModule"/>
+    </property>
+  </bean>
+
+  <!-- Wizard Descriptors -->
+  <bean name="roundtripDescriptor"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.RoundtripPanelDescriptor"
+    autowire="constructor">
+  </bean>
+
+  
+  <!-- UI Elements -->
+
+
 
 </beans>
