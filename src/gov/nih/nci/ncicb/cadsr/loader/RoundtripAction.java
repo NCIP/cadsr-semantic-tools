@@ -35,6 +35,8 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 public class RoundtripAction {
 
   private ProgressListener progressListener = null;
+
+  private Roundtrip roundtrip;
   
   public void doRoundtrip(String projectName, 
                           float projectVersion, 
@@ -49,17 +51,29 @@ public class RoundtripAction {
     UMLDefaults defaults = UMLDefaults.getInstance();
 
     try {
+      ProgressEvent pEvt = new ProgressEvent();
+      pEvt.setGoal(0);
+      pEvt.setMessage("Parsing XMI File");
+      pEvt.setStatus(0);
+      progressListener.newProgressEvent(pEvt);
+      
       defaults.initParams(inputFile);
       parser.parse(inputFile);
 
-      UMLRoundtrip roundtrip = new UMLRoundtrip(projectName, projectVersion);
+      roundtrip.setProjectName(projectName);
+      roundtrip.setProjectVersion(projectVersion);
       roundtrip.setProgressListener(progressListener);
-      roundtrip.roundtrip();
+      roundtrip.start();
 
       RoundtripWriter writer = new RoundtripWriter(inputFile);
       writer.setProgressListener(progressListener);
       writer.setOutput(outputFile);
       writer.write(ElementsLists.getInstance());
+
+      pEvt.setGoal(100);
+      pEvt.setMessage("Done");
+      pEvt.setStatus(100);
+      progressListener.newProgressEvent(pEvt);
 
     } catch (PersisterException e){
 
@@ -73,6 +87,14 @@ public class RoundtripAction {
 
   public void addProgressListener(ProgressListener l) {
     progressListener = l;
+  }
+
+
+  /**
+   * IoC setter
+   */
+  public void setRoundtrip(Roundtrip roundtrip) {
+    this.roundtrip = roundtrip;
   }
 
   public static void main(String[] args) {
