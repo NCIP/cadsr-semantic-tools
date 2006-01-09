@@ -203,7 +203,7 @@
   </target>
 
   <target name="gui" depends="prepare">
-    <java classname="gov.nih.nci.ncicb.cadsr.loader.UMLLoaderGUI" classpathref="proj.class.path" 
+    <java classname="gov.nih.nci.ncicb.cadsr.loader.SIW" classpathref="proj.class.path" 
       fork="yes"
       maxmemory="512m"
       >
