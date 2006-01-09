@@ -19,6 +19,10 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.roundtrip;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+
+
 /**
  * Roundtrip classes populate Object from the underlying database. Can be seen as the opposite of the Persister.
  *
@@ -26,5 +30,10 @@ package gov.nih.nci.ncicb.cadsr.loader.roundtrip;
  */
 public interface Roundtrip {
 
+  public void setProgressListener(ProgressListener l);
+  public void setProjectName(String projectName);
+  public void setProjectVersion(Float projectVersion);
+
+  public void start() throws RoundtripException;
 
 }

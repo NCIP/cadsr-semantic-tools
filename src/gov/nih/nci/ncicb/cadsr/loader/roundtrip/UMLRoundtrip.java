@@ -30,6 +30,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
 
 import org.apache.log4j.Logger;
 
@@ -69,12 +70,9 @@ public class UMLRoundtrip implements Roundtrip {
   private ClassificationScheme projectCs = null;
   private ProgressListener progressListener = null;
 
+  private CadsrPublicApiModule cadsrModule;
 
-  public UMLRoundtrip(String lastProjectName, Float lastProjectVersion) throws RoundtripException {
-    this.lastProjectName = lastProjectName;
-    this.lastProjectVersion = lastProjectVersion;
-    
-    initCs();
+  public UMLRoundtrip() {
   }
 
   public void setProgressListener(ProgressListener l) {
@@ -83,26 +81,40 @@ public class UMLRoundtrip implements Roundtrip {
 
   
   private void initCs() throws RoundtripException {
-    projectCs = createCs(lastProjectName, lastProjectVersion);
-    List eager = new ArrayList();
-    eager.add("csCsis");
+//     projectCs = createCs(lastProjectName, lastProjectVersion);
+//     List<String> eager = new ArrayList<String>();
+//     eager.add("csCsis");
     
-    List<ClassificationScheme> results = DAOAccessor.getClassificationSchemeDAO().find(projectCs, eager);
+//     List<ClassificationScheme> results = DAOAccessor.getClassificationSchemeDAO().find(projectCs, eager);
+    
+    Map<String, Object> queryFields = new HashMap<String, Object>();
+    queryFields.put("longName", lastProjectName);
+    queryFields.put("version", new Float(lastProjectVersion));
 
-    if(results.size() == 0)
-      throw new RoundtripException(PropertyAccessor.getProperty("last.project.not.found", new String[]{lastProjectName, lastProjectVersion.toString()}));
+    try {
+      Collection<ClassificationScheme> results = cadsrModule.findClassificationScheme(queryFields);
       
-    projectCs = results.get(0);
+      if(results.size() == 0)
+        throw new RoundtripException(PropertyAccessor.getProperty("last.project.not.found", new String[]{lastProjectName, lastProjectVersion.toString()}));
+
+      projectCs = results.iterator().next();
+    } catch (Exception e){
+      throw new RoundtripException("Cannot connect to caDSR Public API");
+
+    } // end of try-catch
+      
 
   }
 
 
-  public void roundtrip() {
+  public void start() throws RoundtripException {
+    initCs();
+
     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
-    List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
+//     List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
 
     ProgressEvent pEvt = new ProgressEvent();
-    pEvt.setGoal(des.size() + ocs.size());
+    pEvt.setGoal(des.size() + 1);
     pEvt.setMessage("Opening File");
     if(progressListener != null) 
       progressListener.newProgressEvent(pEvt);
@@ -112,34 +124,34 @@ public class UMLRoundtrip implements Roundtrip {
     Map<String, ClassSchemeClassSchemeItem> csCsiCache = 
       new HashMap<String, ClassSchemeClassSchemeItem>();
 
-    pEvt.setMessage("Looking up Classes");
-    for(ObjectClass oc : ocs) {
-      pEvt.setStatus(pEvt.getStatus() + 1);
-      if(progressListener != null) 
-        progressListener.newProgressEvent(pEvt);
+//     pEvt.setMessage("Looking up Classes");
+//     for(ObjectClass oc : ocs) {
+//       pEvt.setStatus(pEvt.getStatus() + 1);
+//       if(progressListener != null) 
+//         progressListener.newProgressEvent(pEvt);
 
-      String className = oc.getLongName();
-      int ind = className.lastIndexOf(".");
-      String packageName = className.substring(0, ind);
-      className = className.substring(ind + 1);
+//       String className = oc.getLongName();
+//       int ind = className.lastIndexOf(".");
+//       String packageName = className.substring(0, ind);
+//       className = className.substring(ind + 1);
 
-      ClassSchemeClassSchemeItem csCsi = csCsiCache.get(packageName);
-      if(csCsi == null) {
-        csCsi = lookupCsCsi(packageName);
-      }
+//       ClassSchemeClassSchemeItem csCsi = csCsiCache.get(packageName);
+//       if(csCsi == null) {
+//         csCsi = lookupCsCsi(packageName);
+//       }
       
-      if(csCsi != null) {  
-        if(oc.getPublicId() == null) {
-          ObjectClass newOc = findObjectClass(csCsi, className);
-          if(newOc != null) {
-            oc.setPublicId(newOc.getPublicId());
-            oc.setVersion(newOc.getVersion());
-          }
-        }
-      }       
-    }
+//       if(csCsi != null) {  
+//         if(oc.getPublicId() == null) {
+//           ObjectClass newOc = findObjectClass(csCsi, className);
+//           if(newOc != null) {
+//             oc.setPublicId(newOc.getPublicId());
+//             oc.setVersion(newOc.getVersion());
+//           }
+//         }
+//       }       
+//     }
     
-    pEvt.setMessage("Looking up Attributes");
+    pEvt.setMessage("Looking up CDEs");
     for(DataElement de : des) {
       ObjectClass oc = de.getDataElementConcept().getObjectClass();
 
@@ -165,35 +177,33 @@ public class UMLRoundtrip implements Roundtrip {
         altName.setName(de.getDataElementConcept().getLongName());
         altName.setType(AlternateName.TYPE_UML_DE);
         
-        List<String> eager = new ArrayList<String>();
-        List<DataElement> l = DAOAccessor.getAdminComponentDAO()
-          .findByClassifiedAlternateName(
-            altName,
-            DomainObjectFactory.newDataElement(),
-            csCsi, eager
-            );
-        
-        DataElement newDe = null;
-        if(l.size() > 0)
-          newDe = l.get(0);
-        
-        if(newDe != null) {
-          System.out.println("Found Mathcing DE " + altName.getName());
-          de.setValueDomain(newDe.getValueDomain());
-          de.getDataElementConcept().getProperty().setPublicId(newDe.getDataElementConcept().getProperty().getPublicId());
-          de.getDataElementConcept().getProperty().setVersion(newDe.getDataElementConcept().getProperty().getVersion());
-        } else
-          System.out.println("NO DE MATCH " + altName.getName());
+        try {
+          Collection<DataElement> l = cadsrModule.findDEByClassifiedAltName(altName, csCsi);
+
+          
+          DataElement newDe = null;
+          if(l.size() > 0) 
+            newDe = l.iterator().next();
+          
+          if(newDe != null) {
+            logger.debug("Found Matching DE " + altName.getName());
+            de.setPublicId(newDe.getPublicId());
+            de.setVersion(newDe.getVersion());
+          } else
+            logger.debug("NO DE MATCH " + altName.getName());
+        } catch (Exception e){
+          e.printStackTrace();
+          logger.error("Cannot connect to Cadsr Public API: " + e.getMessage());
+        } // end of try-catch
       }
     }
   }
 
   private ClassSchemeClassSchemeItem lookupCsCsi(String packageName) {
-    List csCsis = projectCs.getCsCsis();
+    List<ClassSchemeClassSchemeItem> csCsis = projectCs.getCsCsis();
     ClassSchemeClassSchemeItem packageCsCsi = null;
-    for(Iterator it = csCsis.iterator(); it.hasNext(); ) {
-      ClassSchemeClassSchemeItem csCsi = 
-        (ClassSchemeClassSchemeItem)it.next();
+
+    for(ClassSchemeClassSchemeItem csCsi : csCsis) {
       try {
         if(csCsi.getCsi().getName().equals(packageName)
            || csCsi.getCsi().getComments().equals(packageName)
@@ -207,37 +217,52 @@ public class UMLRoundtrip implements Roundtrip {
 
   }
 
-  private ClassificationScheme createCs(String projectName, float projectVersion) {
-    ClassificationScheme cs = DomainObjectFactory.newClassificationScheme();
-    cs.setPreferredName(projectName);
-    cs.setVersion(new Float(projectVersion));
-    return cs;
+//   private ClassificationScheme createCs(String projectName, float projectVersion) {
+//     ClassificationScheme cs = DomainObjectFactory.newClassificationScheme();
+//     cs.setLongName(projectName);
+//     cs.setVersion(new Float(projectVersion));
+//     return cs;
+//   }
+
+//   private ObjectClass findObjectClass(
+//     ClassSchemeClassSchemeItem packageCsCsi,
+//     String className
+//     ) 
+//   {
+    
+//     AlternateName altName = DomainObjectFactory.newAlternateName();
+//     altName.setName(className);
+//     altName.setType(AlternateName.TYPE_UML_CLASS);
+    
+//     List eager = new ArrayList();
+//     eager.add("acCsCsis");    
+//     List<ObjectClass> l = DAOAccessor.getAdminComponentDAO()
+//       .findByClassifiedAlternateName(
+//         altName, DomainObjectFactory.newObjectClass(),
+//         packageCsCsi, eager
+//         );
+    
+//     ObjectClass oc = null;
+//     if(l.size() > 0)
+//       oc = l.get(0);
+
+//     return oc;
+//   }
+
+  
+  public void setProjectName(String lastProjectName) {
+    this.lastProjectName = lastProjectName;
+  }
+  
+  public void setProjectVersion(Float lastProjectVersion) {
+    this.lastProjectVersion = lastProjectVersion;
   }
 
-  private ObjectClass findObjectClass(
-    ClassSchemeClassSchemeItem packageCsCsi,
-    String className
-    ) 
-  {
-    
-    AlternateName altName = DomainObjectFactory.newAlternateName();
-    altName.setName(className);
-    altName.setType(AlternateName.TYPE_UML_CLASS);
-    
-    List eager = new ArrayList();
-    eager.add("acCsCsis");    
-    List<ObjectClass> l = DAOAccessor.getAdminComponentDAO()
-      .findByClassifiedAlternateName(
-        altName, DomainObjectFactory.newObjectClass(),
-        packageCsCsi, eager
-        );
-    
-    ObjectClass oc = null;
-    if(l.size() > 0)
-      oc = l.get(0);
-
-    return oc;
+  /**
+   * IoC setter
+   */
+  public void setCadsrModule(CadsrPublicApiModule module) {
+    cadsrModule = module;
   }
-
 
 }
