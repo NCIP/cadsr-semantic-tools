@@ -172,6 +172,22 @@ public class CadsrTransformer {
 
   }
 
+  /**
+   * Transforms an OC List from public API to private API
+   */
+  public static Collection<gov.nih.nci.ncicb.cadsr.domain.ObjectClass> ocListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.ObjectClass> inOCs) {
+
+    List<gov.nih.nci.ncicb.cadsr.domain.ObjectClass> outOCs = 
+      new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ObjectClass>();
+
+    for(gov.nih.nci.cadsr.domain.ObjectClass privateOC : inOCs) {
+      outOCs.add(ocPublicToPrivate(privateOC));
+    }
+    return outOCs;
+
+  }
+
+
   private static gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem csCsiPublicToPrivate(gov.nih.nci.cadsr.domain.ClassSchemeClassSchemeItem inCsCsi) {
 
     gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem outCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
