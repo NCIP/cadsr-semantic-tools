@@ -67,6 +67,18 @@ public class CadsrPublicApiModule {
     return CadsrTransformer.csListPublicToPrivate(listResult);
   }
 
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.ObjectClass>
+    findObjectClass(Map<String, Object> queryFields) throws Exception {
+
+    DetachedCriteria criteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.impl.ObjectClassImpl.class, "oc");
+
+    prepareCriteria(criteria, queryFields, null);
+
+    List listResult = new ArrayList(new HashSet(service.query(criteria, gov.nih.nci.cadsr.domain.impl.ObjectClassImpl.class.getName())));
+
+    return CadsrTransformer.ocListPublicToPrivate(listResult);
+  }
+
 
 
   public gov.nih.nci.ncicb.cadsr.domain.DataElement 
@@ -126,7 +138,16 @@ public class CadsrPublicApiModule {
 
   private void prepareCriteria(DetachedCriteria criteria, Map<String, Object> queryFields, List<String> eager) {
     for(String field : queryFields.keySet()) {
-      criteria.add(Expression.eq(field, queryFields.get(field)));
+      Object o = queryFields.get(field);
+      if(o instanceof String) {
+        String s = (String)o;
+        s = s.replace('*', '%');
+        if(s.indexOf("%") != -1) {
+          criteria.add(Expression.like(field, s));
+          continue;
+        }
+      } 
+      criteria.add(Expression.eq(field, o));
     }
 
     if(eager != null) {
