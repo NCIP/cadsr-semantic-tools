@@ -99,7 +99,8 @@ public class DEPanel extends JPanel
         public void actionPerformed(ActionEvent event) {
           JButton button = (JButton)event.getSource();
           if(button.getActionCommand().equals(SEARCH)) {
-            CadsrDialog cd = new CadsrDialog(CadsrDialog.MODE_DE);
+//             CadsrDialog cd = new CadsrDialog(CadsrDialog.MODE_DE);
+            CadsrDialog cd = BeansAccessor.getCadsrDEDialog();
             cd.setVisible(true);
             
             tempDE = (DataElement)cd.getAdminComponent();

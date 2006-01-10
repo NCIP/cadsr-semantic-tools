@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 
 import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
 import gov.nih.nci.ncicb.cadsr.loader.*;
+import gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
 
 public class BeansAccessor {
@@ -59,6 +60,14 @@ public class BeansAccessor {
 
   public static RoundtripAction getRoundtripAction() {
     return (RoundtripAction)getFactory().getBean("roundtripAction");
+  }
+
+  public static CadsrDialog getCadsrDEDialog() {
+    return (CadsrDialog)getFactory().getBean("cadsrDEDialog");
+  }
+
+  public static CadsrDialog getCadsrVDDialog() {
+    return (CadsrDialog)getFactory().getBean("cadsrVDDialog");
   }
 
   private static BeanFactory getFactory() {

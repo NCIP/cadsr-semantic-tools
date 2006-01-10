@@ -3,6 +3,7 @@ import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -26,7 +27,7 @@ public class VDPanel extends JPanel
   vdContextNameValueLabel = new JLabel(),
   vdVersionTitleLabel = new JLabel("Version"),
   vdVersionValueLabel = new JLabel();
-  
+
   private static final String SEARCH = "SEARCH";
   
   private List<PropertyChangeListener> propChangeListeners 
@@ -34,7 +35,7 @@ public class VDPanel extends JPanel
   
   private ValueDomain tempVD, vd;
   private UMLNode node;
-  
+
   public VDPanel(UMLNode node)
   {
     this.node = node;
@@ -66,7 +67,7 @@ public class VDPanel extends JPanel
       public void actionPerformed(ActionEvent event) {
         JButton button = (JButton)event.getSource();
         if(button.getActionCommand().equals(SEARCH)) {
-          CadsrDialog cd = new CadsrDialog(CadsrDialog.MODE_VD);
+          CadsrDialog cd = BeansAccessor.getCadsrVDDialog();
           cd.setVisible(true);
         
           tempVD = (ValueDomain)cd.getAdminComponent();
@@ -138,7 +139,7 @@ public class VDPanel extends JPanel
 
     bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
-  
+
     public static void main(String[] args)
   {
 //    JFrame frame = new JFrame();

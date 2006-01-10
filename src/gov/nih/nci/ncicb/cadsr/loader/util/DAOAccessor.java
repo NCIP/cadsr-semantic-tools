@@ -25,7 +25,7 @@ import gov.nih.nci.ncicb.cadsr.dao.*;
 import org.apache.log4j.Logger;
 
 
-public class DAOAccessor {
+public class DAOAccessor implements Runnable {
 
   private static AdminComponentDAO adminComponentDAO;
   private static DataElementDAO dataElementDAO;
@@ -45,6 +45,10 @@ public class DAOAccessor {
   private static Logger logger = Logger.getLogger(DAOAccessor.class.getName());
 
   static {
+    init();
+  }
+
+  public synchronized static void init()  {
     ApplicationContextFactory.init("applicationContext.xml");
 
     logger.info("Loading DataElementDAO bean");
@@ -106,61 +110,64 @@ public class DAOAccessor {
 
   }
 
-  public static AdminComponentDAO getAdminComponentDAO() {
+  public synchronized static AdminComponentDAO getAdminComponentDAO() {
     return adminComponentDAO;
   }
 
-  public static DataElementDAO getDataElementDAO() {
+  public synchronized static DataElementDAO getDataElementDAO() {
     return dataElementDAO;
   }
 
-  public static DataElementConceptDAO getDataElementConceptDAO() {
+  public synchronized static DataElementConceptDAO getDataElementConceptDAO() {
     return dataElementConceptDAO;
   }
 
-  public static ValueDomainDAO getValueDomainDAO() {
+  public synchronized static ValueDomainDAO getValueDomainDAO() {
     return valueDomainDAO;
   }
 
-  public static PropertyDAO getPropertyDAO() {
+  public synchronized static PropertyDAO getPropertyDAO() {
     return propertyDAO;
   }
 
-  public static ObjectClassDAO getObjectClassDAO() {
+  public synchronized static ObjectClassDAO getObjectClassDAO() {
     return objectClassDAO;
   }
 
-  public static ObjectClassRelationshipDAO getObjectClassRelationshipDAO() {
+  public synchronized static ObjectClassRelationshipDAO getObjectClassRelationshipDAO() {
     return objectClassRelationshipDAO;
   }
 
-  public static ClassificationSchemeDAO getClassificationSchemeDAO() {
+  public synchronized static ClassificationSchemeDAO getClassificationSchemeDAO() {
     return classificationSchemeDAO;
   }
 
-  public static ClassificationSchemeItemDAO getClassificationSchemeItemDAO() {
+  public synchronized static ClassificationSchemeItemDAO getClassificationSchemeItemDAO() {
     return classificationSchemeItemDAO;
   }
 
-  public static ClassSchemeClassSchemeItemDAO getClassSchemeClassSchemeItemDAO() {
+  public synchronized static ClassSchemeClassSchemeItemDAO getClassSchemeClassSchemeItemDAO() {
     return classSchemeClassSchemeItemDAO;
   }
 
-  public static ConceptDAO getConceptDAO() {
+  public synchronized static ConceptDAO getConceptDAO() {
     return conceptDAO;
   }
 
-  public static LoaderDAO getLoaderDAO() {
+  public synchronized static LoaderDAO getLoaderDAO() {
     return loaderDAO;
   }
 
-  public static ContextDAO getContextDAO() {
+  public synchronized static ContextDAO getContextDAO() {
     return contextDAO;
   }
 
-  public static ConceptualDomainDAO getConceptualDomainDAO() {
+  public synchronized static ConceptualDomainDAO getConceptualDomainDAO() {
     return conceptualDomainDAO;
   }
 
+  public void run() {
+    init();
+  }
 
 }
