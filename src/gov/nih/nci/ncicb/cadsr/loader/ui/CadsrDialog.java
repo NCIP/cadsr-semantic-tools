@@ -5,6 +5,7 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -13,7 +14,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.*;
-import java.util.ArrayList;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -43,6 +44,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
     closeButton = new JButton("Close");
   
   private JLabel indexLabel = new JLabel("");
+
+  private CadsrPublicApiModule cadsrModule;
 
   private static String SEARCH = "SEARCH",
     PREVIOUS = "PREVIOUS",
@@ -268,48 +271,50 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
       
       _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       
-      switch (mode) {
-      case MODE_OC:
-        ObjectClass oc = DomainObjectFactory.newObjectClass();
-        ObjectClassDAO ocDAO = DAOAccessor.getObjectClassDAO();
-        if(selection.equals(LONG_NAME)) {
-          oc.setLongName(text);
-        } else if(selection.equals(PUBLIC_ID)) {
-          oc.setPublicId(text);
-        }
-        resultSet.addAll(ocDAO.find(oc));
-        break;
-      case MODE_PROP:
-        Property prop = DomainObjectFactory.newProperty();
-        PropertyDAO propDAO = DAOAccessor.getPropertyDAO();
-        if(selection.equals(LONG_NAME)) {
-          prop.setLongName(text);
-        } else if(selection.equals(PUBLIC_ID)) {
-          prop.setPublicId(text);
-        }
-        resultSet.addAll(propDAO.find(prop));
-        break;
-      case MODE_DE:
-        DataElement de = DomainObjectFactory.newDataElement();
-        DataElementDAO deDAO = DAOAccessor.getDataElementDAO();
-        if(selection.equals(LONG_NAME)) {
-          de.setLongName(text);
-        } else if(selection.equals(PUBLIC_ID)) {
-          de.setPublicId(text);
-        }
-        resultSet.addAll(deDAO.find(de, 20));       
-        break;
-      case MODE_VD:
-        ValueDomain vd = DomainObjectFactory.newValueDomain();
-        ValueDomainDAO vdDAO = DAOAccessor.getValueDomainDAO();
-        if(selection.equals(LONG_NAME)) {
-          vd.setLongName(text);
-        } else if(selection.equals(PUBLIC_ID)) {
-          vd.setPublicId(text);
-        }
-        resultSet.addAll(vdDAO.find(vd));       
+      try {
+        switch (mode) {
+        case MODE_OC:
+          Map<String, Object> queryFields = new HashMap<String, Object>();
+          if(selection.equals(LONG_NAME)) {
+            queryFields.put("longName", text);
+          } else if(selection.equals(PUBLIC_ID)) {
+            queryFields.put("publicID", new Long(text));
+          }
+          resultSet.addAll(cadsrModule.findObjectClass(queryFields));
+          break;
+        case MODE_PROP:
+          Property prop = DomainObjectFactory.newProperty();
+          PropertyDAO propDAO = DAOAccessor.getPropertyDAO();
+          if(selection.equals(LONG_NAME)) {
+            prop.setLongName(text);
+          } else if(selection.equals(PUBLIC_ID)) {
+            prop.setPublicId(text);
+          }
+          resultSet.addAll(propDAO.find(prop));
+          break;
+        case MODE_DE:
+          DataElement de = DomainObjectFactory.newDataElement();
+          DataElementDAO deDAO = DAOAccessor.getDataElementDAO();
+          if(selection.equals(LONG_NAME)) {
+            de.setLongName(text);
+          } else if(selection.equals(PUBLIC_ID)) {
+            de.setPublicId(text);
+          }
+          resultSet.addAll(deDAO.find(de, 20));       
+          break;
+        case MODE_VD:
+          ValueDomain vd = DomainObjectFactory.newValueDomain();
+          ValueDomainDAO vdDAO = DAOAccessor.getValueDomainDAO();
+          if(selection.equals(LONG_NAME)) {
+            vd.setLongName(text);
+          } else if(selection.equals(PUBLIC_ID)) {
+            vd.setPublicId(text);
+          }
+          resultSet.addAll(vdDAO.find(vd));       
 
-      }
+        }
+      } catch (Exception e){
+      } // end of try-catch
       
       _this.setCursor(Cursor.getDefaultCursor());
       
@@ -364,10 +369,22 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
 
   public void keyReleased(KeyEvent evt) {
   }
-  
+ 
+  /**
+   * IoC setter
+   */
+  public void setCadsrModule(CadsrPublicApiModule module) {
+    this.cadsrModule = module;
+  }
+ 
   public static void main(String[] args) 
   {
-    CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_VD);
+    CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_OC);
+
+    dialog.setCadsrModule(new CadsrPublicApiModule("http://cabio.nci.nih.gov/cacore30/server/HTTPServer"));
     dialog.setVisible(true);
+    
+    
+
   }
 }
