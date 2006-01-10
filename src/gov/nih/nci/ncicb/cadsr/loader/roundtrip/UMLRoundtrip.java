@@ -46,18 +46,6 @@ public class UMLRoundtrip implements Roundtrip {
 
   private static Logger logger = Logger.getLogger(UMLRoundtrip.class.getName());
 
-  protected static AdminComponentDAO adminComponentDAO = DAOAccessor.getAdminComponentDAO();
-  protected static DataElementDAO dataElementDAO = DAOAccessor.getDataElementDAO();
-  protected static DataElementConceptDAO dataElementConceptDAO = DAOAccessor.getDataElementConceptDAO();
-  protected static ValueDomainDAO valueDomainDAO = DAOAccessor.getValueDomainDAO();
-  protected static PropertyDAO propertyDAO = DAOAccessor.getPropertyDAO();
-  protected static ObjectClassDAO objectClassDAO = DAOAccessor.getObjectClassDAO();
-  protected static ObjectClassRelationshipDAO objectClassRelationshipDAO = DAOAccessor.getObjectClassRelationshipDAO();
-  protected static ClassificationSchemeDAO classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
-  protected static ClassificationSchemeItemDAO classificationSchemeItemDAO = DAOAccessor.getClassificationSchemeItemDAO();
-  protected static ClassSchemeClassSchemeItemDAO classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
-  protected static ConceptDAO conceptDAO = DAOAccessor.getConceptDAO();
-
   protected ElementsLists elements = ElementsLists.getInstance();
 
   private Map<String, ValueDomain> valueDomains = new HashMap<String, ValueDomain>();
