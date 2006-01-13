@@ -71,6 +71,20 @@ public class CadsrTransformer {
     return outProp;
 
   }
+  
+  /**
+   * Transforms a Value Domain from public API to private API
+   */
+  public static gov.nih.nci.ncicb.cadsr.domain.ValueDomain vdPublicToPrivate(gov.nih.nci.cadsr.domain.ValueDomain inVD) {
+
+    gov.nih.nci.ncicb.cadsr.domain.ValueDomain outVD = DomainObjectFactory.newValueDomain();    
+
+    acPublicToPrivate(outVD, inVD);
+
+    return outVD;
+
+  }
+  
 
   /**
    * Copies values from inAc to outAc
@@ -187,7 +201,37 @@ public class CadsrTransformer {
 
   }
 
+  /**
+   * Transforms an Property List from public API to private API
+   */
+  public static Collection<gov.nih.nci.ncicb.cadsr.domain.Property> propListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.Property> inProps) {
 
+    List<gov.nih.nci.ncicb.cadsr.domain.Property> outProps = 
+      new ArrayList<gov.nih.nci.ncicb.cadsr.domain.Property>();
+
+    for(gov.nih.nci.cadsr.domain.Property privateProp : inProps) {
+      outProps.add(propPublicToPrivate(privateProp));
+    }
+    return outProps;
+
+  }
+  
+  /**
+   * Transforms a Value Domain List from public API to private API
+   */
+  public static Collection<gov.nih.nci.ncicb.cadsr.domain.ValueDomain> vdListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.ValueDomain> inVDs) {
+
+    List<gov.nih.nci.ncicb.cadsr.domain.ValueDomain> outVDs = 
+      new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ValueDomain>();
+
+    for(gov.nih.nci.cadsr.domain.ValueDomain privateVD : inVDs) {
+      outVDs.add(vdPublicToPrivate(privateVD));
+    }
+    return outVDs;
+
+  }
+  
+    
   private static gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem csCsiPublicToPrivate(gov.nih.nci.cadsr.domain.ClassSchemeClassSchemeItem inCsCsi) {
 
     gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem outCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
