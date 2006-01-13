@@ -79,7 +79,45 @@ public class CadsrPublicApiModule {
     return CadsrTransformer.ocListPublicToPrivate(listResult);
   }
 
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.ValueDomain>
+    findValueDomain(Map<String, Object> queryFields) throws Exception {
 
+    DetachedCriteria criteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.impl.ValueDomainImpl.class, "vd");
+
+    prepareCriteria(criteria, queryFields, null);
+
+    List listResult = new ArrayList(new HashSet(service.query(criteria, gov.nih.nci.cadsr.domain.impl.ValueDomainImpl.class.getName())));
+
+    return CadsrTransformer.vdListPublicToPrivate(listResult);
+  }
+
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.Property>
+    findProperty(Map<String, Object> queryFields) throws Exception {
+
+    DetachedCriteria criteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.impl.PropertyImpl.class, "prop");
+
+    prepareCriteria(criteria, queryFields, null);
+
+    List listResult = new ArrayList(new HashSet(service.query(criteria, gov.nih.nci.cadsr.domain.impl.PropertyImpl.class.getName())));
+
+    return CadsrTransformer.propListPublicToPrivate(listResult);
+  }
+  
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement>
+    findDataElement(Map<String, Object> queryFields) throws Exception {
+
+    DetachedCriteria criteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.impl.DataElementImpl.class, "de");
+
+    prepareCriteria(criteria, queryFields, null);
+
+System.out.println("run");
+
+    List listResult = new ArrayList(new HashSet(service.query(criteria, gov.nih.nci.cadsr.domain.impl.DataElementImpl.class.getName())));
+
+  System.out.println("transform");
+
+    return CadsrTransformer.deListPublicToPrivate(listResult);
+  }
 
   public gov.nih.nci.ncicb.cadsr.domain.DataElement 
     findDataElementByPublicId(String id, Float version) throws Exception {
@@ -168,18 +206,20 @@ public class CadsrPublicApiModule {
 //         System.out.println("result : " + de.getLongName());
       
       Map<String, Object> queryFields = new HashMap<String, Object>();
-      queryFields.put("longName", "CAP Cancer Checklists");
-      queryFields.put("version", new Float(1));
+      queryFields.put("longName", "Person Name Prefix Text");
+//      queryFields.put("version", new Float(3f));
       
       List<String> eager = new ArrayList<String>();
 //       eager.add("classSchemeClassSchemeItemCollection");
 
-      Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme> csList = testModule.findClassificationScheme(queryFields, eager);
+      System.out.println("searching");
+
+      Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> list = testModule.findDataElement(queryFields);
       
-      System.out.println(csList.size());
-      for(gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme cs : csList) {
-        System.out.println(cs.getPreferredName());
-        System.out.println(cs.getPublicId());
+      System.out.println(list.size());
+      for(gov.nih.nci.ncicb.cadsr.domain.DataElement o : list) {
+        System.out.println(o.getPreferredName());
+        System.out.println(o.getPublicId());
       }
 
     }
