@@ -25,10 +25,10 @@ public class OCPanel extends JPanel
 
   private JButton searchOcButton = new JButton("Search Object Class");
 
-  private JLabel ocPublicIdLabel = new JLabel("Public ID"),
+  private JLabel ocPublicIdLabel = new JLabel("Public ID / Version"),
   ocPublicIdValueLabel = new JLabel(),
-  ocVersionLabel = new JLabel("Version"),
-  ocVersionValueLabel = new JLabel();
+  ocLongNameLabel = new JLabel("Object Class Long Name"),
+  ocLongNameValueLabel = new JLabel();
   
   private ObjectClass tempOC, oc;
   private UMLNode node;
@@ -45,10 +45,12 @@ public class OCPanel extends JPanel
       
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
-    insertInBag(mainPanel, ocPublicIdLabel, 0, 0);
-    insertInBag(mainPanel, ocPublicIdValueLabel, 1, 0);
-    insertInBag(mainPanel, ocVersionLabel, 0, 1);
-    insertInBag(mainPanel, ocVersionValueLabel, 1, 1);
+    insertInBag(mainPanel, ocLongNameLabel, 0, 0);
+    insertInBag(mainPanel, ocLongNameValueLabel, 1, 0);
+    insertInBag(mainPanel, ocPublicIdLabel, 0, 1);
+    insertInBag(mainPanel, ocPublicIdValueLabel, 1, 1);
+    //insertInBag(mainPanel, ocVersionLabel, 0, 1);
+    //insertInBag(mainPanel, ocVersionValueLabel, 1, 1);
     //insertInBag(mainPanel, searchOcButton, 1, 2);
     
     JPanel titlePanel = new JPanel();
@@ -91,13 +93,14 @@ public class OCPanel extends JPanel
     
     if(oc.getPublicId() != null) 
     {
-      ocPublicIdValueLabel.setText(oc.getPublicId());
-      ocVersionValueLabel.setText(oc.getVersion().toString());
+      ocLongNameValueLabel.setText(oc.getLongName());
+      ocPublicIdValueLabel.setText(oc.getPublicId() + " v" + oc.getVersion().toString());
+      
     }
     else 
     {
       ocPublicIdValueLabel.setText("");
-      ocVersionValueLabel.setText("");
+      ocLongNameValueLabel.setText("");
     }
     
     }
