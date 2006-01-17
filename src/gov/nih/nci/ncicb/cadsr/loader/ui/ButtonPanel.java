@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.*;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
@@ -7,6 +8,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -57,6 +59,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
     SWITCH_TO_OC = "Map to OC",
     SWITCH_TO_CONCEPT = "Map to Concepts";
     
+  private RunMode runMode = null;
+    
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
     propChangeListeners.add(l);
@@ -70,11 +74,18 @@ public class ButtonPanel extends JPanel implements ActionListener,
     this.viewPanel = viewPanel;
     this.editable = editable;
     
+    UserSelections selections = UserSelections.getInstance();
+    
+    runMode = (RunMode)(selections.getProperty("MODE"));
+    
     addButton = new JButton("Add");
     deleteButton = new JButton("Remove");
     saveButton = new JButton("Apply");
     switchButton = new JButton();
-    reviewButton = new JCheckBox("<html>Human<br>Verified</html>");
+    if(runMode.equals(RunMode.Reviewer))
+      reviewButton = new JCheckBox("<html> Model <br> Owner <br> Verified</html");
+    else
+      reviewButton = new JCheckBox("<html>Human<br>Verified</html>");
     previousButton = new JButton("Previous");
     nextButton = new JButton("Next");
     reviewButton.setSelected(viewPanel.isReviewed());
@@ -186,10 +197,10 @@ public class ButtonPanel extends JPanel implements ActionListener,
     
     if(concepts.length == 0)
       reviewButton.setEnabled(false);
-
     
     switchButton.setVisible(editable instanceof DEPanel);
-
+//    switchButton.setVisible(editable instanceof OCPanel);
+  
     // disable add if DEPanel is showing
     if(editable instanceof DEPanel) {
       DataElement de = (DataElement)conceptEditorPanel.getNode().getUserObject();
@@ -197,13 +208,25 @@ public class ButtonPanel extends JPanel implements ActionListener,
 //         deleteButton.setEnabled(false);
 //         addButton.setEnabled(false);
         addButton.setVisible(false);
+        deleteButton.setVisible(false);
       } else {
         addButton.setVisible(true);
+        deleteButton.setVisible(true);
+        
       }
+    } else if(editable instanceof OCPanel) {
+      ObjectClass oc = (ObjectClass)conceptEditorPanel.getNode().getUserObject();
+      if(!StringUtil.isEmpty(oc.getPublicId())) {
+//         deleteButton.setEnabled(false);
+//         addButton.setEnabled(false);
+        addButton.setVisible(false);
+        deleteButton.setVisible(false);
+      } else {
+        addButton.setVisible(true);
+        deleteButton.setVisible(true);
     }
-
+    }
   }
-  
   
   
   private void setSaveButtonState(boolean b) {
@@ -258,6 +281,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
         viewPanel.switchCards(UMLElementViewPanel.DE_PANEL_KEY);
         switchButton.setText(SWITCH_TO_CONCEPT);
         addButton.setVisible(false);
+        deleteButton.setVisible(false);
       } else if (switchButton.getText().equals(SWITCH_TO_CONCEPT)) {
         viewPanel.switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
         if(editable instanceof DEPanel) {
@@ -266,6 +290,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
           switchButton.setText(SWITCH_TO_OC);
         }
         addButton.setVisible(true);
+        deleteButton.setVisible(true);
       } else if(switchButton.getText().equals(SWITCH_TO_OC)) {
          viewPanel.switchCards(UMLElementViewPanel.OC_PANEL_KEY);
          switchButton.setText(SWITCH_TO_CONCEPT);
