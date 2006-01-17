@@ -12,7 +12,6 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -22,9 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.text.Highlighter;
+
 
 
 
@@ -34,8 +31,7 @@ public class ValidateConceptsDialog extends JDialog
   private EvsModule module = new EvsModule();
   private Map<Concept, Concept> errorList = new HashMap<Concept, Concept>();
   private Map<Concept, Concept> errorNameList = new HashMap<Concept, Concept>();
-//  private List<ObjectClass> ocList = new ArrayList();
-//  private List<DataElementConcept> decList = new ArrayList();
+
   private List<AcListElementWrapper> wrapperList = 
     new ArrayList<AcListElementWrapper>();
   
@@ -49,10 +45,11 @@ public class ValidateConceptsDialog extends JDialog
   private DefaultListModel listModel = new DefaultListModel();
   private JList list;
   private JScrollPane listScrollPane;
-  
-  private Map<Concept, String> highlightName = new HashMap<Concept, String>();
-  private Map<Concept, String> highlightDef = new HashMap<Concept, String>();
-  private Map<Concept, String> highlightCode = new HashMap<Concept, String>();
+    
+  private List<Concept> highlightDifferentNameByCode = new ArrayList<Concept>();
+  private List<Concept> highlightDifferentDefByCode = new ArrayList<Concept> ();
+  private List<Concept> highlightDifferentCodeByName = new ArrayList<Concept> ();
+  private List<Concept> highlightDifferentDefByName = new ArrayList<Concept> ();
   
   private AbstractTableModel tableModel = null;
   private JTable resultTable = null;
@@ -112,9 +109,9 @@ public class ValidateConceptsDialog extends JDialog
             || !con.getPreferredDefinition().trim().equals(result.getConcept().getPreferredDefinition().trim())) {
               errorList.put(con, result.getConcept());   
               if(!con.getLongName().equals(result.getConcept().getLongName()))
-                highlightName.put(con, con.getLongName());
+                highlightDifferentNameByCode.add(result.getConcept());
               if(!con.getPreferredDefinition().trim().equals(result.getConcept().getPreferredDefinition().trim()))
-                highlightDef.put(con, con.getPreferredDefinition());
+                highlightDifferentDefByCode.add(result.getConcept());
             }
           }
           
@@ -124,14 +121,11 @@ public class ValidateConceptsDialog extends JDialog
             for(EvsResult name : nameResult) { 
             if(!con.getPreferredDefinition().trim().equals(name.getConcept().getPreferredDefinition().trim()))
               errorNameList.put(con, name.getConcept());
-            if(!con.getPreferredName().equals(name.getConcept().getPreferredName())) {
-              highlightCode.put(name.getConcept(), name.getConcept().getPreferredName());
-              highlightCode.put(con, con.getPreferredName());
-            }
-//            if(!con.getPreferredDefinition().trim().equals(name.getConcept().getPreferredDefinition().trim())) {
-//              highlightCode.put(con, con.getPreferredDefinition());
-//              
-//            }
+            if(!con.getPreferredName().equals(name.getConcept().getPreferredName())) 
+              highlightDifferentCodeByName.add(name.getConcept());            
+            if(!con.getPreferredDefinition().trim().equals(name.getConcept().getPreferredDefinition().trim())) 
+              highlightDifferentDefByName.add(name.getConcept());      
+            
             }
           }
         }
@@ -254,16 +248,10 @@ public class ValidateConceptsDialog extends JDialog
     if (e.getValueIsAdjusting() == false) {
       if (list.getSelectedIndex() != -1) {
         value = (AcListElementWrapper)list.getSelectedValue();
-//        Highlighter hilite;
-//        if(highlightName.get((Concept)value)) {
-//          hilite = elementPane.getHighlighter();
-//        }
         order.setText(value.getOrder());
         elementPane.setText(getConceptHtml(value.getConcept()));
-        evsByCodePane.setText(getConceptHtml(errorList.get(value.getConcept())));
-        evsByNamePane.setText(getConceptHtml(errorNameList.get(value.getConcept())));
-        //tableModel.fireTableDataChanged();
-        
+        evsByCodePane.setText(getHighlightConceptHtmlByCode(errorList.get(value.getConcept())));
+        evsByNamePane.setText(getHighlightConceptHtmlByName(errorNameList.get(value.getConcept())));
                 
         int ind = value.getAc().getLongName().lastIndexOf(".");
         String className = value.getAc().getLongName().substring(ind + 1);
@@ -284,26 +272,56 @@ public class ValidateConceptsDialog extends JDialog
     }
   }
   
+  private String getHighlightConceptHtmlByCode(Concept con) 
+  {
+    StringBuilder sb = new StringBuilder();
+    if(con != null) {
+      sb.append("<b>Code: </b>" + con.getPreferredName() + "<br>");
+      if(highlightDifferentNameByCode.contains(con))
+        sb.append("<div bgcolor='yellow'>" + "<b>Preferred Name: </b>" + con.getLongName() + "</div>" + "<br>");
+      else
+        sb.append("<b>Preferred Name: </b>" + con.getLongName() + "<br>");
+      if(highlightDifferentDefByCode.contains(con))
+        sb.append("<div bgcolor='yellow'>" + "<b>Definition: </b>" + con.getPreferredDefinition() + "</div>" + "<br>");
+      else
+        sb.append("<b>Definition: </b>" + con.getPreferredDefinition() + "<br>");
+      
+      sb.append("</body></html>");
+    }
+    return sb.toString();
+  }
+  
+  private String getHighlightConceptHtmlByName(Concept con) 
+  {
+    StringBuilder sb = new StringBuilder();
+    if(con != null) {
+      if(highlightDifferentCodeByName.contains(con))
+        sb.append("<div bgcolor='yellow'>" + "<b>Code: </b>" + con.getPreferredName() + "</div>" + "<br>");
+      else
+        sb.append("<b>Code: </b>" + con.getPreferredName() + "<br>");
+      sb.append("<b>Preferred Name: </b>" + con.getLongName() + "<br>");
+      if(highlightDifferentDefByName.contains(con))
+        sb.append("<div bgcolor='yellow'>" + "<b>Definition: </b>" + con.getPreferredDefinition() + "</div>" + "<br>");
+      else
+        sb.append("<b>Definition: </b>" + con.getPreferredDefinition() + "<br>");
+      
+      sb.append("</body></html>");
+    }
+    return sb.toString();
+  }
+  
+  
   private String getConceptHtml(Concept con) 
   {
     StringBuilder sb = new StringBuilder();
     if(con != null) {
-    sb.append("<html><body>");
-    if(highlightCode.containsKey(con))
-      sb.append("<div bgcolor='yellow'>" + "<b>Code: </b>" + con.getPreferredName() +"</div>" + "<br>");
-    else
+      sb.append("<html><body>");
       sb.append("<b>Code: </b>" + con.getPreferredName() + "<br>");
-    if(highlightName.containsKey(con))
-      sb.append("<div bgcolor='yellow'>" + "<b>Preferred Name: </b>" + con.getLongName() + "</div>" + "<br>");
-    else
       sb.append("<b>Preferred Name: </b>" + con.getLongName() + "<br>");
-    if(highlightDef.containsKey(con))
-      sb.append("<div bgcolor='yellow'>" + "<b>Definition: </b>" + con.getPreferredDefinition() + "</div>" + "<br>");
-    else
       sb.append("<b>Definition: </b>" + con.getPreferredDefinition() + "<br>");
-    sb.append("</body></html>");
+      sb.append("</body></html>");
     }
-    
+
     return sb.toString();
   }
   
