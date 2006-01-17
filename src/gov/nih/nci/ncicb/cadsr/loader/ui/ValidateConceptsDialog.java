@@ -104,30 +104,31 @@ public class ValidateConceptsDialog extends JDialog
             EvsResult result = module.findByConceptCode(con.getPreferredName(), false);
           //}
           if(result != null) 
-          {
-            if(!con.getLongName().equals(result.getConcept().getLongName())
-            || !con.getPreferredDefinition().trim().equals(result.getConcept().getPreferredDefinition().trim())) {
-              errorList.put(con, result.getConcept());   
-              if(!con.getLongName().equals(result.getConcept().getLongName()))
+          {  
+              if(con.getLongName() == null || !con.getLongName().equals(result.getConcept().getLongName())) {
                 highlightDifferentNameByCode.add(result.getConcept());
-              if(!con.getPreferredDefinition().trim().equals(result.getConcept().getPreferredDefinition().trim()))
+                errorList.put(con, result.getConcept());
+              }
+              if(con.getPreferredDefinition() == null || !con.getPreferredDefinition().trim().equals(result.getConcept().getPreferredDefinition().trim())) {
                 highlightDifferentDefByCode.add(result.getConcept());
-            }
+                errorList.put(con, result.getConcept());
+              }
           }
           
           Collection<EvsResult> nameResult = module.findByPreferredName(con.getLongName(), false);
           if(nameResult != null && nameResult.size() == 1) 
           {
             for(EvsResult name : nameResult) { 
-            if(!con.getPreferredDefinition().trim().equals(name.getConcept().getPreferredDefinition().trim()))
+            if(con.getPreferredName() == null || !con.getPreferredName().equals(name.getConcept().getPreferredName())) { 
+              highlightDifferentCodeByName.add(name.getConcept());
               errorNameList.put(con, name.getConcept());
-            if(!con.getPreferredName().equals(name.getConcept().getPreferredName())) 
-              highlightDifferentCodeByName.add(name.getConcept());            
-            if(!con.getPreferredDefinition().trim().equals(name.getConcept().getPreferredDefinition().trim())) 
+            }
+            if(con.getPreferredDefinition() == null || !con.getPreferredDefinition().trim().equals(name.getConcept().getPreferredDefinition().trim())) { 
               highlightDifferentDefByName.add(name.getConcept());      
-            
+              errorNameList.put(con, name.getConcept());
             }
           }
+        }
         }
         List<ObjectClass> ocs = ElementsLists.getInstance().
             getElements(DomainObjectFactory.newObjectClass());
