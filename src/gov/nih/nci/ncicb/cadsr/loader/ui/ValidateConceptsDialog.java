@@ -277,15 +277,29 @@ public class ValidateConceptsDialog extends JDialog
   {
     StringBuilder sb = new StringBuilder();
     if(con != null) {
-      sb.append("<b>Code: </b>" + con.getPreferredName() + "<br>");
+      if(con.getPreferredName() == null)
+        sb.append("<b>Code: </b>" + "None Provided" + "<br>");
+      else
+        sb.append("<b>Code: </b>" + con.getPreferredName() + "<br>");
+          
       if(highlightDifferentNameByCode.contains(con))
-        sb.append("<div bgcolor='yellow'>" + "<b>Preferred Name: </b>" + con.getLongName() + "</div>" + "<br>");
-      else
-        sb.append("<b>Preferred Name: </b>" + con.getLongName() + "<br>");
+        if(con.getLongName() == null)
+          sb.append("<div bgcolor='yellow'>" + "<b>Preferred Name: </b>" + "None Provided" + "</div>" + "<br>");
+        else
+          sb.append("<div bgcolor='yellow'>" + "<b>Preferred Name: </b>" + con.getLongName() + "</div>" + "<br>");
+      else if(con.getLongName() == null)
+          sb.append("<b>Preferred Name: </b>" + "None Provided" + "<br>");  
+      else    
+          sb.append("<b>Preferred Name: </b>" + con.getLongName() + "<br>");
       if(highlightDifferentDefByCode.contains(con))
-        sb.append("<div bgcolor='yellow'>" + "<b>Definition: </b>" + con.getPreferredDefinition() + "</div>" + "<br>");
+        if(con.getPreferredDefinition() == null)
+          sb.append("<div bgcolor='yellow'>" + "<b>Definition: </b>" + "None Provided" + "</div>" + "<br>");
+        else
+          sb.append("<div bgcolor='yellow'>" + "<b>Definition: </b>" + con.getPreferredDefinition() + "</div>" + "<br>");
+      else if(con.getPreferredDefinition() == null)
+          sb.append("<b>Definition: </b>" + "None Provided" + "<br>");
       else
-        sb.append("<b>Definition: </b>" + con.getPreferredDefinition() + "<br>");
+          sb.append("<b>Definition: </b>" + con.getPreferredDefinition() + "<br>");
       
       sb.append("</body></html>");
     }
@@ -297,13 +311,26 @@ public class ValidateConceptsDialog extends JDialog
     StringBuilder sb = new StringBuilder();
     if(con != null) {
       if(highlightDifferentCodeByName.contains(con))
-        sb.append("<div bgcolor='yellow'>" + "<b>Code: </b>" + con.getPreferredName() + "</div>" + "<br>");
-      else
+        if(con.getPreferredName() == null)
+          sb.append("<div bgcolor='yellow'>" + "<b>Code: </b>" + "None Provided" + "</div>" + "<br>");
+        else
+          sb.append("<div bgcolor='yellow'>" + "<b>Code: </b>" + con.getPreferredName() + "</div>" + "<br>");
+      else if(con.getPreferredName() == null)
+        sb.append("<b>Code: </b>" + "None Provided" + "<br>");
+      else  
         sb.append("<b>Code: </b>" + con.getPreferredName() + "<br>");
-      sb.append("<b>Preferred Name: </b>" + con.getLongName() + "<br>");
-      if(highlightDifferentDefByName.contains(con))
-        sb.append("<div bgcolor='yellow'>" + "<b>Definition: </b>" + con.getPreferredDefinition() + "</div>" + "<br>");
+      if(con.getLongName() == null)
+        sb.append("<b>Preferred Name: </b>" + "None Provided" + "<br>");
       else
+        sb.append("<b>Preferred Name: </b>" + con.getLongName() + "<br>");
+      if(highlightDifferentDefByName.contains(con))
+        if(con.getPreferredDefinition() == null)
+          sb.append("<div bgcolor='yellow'>" + "<b>Definition: </b>" + "None Provided" + "</div>" + "<br>");
+        else
+          sb.append("<div bgcolor='yellow'>" + "<b>Definition: </b>" + con.getPreferredDefinition() + "</div>" + "<br>");
+      else if(con.getPreferredDefinition() == null)
+        sb.append("<b>Definition: </b>" + "None Provided" + "<br>");
+      else 
         sb.append("<b>Definition: </b>" + con.getPreferredDefinition() + "<br>");
       
       sb.append("</body></html>");
@@ -317,9 +344,18 @@ public class ValidateConceptsDialog extends JDialog
     StringBuilder sb = new StringBuilder();
     if(con != null) {
       sb.append("<html><body>");
-      sb.append("<b>Code: </b>" + con.getPreferredName() + "<br>");
-      sb.append("<b>Preferred Name: </b>" + con.getLongName() + "<br>");
-      sb.append("<b>Definition: </b>" + con.getPreferredDefinition() + "<br>");
+      if(con.getPreferredName() == null)
+        sb.append("<b>Code: </b>" + "None Provided" + "<br>");
+      else
+        sb.append("<b>Code: </b>" + con.getPreferredName() + "<br>");
+      if(con.getLongName() == null)
+        sb.append("<b>Preferred Name: </b>" + "None Provided" + "<br>");
+      else
+        sb.append("<b>Preferred Name: </b>" + con.getLongName() + "<br>");
+      if(con.getPreferredDefinition() == null)
+        sb.append("<b>Definition: </b>" + "None Provided" + "<br>");
+      else
+        sb.append("<b>Definition: </b>" + con.getPreferredDefinition() + "<br>");
       sb.append("</body></html>");
     }
 
