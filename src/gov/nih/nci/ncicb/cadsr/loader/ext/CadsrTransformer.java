@@ -23,7 +23,9 @@ public class CadsrTransformer {
 
     acPublicToPrivate(outDE, inDE);
     outDE.setDataElementConcept(decPublicToPrivate(inDE.getDataElementConcept()));
-    
+    outDE.setValueDomain(vdPublicToPrivate(inDE.getValueDomain()));
+
+
     return outDE;
 
   }
