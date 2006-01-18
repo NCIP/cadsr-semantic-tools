@@ -137,6 +137,7 @@ public class MainFrame extends JFrame
   }
 
   public void exit() {
+    if(!ChangeTracker.getInstance().isEmpty()) {
     int result = JOptionPane.showConfirmDialog((JFrame) null, "Would you like to save your file before quitting?");
     switch(result) { 
     case JOptionPane.YES_OPTION: 
@@ -149,6 +150,9 @@ public class MainFrame extends JFrame
       return;    
     }
     System.exit(0);
+    }
+    else 
+      System.exit(0);
   }
 
   public void propertyChange(PropertyChangeEvent evt) {
@@ -234,7 +238,7 @@ public class MainFrame extends JFrame
     
     exitMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
-          _this.exit();
+            _this.exit();
         }
     });  
 
