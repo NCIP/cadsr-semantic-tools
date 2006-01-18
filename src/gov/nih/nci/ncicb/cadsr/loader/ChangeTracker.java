@@ -67,5 +67,8 @@ public class ChangeTracker implements ElementChangeListener
   public void clear() {
     map.clear();
   }
-
+  
+  public boolean isEmpty() {
+    return map.isEmpty();
+  }
 }
