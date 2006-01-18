@@ -258,8 +258,6 @@ public class XMIWriter implements ElementWriter {
             tvElt.getParentElement().removeContent(tvElt);
           }
           
-          String [] conceptCodes = dec.getProperty().getPreferredName().split(":");
-          addConceptTvs(attributeElement, conceptCodes, XMIParser.TV_TYPE_PROPERTY);
 
           // Map to Existing DE
           if(!StringUtil.isEmpty(de.getPublicId()) && de.getVersion() != null) {
@@ -277,10 +275,14 @@ public class XMIWriter implements ElementWriter {
                attributeElement.getAttributeValue("xmi.id"),
                attributeElement.getNamespace());
 
+          } else {
+            String [] conceptCodes = dec.getProperty().getPreferredName().split(":");
+            addConceptTvs(attributeElement, conceptCodes, XMIParser.TV_TYPE_PROPERTY);
           }
 
         }
-    }
+      }
+      changeTracker.clear();
     } catch (JaxenException e){
       throw new ParserException(e);
     } 
