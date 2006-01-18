@@ -64,4 +64,8 @@ public class ChangeTracker implements ElementChangeListener
     this.put(absNode.getFullPath(), true);
   }
 
+  public void clear() {
+    map.clear();
+  }
+
 }
