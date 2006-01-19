@@ -40,7 +40,7 @@ public class PropertyAccessor {
     try {
       properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename));
     } catch (IOException e){
-      logger.fatal("Resource Properties could not be loaded (" + filename + "). Exiting now.");
+      logger.fatal("Resource Properties could not be loaded (" + filename + "). Exiting now. Please contact support");
       logger.fatal(e.getMessage());
       System.exit(1);
     } // end of try-catch
@@ -51,7 +51,12 @@ public class PropertyAccessor {
   }
 
   public static String getProperty(String key, Object[] args) {
-    return MessageFormat.format(properties.getProperty(key), args);
+    try {
+      return MessageFormat.format(properties.getProperty(key), args);
+    } catch (NullPointerException e){
+      logger.error("missing resource: " + key + " Please contact support");
+      return null;
+    } // end of try-catch
   }
 
   public static String getProperty(String key, String arg) {
