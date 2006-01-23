@@ -189,10 +189,15 @@ public class UMLDefaultHandler implements UMLHandler {
 
       if(result.size() == 0) {
         ChangeTracker changeTracker = ChangeTracker.getInstance();
+//         ValidationItems.getInstance()
+//           .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", new String[] 
+//             {event.getClassName() + "." + event.getName(),
+//              ConventionUtil.publicIdVersion(de)}), de));
+
         ValidationItems.getInstance()
-          .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", new String[] 
-            {event.getClassName() + "." + event.getName(),
-             ConventionUtil.publicIdVersion(de)}), de));
+          .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", event.getClassName() + "." + event.getName(),
+             ConventionUtil.publicIdVersion(de)), de));
+
         
         de.setPublicId(null);
         de.setVersion(null);
