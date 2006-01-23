@@ -85,6 +85,7 @@
         <include name="*.properties"/>
         <include name="jaas.config"/>
         <include name="beans.xml"/>
+        <include name="spring-datasources.xml"/>
         <include name="ehcache.xml"/>
         <include name="datatype-mapping.xml"/>
         <include name="about.html"/>
@@ -201,6 +202,8 @@
       <arg value="${projectVersion}"/>
     </java>
   </target>
+
+  <target name="siw" depends="gui"/>
 
   <target name="gui" depends="prepare">
     <java classname="gov.nih.nci.ncicb.cadsr.loader.SIW" classpathref="proj.class.path" 
