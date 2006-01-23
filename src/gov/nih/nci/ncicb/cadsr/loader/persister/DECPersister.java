@@ -60,20 +60,39 @@ public class DECPersister extends UMLPersister {
         List<Definition> modelDefinitions = dec.getDefinitions();
         List<AlternateName> modelAltNames = dec.getAlternateNames();
 
-        
+        String newName = dec.getLongName();
         String packageName = getPackageName(dec);
+
+        if(!StringUtil.isEmpty(dec.getPublicId()) && dec.getVersion() != null) {
+          newDec = existingMapping(dec, newName, packageName);
+          it.set(newDec);
+          addPackageClassification(newDec, packageName);
+	  logger.info(PropertyAccessor.getProperty("mapped.to.existing.dec"));
+          continue;
+        }
         
         // update object class with persisted one
-        dec.setObjectClass(lookupObjectClass(
-                             dec.getObjectClass().getPreferredName()));
+        if(dec.getObjectClass().getPublicId() == null)
+          dec.setObjectClass(LookupUtil.lookupObjectClass(
+                               dec.getObjectClass().getPreferredName()));
+        else
+          dec.setObjectClass(LookupUtil.lookupObjectClass
+                             (dec.getObjectClass().getPublicId(), 
+                              dec.getObjectClass().getVersion()));
+
         newDec.setObjectClass(dec.getObjectClass());
 
-        // update object class with persisted one
-        dec.setProperty(lookupProperty(
-                             dec.getProperty().getPreferredName()));
+        // update property with persisted one
+        if(dec.getProperty().getPublicId() == null)
+          dec.setProperty(LookupUtil.lookupProperty(
+                            dec.getProperty().getPreferredName()));
+        else
+          dec.setProperty(LookupUtil.lookupProperty
+                             (dec.getProperty().getPublicId(), 
+                              dec.getProperty().getVersion()));
+          
         newDec.setProperty(dec.getProperty());
         
-        String newName = dec.getLongName();
 
 	logger.debug("dec name: " + dec.getLongName());
         logger.debug("alt Name: " + newName);
@@ -181,6 +200,25 @@ public class DECPersister extends UMLPersister {
 
       }
     }
+
+  }
+
+
+  private DataElementConcept existingMapping(DataElementConcept dec, String newName, String packageName) throws PersisterException {
+
+    List<String> eager = new ArrayList<String>();
+    eager.add(EagerConstants.AC_CS_CSI);
+    
+    List<DataElementConcept> l = dataElementConceptDAO.find(dec, eager);
+
+    if(l.size() == 0)
+      throw new PersisterException(PropertyAccessor.getProperty("dec.existing.error", ConventionUtil.publicIdVersion(dec)));
+    
+    DataElementConcept existingDec = l.get(0);
+
+    addAlternateName(existingDec, newName, AlternateName.TYPE_UML_CLASS ,packageName);
+
+    return existingDec;
 
   }
 

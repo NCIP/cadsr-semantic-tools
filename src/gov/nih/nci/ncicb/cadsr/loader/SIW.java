@@ -22,7 +22,7 @@ public class SIW {
     }
 
     
-    UMLLoaderGUI gui = BeansAccessor.getUMLLoaderGUI();
+    UMLLoaderGUI gui = BeansAccessor.getSiw();
     
     gui.start();
 

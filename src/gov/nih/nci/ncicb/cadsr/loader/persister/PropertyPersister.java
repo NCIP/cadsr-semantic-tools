@@ -64,9 +64,11 @@ public class PropertyPersister extends UMLPersister {
         String[] conceptCodes = prop.getPreferredName().split(":");
         
         if(!StringUtil.isEmpty(prop.getPublicId()) && prop.getVersion() != null) {
-          newProp = existingMapping(prop, newName, newDef, packageName);
+          logger.debug("mapping to existing Prop");
+          newProp = existingMapping(prop, newName, packageName);
           it.set(newProp);
           addPackageClassification(newProp, packageName);
+	  logger.info(PropertyAccessor.getProperty("mapped.to.existing.prop"));
           continue;
         }
 
@@ -78,7 +80,7 @@ public class PropertyPersister extends UMLPersister {
 
         Concept[] concepts = new Concept[conceptCodes.length];
         for(int i=0; i<concepts.length; 
-            concepts[i] = lookupConcept(conceptCodes[i++])
+            concepts[i] = LookupUtil.lookupConcept(conceptCodes[i++])
             );
 
         Concept primaryConcept = concepts[concepts.length - 1];
@@ -130,7 +132,7 @@ public class PropertyPersister extends UMLPersister {
   }
 
 
-  private Property existingMapping(Property prop, String newName, String newDef, String packageName) throws PersisterException {
+  private Property existingMapping(Property prop, String newName, String packageName) throws PersisterException {
 
     List<String> eager = new ArrayList<String>();
     eager.add(EagerConstants.AC_CS_CSI);
@@ -143,7 +145,6 @@ public class PropertyPersister extends UMLPersister {
     Property existingProp = l.get(0);
 
     addAlternateName(existingProp, newName, AlternateName.TYPE_UML_CLASS ,packageName);
-    addAlternateDefinition(existingProp, newDef, Definition.TYPE_UML_CLASS, packageName);
 
     return existingProp;
 

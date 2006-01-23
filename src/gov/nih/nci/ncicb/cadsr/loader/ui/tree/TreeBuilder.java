@@ -70,6 +70,8 @@ public class TreeBuilder implements UserPreferencesListener {
     rootNode = new RootNode();
     doPackages(rootNode);
 
+    doValueDomains(rootNode);
+
     if(!inClassAssociations && showAssociations)
       doAssociations(rootNode);
 
@@ -102,7 +104,7 @@ public class TreeBuilder implements UserPreferencesListener {
   private void doPackages(UMLNode parentNode) {
     
     ClassificationSchemeItem pkg = DomainObjectFactory.newClassificationSchemeItem();
-    List<ClassificationSchemeItem> packages = (List<ClassificationSchemeItem>) elements.getElements(pkg.getClass());
+    List<ClassificationSchemeItem> packages = elements.getElements(pkg);
     
     for(ClassificationSchemeItem pack : packages) {
       String alias = defaults.getPackageDisplay(pack.getName()); 
@@ -118,7 +120,7 @@ public class TreeBuilder implements UserPreferencesListener {
     String packageName = parentNode.getFullPath();
 
     ObjectClass oc = DomainObjectFactory.newObjectClass();
-    List<ObjectClass> ocs = (List<ObjectClass>) elements.getElements(oc.getClass());
+    List<ObjectClass> ocs = elements.getElements(oc);
 
     for(ObjectClass o : ocs) {
       String className = o.getLongName();
@@ -126,9 +128,6 @@ public class TreeBuilder implements UserPreferencesListener {
       packageName = className.substring(0, ind);
       if(packageName.equals(parentNode.getFullPath())) {
         UMLNode node = new ClassNode(o);
-        //ClassNode classNode = (ClassNode) node;
-        //boolean temp; 
-        //temp = Boolean.valueOf((String)reviewTracker.get(node.getFullPath()));
    
         parentNode.addChild(node);
      
@@ -157,7 +156,7 @@ public class TreeBuilder implements UserPreferencesListener {
   private void doAttributes(UMLNode parentNode) {
     // Find all DEs that have this OC.
     DataElement o = DomainObjectFactory.newDataElement();
-    List<DataElement> des = (List<DataElement>) elements.getElements(o.getClass());
+    List<DataElement> des = elements.getElements(o);
 
       for(DataElement de : des) {
         try {
@@ -197,6 +196,67 @@ public class TreeBuilder implements UserPreferencesListener {
           e.printStackTrace();
         } // end of try-catch
       }
+  }
+
+  private void doValueDomains(UMLNode parentNode) {
+    UMLNode vdNode = new PackageNode("Value Domains", "Value Domains");
+    
+    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+    
+    for(ValueDomain vd : vds) {
+      UMLNode node = new ValueDomainNode(vd);
+      
+      parentNode.addChild(node);
+      
+      ((ValueDomainNode) node).setReviewed
+        (reviewTracker.get(node.getFullPath()));
+      
+      doValueMeanings(node);
+
+      List<ValidationItem> items = findValidationItems(vd);
+      for(ValidationItem item : items) {
+        ValidationNode vNode = null;
+        if (item instanceof ValidationWarning) {
+          vNode = new WarningNode(item);
+        } else {
+          vNode = new ErrorNode(item);
+        }
+        node.addValidationNode(vNode);
+      }
+    }
+  }
+
+  private void doValueMeanings(UMLNode parentNode) {
+    // Find all DEs that have this OC.
+    List<ValueMeaning> vms = elements.getElements(DomainObjectFactory.newValueMeaning());
+    
+    for(ValueMeaning vm : vms) {
+      try {
+        if(vm.getShortMeaning()
+           .equals(parentNode.getFullPath())) {
+          UMLNode node = new ValueMeaningNode(vm);
+
+          Boolean reviewed = reviewTracker.get(node.getFullPath());
+          if(reviewed != null) {
+            parentNode.addChild(node);
+            ((ValueMeaningNode) node).setReviewed(reviewed);
+          }
+
+          List<ValidationItem> items = findValidationItems(vm);
+          for(ValidationItem item : items) {
+            ValidationNode vNode = null;
+            if (item instanceof ValidationWarning) {
+              vNode = new WarningNode(item);
+            } else {
+              vNode = new ErrorNode(item);
+            }
+            node.addValidationNode(vNode);
+          }
+        }
+      } catch (NullPointerException e){
+        e.printStackTrace();
+      } // end of try-catch
+    }
   }
 
   private void doAssociations(UMLNode parentNode) {

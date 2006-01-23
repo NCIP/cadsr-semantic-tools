@@ -37,17 +37,15 @@ public class RoundtripAction {
   private ProgressListener progressListener = null;
 
   private Roundtrip roundtrip;
+
+  private Parser parser;
   
   public void doRoundtrip(String projectName, 
                           float projectVersion, 
                           String inputFile, 
                           String outputFile) {
 
-    XMIParser  parser = new XMIParser();
     ElementsLists elements = ElementsLists.getInstance();
-    UMLHandler listener = new UMLDefaultHandler(elements);
-    parser.setEventHandler(listener);
-
     UMLDefaults defaults = UMLDefaults.getInstance();
 
     try {
@@ -95,6 +93,10 @@ public class RoundtripAction {
    */
   public void setRoundtrip(Roundtrip roundtrip) {
     this.roundtrip = roundtrip;
+  }
+
+  public void setParser(Parser parser) {
+    this.parser = parser;
   }
 
   public static void main(String[] args) {

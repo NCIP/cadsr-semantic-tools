@@ -789,4 +789,5 @@ public class XMIParser implements Parser {
   public void addProgressListener(ProgressListener listener) {
     progressListener = listener;
   }
+  
 }

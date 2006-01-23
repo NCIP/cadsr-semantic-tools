@@ -54,8 +54,12 @@ public class BeansAccessor {
     return (CadsrPublicApiModule)getFactory().getBean("cadsrPublicApiModule");
   }
 
-  public static UMLLoaderGUI getUMLLoaderGUI() {
-    return (UMLLoaderGUI)getFactory().getBean("umlLoaderGui");
+  public static UMLLoaderGUI getSiw() {
+    return (UMLLoaderGUI)getFactory().getBean("siw");
+  }
+
+  public static UMLLoader getUmlLoader() {
+    return (UMLLoader)getFactory().getBean("umlLoader");
   }
 
   public static RoundtripAction getRoundtripAction() {

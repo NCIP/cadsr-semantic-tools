@@ -38,6 +38,9 @@ import org.jdom.output.XMLOutputter;
 import java.io.*;
 import java.util.*;
 
+import org.apache.log4j.Logger;
+
+
 /**
  * A writer for XMI files 
  *
@@ -62,6 +65,8 @@ public class RoundtripWriter implements ElementWriter {
   private ChangeTracker changeTracker = ChangeTracker.getInstance();
 
   private ProgressListener progressListener = null;
+
+  private static Logger logger = Logger.getLogger(RoundtripWriter.class.getName());
 
   
   public RoundtripWriter(String inputFile) {
@@ -198,7 +203,11 @@ public class RoundtripWriter implements ElementWriter {
       {
         String exp = "//*[local-name()='TaggedValue' and @modelElement='"+ xmiid +"']";
         List tvs = (List)(new JDOMXPath(exp)).selectNodes(modelElement);
-        Element tv = (Element)tvs.get(tvs.size()-1);
+
+        Element tv = null;
+        
+        if(tvs != null && tvs.size() > 0)
+          tv = (Element)tvs.get(tvs.size()-1);
         
         if(tv != null)
           id = (String)tv.getAttributeValue("xmi.id")+"_tag";
@@ -208,7 +217,7 @@ public class RoundtripWriter implements ElementWriter {
       }
     catch(Exception e)
       {
-        throw new RuntimeException("Exception while creating getNewId"+e.getMessage());
+        throw new RuntimeException("Exception while creating getNewId "+e.getMessage());
       }
     
     return id;
@@ -285,6 +294,11 @@ public class RoundtripWriter implements ElementWriter {
 
         String fullPropName = de.getDataElementConcept().getObjectClass().getLongName() + "." + de.getDataElementConcept().getProperty().getLongName();
         Element attributeElement = elements.get(fullPropName);
+
+        if(attributeElement == null) {
+          logger.info("Parser Can't find attribute: " + fullPropName + "\n Probably inherited. That should be ok.");
+          continue;
+        }
         
         if(!StringUtil.isEmpty(de.getPublicId())) {
           String xpath = "//*[local-name()='TaggedValue' and starts-with(@tag, 'CADSR_DE_')  and @modelElement='"

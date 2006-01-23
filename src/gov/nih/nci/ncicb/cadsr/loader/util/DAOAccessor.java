@@ -49,7 +49,7 @@ public class DAOAccessor implements Runnable {
   }
 
   public synchronized static void init()  {
-    ApplicationContextFactory.init("applicationContext.xml");
+    ApplicationContextFactory.init(new String[] {"spring-datasources.xml", "applicationContext.xml" });
 
     logger.info("Loading DataElementDAO bean");
     dataElementDAO = (DataElementDAO) ApplicationContextFactory.getApplicationContext()
@@ -169,5 +169,6 @@ public class DAOAccessor implements Runnable {
   public void run() {
     init();
   }
+
 
 }

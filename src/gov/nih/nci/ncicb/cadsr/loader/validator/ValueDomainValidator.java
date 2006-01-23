@@ -68,6 +68,45 @@ public class ValueDomainValidator implements Validator {
         ValueDomain newVd = DomainObjectFactory.newValueDomain();
         newVd.setLongName(vd.getLongName());
 
+        if(StringUtil.isEmpty(vd.getPreferredDefinition())) {
+          items.addItem
+            (new ValidationError
+             (PropertyAccessor.getProperty
+              ("vd.missing.definition", vd.getLongName()), vd));
+        }
+
+        if(StringUtil.isEmpty(vd.getVdType())) {
+          items.addItem
+            (new ValidationError
+             (PropertyAccessor.getProperty
+              ("vd.missing.vdtype", vd.getLongName()), vd));
+        } else if(!vd.getVdType().equals(ValueDomain.VD_TYPE_ENUMERATED) && !vd.getVdType().equals(ValueDomain.VD_TYPE_NON_ENUMERATED)) {
+          items.addItem
+            (new ValidationError
+             (PropertyAccessor.getProperty
+              ("vd.wrong.vdtype", vd.getLongName()), vd));
+        }
+        if(StringUtil.isEmpty(vd.getDataType())) {
+          items.addItem
+            (new ValidationError
+             (PropertyAccessor.getProperty
+              ("vd.missing.datatype", vd.getLongName()), vd));
+        }
+
+        if(StringUtil.isEmpty(vd.getConceptualDomain().getPublicId())) {
+          items.addItem
+            (new ValidationError
+             (PropertyAccessor.getProperty
+              ("vd.missing.cdId", vd.getLongName()), vd));
+        }
+        if(vd.getConceptualDomain().getVersion() == null) {
+          items.addItem
+            (new ValidationError
+             (PropertyAccessor.getProperty
+              ("vd.missing.cdVersion", vd.getLongName()), vd));
+        }
+
+
         ValueDomainDAO vdDAO = DAOAccessor.getValueDomainDAO();
         List<ValueDomain> result =  vdDAO.find(newVd);
         if(result.size() > 0) {

@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
 
 import gov.nih.nci.ncicb.cadsr.dao.DataElementDAO;
 
@@ -51,8 +52,8 @@ public class UMLDefaultHandler implements UMLHandler {
   // Value = the DE that set oc id / version
   private Map<String, DataElement> ocMapping = new HashMap<String, DataElement>();
   
-  public UMLDefaultHandler(ElementsLists elements) {
-    this.elements = elements;
+  public UMLDefaultHandler() {
+    this.elements = ElementsLists.getInstance();
   }
 
   public void newPackage(NewPackageEvent event) {
@@ -97,7 +98,18 @@ public class UMLDefaultHandler implements UMLHandler {
     ValueDomain vd = LookupUtil.lookupValueDomain(event.getValueDomainName());
 
     ValueMeaning vm = DomainObjectFactory.newValueMeaning();
-    vm.setShortMeaning(ConceptUtil.longNameFromConcepts(concepts));
+    vm.setShortMeaning(event.getName());
+    
+    ConceptDerivationRule condr = DomainObjectFactory.newConceptDerivationRule();
+    int c = 0;
+    for(Concept con : concepts) {
+      ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
+      compCon.setConcept(con);
+      compCon.setOrder(concepts.size() - 1 - c);
+      compCon.setConceptDerivationRule(condr);
+    }    
+
+    vm.setConceptDerivationRule(condr);
 
     PermissibleValue pv = DomainObjectFactory.newPermissibleValue();
     pv.setValueMeaning(vm);
@@ -118,12 +130,6 @@ public class UMLDefaultHandler implements UMLHandler {
     // store concept codes in preferredName
     oc.setPreferredName(ConceptUtil.preferredNameFromConcepts(concepts));
     
-
-    if(event.getPersistenceId() != null) {
-      oc.setPublicId(event.getPersistenceId());
-      oc.setVersion(event.getPersistenceVersion());
-    }
-
     oc.setLongName(event.getName());
     if(event.getDescription() != null && event.getDescription().length() > 0)
       oc.setPreferredDefinition(event.getDescription());
@@ -153,6 +159,16 @@ public class UMLDefaultHandler implements UMLHandler {
     l.add(acCsCsi);
     oc.setAcCsCsis(l);
 
+    AlternateName fullName = DomainObjectFactory.newAlternateName();
+    fullName.setType(AlternateName.TYPE_CLASS_FULL_NAME);
+    fullName.setName(event.getName());
+    AlternateName className = DomainObjectFactory.newAlternateName();
+    className.setType(AlternateName.TYPE_UML_CLASS);
+    className.setName(event.getName().substring(event.getName().lastIndexOf(".") + 1));
+
+    oc.addAlternateName(fullName);
+    oc.addAlternateName(className);
+
   }
 
   public void newAttribute(NewAttributeEvent event) {
@@ -172,6 +188,7 @@ public class UMLDefaultHandler implements UMLHandler {
       List<DataElement> result =  deDAO.find(de);
 
       if(result.size() == 0) {
+        ChangeTracker changeTracker = ChangeTracker.getInstance();
         ValidationItems.getInstance()
           .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", new String[] 
             {event.getClassName() + "." + event.getName(),
@@ -179,6 +196,9 @@ public class UMLDefaultHandler implements UMLHandler {
         
         de.setPublicId(null);
         de.setVersion(null);
+        changeTracker.put
+          (event.getClassName() + "." + event.getName(), 
+           true);
       } else {
         existingDe = result.get(0);
       }
@@ -235,6 +255,11 @@ public class UMLDefaultHandler implements UMLHandler {
         oc.setVersion(existingDe.getDataElementConcept().getObjectClass().getVersion());
         // Keep track so if there's conflict, we know both ends of the conflict
         ocMapping.put(ConventionUtil.publicIdVersion(oc), de);
+        oc.setPreferredName(null);
+        ChangeTracker changeTracker = ChangeTracker.getInstance();
+        changeTracker.put
+          (event.getClassName(), 
+           true);
       }
 
       prop.setPublicId(existingDe.getDataElementConcept().getProperty().getPublicId());
@@ -248,7 +273,7 @@ public class UMLDefaultHandler implements UMLHandler {
       de.setLongName(existingDe.getLongName());
       de.setContext(existingDe.getContext());
     } else
-      de.setLongName(dec.getLongName() + event.getType());
+      de.setLongName(dec.getLongName() + " " + event.getType());
     //     de.setPreferredDefinition(event.getDescription());
 
     logger.debug("DE LONG_NAME: " + de.getLongName());
@@ -409,9 +434,9 @@ public class UMLDefaultHandler implements UMLHandler {
         if(dec.getObjectClass() == parentOc) {
           // We found property belonging to parent
           // Duplicate it for child.
-          Property newProp = DomainObjectFactory.newProperty();
-          newProp.setLongName(dec.getProperty().getLongName());
-          newProp.setPreferredName(dec.getProperty().getPreferredName());
+//           Property newProp = DomainObjectFactory.newProperty();
+//           newProp.setLongName(dec.getProperty().getLongName());
+//           newProp.setPreferredName(dec.getProperty().getPreferredName());
 
 
           DataElementConcept newDec = DomainObjectFactory.newDataElementConcept();
@@ -457,11 +482,16 @@ public class UMLDefaultHandler implements UMLHandler {
 //             newDe.addAlternateName(an);
 //           }
 
-          newDe.setAcCsCsis(parentOc.getAcCsCsis());
-          newDec.setAcCsCsis(parentOc.getAcCsCsis());
-          newProp.setAcCsCsis(parentOc.getAcCsCsis());
+          newDe.setAcCsCsis(childOc.getAcCsCsis());
+          newDec.setAcCsCsis(childOc.getAcCsCsis());
 
-          newElts.add(newProp);
+          Property oldProp = de.getDataElementConcept().getProperty();
+          List oldAcCsCsis = oldProp.getAcCsCsis();
+          List newAcCsCsis = new ArrayList(childOc.getAcCsCsis());
+          newAcCsCsis.addAll(oldAcCsCsis);
+          oldProp.setAcCsCsis(newAcCsCsis);
+
+//           newElts.add(newProp);
           newElts.add(newDe);
           newElts.add(newDec);
         }

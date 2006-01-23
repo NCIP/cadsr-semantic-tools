@@ -23,7 +23,7 @@ import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import org.apache.log4j.Logger;
@@ -67,21 +67,37 @@ public class OcRecPersister extends UMLPersister {
 	  ocr.setLongName(new OCRRoleNameBuilder().buildRoleName(ocr));
 	}
 
-	List ocs = elements.
-	  getElements(DomainObjectFactory.newObjectClass()
-		      .getClass());
+	List<ObjectClass> ocs = elements.
+	  getElements(DomainObjectFactory.newObjectClass());
 
-	for (int j = 0; j < ocs.size(); j++) {
-	  ObjectClass o = (ObjectClass) ocs.get(j);
+// 	for (ObjectClass o : ocs) {
+// 	  if (o.getPreferredName().equals(ocr.getSource().getPreferredName())) {
+// 	    ocr.setSource(o);
+// 	  } 
+//           if (o.getPreferredName().equals(ocr.getTarget()
+// 					    .getPreferredName())) {
+// 	    ocr.setTarget(o);
+// 	  }
+// 	}
+        ObjectClass sOcr = ocr.getSource();
 
-	  if (o.getLongName().equals(ocr.getSource().getLongName())) {
-	    ocr.setSource(o);
-	  } 
-          if (o.getLongName().equals(ocr.getTarget()
-					    .getLongName())) {
-	    ocr.setTarget(o);
-	  }
-	}
+socr:
+        for(AlternateName an : sOcr.getAlternateNames()) {
+          if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME)) {
+            ocr.setSource(LookupUtil.lookupObjectClass(an));
+            break socr;
+          }
+        }
+        ObjectClass tOcr = ocr.getTarget();
+tocr:
+        for(AlternateName an : tOcr.getAlternateNames()) {
+          if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME)) {
+            ocr.setTarget(LookupUtil.lookupObjectClass(an));
+            break tocr;
+          }
+        }
+
+
 
 //         logger.info(PropertyAccessor
 //                     .getProperty("created.association"));

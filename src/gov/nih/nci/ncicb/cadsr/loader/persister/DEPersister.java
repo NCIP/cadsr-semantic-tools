@@ -47,14 +47,14 @@ public class DEPersister extends UMLPersister {
 
   public void persist() throws PersisterException {
     DataElement de = DomainObjectFactory.newDataElement();
-    List des = (List) elements.getElements(de.getClass());
+    List<DataElement> des = elements.getElements(de);
 
     logger.debug("des...");
 
     if (des != null) {
-      for (ListIterator it = des.listIterator(); it.hasNext();) {
+      for (ListIterator<DataElement> it = des.listIterator(); it.hasNext();) {
         try {
-          de = (DataElement) it.next();
+          de = it.next();
           DataElement newDe = DomainObjectFactory.newDataElement();
 
           String packageName = getPackageName(de);
@@ -66,59 +66,65 @@ public class DEPersister extends UMLPersister {
           de.setValueDomain(lookupValueDomain(de.getValueDomain()));
           newDe.setValueDomain(de.getValueDomain());
 
-//           String newDef = de.getPreferredDefinition();
+          if(!StringUtil.isEmpty(de.getPublicId()) && de.getVersion() != null) {
+            newDe = existingMapping(de);
 
-          List l = dataElementDAO.find(newDe);
-          //Did Extract Method refactoring
-          /*de.setLongName(
-            de.getDataElementConcept().getLongName() + " " +
-            de.getValueDomain().getPreferredName());*/
-          de.setLongName(this.deriveLongName(de));
-
-          if (l.size() == 0) {
-            de.setContext(defaults.getContext());
-            de.setPreferredName(this.derivePreferredName(de));
-            de.setVersion(new Float(1.0f));
-            de.setWorkflowStatus(defaults.getWorkflowStatus());
-
-            de.setPreferredDefinition(
-              de.getDataElementConcept().getPreferredDefinition()
-              + DE_PREFERRED_DEF_CONCAT_CHAR +
-              de.getValueDomain().getPreferredDefinition()
-              );
-
-            de.setAudit(defaults.getAudit());
-            logger.debug("Creating DE: " + de.getLongName());
-            List altNames = new ArrayList(de.getAlternateNames());
-            List altDefs = new ArrayList(de.getDefinitions());
-            newDe = dataElementDAO.create(de);
-
-            // restore altNames
-            for(Iterator it2 = altNames.iterator(); it2.hasNext();) {
-              AlternateName an = (AlternateName)it2.next();
-              de.addAlternateName(an);
-            }
-            // restore altDefs
-            for(Iterator it2 = altDefs.iterator(); it2.hasNext();) {
-              Definition def = (Definition)it2.next();
-              de.addDefinition(def);
-            }
-
-            logger.info(PropertyAccessor.getProperty("created.de"));
-          }
-          else {
-            newDe = (DataElement) l.get(0);
-            logger.info(PropertyAccessor.getProperty("existed.de"));
-
-            /* if DE alreay exists, check context
-             * If context is different, add Used_by alt_name
-             */
+              /* if DE alreay exists, check context
+               * If context is different, add Used_by alt_name
+               */
             if (!newDe.getContext().getId().equals(defaults.getContext().getId())) {
-              addAlternateName(
-                newDe, defaults.getContext().getName(), AlternateName.TYPE_USED_BY,
-                null);
+              addAlternateName
+                (newDe, defaults.getContext().getName(), 
+                 AlternateName.TYPE_USED_BY,
+                 null);
             }
-
+            logger.info(PropertyAccessor.getProperty("mapped.to.existing.dec"));
+          } else {
+            List l = dataElementDAO.find(newDe);
+            de.setLongName(this.deriveLongName(de));
+            
+            if (l.size() == 0) {
+              de.setContext(defaults.getContext());
+              de.setPreferredName(this.derivePreferredName(de));
+              de.setVersion(new Float(1.0f));
+              de.setWorkflowStatus(defaults.getWorkflowStatus());
+              
+              de.setPreferredDefinition(
+                                        de.getDataElementConcept().getPreferredDefinition()
+                                        + DE_PREFERRED_DEF_CONCAT_CHAR +
+                                        de.getValueDomain().getPreferredDefinition()
+                                        );
+              
+              de.setAudit(defaults.getAudit());
+              logger.debug("Creating DE: " + de.getLongName());
+              List<AlternateName> altNames = new ArrayList(de.getAlternateNames());
+              List<Definition> altDefs = new ArrayList(de.getDefinitions());
+              newDe = dataElementDAO.create(de);
+              
+              // restore altNames
+              for(AlternateName an : altNames) {
+                de.addAlternateName(an);
+              }
+              // restore altDefs
+              for(Definition def : altDefs) {
+                de.addDefinition(def);
+              }
+              
+              logger.info(PropertyAccessor.getProperty("created.de"));
+            }
+            else {
+              newDe = (DataElement) l.get(0);
+              logger.info(PropertyAccessor.getProperty("existed.de"));
+              
+              /* if DE alreay exists, check context
+               * If context is different, add Used_by alt_name
+               */
+              if (!newDe.getContext().getId().equals(defaults.getContext().getId())) {
+                addAlternateName(
+                                 newDe, defaults.getContext().getName(), AlternateName.TYPE_USED_BY,
+                                 null);
+              }
+            }
           }
 
           LogUtil.logAc(newDe, logger);
@@ -128,16 +134,13 @@ public class DEPersister extends UMLPersister {
 
           addPackageClassification(newDe, packageName);
 
-          for(Iterator it2 = de.getAlternateNames().iterator(); it2.hasNext(); ) {
-            AlternateName altName = (AlternateName)it2.next();
-            
+          for(AlternateName altName : de.getAlternateNames()) {
             addAlternateName(
               newDe, altName.getName(),
               altName.getType(), packageName);
           }
 
-          for(Iterator it2 = de.getDefinitions().iterator(); it2.hasNext(); ) {
-            Definition def = (Definition)it2.next();
+          for(Definition def : de.getDefinitions()) {
             addAlternateDefinition(
               newDe, def.getDefinition(), 
               def.getType(), packageName);
@@ -171,4 +174,23 @@ public class DEPersister extends UMLPersister {
                      +de.getValueDomain().getPreferredName();
     return longName;
   }
+
+  private DataElement existingMapping(DataElement de) 
+  throws PersisterException {
+
+    List<String> eager = new ArrayList<String>();
+    eager.add(EagerConstants.AC_CS_CSI);
+    
+    List<DataElement> l = dataElementDAO.find(de, eager);
+
+    if(l.size() == 0)
+      throw new PersisterException(PropertyAccessor.getProperty("de.existing.error", ConventionUtil.publicIdVersion(de)));
+    
+    DataElement existingDe = l.get(0);
+
+    return existingDe;
+
+  }
+
+
 }

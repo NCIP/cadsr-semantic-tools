@@ -65,4 +65,76 @@ public class LookupUtil {
 
   }
 
+  /**
+   * by preferred Name
+   */
+  public static ObjectClass lookupObjectClass(String preferredName) {
+    List<ObjectClass> ocs = ElementsLists.getInstance().getElements(DomainObjectFactory.newObjectClass());
+    
+    for (ObjectClass oc : ocs) {
+      if (oc.getPreferredName().equals(preferredName)) {
+        return oc;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * by public id / version
+   */
+  public static ObjectClass lookupObjectClass(String publicID, Float version) {
+    List<ObjectClass> ocs = ElementsLists.getInstance().getElements(DomainObjectFactory.newObjectClass());
+    
+    for (ObjectClass oc : ocs) {
+      if (oc.getPublicId().equals(publicID) && oc.getVersion().equals(version)) { // 
+        return oc;
+      }
+    }
+    return null;
+  }
+
+  
+  public static Property lookupProperty(String preferredName) {
+    List<Property> props = ElementsLists.getInstance().getElements(DomainObjectFactory.newProperty());
+    
+    for (Property prop : props) {
+      if (prop.getPreferredName().equals(preferredName)) {
+        return prop;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * by public id / version
+   */
+  public static Property lookupProperty(String publicID, Float version) {
+    List<Property> props = ElementsLists.getInstance().getElements(DomainObjectFactory.newProperty());
+    
+    for (Property prop : props) {
+      if (prop.getPublicId().equals(publicID) && prop.getVersion().equals(version)) { // 
+        return prop;
+      }
+    }
+    return null;
+  }
+
+  public static ObjectClass lookupObjectClass(AlternateName altName) {
+    for(ObjectClass oc : ElementsLists.getInstance().getElements(DomainObjectFactory.newObjectClass())) {
+      for(AlternateName an : oc.getAlternateNames()) {
+        if(an.getType().equals(altName.getType()) && an.getName().equals(altName.getName()))
+          return oc;
+      }
+    }
+    return null;
+  }
+
+  public static String lookupFullName(ObjectClass oc) {
+    for(AlternateName altName : oc.getAlternateNames()) {
+      if(altName.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+        return altName.getName();
+    }
+    return null;
+  }
+
 }

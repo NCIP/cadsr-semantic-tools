@@ -3,7 +3,7 @@
  
 <beans>
 
-  <bean name="umlLoaderGui"
+  <bean name="siw"
     class="gov.nih.nci.ncicb.cadsr.loader.UMLLoaderGUI"
     >
 
@@ -11,6 +11,31 @@
       <ref bean="roundtripDescriptor"/>
     </property>
     
+  </bean>
+
+  <bean name="umlLoader"
+    class="gov.nih.nci.ncicb.cadsr.loader.UMLLoader"
+    >
+    <property name="validator"><ref bean="mainValidator"/></property>
+    <property name="parser"><ref bean="xmiParser"/></property>
+    <property name="persister"><ref bean="mainPersister"/></property>
+  </bean>
+  
+  <bean name="mainValidator" 
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.UMLValidator">
+  </bean>
+
+  <bean name="umlEventHandler"
+    class="gov.nih.nci.ncicb.cadsr.loader.event.UMLDefaultHandler">
+  </bean>
+
+  <bean name="xmiParser"
+    class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser">
+    <property name="eventHandler"><ref bean="umlEventHandler"/></property>
+  </bean>
+
+  <bean name="mainPersister"
+    class="gov.nih.nci.ncicb.cadsr.loader.persister.UMLPersister">
   </bean>
 
 
@@ -28,7 +53,7 @@
   <bean name="cadsrModule"
     class="gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule" 
     singleton="true">
-    <property name="serviceURL"> <value>http://cabio.nci.nih.gov/cacore30/server/HTTPServer</value></property>
+    <property name="serviceURL"> <value>http://cabio-dev.nci.nih.gov/cacore30/server/HTTPServer</value></property>
   </bean>
 
   <bean name="umlRoundtrip"
@@ -43,6 +68,7 @@
     singleton="true"
     >
     <property name="roundtrip"><ref bean="umlRoundtrip"/></property>
+    <property name="parser"><ref bean="xmiParser"/></property>
   </bean>
 
 
@@ -81,7 +107,6 @@
       <ref bean="cadsrModule"/>
     </property>
   </bean>
-
 
 
 </beans>

@@ -90,13 +90,19 @@ public class UMLRoundtrip implements Roundtrip {
 
 
   public void start() throws RoundtripException {
-    initCs();
-
     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
 
     ProgressEvent pEvt = new ProgressEvent();
-    pEvt.setGoal(des.size() + 1);
-    pEvt.setMessage("Opening File");
+    pEvt.setGoal(des.size() + 2);
+    pEvt.setMessage("Looking up Project");
+    if(progressListener != null) 
+      progressListener.newProgressEvent(pEvt);
+
+    initCs();
+
+    pEvt = new ProgressEvent();
+    pEvt.setStatus(1);
+    pEvt.setMessage("Looking up CDEs");
     if(progressListener != null) 
       progressListener.newProgressEvent(pEvt);
 
@@ -105,18 +111,14 @@ public class UMLRoundtrip implements Roundtrip {
     Map<String, ClassSchemeClassSchemeItem> csCsiCache = 
       new HashMap<String, ClassSchemeClassSchemeItem>();
 
-    
-    pEvt.setMessage("Looking up CDEs");
     for(DataElement de : des) {
       ObjectClass oc = de.getDataElementConcept().getObjectClass();
 
+      pEvt.setMessage("Looking up CDEs");
       pEvt.setStatus(pEvt.getStatus() + 1);
       if(progressListener != null) 
         progressListener.newProgressEvent(pEvt);
 
-
-      Property prop = de.getDataElementConcept().getProperty();
-      
       String className = oc.getLongName();
       int ind = className.lastIndexOf(".");
       String packageName = className.substring(0, ind);
@@ -152,6 +154,14 @@ public class UMLRoundtrip implements Roundtrip {
         } // end of try-catch
       }
     }
+
+    // Do the classes that don't have an attribute
+    // Next Version
+//     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
+//     for(ObjectClass oc : ocs) {
+
+//     }
+
   }
 
   private ClassSchemeClassSchemeItem lookupCsCsi(String packageName) {

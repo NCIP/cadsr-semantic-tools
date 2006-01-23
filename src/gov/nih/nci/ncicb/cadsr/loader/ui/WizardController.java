@@ -103,61 +103,10 @@ public class WizardController implements ActionListener {
       WizardPanelDescriptor descriptor = model.getCurrentPanelDescriptor();
       
       Object nextPanelDescriptor = descriptor.getNextPanelDescriptor();
-      //         if(descriptor.getPanelDescriptorIdentifier().equals(LoginPanelDescriptor.IDENTIFIER)) {
-      //           final LoginPanel panel = (LoginPanel)descriptor.getPanelComponent();
-      //           final ProgressLoginPanelDescriptor thisDesc =
-      //             (ProgressLoginPanelDescriptor)model
-//             .getPanelDescriptor(nextPanelDescriptor);
-
-//           final SwingWorker worker = new SwingWorker() {
-//               public Object construct() {
-//                 try {
-//                   boolean workOffline = (Boolean)UserSelections.getInstance()
-//                     .getProperty("WORK_OFFLINE");
-                  
-//                   ProgressEvent evt = null;
-
-//                   if(!workOffline) {
-//                     evt = new ProgressEvent();
-//                     evt.setMessage("Sending credentials...");
-//                     thisDesc.newProgressEvent(evt);
-                    
-//                     LoginContext lc = new LoginContext("UML_Loader", panel);    
-//                     lc.login();
-//                     username = panel.getUsername();
-//                     panel.setErrorMessage("");
-//                   } else {
-//                     try {
-//                       Thread.currentThread().sleep(100);
-//                     } catch (Exception e){
-//                     } // end of try-catch
-//                   }
-                  
-//                   evt = new ProgressEvent();
-//                   evt.setGoal(100);
-//                   evt.setStatus(100);
-//                   evt.setMessage("Done");
-//                   thisDesc.newProgressEvent(evt);
-//                 } catch (Exception e){
-//                   ProgressEvent evt = new ProgressEvent();
-//                   evt.setStatus(-1);
-//                   evt.setGoal(-1);
-//                   evt.setMessage("Failed");
-//                   thisDesc.newProgressEvent(evt);
-
-//                   username = null;
-//                   panel.setErrorMessage("Login / Password incorrect");
-//                 } // end of try-catch
-//                 return null;
-//               }
-//             };
-//           worker.start(); 
-//         }
 
       if(descriptor.getPanelDescriptorIdentifier().equals(ModeSelectionPanelDescriptor.IDENTIFIER)) {
         ModeSelectionPanel panel = 
           (ModeSelectionPanel)descriptor.getPanelComponent();
-        
         
         mode = Enum.valueOf(RunMode.class, panel.getSelection());
         
@@ -198,10 +147,6 @@ public class WizardController implements ActionListener {
           (RoundtripPanel)descriptor.getPanelComponent();
         userSelections.setProperty("PROJECT_NAME", panel.getProjectName());
         userSelections.setProperty("PROJECT_VERSION", new Float(panel.getProjectVersion()));
-
-
-        
-
       }
 
       if(descriptor.getPanelDescriptorIdentifier().equals(FileSelectionPanelDescriptor.IDENTIFIER)) {
@@ -276,7 +221,7 @@ public class WizardController implements ActionListener {
                   try {
                     Parser parser = new CsvParser();
                     ElementsLists elements = ElementsLists.getInstance();
-                    UMLHandler listener = new UMLDefaultHandler(elements);
+                    UMLHandler listener = new UMLDefaultHandler();
                     parser.setEventHandler(listener);
                     parser.addProgressListener(progressDesc);
                     
@@ -317,7 +262,7 @@ public class WizardController implements ActionListener {
                   Float projectVersion = (Float)(userSelections.getProperty("PROJECT_VERSION"));
                   
                   File f = new File(filename);
-                  outputFile = f.getParent() + "/" + "roundtrip.xmi";
+                  outputFile = f.getParent() + "/roundtrip_" + f.getName();
 
                   roundtripAction.doRoundtrip(projectName, projectVersion, filename, outputFile);
 
@@ -335,7 +280,7 @@ public class WizardController implements ActionListener {
                   try {
                     XMIParser  parser = new XMIParser();
                     ElementsLists elements = ElementsLists.getInstance();
-                    UMLHandler listener = new UMLDefaultHandler(elements);
+                    UMLHandler listener = new UMLDefaultHandler();
                     parser.setEventHandler(listener);
                     parser.addProgressListener(progressDesc);
                     UMLDefaults defaults = UMLDefaults.getInstance();

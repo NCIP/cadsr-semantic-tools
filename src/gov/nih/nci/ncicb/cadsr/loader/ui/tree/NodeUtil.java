@@ -34,8 +34,10 @@ public class NodeUtil
       String[] conceptCodes = null;
       if(node instanceof ClassNode) {
         ObjectClass oc = (ObjectClass)node.getUserObject();
-        conceptCodes = oc.getPreferredName().split(":");
-        
+        if(oc.getPreferredName() != null)
+          conceptCodes = oc.getPreferredName().split(":");
+        else
+          return new Concept[0];
       } else if(node instanceof AttributeNode) {
         Property prop = ((DataElement)node.getUserObject()).getDataElementConcept().getProperty();
         conceptCodes = prop.getPreferredName().split(":");

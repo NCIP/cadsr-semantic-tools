@@ -57,18 +57,23 @@ public class ObjectClassPersister extends UMLPersister {
         logger.debug(oc.getLongName());
 	oc.setContext(defaults.getMainContext());
 
-	String className = oc.getLongName();
+	String className = LookupUtil.lookupFullName(oc);
 	int ind = className.lastIndexOf(".");
 	packageName = className.substring(0, ind);
 	className = className.substring(ind + 1);
         String newDef = oc.getPreferredDefinition();
         String newName = className;
 
+        List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc.getAlternateNames());
+
         // Use case for existing Element
         if(!StringUtil.isEmpty(oc.getPublicId()) && oc.getVersion() != null) {
-          newOc = existingMapping(oc, newName, newDef, packageName);
+          newOc = existingMapping(oc, packageName);
           it.set(newOc);
           addPackageClassification(newOc, packageName);
+
+	  logger.info(PropertyAccessor.getProperty("mapped.to.existing.oc"));
+
           continue;
         } // otherwise search by concepts
 
@@ -79,7 +84,7 @@ public class ObjectClassPersister extends UMLPersister {
         String[] conceptCodes = oc.getPreferredName().split(":");
         Concept[] concepts = new Concept[conceptCodes.length];
         for(int i=0; i<concepts.length; 
-            concepts[i] = lookupConcept(conceptCodes[i++])
+            concepts[i] = LookupUtil.lookupConcept(conceptCodes[i++])
             );
         
         List<ObjectClass> l = objectClassDAO.findByConceptCodes(conceptCodes, oc.getContext(), eager);
@@ -111,6 +116,11 @@ public class ObjectClassPersister extends UMLPersister {
           String newDefSource = primaryConcept.getDefinitionSource();
           String newConceptDef = primaryConcept.getPreferredDefinition();
 	  newOc = l.get(0);
+          
+          for(AlternateName an : parsedAltNames) {
+            newOc.addAlternateName(an);
+          }
+
 	  logger.info(PropertyAccessor.getProperty("existed.oc"));
 
           // is concept source the same?
@@ -130,9 +140,12 @@ public class ObjectClassPersister extends UMLPersister {
 //         if((newDef.length() > 0) && !newDef.equals(newOc.getPreferredDefinition())) {
           addAlternateDefinition(newOc, newDef, Definition.TYPE_UML_CLASS, packageName);
         }
-        
-        addAlternateName(newOc, newName, AlternateName.TYPE_UML_CLASS ,packageName);
 
+//           addAlternateName(newOc, newName, AlternateName.TYPE_UML_CLASS ,packageName);
+        
+        for(AlternateName an : parsedAltNames) {
+          addAlternateName(newOc, an.getName(), an.getType() ,packageName);
+        }
 
 	it.set(newOc);
         oc.setLongName(newOc.getLongName());
@@ -143,11 +156,14 @@ public class ObjectClassPersister extends UMLPersister {
 
   }
 
-  private ObjectClass existingMapping(ObjectClass oc, String newName, String newDef, String packageName) throws PersisterException {
+  private ObjectClass existingMapping(ObjectClass oc, String packageName) throws PersisterException {
 
     List<String> eager = new ArrayList<String>();
     eager.add(EagerConstants.AC_CS_CSI);
     
+    String newDef = oc.getPreferredDefinition();
+
+    List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc.getAlternateNames());
     List<ObjectClass> l = objectClassDAO.find(oc, eager);
 
     if(l.size() == 0)
@@ -155,8 +171,15 @@ public class ObjectClassPersister extends UMLPersister {
     
     ObjectClass existingOc = l.get(0);
 
-    addAlternateName(existingOc, newName, AlternateName.TYPE_UML_CLASS ,packageName);
-    addAlternateDefinition(existingOc, newDef, Definition.TYPE_UML_CLASS, packageName);
+    for(AlternateName an : parsedAltNames) {
+      addAlternateName(existingOc, an.getName(), an.getType() ,packageName);
+      existingOc.addAlternateName(an);
+    }
+
+    if(!StringUtil.isEmpty(newDef))
+      addAlternateDefinition(existingOc, newDef, Definition.TYPE_UML_CLASS, packageName);
+
+
 
     return existingOc;
 

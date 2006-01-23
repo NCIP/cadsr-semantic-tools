@@ -26,6 +26,7 @@ import java.awt.FlowLayout;
 import java.awt.Container;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.Cursor;
 
 import java.awt.event.*;
 
@@ -44,6 +45,8 @@ import org.apache.log4j.Logger;
  */
 public class RoundtripPanel extends JPanel implements KeyListener
 {
+
+  private JPanel _this = this;
 
   private JTextField projectNameField = new JTextField();
   private JTextField projectVersionField = new JTextField(5);
@@ -100,7 +103,8 @@ public class RoundtripPanel extends JPanel implements KeyListener
           Map<String, Object> queryFields = new HashMap<String, Object>();
           queryFields.put("longName", projectNameField.getText());
           queryFields.put("version", new Float(projectVersionField.getText()));
-          
+
+          _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
           try {
             Collection classSchemes = cadsrModule.findClassificationScheme(queryFields);
 
@@ -116,7 +120,9 @@ public class RoundtripPanel extends JPanel implements KeyListener
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Unable to connect to Cadsr public Api");
             logger.error(e);
-          } // end of try-catch
+          } finally {
+            _this.setCursor(Cursor.getDefaultCursor());
+          }
 
         }
       });

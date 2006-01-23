@@ -42,17 +42,17 @@ public class UMLPersister implements Persister {
 
   private static Map<String,String> vdMapping = DatatypeMapping.getMapping();
 
-  protected static AdminComponentDAO adminComponentDAO = DAOAccessor.getAdminComponentDAO();
-  protected static DataElementDAO dataElementDAO = DAOAccessor.getDataElementDAO();
-  protected static DataElementConceptDAO dataElementConceptDAO = DAOAccessor.getDataElementConceptDAO();
-  protected static ValueDomainDAO valueDomainDAO = DAOAccessor.getValueDomainDAO();
-  protected static PropertyDAO propertyDAO = DAOAccessor.getPropertyDAO();
-  protected static ObjectClassDAO objectClassDAO = DAOAccessor.getObjectClassDAO();
-  protected static ObjectClassRelationshipDAO objectClassRelationshipDAO = DAOAccessor.getObjectClassRelationshipDAO();
-  protected static ClassificationSchemeDAO classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
-  protected static ClassificationSchemeItemDAO classificationSchemeItemDAO = DAOAccessor.getClassificationSchemeItemDAO();
-  protected static ClassSchemeClassSchemeItemDAO classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
-  protected static ConceptDAO conceptDAO = DAOAccessor.getConceptDAO();
+  protected static AdminComponentDAO adminComponentDAO;
+  protected static DataElementDAO dataElementDAO;
+  protected static DataElementConceptDAO dataElementConceptDAO;
+  protected static ValueDomainDAO valueDomainDAO;
+  protected static PropertyDAO propertyDAO;
+  protected static ObjectClassDAO objectClassDAO;
+  protected static ObjectClassRelationshipDAO objectClassRelationshipDAO;
+  protected static ClassificationSchemeDAO classificationSchemeDAO;
+  protected static ClassificationSchemeItemDAO classificationSchemeItemDAO;
+  protected static ClassSchemeClassSchemeItemDAO classSchemeClassSchemeItemDAO;
+  protected static ConceptDAO conceptDAO;
 
   protected ElementsLists elements = null;
 
@@ -60,19 +60,14 @@ public class UMLPersister implements Persister {
 
   protected UMLDefaults defaults = UMLDefaults.getInstance();
 
-//   private static final String DEF_CONCAT_CHAR = "_";
-
-//   protected static final String CSI_PACKAGE_TYPE = "UML_PACKAGE";
-
   public UMLPersister() {
-    
-  }
-
-  public UMLPersister(ElementsLists list) {
-    this.elements = list;
+    this.elements = ElementsLists.getInstance();
   }
 
   public void persist() throws PersisterException {
+
+    initDAOs();
+
 
     new PackagePersister(elements).persist();
     new ConceptPersister(elements).persist();
@@ -128,9 +123,9 @@ public class UMLPersister implements Persister {
         boolean csFound = false;
         boolean parentFound = false;
         for(ClassSchemeClassSchemeItem csCsi : an.getCsCsis()) {
-          if(csCsi.equals(packageCsCsi)) {
+          if(csCsi.getId().equals(packageCsCsi.getId())) {
             csFound = true;
-          } else if(csCsi.equals(packageCsCsi.getParent())) 
+          } else if(csCsi.getId().equals(packageCsCsi.getParent().getId())) 
             parentFound = true;
         }
         if(!csFound) {
@@ -190,12 +185,14 @@ public class UMLPersister implements Persister {
 
   protected void addAlternateDefinition(AdminComponent ac, String newDef, String type, String packageName) {
 
-    List altDefs = adminComponentDAO.getDefinitions(ac);
+    List<String> eager = new ArrayList<String>();
+    eager.add("csCsis");
+
+    List<Definition> altDefs = adminComponentDAO.getDefinitions(ac, eager);
     boolean found = false;
     ClassSchemeClassSchemeItem packageCsCsi = (ClassSchemeClassSchemeItem)defaults.getPackageCsCsis().get(packageName);
 
-    for(Iterator it = altDefs.iterator(); it.hasNext(); ) {
-      Definition def = (Definition)it.next();
+    for(Definition def : altDefs) {
       if(def.getType().equals(type) && def.getDefinition().equals(newDef)) {
         found = true;
         logger.info(PropertyAccessor.getProperty(
@@ -203,11 +200,10 @@ public class UMLPersister implements Persister {
         
         boolean csFound = false;
         boolean parentFound = false;
-        for(Iterator it2 = def.getCsCsis().iterator(); it2.hasNext();) {
-          ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem)it2.next();
-          if(csCsi.equals(packageCsCsi)) {
+        for(ClassSchemeClassSchemeItem csCsi : def.getCsCsis()) {
+          if(csCsi.getId().equals(packageCsCsi.getId())) {
             csFound = true;
-          } else if(csCsi.equals(packageCsCsi.getParent())) 
+          } else if(csCsi.getId().equals(packageCsCsi.getParent().getId())) 
             parentFound = true;
         }
         if(!csFound) {
@@ -264,44 +260,6 @@ public class UMLPersister implements Persister {
     } 
   }
 
-  protected Concept lookupConcept(String conceptCode) {
-    List concepts = (List) elements.getElements(DomainObjectFactory.newConcept().getClass());
-
-    for (Iterator it = concepts.iterator(); it.hasNext();) {
-      Concept con = (Concept)it.next();
-      if(con.getPreferredName().equals(conceptCode))
-        return con;
-    }
-    return null;
-
-  }
-
-  protected Property lookupProperty(String preferredName) {
-    List props = (List) elements.getElements(DomainObjectFactory.newProperty().getClass());
-    
-    for (Iterator it = props.iterator(); it.hasNext(); ) {
-      Property o = (Property) it.next();
-
-      if (o.getPreferredName().equals(preferredName)) {
-        return o;
-      }
-    }
-    return null;
-  }
-
-  protected ObjectClass lookupObjectClass(String preferredName) {
-    List ocs = (List) elements.getElements(DomainObjectFactory.newObjectClass().getClass());
-    
-    for (Iterator it = ocs.iterator(); it.hasNext(); ) {
-      ObjectClass o = (ObjectClass) it.next();
-
-      if (o.getPreferredName().equals(preferredName)) {
-        return o;
-      }
-    }
-    return null;
-  }
-
   protected DataElementConcept lookupDec(String id) {
     List decs = (List) elements.getElements(DomainObjectFactory.newDataElementConcept().getClass());
     
@@ -347,7 +305,7 @@ public class UMLPersister implements Persister {
 
       if(csCsi.getId().equals(packageCsCsi.getId()))
         found = true;
-      else if(csCsi.equals(packageCsCsi.getParent())) 
+      else if(csCsi.getId().equals(packageCsCsi.getParent().getId())) 
         parentFound = true;
     }
 
@@ -382,4 +340,18 @@ public class UMLPersister implements Persister {
       ((AdminComponentClassSchemeClassSchemeItem)ac.getAcCsCsis().get(0)).getCsCsi().getCsi().getName();
   }
 
+
+  private void initDAOs() {
+    adminComponentDAO = DAOAccessor.getAdminComponentDAO();
+    dataElementDAO = DAOAccessor.getDataElementDAO();
+    dataElementConceptDAO = DAOAccessor.getDataElementConceptDAO();
+    valueDomainDAO = DAOAccessor.getValueDomainDAO();
+    propertyDAO = DAOAccessor.getPropertyDAO();
+    objectClassDAO = DAOAccessor.getObjectClassDAO();
+    objectClassRelationshipDAO = DAOAccessor.getObjectClassRelationshipDAO();
+    classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
+    classificationSchemeItemDAO = DAOAccessor.getClassificationSchemeItemDAO();
+    classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
+    conceptDAO = DAOAccessor.getConceptDAO();
+  }
 }

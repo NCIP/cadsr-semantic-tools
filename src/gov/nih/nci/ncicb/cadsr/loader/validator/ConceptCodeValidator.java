@@ -47,50 +47,47 @@ public class ConceptCodeValidator implements Validator {
    * returns a list of Validation errors.
    */
   public ValidationItems validate() {
-    
-    List<ObjectClass> ocs = (List<ObjectClass>)elements.getElements(DomainObjectFactory.newObjectClass().getClass());
+    List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
     if(ocs != null)
       for(ObjectClass o : ocs) {
-        if(StringUtil.isEmpty(o.getPreferredName()))
-          items.addItem(new ValidationError("Class: " + o.getLongName() + " has no concept code.", o));
-        else {
-          checkConcepts(o);
+        if(StringUtil.isEmpty(o.getPublicId()) || o.getVersion() == null) {
+          if(StringUtil.isEmpty(o.getPreferredName()))
+            items.addItem(new ValidationError("Class: " + o.getLongName() + " has no concept code.", o));
+          else {
+            checkConcepts(o);
+          }
         }
       }    
 
 
-    List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());
+    List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
     if(des != null)
       for(DataElement de : des ) {
         if(StringUtil.isEmpty(de.getPublicId()) || de.getVersion() == null) {
           // no existing DE mapping -- check for concepts
           Property prop = de.getDataElementConcept().getProperty();
-          if(StringUtil.isEmpty(prop.getPreferredName()))
-            items.addItem(new ValidationError("Attribute: " + prop.getLongName() + " has no concept code.", prop));
-          else {
-            checkConcepts(prop);
+          if(StringUtil.isEmpty(prop.getPublicId()) || prop.getVersion() == null) {
+            if(StringUtil.isEmpty(prop.getPreferredName()))
+              items.addItem(new ValidationError("Attribute: " + prop.getLongName() + " has no concept code.", prop));
+            else {
+              checkConcepts(prop);
+            }
           }
         }
       }
-    
-//     List<Concept> concepts = (List<Concept>)elements.getElements(DomainObjectFactory.newConcept().getClass());
-//     if(concepts != null) {
-//       for(Concept o : concepts ) {
-//         Concept o = (Concept)it.next();
-//         if(o.getPreferredName() == null) {
 
-//         } else {
-//           if(o.getLongName() == null)
-//             items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.longName", o.getPreferredName()), o));
-//           if(o.getPreferredDefinition() == null) {
-//             items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.definition", o.getPreferredName()), o));
-//           }
-//           if(o.getDefinitionSource() == null)
-//             items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.source", o.getPreferredName()), o));
-//         }
-//       }
-//     }
-
+    List<ValueMeaning> vms = elements.getElements(DomainObjectFactory.newValueMeaning());
+    if(vms != null)
+      for(ValueMeaning vm : vms) {
+        if(vm.getConceptDerivationRule().getComponentConcepts().size() == 0)
+          items.addItem
+            (new ValidationError
+             (PropertyAccessor.getProperty
+              ("vm.missing.concept", vm.getShortMeaning()), vm));
+        else {
+          checkConcepts(vm);
+        }
+      }
     return items;
   }
 
@@ -107,5 +104,19 @@ public class ConceptCodeValidator implements Validator {
         items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.source", con.getPreferredName()), ac));
     }
   }
+
+  private void checkConcepts(ValueMeaning vm) {
+    for(ComponentConcept compCon : vm.getConceptDerivationRule().getComponentConcepts()) {
+      Concept con = compCon.getConcept();
+      if(con.getLongName() == null)
+        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.longName", con.getPreferredName()), vm));
+      if(con.getPreferredDefinition() == null) {
+        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.definition", con.getPreferredName()), vm));
+      }
+      if(con.getDefinitionSource() == null)
+        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.source", con.getPreferredName()), vm));
+    }
+  }
+
 
 }

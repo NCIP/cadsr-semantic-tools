@@ -17,58 +17,69 @@
  *
  * 5. THIS SOFTWARE IS PROVIDED "AS IS," AND ANY EXPRESSED OR IMPLIED WARRANTIES, (INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE) ARE DISCLAIMED. IN NO EVENT SHALL THE NATIONAL CANCER INSTITUTE, ORACLE, OR THEIR AFFILIATES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  */
-package gov.nih.nci.ncicb.cadsr.loader.validator;
+package gov.nih.nci.ncicb.cadsr.loader.ui.tree;
 
-import java.util.*;
+import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 
-import gov.nih.nci.ncicb.cadsr.domain.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
-import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
-import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
-import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
-import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
+public class ValueDomainNode 
+  extends AbstractUMLNode 
+  implements ReviewableUMLNode
+{
 
-public class UMLValidator implements Validator {
+  static final Icon REVIEWED_ICON = 
+    new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-class-checked.gif"));
 
-  private ElementsLists elements = ElementsLists.getInstance();
-  private List<Validator> validators;
+  static final Icon DEFAULT_ICON = 
+    new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-class.gif"));
 
-  public UMLValidator() {
+  private boolean reviewed = false;
+
+  public ValueDomainNode(ValueDomain vd) {
+    fullPath = vd.getLongName();
+    int ind = fullPath.lastIndexOf(".");
+    display = fullPath.substring(ind + 1);
+    
+    userObject = vd;
+    
+    icon = DEFAULT_ICON;
+  }
+
+
+  public void setReviewed(boolean currentStatus) 
+  {
+    reviewed = currentStatus;
+    
+    boolean changeIcon = true;
+    
+    // iterate over children
+    // if all children are reviewed then review the class
+    for(UMLNode l : getChildren())
+      {
+        ValueMeaningNode next = (ValueMeaningNode) l;
+        if(!next.isReviewed()) 
+        {
+          changeIcon = false;
+          break;
+        }
+      }
+      
+      if(changeIcon && currentStatus) 
+      {
+        setIcon(REVIEWED_ICON);
+      } 
+      else
+        setIcon(DEFAULT_ICON);
+        
+      PackageNode parent = (PackageNode) getParent();
+      parent.setReviewed(parent.isReviewed());
   }
   
-  public void addProgressListener(ProgressListener l) {
-    
-  }
-  
-  
-  /**
-   * returns a list of Validation errors.
-   */
-  public ValidationItems validate() {
-    validators = new ArrayList();
-    validators.add(new ConceptCodeValidator(elements)); 
-    validators.add(new AssociationValidator(elements));
-    validators.add(new DescriptionValidator(elements));
-    
-    UserSelections userSelections = UserSelections.getInstance();
-
-    RunMode mode = (RunMode)(userSelections.getProperty("MODE"));
-    
-    if(mode.equals(RunMode.Reviewer))
-      validators.add(new DatatypeValidator(elements));
-
-    if(!(Boolean)userSelections.getProperty("SKIP_VD_VALIDATION")) {
-      validators.add(new ValueDomainValidator(elements));
-    }
-
-
-    for(Validator val : validators)
-      val.validate();
-
-    
-    // !!TODO here we should add validators that we only want to run on subsequent calls 
-    
-    return ValidationItems.getInstance();
+  public boolean isReviewed() 
+  {
+    return reviewed;
   }
 
 }

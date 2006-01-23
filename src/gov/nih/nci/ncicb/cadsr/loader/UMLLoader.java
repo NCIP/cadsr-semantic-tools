@@ -34,9 +34,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.parser.*;
 import gov.nih.nci.ncicb.cadsr.loader.persister.*;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
-import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
-import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
@@ -67,6 +65,10 @@ public class UMLLoader {
 
   private static Logger logger = Logger.getLogger(UMLLoader.class.getName());
 
+  private Validator validator;
+  private Parser parser;
+  private Persister persister;
+
   /**
    *
    * @param args a <code>String[]</code> value
@@ -79,10 +81,19 @@ public class UMLLoader {
       System.exit(1);
     }
 
-    new UMLLoader().run(args);
+    Float projectVersion = null;
+    try {
+      projectVersion = new Float(args[2]);
+    } catch (NumberFormatException ex) {
+      System.err.println("Parameter projectVersion must be a number");
+      System.exit(1);
+    }
+
+    UMLLoader loader = BeansAccessor.getUmlLoader();
+    loader.run(args[0], args[1], projectVersion);
   }
 
-  private void run(String[] args) throws Exception {
+  private void run(String fileDir, String projectName, Float projectVersion) throws Exception {
     InitClass initClass = new InitClass(this);
     Thread t = new Thread(initClass);
     /* high priority because:
@@ -107,7 +118,7 @@ public class UMLLoader {
     userSelections.setProperty("SKIP_VD_VALIDATION", true);
 
 
-    String[] filenames = new File(args[0]).list(new FilenameFilter() {
+    String[] filenames = new File(fileDir).list(new FilenameFilter() {
 	public boolean accept(File dir, String name) {
 	  return name.endsWith(".xmi");
 	}
@@ -141,20 +152,8 @@ public class UMLLoader {
       System.exit(1);
     }
     
-    String projectName = args[1];
-
-    Float projectVersion = null;
-    try {
-      projectVersion = new Float(args[2]);
-    } catch (NumberFormatException ex) {
-      System.err.println("Parameter projectVersion must be a number");
-      System.exit(1);
-    }
     
     logger.info(PropertyAccessor.getProperty("nbOfFiles", filenames.length));
-    
-    Validator validator = new UMLValidator();
-    UMLHandler listener = new UMLDefaultHandler(ElementsLists.getInstance());
 
     synchronized(initClass) {
       if(!initClass.isDone())
@@ -174,36 +173,27 @@ public class UMLLoader {
       defaults.setUsername(username);
 
 
-      XMIParser  parser = new XMIParser();
-      parser.setEventHandler(listener);
-      parser.parse(args[0] + "/" + filenames[i]);
+//       XMIParser  parser = new XMIParser();
+//       parser.setEventHandler(listener);
+      parser.parse(fileDir + "/" + filenames[i]);
       
     }
 
     ValidationItems items = validator.validate();
-    Set errors = items.getErrors();
+    Set<ValidationError> errors = items.getErrors();
     if(errors.size() > 0) {
       // Ask user if we should continue
-      for(Iterator it=errors.iterator(); it.hasNext();) {
-        ValidationError error = (ValidationError)it.next();
-        // !!! TODO choose error, warning, etc ...
-        logger.error("ERROR: " + error.getMessage());
+      for(ValidationError error : errors) {
+        logger.error(error.getMessage());
       }
-      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-      System.out.print(PropertyAccessor.getProperty("validation.continue"));
-      String answ = br.readLine();
-      if(!answ.equals("y")) {
-        System.exit(1);
-      }
+      System.exit(1);
     }
 
-    Set warnings = items.getErrors();
+    Set<ValidationWarning> warnings = items.getWarnings();
     if(warnings.size() > 0) {
       // Ask user if we should continue
-      for(Iterator it=warnings.iterator(); it.hasNext();) {
-        ValidationWarning warning = (ValidationWarning)it.next();
-        // !!! TODO choose error, warning, etc ...
-        logger.error("ERROR: " + warning.getMessage());
+      for(ValidationWarning warning : warnings) {
+        logger.warn(warning.getMessage());
       }
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
       System.out.print(PropertyAccessor.getProperty("validation.continue"));
@@ -213,11 +203,21 @@ public class UMLLoader {
       }
     }
 
-    Persister persister = new UMLPersister(ElementsLists.getInstance());
     persister.persist();
 
   }
 
+  public void setValidator(Validator validator) {
+    this.validator = validator;
+  }
+
+  public void setParser(Parser parser) {
+    this.parser = parser;
+  }
+
+  public void setPersister(Persister persister) {
+    this.persister = persister;
+  }
 
 }
 
