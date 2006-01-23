@@ -50,6 +50,15 @@ public class PropertyAccessor {
     return properties.getProperty(key);
   }
 
+  public static String getProperty(String key, String ... args) {
+    try {
+      return MessageFormat.format(properties.getProperty(key), (Object[])args);
+    } catch (NullPointerException e){
+      logger.error("missing resource: " + key + " Please contact support");
+      return null;
+    } // end of try-catch
+  }
+
   public static String getProperty(String key, Object[] args) {
     try {
       return MessageFormat.format(properties.getProperty(key), args);
