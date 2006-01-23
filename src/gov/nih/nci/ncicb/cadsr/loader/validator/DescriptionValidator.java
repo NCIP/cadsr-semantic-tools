@@ -26,7 +26,9 @@ public class DescriptionValidator implements Validator
     if(ocs != null) {   
       for(ObjectClass oc : ocs) {  
         if(StringUtil.isEmpty(oc.getPreferredDefinition()))
-          items.addItem(new ValidationWarning("Class: " + oc.getLongName() + " has no description.", oc));
+          items.addItem(new ValidationWarning
+                        (PropertyAccessor.getProperty
+                         ("class.no.description", oc.getLongName()), oc));
       }
     }
     boolean found = false;
@@ -39,7 +41,10 @@ public class DescriptionValidator implements Validator
             break;
         }
       if(!found)
-        items.addItem(new ValidationWarning("Attribute " + de.getDataElementConcept().getLongName() + " has no description.", de));
+        items.addItem(new ValidationWarning
+                      (PropertyAccessor.getProperty
+                       ("attribute.no.description",
+                        de.getDataElementConcept().getLongName()), de));
       }
     }
     

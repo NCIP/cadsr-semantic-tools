@@ -34,6 +34,17 @@ public class UMLValidator implements Validator {
   private List validators;
 
   public UMLValidator() {
+  }
+  
+  public void addProgressListener(ProgressListener l) {
+    
+  }
+  
+  
+  /**
+   * returns a list of Validation errors.
+   */
+  public ValidationItems validate() {
     validators = new ArrayList();
     validators.add(new ConceptCodeValidator(elements)); 
     validators.add(new AssociationValidator(elements));
@@ -49,17 +60,8 @@ public class UMLValidator implements Validator {
     if(!(Boolean)userSelections.getProperty("SKIP_VD_VALIDATION")) {
       validators.add(new ValueDomainValidator(elements));
     }
-  }
-  
-  public void addProgressListener(ProgressListener l) {
-    
-  }
-  
-  
-  /**
-   * returns a list of Validation errors.
-   */
-  public ValidationItems validate() {
+
+
     for(Iterator it = validators.iterator(); it.hasNext(); ) {
       Validator val = (Validator)it.next();
       val.validate();

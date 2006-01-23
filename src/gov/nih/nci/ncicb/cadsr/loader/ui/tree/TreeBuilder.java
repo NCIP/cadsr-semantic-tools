@@ -141,7 +141,12 @@ public class TreeBuilder implements UserPreferencesListener {
         
         List<ValidationItem> items = findValidationItems(o);
         for(ValidationItem item : items) {
-          ValidationNode vNode = new ValidationNode(item);
+          ValidationNode vNode = null;
+          if (item instanceof ValidationWarning) {
+            vNode = new WarningNode(item);
+          } else {
+            vNode = new ErrorNode(item);
+          }
           node.addValidationNode(vNode);
         }
       }
@@ -169,22 +174,29 @@ public class TreeBuilder implements UserPreferencesListener {
 
           List<ValidationItem> items = findValidationItems(de.getDataElementConcept().getProperty());
           for(ValidationItem item : items) {
-            ValidationNode vNode = new ValidationNode(item);
+            ValidationNode vNode = null;
+            if (item instanceof ValidationWarning) {
+              vNode = new WarningNode(item);
+            } else {
+              vNode = new ErrorNode(item);
+            }
             node.addValidationNode(vNode);
           }
-
           items = findValidationItems(de);
           for(ValidationItem item : items) {
-            ValidationNode vNode = new ValidationNode(item);
+            ValidationNode vNode = null;
+            if (item instanceof ValidationWarning) {
+              vNode = new WarningNode(item);
+            } else {
+              vNode = new ErrorNode(item);
+            }
             node.addValidationNode(vNode);
           }
         }
-    } catch (NullPointerException e){
-      e.printStackTrace();
-    } // end of try-catch
+        } catch (NullPointerException e){
+          e.printStackTrace();
+        } // end of try-catch
       }
-
-
   }
 
   private void doAssociations(UMLNode parentNode) {

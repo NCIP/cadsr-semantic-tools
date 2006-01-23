@@ -24,6 +24,15 @@ import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItem;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-public interface ValidationNode extends UMLNode {
+public class WarningNode extends AbstractUMLNode implements ValidationNode {
+
+  public WarningNode(ValidationItem item) {
+    fullPath = item.getMessage();
+    display = item.getMessage();
+  }
+
+  public Icon getIcon() {
+    return new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-warning.jpg"));
+  }
 
 }
