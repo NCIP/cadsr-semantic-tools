@@ -187,10 +187,10 @@ implements ProgressListener {
       insertInBag(browsePanel, jl, 0, y++, 2, 1);
     }
 
-    if(runMode != null && runMode.equals(RunMode.Reviewer)) {
-      insertInBag(browsePanel,
-                  skipVdValidationCheckBox, 0, y, 2, 1);
-    }
+//     if(runMode != null && runMode.equals(RunMode.Reviewer)) {
+//       insertInBag(browsePanel,
+//                   skipVdValidationCheckBox, 0, y, 2, 1);
+//     }
 
 
     browsePanel.setPreferredSize(new Dimension(400, 250));
