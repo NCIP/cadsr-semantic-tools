@@ -30,6 +30,9 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
+
+
 /**
  * Validate that Value Domains requested for load validate required rules: <ul>
  * <li>Must not already Exist
@@ -37,14 +40,15 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
  */
 public class ValueDomainValidator implements Validator {
 
-  private ElementsLists elements;
+  private ElementsLists elements = ElementsLists.getInstance();
 
   private ValidationItems items = ValidationItems.getInstance();
 
   private ProgressListener progressListener;
 
-  public ValueDomainValidator(ElementsLists elements) {
-    this.elements = elements;
+  private CadsrPublicApiModule cadsrModule;
+
+  public ValueDomainValidator() {
   }
 
   public void addProgressListener(ProgressListener l) {
@@ -106,6 +110,13 @@ public class ValueDomainValidator implements Validator {
               ("vd.missing.cdVersion", vd.getLongName()), vd));
         }
 
+        if(vd.getConceptualDomain().getVersion() != null && 
+           vd.getConceptualDomain().getPublicId() != null) {
+          
+          
+
+        }
+
 
         ValueDomainDAO vdDAO = DAOAccessor.getValueDomainDAO();
         List<ValueDomain> result =  vdDAO.find(newVd);
@@ -116,6 +127,10 @@ public class ValueDomainValidator implements Validator {
 
     }
     return items;
+  }
+
+  public void setCadsrModule(CadsrPublicApiModule module) {
+    this.cadsrModule = module;
   }
 
 }

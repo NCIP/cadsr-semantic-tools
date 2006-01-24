@@ -30,12 +30,11 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 public class ConceptCodeValidator implements Validator {
 
-  private ElementsLists elements;
+  private ElementsLists elements = ElementsLists.getInstance();
 
   private ValidationItems items = ValidationItems.getInstance();
 
-  public ConceptCodeValidator(ElementsLists elements) {
-    this.elements = elements;
+  public ConceptCodeValidator() {
   }
 
   public void addProgressListener(ProgressListener l) {

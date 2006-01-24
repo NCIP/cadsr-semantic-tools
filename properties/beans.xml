@@ -71,6 +71,33 @@
     <property name="parser"><ref bean="xmiParser"/></property>
   </bean>
 
+  <!-- Validators -->
+  <bean name="valueDomainValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.ValueDomainValidator">
+    <property name="cadsrModule"><ref bean="cadsrModule"/></property>
+  </bean>
+  <bean name="conceptCodeValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.ConceptCodeValidator"/>
+  <bean name="datatypeValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.DatatypeValidator"/>
+  <bean name="descriptionValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.DescriptionValidator"/>
+
+  <bean name="mainValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.UMLValidator">
+    <property name="validators">
+      <list>
+        <ref bean="descriptionValidator"/>
+        <ref bean="conceptCodeValidator"/>
+        <ref bean="datatypeValidator"/>
+        <ref bean="valueDomainValidator"/>
+      </list>
+    </property>
+
+  </bean>
+  
+  
+
 
   <!-- Wizard Panels -->
   <bean name="roundtripPanel"

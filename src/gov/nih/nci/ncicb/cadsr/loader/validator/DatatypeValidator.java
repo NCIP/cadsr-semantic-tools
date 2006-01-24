@@ -27,16 +27,19 @@ import gov.nih.nci.ncicb.cadsr.loader.util.DatatypeMapping;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
+
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
+
 import java.util.List;
 public class DatatypeValidator implements Validator
 {
-  private ElementsLists elements;
+  private ElementsLists elements = ElementsLists.getInstance();
   
   private ValidationItems items = ValidationItems.getInstance();
   
-  public DatatypeValidator(ElementsLists elements)
+  public DatatypeValidator()
   {
-    this.elements = elements;
   }
 
   public void addProgressListener(ProgressListener l) {
@@ -48,6 +51,11 @@ public class DatatypeValidator implements Validator
    */
   public ValidationItems validate()
   {
+    UserSelections userSelections = UserSelections.getInstance();
+    RunMode mode = (RunMode)(userSelections.getProperty("MODE"));
+    if(!mode.equals(RunMode.Reviewer))
+      return items;
+
     //DataElement o = DomainObjectFactory.newDataElement();
     List<DataElement> des = (List<DataElement>) elements.getElements(DomainObjectFactory.newDataElement().getClass());
     if(des != null)

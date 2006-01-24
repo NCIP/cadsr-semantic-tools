@@ -7,13 +7,12 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 public class DescriptionValidator implements Validator
 {
-  private ElementsLists elements;
+  private ElementsLists elements = ElementsLists.getInstance();
   
   private ValidationItems items = ValidationItems.getInstance();
   
-  public DescriptionValidator(ElementsLists elements)
+  public DescriptionValidator()
   {
-    this.elements = elements;
   }
   
   public void addProgressListener(ProgressListener l) {

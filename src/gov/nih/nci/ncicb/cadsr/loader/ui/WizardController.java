@@ -230,7 +230,7 @@ public class WizardController implements ActionListener {
                     
                     parser.parse(filename);
                     
-                    Validator validator = new UMLValidator();
+                    Validator validator = BeansAccessor.getValidator();
                     validator.validate();
                     
                     TreeBuilder tb = TreeBuilder.getInstance();
@@ -288,7 +288,7 @@ public class WizardController implements ActionListener {
                     
                     parser.parse(filename);
                     
-                    Validator validator = new UMLValidator();
+                    Validator validator = BeansAccessor.getValidator();
                     validator.validate();
 
                     Set<ValidationFatal> fatals = ValidationItems.getInstance().getFatals();

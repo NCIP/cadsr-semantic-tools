@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 
 import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
 import gov.nih.nci.ncicb.cadsr.loader.*;
+import gov.nih.nci.ncicb.cadsr.loader.validator.Validator;
 import gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
 
@@ -72,6 +73,10 @@ public class BeansAccessor {
 
   public static CadsrDialog getCadsrVDDialog() {
     return (CadsrDialog)getFactory().getBean("cadsrVDDialog");
+  }
+
+  public static Validator getValidator() {
+    return (Validator)getFactory().getBean("mainValidator");
   }
 
   private static BeanFactory getFactory() {

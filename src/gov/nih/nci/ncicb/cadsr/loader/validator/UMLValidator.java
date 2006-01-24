@@ -45,21 +45,21 @@ public class UMLValidator implements Validator {
    * returns a list of Validation errors.
    */
   public ValidationItems validate() {
-    validators = new ArrayList();
-    validators.add(new ConceptCodeValidator(elements)); 
-    validators.add(new AssociationValidator(elements));
-    validators.add(new DescriptionValidator(elements));
+//     validators = new ArrayList();
+//     validators.add(new ConceptCodeValidator(elements)); 
+//     validators.add(new AssociationValidator(elements));
+//     validators.add(new DescriptionValidator(elements));
     
-    UserSelections userSelections = UserSelections.getInstance();
+//     UserSelections userSelections = UserSelections.getInstance();
 
-    RunMode mode = (RunMode)(userSelections.getProperty("MODE"));
+//     RunMode mode = (RunMode)(userSelections.getProperty("MODE"));
     
-    if(mode.equals(RunMode.Reviewer))
-      validators.add(new DatatypeValidator(elements));
+//     if(mode.equals(RunMode.Reviewer))
+//       validators.add(new DatatypeValidator(elements));
 
-    if(!(Boolean)userSelections.getProperty("SKIP_VD_VALIDATION")) {
-      validators.add(new ValueDomainValidator(elements));
-    }
+//     if(!(Boolean)userSelections.getProperty("SKIP_VD_VALIDATION")) {
+//       validators.add(new ValueDomainValidator(elements));
+//     }
 
 
     for(Validator val : validators)
@@ -69,6 +69,10 @@ public class UMLValidator implements Validator {
     // !!TODO here we should add validators that we only want to run on subsequent calls 
     
     return ValidationItems.getInstance();
+  }
+
+  public void setValidators(List<Validator> v) {
+    this.validators = v;
   }
 
 }
