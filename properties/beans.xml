@@ -81,7 +81,8 @@
 
   <bean name="associationValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.AssociationValidator"/>
-
+  <bean name="duplicateValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateValidator"/>
 
   <bean name="mainValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.UMLValidator">
@@ -92,6 +93,7 @@
         <ref bean="datatypeValidator"/>
         <ref bean="valueDomainValidator"/>
         <ref bean="associationValidator"/>
+        <ref bean="duplicateValidator"/>
       </list>
     </property>
 
