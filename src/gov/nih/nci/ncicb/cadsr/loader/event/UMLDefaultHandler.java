@@ -86,6 +86,7 @@ public class UMLDefaultHandler implements UMLHandler {
     vd.setConceptDerivationRule(createConceptDerivationRule(concepts));
 
     elements.addElement(vd);
+    reviewTracker.put(event.getName(), event.isReviewed());
 
   }
 
@@ -117,6 +118,7 @@ public class UMLDefaultHandler implements UMLHandler {
     vd.addPermissibleValue(pv);
 
     elements.addElement(vm);
+    reviewTracker.put(event.getName(), event.isReviewed());
 
   }
   
