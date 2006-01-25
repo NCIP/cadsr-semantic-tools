@@ -60,7 +60,8 @@ public class UMLDefaults {
 
   private LoaderDefault loaderDefault = null;
 
-  private String filename ;
+  private String filename;
+  private String origin;
 
   private UMLDefaults() {
   }
@@ -102,6 +103,8 @@ public class UMLDefaults {
   private void initParams() throws PersisterException {
 
     audit = DomainObjectFactory.newAudit();
+
+    origin = PropertyAccessor.getProperty("default.origin");
 
     if (loaderDefault == null) {
       throw new PersisterException(
@@ -331,7 +334,11 @@ public class UMLDefaults {
   public void setUsername(String username) {
     audit.setCreatedBy(username);
   }
- 
+  
+  public String getOrigin() {
+    return origin;
+  }
+
   public void updateDefaults(LoaderDefault defaults) {
     try {
       loaderDefault = defaults;
