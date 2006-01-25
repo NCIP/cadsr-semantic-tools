@@ -29,10 +29,9 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 public class AssociationValidator implements Validator {
 
-  private ElementsLists elements;
+  private ElementsLists elements = ElementsLists.getInstance();
 
-  public AssociationValidator(ElementsLists elements) {
-    this.elements = elements;
+  public AssociationValidator() {
   }
 
   public void addProgressListener(ProgressListener l) {

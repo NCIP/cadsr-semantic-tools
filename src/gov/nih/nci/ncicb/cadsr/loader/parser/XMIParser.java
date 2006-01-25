@@ -88,7 +88,7 @@ public class XMIParser implements Parser {
   public static final String TV_VD_DATATYPE = "CADSR_ValueDomainDatatype";
   public static final String TV_VD_TYPE = "CADSR_ValueDomainType";
   public static final String TV_CD_ID = "CADSR_ConceptualDomainPublicID";
-  public static final String TV_CD_VERSION = "CADSR_ConceptDomainVersion";
+  public static final String TV_CD_VERSION = "CADSR_ConceptualDomainVersion";
 
   /**
    * Tagged Value name for Concept Code

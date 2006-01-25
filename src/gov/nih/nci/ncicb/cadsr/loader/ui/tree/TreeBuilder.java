@@ -70,7 +70,9 @@ public class TreeBuilder implements UserPreferencesListener {
     rootNode = new RootNode();
     doPackages(rootNode);
 
-    doValueDomains(rootNode);
+    UMLNode vdNode = new PackageNode("Value Domain", "Value Domains");
+    doValueDomains(vdNode);
+    rootNode.addChild(vdNode);
 
     if(!inClassAssociations && showAssociations)
       doAssociations(rootNode);

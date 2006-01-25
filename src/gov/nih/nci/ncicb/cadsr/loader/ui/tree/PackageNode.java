@@ -52,11 +52,20 @@ public class PackageNode extends AbstractUMLNode
     
     for(UMLNode l : getChildren()) 
     {
-      ClassNode next = (ClassNode) l;
-      if(!next.getIcon().equals(ClassNode.REVIEWED_ICON)) 
-      {
-        changeIcon = false;
-        break;
+      if(l instanceof ClassNode) {
+        ClassNode next = (ClassNode) l;
+        if(!next.getIcon().equals(ClassNode.REVIEWED_ICON)) 
+          {
+            changeIcon = false;
+            break;
+          }
+      } else if(l instanceof ValueDomainNode) {
+        ValueDomainNode next = (ValueDomainNode) l;
+        if(!next.getIcon().equals(ValueDomainNode.REVIEWED_ICON)) 
+          {
+            changeIcon = false;
+            break;
+          }
       }
     }
     

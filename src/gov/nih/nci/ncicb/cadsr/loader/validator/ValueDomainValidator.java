@@ -113,7 +113,31 @@ public class ValueDomainValidator implements Validator {
         if(vd.getConceptualDomain().getVersion() != null && 
            vd.getConceptualDomain().getPublicId() != null) {
           
-          
+          Map<String, Object> queryFields = 
+            new HashMap<String, Object>();
+          queryFields.put("publicID", new Long(vd.getConceptualDomain().getPublicId()));
+          try {
+            queryFields.put("version", vd.getConceptualDomain().getVersion());
+            Collection<ConceptualDomain> cds = cadsrModule.findConceptualDomain(queryFields);
+            if(cds.size() != 1) {
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.cd.match.incorrect", vd.getLongName()), vd));
+              System.out.println("%%%%%%% " + cds.size());
+              System.out.println("pubId " + vd.getConceptualDomain().getPublicId());
+              System.out.println("version " + vd.getConceptualDomain().getVersion());
+            } else {
+              System.out.println("*** ");
+            }
+          } catch (NumberFormatException e) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.missing.cdId", vd.getLongName()), vd));
+          } catch (Exception e){
+            System.err.println("Cannot query cadsr for CD " + e);
+          } // end of try-catch
 
         }
 

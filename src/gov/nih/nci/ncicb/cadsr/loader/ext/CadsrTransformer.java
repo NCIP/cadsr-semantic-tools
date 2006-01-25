@@ -42,6 +42,8 @@ public class CadsrTransformer {
     outDEC.setObjectClass(ocPublicToPrivate(inDEC.getObjectClass()));
     outDEC.setProperty(propPublicToPrivate(inDEC.getProperty()));
 
+    outDEC.setConceptualDomain(cdPublicToPrivate(inDEC.getConceptualDomain()));
+
     return outDEC;
 
   }
@@ -86,6 +88,26 @@ public class CadsrTransformer {
     return outVD;
 
   }
+
+  public static gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain cdPublicToPrivate(gov.nih.nci.cadsr.domain.ConceptualDomain inCD) {
+
+    gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain outCD = DomainObjectFactory.newConceptualDomain();    
+
+    acPublicToPrivate(outCD, inCD);
+
+    return outCD;
+  }
+
+  public static List<gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain> cdListPublicToPrivate(List<gov.nih.nci.cadsr.domain.ConceptualDomain> inCDs) {
+
+    List<gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain> result = new ArrayList();
+
+    for(gov.nih.nci.cadsr.domain.ConceptualDomain inCD : inCDs) {
+      result.add(cdPublicToPrivate(inCD));
+    }
+    return result;
+  }
+
   
 
   /**

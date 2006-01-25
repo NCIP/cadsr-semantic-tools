@@ -103,6 +103,20 @@ public class CadsrPublicApiModule {
     return CadsrTransformer.propListPublicToPrivate(listResult);
   }
 
+
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain>
+    findConceptualDomain(Map<String, Object> queryFields) throws Exception {
+    
+    
+    gov.nih.nci.cadsr.domain.ConceptualDomain searchCD = new gov.nih.nci.cadsr.domain.impl.ConceptualDomainImpl();
+    
+    buildExample(searchCD, queryFields);
+
+    List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.impl.ConceptualDomainImpl.class, searchCD)));
+    
+    return CadsrTransformer.cdListPublicToPrivate(listResult);
+  }
+
   
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement>
     findDataElement(Map<String, Object> queryFields) throws Exception {
@@ -226,7 +240,7 @@ public class CadsrPublicApiModule {
   }
 
   public static void main(String[] args) {
-    CadsrPublicApiModule testModule = new CadsrPublicApiModule("http://cabio.nci.nih.gov/cacore30/server/HTTPServer");
+    CadsrPublicApiModule testModule = new CadsrPublicApiModule("http://cabio-dev.nci.nih.gov/cacore30/server/HTTPServer");
     try {
 //       gov.nih.nci.ncicb.cadsr.domain.DataElement de = testModule.findDataElementByPublicId("2223838", 3f);
 //       if(de == null)
@@ -237,9 +251,9 @@ public class CadsrPublicApiModule {
       Map<String, Object> queryFields = new HashMap<String, Object>();
 //       queryFields.put("longName", "CAP Cancer Checklists");
 //       queryFields.put("version", new Float(1));
-//       queryFields.put("publicID", new Long(2223838));
-//       queryFields.put("version", 3f);
-      queryFields.put("longName", "Person Name Prefix *");
+      queryFields.put("publicID", new Long(2300332));
+      queryFields.put("version", 1f);
+//       queryFields.put("longName", "Person Name Prefix *");
     
 
       
