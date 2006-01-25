@@ -101,6 +101,7 @@ public class ObjectClassPersister extends UMLPersister {
 	  oc.setVersion(1.0f);
 	  oc.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
 	  oc.setAudit(defaults.getAudit());
+          oc.setOrigin(defaults.getOrigin());
 
           List acCsCsis = oc.getAcCsCsis();
           try {

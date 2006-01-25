@@ -59,6 +59,8 @@ public class ConceptPersister extends UMLPersister {
           c.setContext(defaults.getMainContext());
 	  c.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
 	  c.setAudit(defaults.getAudit());
+          c.setOrigin(defaults.getOrigin());
+          c.setEvsSource(PropertyAccessor.getProperty("default.evsSource"));
           c.setId(conceptDAO.create(c));
           logger.info(PropertyAccessor.getProperty("created.concept"));
           LogUtil.logAc(c, logger);
