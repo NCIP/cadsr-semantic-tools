@@ -125,6 +125,7 @@ public class UMLLoaderGUI
     if(mode.equals(RunMode.GenerateReport)) 
       System.exit(0);
 
+    mainFrame.init();
     putToCenter(mainFrame);
     mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     mainFrame.addWindowListener(new WindowAdapter()
@@ -135,7 +136,6 @@ public class UMLLoaderGUI
         }
       });
 
-    mainFrame.init();
     mainFrame.setVisible(true);
 
   }
