@@ -98,8 +98,9 @@ public class MainFrame extends JFrame
   private CloseableTabbedPane viewTabbedPane = new CloseableTabbedPane();
   private JPanel jPanel1 = new JPanel();
 
-  private NavigationPanel navigationPanel = new NavigationPanel();
+  private NavigationPanel navigationPanel;
   private ErrorPanel errorPanel = null;
+  private JPanel logPanel;
 
   private MainFrame _this = this;
 
@@ -119,21 +120,15 @@ public class MainFrame extends JFrame
 
   public MainFrame()
   {
-    try
-    {
-      UserSelections selections = UserSelections.getInstance();
+  }
 
-      runMode = (RunMode)(selections.getProperty("MODE"));
-      saveFilename = (String)selections.getProperty("FILENAME");
+  public void init() {
+    UserSelections selections = UserSelections.getInstance();
+    
+    runMode = (RunMode)(selections.getProperty("MODE"));
+    saveFilename = (String)selections.getProperty("FILENAME");
 
-      jbInit();
-
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
-    }
-
+    jbInit();
   }
 
   public void exit() {
@@ -167,8 +162,7 @@ public class MainFrame extends JFrame
     }
   }
 
-  private void jbInit() throws Exception
-  {
+  private void jbInit() {
     this.getContentPane().setLayout(new BorderLayout());
     this.setSize(new Dimension(830, 650));
     this.setJMenuBar(mainMenuBar);
@@ -224,11 +218,12 @@ public class MainFrame extends JFrame
     viewTabbedPane.setCloseIcons(closeIcon, closeIcon, closeIcon);
     viewTabbedPane.addCloseableTabbedPaneListener(this);
 
-    jTabbedPane1.addTab("Log", new JPanel());
+    jTabbedPane1.addTab("Log", logPanel);
     jSplitPane2.add(jTabbedPane1, JSplitPane.BOTTOM);
     jSplitPane2.add(viewTabbedPane, JSplitPane.TOP);
     jSplitPane1.add(jSplitPane2, JSplitPane.RIGHT);
     
+    navigationPanel = new NavigationPanel();
     jSplitPane1.add(navigationPanel, JSplitPane.LEFT);
     
     navigationPanel.addViewChangeListener(this);
@@ -495,6 +490,10 @@ public class MainFrame extends JFrame
     viewPanels.remove(c.getName());
 
     return true;
+  }
+ 
+  public void setLogTab(JPanel panel) {
+    this.logPanel = panel;
   }
   
 }
