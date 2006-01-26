@@ -5,7 +5,7 @@ import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import java.util.*;
 
 public class DuplicateValidator implements Validator 
@@ -38,7 +38,7 @@ public class DuplicateValidator implements Validator
         else
           listed.put(oc.getPublicId(), oc);
         }
-        else if(oc.getPreferredName() != null) {
+        else if(!StringUtil.isEmpty(oc.getPreferredName())) {
           if(prefNameList.containsKey(oc.getPreferredName()))
             items.addItem(new ValidationError
                           (PropertyAccessor.getProperty
