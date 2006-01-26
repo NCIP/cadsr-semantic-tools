@@ -41,7 +41,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.*;
 
 import gov.nih.nci.ncicb.cadsr.jaas.SwingCallbackHandler;
 
@@ -62,6 +62,10 @@ public class UMLLoaderGUI
 
   private RoundtripPanelDescriptor roundtripDesc;
 
+  private MainFrame mainFrame;
+
+  private Appender appender;
+  
   public UMLLoaderGUI()
   {
   }
@@ -72,6 +76,8 @@ public class UMLLoaderGUI
     Thread t = new Thread(initClass);
     t.setPriority(Thread.MIN_PRIORITY);
     t.start();
+
+    logger.getParent().addAppender(appender);
 
     System.setProperty("java.security.auth.login.config", Thread.currentThread().getContextClassLoader().getResource("jaas.config").toExternalForm());
 
@@ -119,19 +125,27 @@ public class UMLLoaderGUI
     if(mode.equals(RunMode.GenerateReport)) 
       System.exit(0);
 
-    final MainFrame frame = new MainFrame();
-    putToCenter(frame);
-    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-    frame.addWindowListener(new WindowAdapter()
+    putToCenter(mainFrame);
+    mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    mainFrame.addWindowListener(new WindowAdapter()
       {
         public void windowClosing(WindowEvent e)
         {
-          frame.exit();
+          mainFrame.exit();
         }
       });
-    frame.setVisible(true);
 
+    mainFrame.init();
+    mainFrame.setVisible(true);
 
+  }
+
+  public void setMainFrame(MainFrame frame) {
+    this.mainFrame = frame;
+  }
+
+  public void setCustomAppender(Appender a) {
+    this.appender = a;
   }
 
 //   /**

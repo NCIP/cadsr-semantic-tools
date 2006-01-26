@@ -6,11 +6,15 @@
   <bean name="siw"
     class="gov.nih.nci.ncicb.cadsr.loader.UMLLoaderGUI"
     >
-
     <property name="roundtripDescriptor">
       <ref bean="roundtripDescriptor"/>
     </property>
-    
+    <property name="mainFrame">
+      <ref bean="mainFrame"/>
+    </property>
+    <property name="customAppender">
+      <ref bean="appender"/>
+    </property>
   </bean>
 
   <bean name="umlLoader"
@@ -81,6 +85,7 @@
 
   <bean name="associationValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.AssociationValidator"/>
+
   <bean name="duplicateValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateValidator"/>
 
@@ -96,12 +101,8 @@
         <ref bean="duplicateValidator"/>
       </list>
     </property>
-
   </bean>
   
-  
-
-
   <!-- Wizard Panels -->
   <bean name="roundtripPanel"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.RoundtripPanel">
@@ -138,5 +139,25 @@
     </property>
   </bean>
 
+  <bean name="mainFrame"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.MainFrame">
+    <property name="logTab">
+      <ref bean="logTab"/>
+    </property>
+  </bean>
+
+  <bean name="logTab"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.LogPanel">
+  </bean>
+
+  <bean name="appender"
+    class="gov.nih.nci.ncicb.cadsr.loader.util.SiwAppender">
+    <property name="logListeners">
+      <list>
+        <ref bean="logTab"/>
+      </list>
+    </property>
+  </bean>
+    
 
 </beans>
