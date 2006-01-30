@@ -5,7 +5,7 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
-import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
+import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -20,9 +20,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.log4j.*;
 
-
-public class CadsrDialog extends JDialog implements ActionListener, KeyListener
+public class CadsrDialog extends JDialog implements ActionListener, KeyListener, CadsrModuleListener
 {
   private CadsrDialog _this = this;
 
@@ -45,7 +45,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
   
   private JLabel indexLabel = new JLabel("");
 
-  private CadsrPublicApiModule cadsrModule;
+  private CadsrModule cadsrModule;
 
   private static String SEARCH = "SEARCH",
     PREVIOUS = "PREVIOUS",
@@ -74,6 +74,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
   public static final int MODE_CD = 5;
   
   private int mode;
+
+  private static Logger logger = Logger.getLogger(CadsrDialog.class.getName());
   
   public CadsrDialog(int runMode)
   {
@@ -192,7 +194,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
                 }
               }
               
-              _this.dispose();
+              _this.setVisible(false);
             }
           }
         }
@@ -272,52 +274,31 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
       _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       
       try {
+        Map<String, Object> queryFields = new HashMap<String, Object>();
+        if(selection.equals(LONG_NAME)) {
+          queryFields.put(CadsrModule.LONG_NAME, text);
+        } else if(selection.equals(PUBLIC_ID)) {
+          queryFields.put(CadsrModule.PUBLIC_ID, new Long(text));
+        }
         switch (mode) {
         case MODE_OC:
-          Map<String, Object> queryFields = new HashMap<String, Object>();
-          if(selection.equals(LONG_NAME)) {
-            queryFields.put("longName", text);
-          } else if(selection.equals(PUBLIC_ID)) {
-            queryFields.put("publicID", new Long(text));
-          }
           resultSet.addAll(cadsrModule.findObjectClass(queryFields));
           break;
         case MODE_PROP:
-          Property prop = DomainObjectFactory.newProperty();
-          PropertyDAO propDAO = DAOAccessor.getPropertyDAO();
-          if(selection.equals(LONG_NAME)) {
-            prop.setLongName(text);
-          } else if(selection.equals(PUBLIC_ID)) {
-            prop.setPublicId(text);
-          }
-          resultSet.addAll(propDAO.find(prop));
+          resultSet.addAll(cadsrModule.findProperty(queryFields));
           break;
         case MODE_DE:
-          DataElement de = DomainObjectFactory.newDataElement();
-          DataElementDAO deDAO = DAOAccessor.getDataElementDAO();
-          if(selection.equals(LONG_NAME)) {
-            de.setLongName(text);
-          } else if(selection.equals(PUBLIC_ID)) {
-            de.setPublicId(text);
-          }
-          resultSet.addAll(deDAO.find(de, 20));       
+          resultSet.addAll(cadsrModule.findDataElement(queryFields));
           break;
         case MODE_VD:
-          ValueDomain vd = DomainObjectFactory.newValueDomain();
-          ValueDomainDAO vdDAO = DAOAccessor.getValueDomainDAO();
-          if(selection.equals(LONG_NAME)) {
-            vd.setLongName(text);
-          } else if(selection.equals(PUBLIC_ID)) {
-            vd.setPublicId(text);
-          }
-          resultSet.addAll(vdDAO.find(vd));       
-
+          resultSet.addAll(cadsrModule.findValueDomain(queryFields));       
         }
       } catch (Exception e){
+        logger.error(e);
+        logger.error("module: " + cadsrModule);
       } // end of try-catch
       
       _this.setCursor(Cursor.getDefaultCursor());
-      
       updateTable();
       
     }
@@ -328,7 +309,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
       pageIndex++;
       updateTable();
     } else if(button.getActionCommand().equals(CLOSE)) {
-      this.dispose();
+      this.setVisible(false);
     }
     updateIndexLabel();
   }
@@ -373,7 +354,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener
   /**
    * IoC setter
    */
-  public void setCadsrModule(CadsrPublicApiModule module) {
+  public void setCadsrModule(CadsrModule module) {
     this.cadsrModule = module;
   }
  
