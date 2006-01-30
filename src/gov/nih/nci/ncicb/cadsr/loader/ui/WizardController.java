@@ -114,6 +114,9 @@ public class WizardController implements ActionListener {
         
         prefs.setModeSelection(mode.toString());
         
+        // right here, we decide which module to use
+        prefs.setUsePrivateApi(panel.usePrivateApi());
+
         FileSelectionPanelDescriptor fileDesc =
           (FileSelectionPanelDescriptor)model
           .getPanelDescriptor(FileSelectionPanelDescriptor.IDENTIFIER);

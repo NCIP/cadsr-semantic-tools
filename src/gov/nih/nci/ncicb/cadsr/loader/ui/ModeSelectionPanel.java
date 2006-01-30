@@ -39,6 +39,8 @@ public class ModeSelectionPanel extends JPanel {
 
   private UserSelections userSelections = UserSelections.getInstance();
   private UserPreferences prefs = UserPreferences.getInstance();
+
+  private JCheckBox privateApiCb = new JCheckBox("Use Private API", prefs.isUsePrivateApi());
   
   public ModeSelectionPanel()
   {
@@ -55,6 +57,10 @@ public class ModeSelectionPanel extends JPanel {
 
   public String getSelection() {
     return group.getSelection().getActionCommand();
+  }
+
+  public boolean usePrivateApi() {
+    return privateApiCb.isSelected();
   }
 
   private void initUI() {
@@ -122,6 +128,8 @@ public class ModeSelectionPanel extends JPanel {
     this.setLayout(new BorderLayout());
     this.add(infoPanel, BorderLayout.NORTH);
     this.add(buttonPanel, BorderLayout.CENTER);
+
+    this.add(privateApiCb, BorderLayout.SOUTH);
 
   }
 
