@@ -108,6 +108,7 @@ public class MainFrame extends JFrame
 
   private Map<String, UMLElementViewPanel> viewPanels = new HashMap();
   private AssociationViewPanel associationViewPanel = null;
+  private ValueDomainViewPanel vdViewPanel = null;
 
   private ReviewTracker reviewTracker = ReviewTracker.getInstance();
 
@@ -426,7 +427,8 @@ public class MainFrame extends JFrame
 
 
       if((event.getInNewTab() == true) || (viewPanels.size() == 0)
-          || viewTabbedPane.getSelectedComponent() instanceof AssociationViewPanel) {
+          || viewTabbedPane.getSelectedComponent() instanceof AssociationViewPanel
+          || viewTabbedPane.getSelectedComponent() instanceof ValueDomainViewPanel) {
         UMLElementViewPanel viewPanel = new UMLElementViewPanel(node);
         
         viewPanel.addPropertyChangeListener(this);
@@ -479,7 +481,20 @@ public class MainFrame extends JFrame
       viewTabbedPane.setSelectedComponent(associationViewPanel);
 
     }
-   
+      else if(event.getType() == ViewChangeEvent.VIEW_VALUE_DOMAIN) {
+      UMLNode node = (UMLNode)event.getViewObject();
+      
+      if(vdViewPanel == null) {
+        vdViewPanel = new ValueDomainViewPanel((ValueDomain)node.getUserObject());
+        viewTabbedPane.addTab("ValueDomain", vdViewPanel);
+        vdViewPanel.setName("ValueDomain");
+        infoLabel.setText("ValueDomain");
+      }
+      else
+        vdViewPanel.update((ValueDomain)node.getUserObject());
+        
+      viewTabbedPane.setSelectedComponent(vdViewPanel);
+  }
   }
 
   public boolean closeTab(int index) {
@@ -487,6 +502,8 @@ public class MainFrame extends JFrame
     Component c = viewTabbedPane.getComponentAt(index);
     if(c.equals(associationViewPanel))
       associationViewPanel = null;
+    if(c.equals(vdViewPanel))
+      vdViewPanel = null;
     viewPanels.remove(c.getName());
 
     return true;
