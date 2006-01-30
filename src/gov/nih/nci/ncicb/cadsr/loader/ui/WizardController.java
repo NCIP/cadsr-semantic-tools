@@ -224,7 +224,7 @@ public class WizardController implements ActionListener {
                   try {
                     Parser parser = new CsvParser();
                     ElementsLists elements = ElementsLists.getInstance();
-                    UMLHandler listener = new UMLDefaultHandler();
+                    UMLHandler listener = BeansAccessor.getUMLHandler();
                     parser.setEventHandler(listener);
                     parser.addProgressListener(progressDesc);
                     
@@ -283,7 +283,7 @@ public class WizardController implements ActionListener {
                   try {
                     XMIParser  parser = new XMIParser();
                     ElementsLists elements = ElementsLists.getInstance();
-                    UMLHandler listener = new UMLDefaultHandler();
+                    UMLHandler listener = BeansAccessor.getUMLHandler();
                     parser.setEventHandler(listener);
                     parser.addProgressListener(progressDesc);
                     UMLDefaults defaults = UMLDefaults.getInstance();

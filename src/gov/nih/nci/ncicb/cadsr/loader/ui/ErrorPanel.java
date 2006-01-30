@@ -42,20 +42,24 @@ public class ErrorPanel extends JPanel
  implements MouseListener {
 
   private JTree tree;
-  private Set displaySet = new HashSet();
+  private Set<UMLNode> displaySet = new HashSet<UMLNode>();
   private JPopupMenu popup;
 
   public ErrorPanel(UMLNode rootNode) {
     initUI(rootNode);
-    buildPopupMenu();
+//     buildPopupMenu();
   }
 
   public void update(UMLNode rootNode) {
     this.removeAll();
     initUI(rootNode);
+
+    this.updateUI();
   }
 
+
   private void initUI(UMLNode rootNode) {
+    displaySet.clear();
     firstRun(rootNode);
 
     DefaultMutableTreeNode node = buildTree(rootNode);
@@ -76,8 +80,6 @@ public class ErrorPanel extends JPanel
     JScrollPane scrollPane = new JScrollPane(tree);
     this.setPreferredSize(new Dimension(450, 110));
     this.add(scrollPane, BorderLayout.CENTER);
-
-
   }
 
   public void mousePressed(MouseEvent e) {
@@ -99,7 +101,7 @@ public class ErrorPanel extends JPanel
     }
   }
 
-  public void buildPopupMenu() {
+  private void buildPopupMenu() {
     popup = new JPopupMenu();
     JMenuItem menuItem = new JMenuItem("Export Errors");
     popup.add(menuItem);
@@ -107,8 +109,8 @@ public class ErrorPanel extends JPanel
 
   private void firstRun(UMLNode node) {
     Set<UMLNode> children = node.getChildren();
-    
     Set<ValidationNode> valNodes = node.getValidationNodes();
+//     displaySet = new HashSet<UMLNode>();
 
     for(ValidationNode valNode : valNodes)
       navTree(valNode);

@@ -35,9 +35,11 @@ import javax.swing.*;
  */
 public class PreferenceDialog extends JDialog implements ActionListener
 {
-  private JCheckBox associationBox = new JCheckBox("View Associations in Class Tree");
-  private JCheckBox umlDescriptionBox = new JCheckBox("Display UML Description Last");
-  private JCheckBox evsAutoSearchBox = new JCheckBox("Automatically Search EVS on EVS link");
+  private JCheckBox associationBox = new JCheckBox("View Associations in Class Tree"),
+    umlDescriptionBox = new JCheckBox("Display UML Description Last"),
+    evsAutoSearchBox = new JCheckBox("Automatically Search EVS on EVS link"),
+    privateApiSearchBox = new JCheckBox("Use Private Api");
+
   private JButton apply = new JButton("Apply");
   private JButton cancel = new JButton("Cancel");
   private JButton ok = new JButton("OK");
@@ -57,11 +59,12 @@ public class PreferenceDialog extends JDialog implements ActionListener
     centerPanel.add(associationBox); 
     centerPanel.add(umlDescriptionBox);
     centerPanel.add(evsAutoSearchBox);
+    centerPanel.add(privateApiSearchBox);
 
     this.getContentPane().setLayout(new BorderLayout());
     this.getContentPane().add(centerPanel);
     this.getContentPane().add(southPanel,BorderLayout.SOUTH);
-    this.setSize(300,150);
+    this.setSize(300,200);
     
     apply.setActionCommand(APPLY);
     cancel.setActionCommand(CANCEL);
@@ -90,13 +93,15 @@ public class PreferenceDialog extends JDialog implements ActionListener
       umlDescriptionBox.setSelected(true);
  
     evsAutoSearchBox.setSelected(prefs.getEvsAutoSearch());
+
+    privateApiSearchBox.setSelected(prefs.isUsePrivateApi());
   }
   
   public void actionPerformed(ActionEvent event) 
   {
     JButton button = (JButton)event.getSource();
     
-    if(button.getActionCommand().equals(OK)) {
+    if(button.getActionCommand().equals(OK) || button.getActionCommand().equals(APPLY)) {
       UserPreferences prefs = UserPreferences.getInstance();
       if(associationBox.isSelected())
         prefs.setViewAssociationType("true");
@@ -109,22 +114,11 @@ public class PreferenceDialog extends JDialog implements ActionListener
         prefs.setUmlDescriptionOrder("first");
 
       prefs.setEvsAutoSeatch(evsAutoSearchBox.isSelected());
-        
-      this.dispose();
-    }
-    
-    if(button.getActionCommand().equals(APPLY)) {
-      UserPreferences prefs = UserPreferences.getInstance();
-      if(associationBox.isSelected())
-        prefs.setViewAssociationType("true");
-      else
-        prefs.setViewAssociationType("false");
-      
-      if(umlDescriptionBox.isSelected())
-        prefs.setUmlDescriptionOrder("last");
-      else
-        prefs.setUmlDescriptionOrder("first");  
-      
+
+      prefs.setUsePrivateApi(privateApiSearchBox.isSelected());
+
+      if(button.getActionCommand().equals(OK))
+        this.dispose();
     }
     
     if(button.getActionCommand().equals(CANCEL))

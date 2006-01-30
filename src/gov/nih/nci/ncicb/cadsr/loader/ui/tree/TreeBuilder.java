@@ -125,7 +125,12 @@ public class TreeBuilder implements UserPreferencesListener {
     List<ObjectClass> ocs = elements.getElements(oc);
 
     for(ObjectClass o : ocs) {
-      String className = o.getLongName();
+      String className = null;
+      for(AlternateName an : o.getAlternateNames()) {
+        if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+          className = an.getName();
+      }
+
       int ind = className.lastIndexOf(".");
       packageName = className.substring(0, ind);
       if(packageName.equals(parentNode.getFullPath())) {
@@ -234,8 +239,7 @@ public class TreeBuilder implements UserPreferencesListener {
     
     for(ValueMeaning vm : vms) {
       try {
-        if(vm.getShortMeaning()
-           .equals(parentNode.getFullPath())) {
+        if(isInValueDomain(parentNode.getFullPath(), vm)) {
           UMLNode node = new ValueMeaningNode(vm);
 
           Boolean reviewed = reviewTracker.get(node.getFullPath());
@@ -311,10 +315,27 @@ public class TreeBuilder implements UserPreferencesListener {
   {
     treeListeners.add(listener);
   }
-  
+
   public void fireTreeEvent(TreeEvent event) 
   {
     for(TreeListener l : treeListeners)
       l.treeChange(event);
   }
+
+  private boolean isInValueDomain(String vdName, ValueMeaning vm) {
+    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+    
+    for(ValueDomain vd : vds) {
+      if(vd.getLongName().equals(vdName)) {
+        for(PermissibleValue pv : vd.getPermissibleValues()) {
+          if(pv.getValueMeaning() == vm)
+            return true;
+        }
+        return false;
+      }
+    }
+    return false;
+    
+  }
+  
 }
