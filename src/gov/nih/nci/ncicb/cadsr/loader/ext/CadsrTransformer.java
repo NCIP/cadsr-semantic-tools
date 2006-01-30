@@ -39,10 +39,13 @@ public class CadsrTransformer {
 
     acPublicToPrivate(outDEC, inDEC);
     
-    outDEC.setObjectClass(ocPublicToPrivate(inDEC.getObjectClass()));
-    outDEC.setProperty(propPublicToPrivate(inDEC.getProperty()));
+    if(inDEC.getObjectClass() != null)
+      outDEC.setObjectClass(ocPublicToPrivate(inDEC.getObjectClass()));
+    if(inDEC.getProperty() != null)
+      outDEC.setProperty(propPublicToPrivate(inDEC.getProperty()));
 
-    outDEC.setConceptualDomain(cdPublicToPrivate(inDEC.getConceptualDomain()));
+    if(outDEC.getConceptualDomain() != null)
+      outDEC.setConceptualDomain(cdPublicToPrivate(inDEC.getConceptualDomain()));
 
     return outDEC;
 
