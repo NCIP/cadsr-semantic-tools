@@ -56,8 +56,6 @@ public class BeansAccessor {
   }
 
   public static UMLLoaderGUI getSiw() {
-    System.out.println("SIW FACTORY: " + getFactory());
-    
     return (UMLLoaderGUI)getFactory().getBean("siw");
   }
 
