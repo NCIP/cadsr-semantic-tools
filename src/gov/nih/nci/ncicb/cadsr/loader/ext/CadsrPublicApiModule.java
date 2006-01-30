@@ -20,13 +20,13 @@ import java.lang.reflect.Method;
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class CadsrPublicApiModule {
+public class CadsrPublicApiModule implements CadsrModule {
 
   private static String serviceURL = null;
 
   private static ApplicationService service = null;
 
-  private Logger logger = Logger.getLogger(CadsrPublicApiModule.class.getName());
+  private Logger logger = Logger.getLogger(CadsrPrivateApiModule.class.getName());
 
 
 //   public static List<gov.nih.nci.ncicb.cadsr.domain.DataElement>
@@ -121,7 +121,6 @@ public class CadsrPublicApiModule {
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement>
     findDataElement(Map<String, Object> queryFields) throws Exception {
     
-    
     gov.nih.nci.cadsr.domain.DataElement searchDE = new gov.nih.nci.cadsr.domain.impl.DataElementImpl();
     
     buildExample(searchDE, queryFields);
@@ -134,9 +133,14 @@ public class CadsrPublicApiModule {
   private void buildExample(Object o, Map<String, Object> queryFields) {
 
     for(String s : queryFields.keySet()) {
+      Object field = queryFields.get(s);
+      if(s.equals("publicId")) {
+        s = "publicID";
+        field = new Long((String)field);
+      }
       try {
-        Method m = o.getClass().getMethod("set" + s.substring(0, 1).toUpperCase() + s.substring(1), queryFields.get(s).getClass());
-        m.invoke(o, queryFields.get(s));
+        Method m = o.getClass().getMethod("set" + s.substring(0, 1).toUpperCase() + s.substring(1), field.getClass());
+        m.invoke(o, field);
       } catch(Exception e) {
         e.printStackTrace();
       } // end of try-catch
@@ -162,22 +166,22 @@ public class CadsrPublicApiModule {
 //     return CadsrTransformer.deListPublicToPrivate(listResult);
 //   }
 
-  public gov.nih.nci.ncicb.cadsr.domain.DataElement 
-    findDataElementByPublicId(String id, Float version) throws Exception {
+//   public gov.nih.nci.ncicb.cadsr.domain.DataElement 
+//     findDataElementByPublicId(String id, Float version) throws Exception {
     
-    DetachedCriteria deCriteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.impl.DataElementImpl.class, "de");
+//     DetachedCriteria deCriteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.impl.DataElementImpl.class, "de");
     
-    deCriteria.add(Expression.eq("publicID", new Long(id)));
-    deCriteria.add(Expression.eq("version", version));
+//     deCriteria.add(Expression.eq("publicID", new Long(id)));
+//     deCriteria.add(Expression.eq("version", version));
     
-    List listResult = service.query(deCriteria, gov.nih.nci.cadsr.domain.impl.DataElementImpl.class.getName());
+//     List listResult = service.query(deCriteria, gov.nih.nci.cadsr.domain.impl.DataElementImpl.class.getName());
     
-    if(listResult.size() > 0) {
-      gov.nih.nci.cadsr.domain.DataElement qResult = (gov.nih.nci.cadsr.domain.DataElement)listResult.get(0);
-      return CadsrTransformer.dePublicToPrivate(qResult);
-    } else
-      return null;
-  }
+//     if(listResult.size() > 0) {
+//       gov.nih.nci.cadsr.domain.DataElement qResult = (gov.nih.nci.cadsr.domain.DataElement)listResult.get(0);
+//       return CadsrTransformer.dePublicToPrivate(qResult);
+//     } else
+//       return null;
+//   }
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
     findDEByClassifiedAltName(gov.nih.nci.ncicb.cadsr.domain.AlternateName altName, gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem csCsi) throws Exception {
@@ -240,7 +244,7 @@ public class CadsrPublicApiModule {
   }
 
   public static void main(String[] args) {
-    CadsrPublicApiModule testModule = new CadsrPublicApiModule("http://cabio-dev.nci.nih.gov/cacore30/server/HTTPServer");
+    CadsrModule testModule = new CadsrPublicApiModule("http://cabio-dev.nci.nih.gov/cacore30/server/HTTPServer");
     try {
 //       gov.nih.nci.ncicb.cadsr.domain.DataElement de = testModule.findDataElementByPublicId("2223838", 3f);
 //       if(de == null)
@@ -251,7 +255,7 @@ public class CadsrPublicApiModule {
       Map<String, Object> queryFields = new HashMap<String, Object>();
 //       queryFields.put("longName", "CAP Cancer Checklists");
 //       queryFields.put("version", new Float(1));
-      queryFields.put("publicID", new Long(2300332));
+      queryFields.put("publicId", "2300332");
       queryFields.put("version", 1f);
 //       queryFields.put("longName", "Person Name Prefix *");
     
