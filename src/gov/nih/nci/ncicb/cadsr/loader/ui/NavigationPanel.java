@@ -233,7 +233,14 @@ public class NavigationPanel extends JPanel
 
             fireViewChangeEvent(evt);
   	  }
-  	}
+        else if(o instanceof ValueDomainNode) {
+        ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_VALUE_DOMAIN);
+        evt.setViewObject(dmtn.getUserObject());
+        evt.setInNewTab(false);
+        
+        fireViewChangeEvent(evt);
+        }
+    }
   }
 
 
