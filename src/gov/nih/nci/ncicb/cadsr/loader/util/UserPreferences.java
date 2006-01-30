@@ -20,8 +20,12 @@
 package gov.nih.nci.ncicb.cadsr.loader.util;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
+import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 import java.util.prefs.Preferences;
 import java.util.*;
+
+import org.apache.log4j.Logger;
+
 
 /**
  * Persists user preferences using os specific mechanism. 
@@ -34,11 +38,43 @@ public class UserPreferences {
   Set<UserPreferencesListener> userPrefsListeners = new HashSet(); 
   private UserSelections userSelections = UserSelections.getInstance();
   private static UserPreferences instance = new UserPreferences();
+
+  private CadsrModule privateCadsrModule, publicCadsrModule;
+
+  private List<CadsrModuleListener> cadsrModuleListeners;
+
+  private Logger logger = Logger.getLogger(UserPreferences.class.getName());
+
+
   private UserPreferences() {}
   public static UserPreferences getInstance() {
     return instance;
   }
+
+  public void setPrivateCadsrModule(CadsrModule m) {
+    privateCadsrModule = m;
+  }
+  public void setPublicCadsrModule(CadsrModule m) {
+    publicCadsrModule = m;
+  }
+
   
+  public boolean isUsePrivateApi() {
+    return new Boolean(prefs.get("isUsePrivateApi", "false"));
+  }
+
+  public void setUsePrivateApi(boolean b) 
+  {
+    prefs.put("isUsePrivateApi", b?"true":"false");
+    
+    logger.info("Will be using the " + (b?"private":"public") + " api from now on");
+
+    if(cadsrModuleListeners != null)
+      for(CadsrModuleListener l : cadsrModuleListeners) {
+        l.setCadsrModule(b?privateCadsrModule:publicCadsrModule);
+      }
+  }
+
   public String getViewAssociationType() 
   {
     return prefs.get("ViewAssociations", "false");
@@ -154,6 +190,11 @@ public class UserPreferences {
 
   public void setUserSelections(UserSelections us) {
     userSelections = us;
+  }
+
+  
+  public void setCadsrModuleListeners(List<CadsrModuleListener> listeners ) {
+    cadsrModuleListeners = listeners;
   }
 
 }
