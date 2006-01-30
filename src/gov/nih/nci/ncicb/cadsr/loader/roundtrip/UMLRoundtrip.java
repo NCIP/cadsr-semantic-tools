@@ -30,7 +30,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
-import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
+import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 
 import org.apache.log4j.Logger;
 
@@ -42,7 +42,7 @@ import java.util.*;
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class UMLRoundtrip implements Roundtrip {
+public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
 
   private static Logger logger = Logger.getLogger(UMLRoundtrip.class.getName());
 
@@ -58,7 +58,7 @@ public class UMLRoundtrip implements Roundtrip {
   private ClassificationScheme projectCs = null;
   private ProgressListener progressListener = null;
 
-  private CadsrPublicApiModule cadsrModule;
+  private CadsrModule cadsrModule;
 
   public UMLRoundtrip() {
   }
@@ -194,7 +194,7 @@ public class UMLRoundtrip implements Roundtrip {
   /**
    * IoC setter
    */
-  public void setCadsrModule(CadsrPublicApiModule module) {
+  public void setCadsrModule(CadsrModule module) {
     cadsrModule = module;
   }
 
