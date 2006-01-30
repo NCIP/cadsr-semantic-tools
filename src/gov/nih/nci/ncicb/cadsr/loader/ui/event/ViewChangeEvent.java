@@ -23,6 +23,8 @@ public class ViewChangeEvent {
 
   public static final int VIEW_CONCEPTS = 1;
   public static final int VIEW_ASSOCIATION = 2;
+  public static final int VIEW_AC = 3;
+  public static final int VIEW_VALUE_DOMAIN = 4;
 
   private int type;
   private Object viewObject;
