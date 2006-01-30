@@ -409,6 +409,8 @@ public class XMIParser implements Parser {
     }
 
 
+    listener.newValueDomain(event);
+
     for (Object o : clazz.getFeature()) {
       if (o instanceof Attribute) {
         doValueMeaning((Attribute) o);
@@ -418,7 +420,6 @@ public class XMIParser implements Parser {
       }
     }
 
-    listener.newValueDomain(event);
     className = "";
 
   }
