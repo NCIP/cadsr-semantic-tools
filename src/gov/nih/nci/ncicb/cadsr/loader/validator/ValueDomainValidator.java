@@ -30,15 +30,16 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
-import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
+import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 
+import org.apache.log4j.Logger;
 
 /**
  * Validate that Value Domains requested for load validate required rules: <ul>
  * <li>Must not already Exist
  * <ul>
  */
-public class ValueDomainValidator implements Validator {
+public class ValueDomainValidator implements Validator, CadsrModuleListener {
 
   private ElementsLists elements = ElementsLists.getInstance();
 
@@ -46,7 +47,9 @@ public class ValueDomainValidator implements Validator {
 
   private ProgressListener progressListener;
 
-  private CadsrPublicApiModule cadsrModule;
+  private CadsrModule cadsrModule;
+
+  private Logger logger = Logger.getLogger(ValueDomainValidator.class.getName());
 
   public ValueDomainValidator() {
   }
@@ -115,20 +118,17 @@ public class ValueDomainValidator implements Validator {
           
           Map<String, Object> queryFields = 
             new HashMap<String, Object>();
-          queryFields.put("publicID", new Long(vd.getConceptualDomain().getPublicId()));
+          queryFields.put(CadsrModule.PUBLIC_ID, vd.getConceptualDomain().getPublicId());
           try {
-            queryFields.put("version", vd.getConceptualDomain().getVersion());
+            queryFields.put(CadsrModule.VERSION, vd.getConceptualDomain().getVersion());
             Collection<ConceptualDomain> cds = cadsrModule.findConceptualDomain(queryFields);
             if(cds.size() != 1) {
               items.addItem
                 (new ValidationError
                  (PropertyAccessor.getProperty
                   ("vd.cd.match.incorrect", vd.getLongName()), vd));
-              System.out.println("%%%%%%% " + cds.size());
-              System.out.println("pubId " + vd.getConceptualDomain().getPublicId());
-              System.out.println("version " + vd.getConceptualDomain().getVersion());
             } else {
-              System.out.println("*** ");
+
             }
           } catch (NumberFormatException e) {
             items.addItem
@@ -136,7 +136,7 @@ public class ValueDomainValidator implements Validator {
                (PropertyAccessor.getProperty
                 ("vd.missing.cdId", vd.getLongName()), vd));
           } catch (Exception e){
-            System.err.println("Cannot query cadsr for CD " + e);
+            logger.error("Cannot query cadsr for CD " + e);
           } // end of try-catch
 
         }
@@ -153,7 +153,7 @@ public class ValueDomainValidator implements Validator {
     return items;
   }
 
-  public void setCadsrModule(CadsrPublicApiModule module) {
+  public void setCadsrModule(CadsrModule module) {
     this.cadsrModule = module;
   }
 

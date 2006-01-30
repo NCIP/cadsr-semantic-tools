@@ -34,7 +34,7 @@ import java.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
-import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
+import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 
 import org.apache.log4j.Logger;
 
@@ -43,7 +43,7 @@ import org.apache.log4j.Logger;
  *
  * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
  */
-public class RoundtripPanel extends JPanel implements KeyListener
+public class RoundtripPanel extends JPanel implements KeyListener, CadsrModuleListener
 {
 
   private JPanel _this = this;
@@ -55,7 +55,7 @@ public class RoundtripPanel extends JPanel implements KeyListener
   
   private List<ActionListener> actionListeners = new ArrayList<ActionListener>();
 
-  private CadsrPublicApiModule cadsrModule;
+  private CadsrModule cadsrModule;
 
   private boolean verified = false;
 
@@ -181,7 +181,7 @@ public class RoundtripPanel extends JPanel implements KeyListener
     return verified;
   }
   
-  public void setCadsrModule(CadsrPublicApiModule cadsrModule) {
+  public void setCadsrModule(CadsrModule cadsrModule) {
     this.cadsrModule = cadsrModule;
   }
   
