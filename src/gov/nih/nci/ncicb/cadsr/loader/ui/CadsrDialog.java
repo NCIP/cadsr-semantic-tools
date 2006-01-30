@@ -294,8 +294,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
           resultSet.addAll(cadsrModule.findValueDomain(queryFields));       
         }
       } catch (Exception e){
-        logger.error(e);
-        logger.error("module: " + cadsrModule);
+        logger.error("Error querying Cadsr " + e);
       } // end of try-catch
       
       _this.setCursor(Cursor.getDefaultCursor());
