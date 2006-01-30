@@ -27,9 +27,8 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
-
-import gov.nih.nci.ncicb.cadsr.dao.DataElementDAO;
 
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationError;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
@@ -40,12 +39,16 @@ import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
  *
  * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
  */
-public class UMLDefaultHandler implements UMLHandler {
+public class UMLDefaultHandler 
+  implements UMLHandler, CadsrModuleListener {
+
   private ElementsLists elements;
   private Logger logger = Logger.getLogger(UMLDefaultHandler.class.getName());
   private List packageList = new ArrayList();
   
   private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+
+  private CadsrModule cadsrModule;
 
   // keeps track of the mapping between an oc and the DE that set it's public id
   // key = oc Id / version
@@ -103,12 +106,15 @@ public class UMLDefaultHandler implements UMLHandler {
     
     ConceptDerivationRule condr = DomainObjectFactory.newConceptDerivationRule();
     int c = 0;
+    List<ComponentConcept> compCons = new ArrayList<ComponentConcept>();
     for(Concept con : concepts) {
       ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
       compCon.setConcept(con);
       compCon.setOrder(concepts.size() - 1 - c);
       compCon.setConceptDerivationRule(condr);
-    }    
+      compCons.add(compCon);
+    }
+    condr.setComponentConcepts(compCons);
 
     vm.setConceptDerivationRule(condr);
 
@@ -183,11 +189,18 @@ public class UMLDefaultHandler implements UMLHandler {
     // populate if there is valid existing mapping
     DataElement existingDe = null;
     if(event.getPersistenceId() != null) {
-      de.setPublicId(event.getPersistenceId());
-      de.setVersion(event.getPersistenceVersion());
+      Map<String, Object> queryFields = 
+        new HashMap<String, Object>();
+      queryFields.put(CadsrModule.PUBLIC_ID, event.getPersistenceId());
+      queryFields.put(CadsrModule.VERSION, event.getPersistenceVersion());
 
-      DataElementDAO deDAO = DAOAccessor.getDataElementDAO();
-      List<DataElement> result =  deDAO.find(de);
+      List<DataElement> result = null;
+
+      try {
+        result =  new ArrayList<DataElement>(cadsrModule.findDataElement(queryFields));
+      } catch (Exception e){
+        logger.error("Could not query cadsr module " + e);
+      } // end of try-catch
 
       if(result.size() == 0) {
         ChangeTracker changeTracker = ChangeTracker.getInstance();
@@ -262,6 +275,8 @@ public class UMLDefaultHandler implements UMLHandler {
         oc.setVersion(existingDe.getDataElementConcept().getObjectClass().getVersion());
         // Keep track so if there's conflict, we know both ends of the conflict
         ocMapping.put(ConventionUtil.publicIdVersion(oc), de);
+
+        oc.setLongName(existingDe.getDataElementConcept().getObjectClass().getLongName());
         oc.setPreferredName(null);
         ChangeTracker changeTracker = ChangeTracker.getInstance();
         changeTracker.put
@@ -416,16 +431,14 @@ public class UMLDefaultHandler implements UMLHandler {
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
     ObjectClass oc = DomainObjectFactory.newObjectClass();
 
-    List<ObjectClass> ocs = elements.getElements(oc);
+    AlternateName an = DomainObjectFactory.newAlternateName();
+    an.setName(event.getParentClassName());
+    an.setType(AlternateName.TYPE_CLASS_FULL_NAME);
+    ocr.setTarget(LookupUtil.lookupObjectClass(an));
+    
+    an.setName(event.getChildClassName());
+    ocr.setSource(LookupUtil.lookupObjectClass(an));
 
-    for(ObjectClass o : ocs ) {
-      if (o.getLongName().equals(event.getParentClassName())) {
-        ocr.setTarget(o);
-      } else if (o.getLongName().equals(event.getChildClassName())) {
-        ocr.setSource(o);
-      }
-      
-    }
     ocr.setType(ObjectClassRelationship.TYPE_IS);
 
     // Inherit all attributes
@@ -456,7 +469,7 @@ public class UMLDefaultHandler implements UMLHandler {
           
           String propName = newDec.getProperty().getLongName();
           
-          String s = childOc.getLongName();
+          String s = event.getChildClassName();
           int ind = s.lastIndexOf(".");
           String className = s.substring(ind + 1);
           String packageName = s.substring(0, ind);
@@ -581,6 +594,10 @@ public class UMLDefaultHandler implements UMLHandler {
 //                        PropertyAccessor.getProperty("validation.concept.missing.for", eltName)));
       }
     }
+  }
+
+  public void setCadsrModule(CadsrModule module) {
+    this.cadsrModule = module;
   }
 
 }
