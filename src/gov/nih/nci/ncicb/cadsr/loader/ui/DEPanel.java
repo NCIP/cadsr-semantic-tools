@@ -249,7 +249,8 @@ public class DEPanel extends JPanel
        (tempDE.getDataElementConcept().getObjectClass().getPublicId());
      de.getDataElementConcept().getObjectClass().setVersion
        (tempDE.getDataElementConcept().getObjectClass().getVersion());
-
+     de.getDataElementConcept().getObjectClass().setLongName
+       (tempDE.getDataElementConcept().getObjectClass().getLongName());
 
     firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, true));
 
