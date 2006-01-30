@@ -170,6 +170,11 @@ public class UMLLoaderGUI
     roundtripDesc = desc;
   }
 
+  public void setUserPreferences(UserPreferences preferences) {
+
+  }
+
+
   private void putToCenter(Component comp) {
     comp.setLocation((screenSize.width - comp.getSize().width) / 2, (screenSize.height - comp.getSize().height) / 2);
   }
