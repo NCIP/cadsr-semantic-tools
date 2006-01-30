@@ -15,6 +15,9 @@
     <property name="customAppender">
       <ref bean="appender"/>
     </property>
+    <property name="userPreferences">
+      <ref bean="usersPreferences"/>
+    </property>
   </bean>
 
   <bean name="umlLoader"
@@ -38,6 +41,27 @@
     class="gov.nih.nci.ncicb.cadsr.loader.persister.UMLPersister">
   </bean>
 
+  <bean name="usersPreferences"
+    class="gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences"
+    factory-method="getInstance"
+    >
+    <property name="publicCadsrModule">
+      <ref bean="publicCadsrModule"/>
+    </property>
+    <property name="privateCadsrModule">
+      <ref bean="privateCadsrModule"/>
+    </property>
+    <property name="cadsrModuleListeners">
+      <list>
+        <ref bean="umlRoundtrip"/>
+        <ref bean="valueDomainValidator"/>
+        <ref bean="roundtripPanel"/>
+        <ref bean="cadsrDEDialog"/>
+        <ref bean="cadsrVDDialog"/>
+      </list>
+    </property>
+  </bean>
+
 
   <!-- Services -->
   <bean name="csvWriter"
@@ -50,17 +74,22 @@
     singleton="true">
   </bean>
 
-  <bean name="cadsrModule"
+  <bean name="publicCadsrModule"
     class="gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule" 
     singleton="true">
     <property name="serviceURL"> <value>http://cabio.nci.nih.gov/cacore30/server/HTTPServer</value></property>
   </bean>
 
+  <bean name="privateCadsrModule"
+    class="gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPrivateApiModule" 
+    singleton="true">
+  </bean>
+
+
   <bean name="umlRoundtrip"
     class="gov.nih.nci.ncicb.cadsr.loader.roundtrip.UMLRoundtrip" 
     singleton="true"
     >
-    <property name="cadsrModule"><ref bean="cadsrModule"/></property>
   </bean>
 
   <bean name="roundtripAction"
@@ -74,7 +103,6 @@
   <!-- Validators -->
   <bean name="valueDomainValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.ValueDomainValidator">
-    <property name="cadsrModule"><ref bean="cadsrModule"/></property>
   </bean>
   <bean name="conceptCodeValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.ConceptCodeValidator"/>
@@ -106,9 +134,6 @@
   <!-- Wizard Panels -->
   <bean name="roundtripPanel"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.RoundtripPanel">
-    <property name="cadsrModule">
-      <ref bean="cadsrModule"/>
-    </property>
   </bean>
 
   <!-- Wizard Descriptors -->
@@ -125,18 +150,12 @@
     class="gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog"
     >
     <constructor-arg><value>4</value></constructor-arg>
-    <property name="cadsrModule">
-      <ref bean="cadsrModule"/>
-    </property>
   </bean>
 
   <bean name="cadsrVDDialog"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog"
     >
     <constructor-arg><value>3</value></constructor-arg>
-    <property name="cadsrModule">
-      <ref bean="cadsrModule"/>
-    </property>
   </bean>
 
   <bean name="mainFrame"
