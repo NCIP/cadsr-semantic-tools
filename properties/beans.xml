@@ -58,6 +58,7 @@
         <ref bean="roundtripPanel"/>
         <ref bean="cadsrDEDialog"/>
         <ref bean="cadsrVDDialog"/>
+        <ref bean="umlEventHandler" />
       </list>
     </property>
   </bean>
