@@ -167,38 +167,43 @@ public class TreeBuilder implements UserPreferencesListener {
 
       for(DataElement de : des) {
         try {
-        if(de.getDataElementConcept().getObjectClass().getLongName()
-           .equals(parentNode.getFullPath())) {
-          UMLNode node = new AttributeNode(de);
+          String fullClassName = null;
+          for(AlternateName an : de.getDataElementConcept().getObjectClass().getAlternateNames()) {
+            if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+              fullClassName = an.getName();
+          }
+
+          if(fullClassName.equals(parentNode.getFullPath())) {
+            UMLNode node = new AttributeNode(de);
 
           
-          Boolean reviewed = reviewTracker.get(node.getFullPath());
-          if(reviewed != null) {
-            parentNode.addChild(node);
-            ((AttributeNode) node).setReviewed(reviewed);
-          }
-
-          List<ValidationItem> items = findValidationItems(de.getDataElementConcept().getProperty());
-          for(ValidationItem item : items) {
-            ValidationNode vNode = null;
-            if (item instanceof ValidationWarning) {
-              vNode = new WarningNode(item);
-            } else {
-              vNode = new ErrorNode(item);
+            Boolean reviewed = reviewTracker.get(node.getFullPath());
+            if(reviewed != null) {
+              parentNode.addChild(node);
+              ((AttributeNode) node).setReviewed(reviewed);
             }
-            node.addValidationNode(vNode);
-          }
-          items = findValidationItems(de);
-          for(ValidationItem item : items) {
-            ValidationNode vNode = null;
-            if (item instanceof ValidationWarning) {
-              vNode = new WarningNode(item);
-            } else {
-              vNode = new ErrorNode(item);
+            
+            List<ValidationItem> items = findValidationItems(de.getDataElementConcept().getProperty());
+            for(ValidationItem item : items) {
+              ValidationNode vNode = null;
+              if (item instanceof ValidationWarning) {
+                vNode = new WarningNode(item);
+              } else {
+                vNode = new ErrorNode(item);
+              }
+              node.addValidationNode(vNode);
             }
-            node.addValidationNode(vNode);
+            items = findValidationItems(de);
+            for(ValidationItem item : items) {
+              ValidationNode vNode = null;
+              if (item instanceof ValidationWarning) {
+                vNode = new WarningNode(item);
+              } else {
+                vNode = new ErrorNode(item);
+              }
+              node.addValidationNode(vNode);
+            }
           }
-        }
         } catch (NullPointerException e){
           e.printStackTrace();
         } // end of try-catch

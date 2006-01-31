@@ -20,6 +20,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui.tree;
 
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
+import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -39,8 +40,10 @@ public class AttributeNode extends AbstractUMLNode
   public AttributeNode(DataElement de) {
     display = de.getDataElementConcept().getProperty().getLongName();
 
-    fullPath = de.getDataElementConcept().getObjectClass().getLongName()
-      + "." + display;
+    for(AlternateName an : de.getAlternateNames()) {
+      if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
+        fullPath = an.getName();
+    }
     userObject = de;
     
     icon = DEFAULT_ICON;

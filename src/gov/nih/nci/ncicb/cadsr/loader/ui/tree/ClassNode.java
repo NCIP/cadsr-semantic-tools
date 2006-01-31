@@ -20,6 +20,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui.tree;
 
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
+import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -38,7 +39,11 @@ public class ClassNode extends AbstractUMLNode
   private boolean reviewed = false;
 
   public ClassNode(ObjectClass oc) {
-    fullPath = oc.getLongName();
+    for(AlternateName an : oc.getAlternateNames()) {
+      if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+        fullPath = an.getName();
+    }
+
     int ind = fullPath.lastIndexOf(".");
     display = fullPath.substring(ind + 1);
     

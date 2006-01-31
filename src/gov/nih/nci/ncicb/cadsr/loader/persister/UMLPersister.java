@@ -46,6 +46,7 @@ public class UMLPersister implements Persister {
   protected static DataElementDAO dataElementDAO;
   protected static DataElementConceptDAO dataElementConceptDAO;
   protected static ValueDomainDAO valueDomainDAO;
+//   protected static ValueMeaningDAO valueMeaningDAO;
   protected static PropertyDAO propertyDAO;
   protected static ObjectClassDAO objectClassDAO;
   protected static ObjectClassRelationshipDAO objectClassRelationshipDAO;
@@ -345,6 +346,7 @@ public class UMLPersister implements Persister {
     dataElementDAO = DAOAccessor.getDataElementDAO();
     dataElementConceptDAO = DAOAccessor.getDataElementConceptDAO();
     valueDomainDAO = DAOAccessor.getValueDomainDAO();
+//     valueMeaningDAO = DAOAccessor.getValueMeaningDAO();
     propertyDAO = DAOAccessor.getPropertyDAO();
     objectClassDAO = DAOAccessor.getObjectClassDAO();
     objectClassRelationshipDAO = DAOAccessor.getObjectClassRelationshipDAO();

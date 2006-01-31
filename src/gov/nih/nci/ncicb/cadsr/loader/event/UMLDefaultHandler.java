@@ -86,7 +86,8 @@ public class UMLDefaultHandler
 
     vd.setConceptualDomain(cd);
     
-    vd.setConceptDerivationRule(createConceptDerivationRule(concepts));
+    if(concepts.size() > 0)
+      vd.setConceptDerivationRule(createConceptDerivationRule(concepts));
 
     elements.addElement(vd);
     reviewTracker.put(event.getName(), event.isReviewed());
@@ -104,22 +105,11 @@ public class UMLDefaultHandler
     ValueMeaning vm = DomainObjectFactory.newValueMeaning();
     vm.setShortMeaning(event.getName());
     
-    ConceptDerivationRule condr = DomainObjectFactory.newConceptDerivationRule();
-    int c = 0;
-    List<ComponentConcept> compCons = new ArrayList<ComponentConcept>();
-    for(Concept con : concepts) {
-      ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
-      compCon.setConcept(con);
-      compCon.setOrder(concepts.size() - 1 - c);
-      compCon.setConceptDerivationRule(condr);
-      compCons.add(compCon);
-    }
-    condr.setComponentConcepts(compCons);
-
-    vm.setConceptDerivationRule(condr);
+    vm.setConceptDerivationRule(createConceptDerivationRule(concepts));
 
     PermissibleValue pv = DomainObjectFactory.newPermissibleValue();
     pv.setValueMeaning(vm);
+    pv.setValue(event.getName());
     
     vd.addPermissibleValue(pv);
 
@@ -251,7 +241,12 @@ public class UMLDefaultHandler
     List<ObjectClass> ocs = elements.getElements(oc);
     
     for (ObjectClass o : ocs) {
-      if (o.getLongName().equals(event.getClassName())) {
+      String fullClassName = null;
+      for(AlternateName an : o.getAlternateNames()) {
+        if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+          fullClassName = an.getName();
+      }
+      if (fullClassName.equals(event.getClassName())) {
         oc = o;
       }
     }
@@ -294,6 +289,8 @@ public class UMLDefaultHandler
     if(existingDe != null) {
       de.setLongName(existingDe.getLongName());
       de.setContext(existingDe.getContext());
+      de.setPublicId(existingDe.getPublicId());
+      de.setVersion(existingDe.getVersion());
     } else
       de.setLongName(dec.getLongName() + " " + event.getType());
     //     de.setPreferredDefinition(event.getDescription());
@@ -568,15 +565,21 @@ public class UMLDefaultHandler
 
   private ConceptDerivationRule createConceptDerivationRule(List<Concept> concepts) {
 
-    List<ComponentConcept> compConcepts = new ArrayList<ComponentConcept>();
-
+    ConceptDerivationRule condr = DomainObjectFactory.newConceptDerivationRule();
+    List<ComponentConcept> compCons = new ArrayList<ComponentConcept>();
+ 
+    int c = 0;
     for(Concept con : concepts) {
       ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
+      compCon.setConcept(con);
+      compCon.setOrder(concepts.size() - 1 - c);
+      compCon.setConceptDerivationRule(condr);
+      compCons.add(compCon);
+      c++;
     }
 
-    ConceptDerivationRule conDerRule = DomainObjectFactory.newConceptDerivationRule();
-    conDerRule.setComponentConcepts(compConcepts);
-    return conDerRule;
+    condr.setComponentConcepts(compCons);
+    return condr;
     
 
   }
