@@ -216,6 +216,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     
     JPanel browsePanel = new JPanel();
     browsePanel.add(previousButton);
+    browsePanel.add(indexLabel);
     browsePanel.add(nextButton);
     browsePanel.add(closeButton);
     
@@ -298,6 +299,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       } // end of try-catch
       
       _this.setCursor(Cursor.getDefaultCursor());
+
+      pageIndex = 0;
       updateTable();
       
     }

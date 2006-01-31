@@ -268,7 +268,8 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
       }
 
       _this.setCursor(Cursor.getDefaultCursor());
-    
+      
+      pageIndex = 0;
       updateTable();
 
     } else if(button.getActionCommand().equals(PREVIOUS)) {
