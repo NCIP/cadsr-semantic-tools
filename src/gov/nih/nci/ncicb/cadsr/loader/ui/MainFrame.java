@@ -35,6 +35,7 @@ import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -168,6 +169,8 @@ public class MainFrame extends JFrame
     this.setSize(new Dimension(830, 650));
     this.setJMenuBar(mainMenuBar);
     
+    this.setIconImage(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("SIW-logo.jpg")).getImage());
+
     UserSelections selections = UserSelections.getInstance();
     String fileName = new File((String)selections.getProperty("FILENAME")).getName();
     this.setTitle("Semantic Integration Workbench - " + fileName);
