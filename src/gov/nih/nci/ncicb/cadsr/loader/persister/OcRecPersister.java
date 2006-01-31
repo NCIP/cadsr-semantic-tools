@@ -39,9 +39,7 @@ public class OcRecPersister extends UMLPersister {
 
   private static Logger logger = Logger.getLogger(OcRecPersister.class.getName());
 
-  public OcRecPersister(ElementsLists list) {
-    this.elements = list;
-    defaults = UMLDefaults.getInstance();
+  public OcRecPersister() {
   }
 
   public void persist() throws PersisterException {

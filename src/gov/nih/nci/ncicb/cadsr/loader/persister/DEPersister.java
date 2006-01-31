@@ -40,9 +40,7 @@ public class DEPersister extends UMLPersister {
   public static String DE_PREFERRED_NAME_CONCAT_CHAR = ":";
   public static String DE_PREFERRED_DEF_CONCAT_CHAR = "_";
 
-  public DEPersister(ElementsLists list) {
-    this.elements = list;
-    defaults = UMLDefaults.getInstance();
+  public DEPersister() {
   }
 
   public void persist() throws PersisterException {

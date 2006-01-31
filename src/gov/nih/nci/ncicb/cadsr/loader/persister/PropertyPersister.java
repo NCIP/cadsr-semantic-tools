@@ -38,9 +38,7 @@ public class PropertyPersister extends UMLPersister {
 
   private static Logger logger = Logger.getLogger(PropertyPersister.class.getName());
 
-  public PropertyPersister(ElementsLists list) {
-    this.elements = list;
-    defaults = UMLDefaults.getInstance();
+  public PropertyPersister() {
   }
 
   public void persist() throws PersisterException {

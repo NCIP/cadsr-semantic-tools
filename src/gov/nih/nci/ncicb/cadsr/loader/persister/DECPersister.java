@@ -42,9 +42,7 @@ public class DECPersister extends UMLPersister {
 
   private static Logger logger = Logger.getLogger(DECPersister.class.getName());
 
-  public DECPersister(ElementsLists list) {
-    this.elements = list;
-    defaults = UMLDefaults.getInstance();
+  public DECPersister() {
   }
 
   public void persist() throws PersisterException {

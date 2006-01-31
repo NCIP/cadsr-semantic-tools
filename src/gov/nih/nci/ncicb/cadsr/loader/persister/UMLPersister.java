@@ -54,7 +54,7 @@ public class UMLPersister implements Persister {
   protected static ClassSchemeClassSchemeItemDAO classSchemeClassSchemeItemDAO;
   protected static ConceptDAO conceptDAO;
 
-  protected ElementsLists elements = null;
+  protected ElementsLists elements = ElementsLists.getInstance();
 
   protected Map<String, ValueDomain> valueDomains = new HashMap<String, ValueDomain>();
 
@@ -68,14 +68,13 @@ public class UMLPersister implements Persister {
 
     initDAOs();
 
-
-    new PackagePersister(elements).persist();
-    new ConceptPersister(elements).persist();
-    new PropertyPersister(elements).persist();
-    new ObjectClassPersister(elements).persist();
-    new DECPersister(elements).persist();
-    new DEPersister(elements).persist();
-    new OcRecPersister(elements).persist();
+    new PackagePersister().persist();
+    new ConceptPersister().persist();
+    new PropertyPersister().persist();
+    new ObjectClassPersister().persist();
+    new DECPersister().persist();
+    new DEPersister().persist();
+    new OcRecPersister().persist();
   }
 
   protected ValueDomain lookupValueDomain(ValueDomain vd)

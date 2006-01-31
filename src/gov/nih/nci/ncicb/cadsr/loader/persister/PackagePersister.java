@@ -37,9 +37,7 @@ public class PackagePersister extends UMLPersister {
   
   private static Logger logger = Logger.getLogger(PackagePersister.class.getName());
 
-  public PackagePersister(ElementsLists list) {
-    this.elements = list;
-    defaults = UMLDefaults.getInstance();
+  public PackagePersister() {
   }
 
   public void persist() {

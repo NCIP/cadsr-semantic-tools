@@ -37,8 +37,7 @@ public class ConceptPersister extends UMLPersister {
 
   private static Logger logger = Logger.getLogger(ConceptPersister.class.getName());
 
-  public ConceptPersister(ElementsLists list) {
-    this.elements = list;
+  public ConceptPersister() {
   }
 
   public void persist() {
