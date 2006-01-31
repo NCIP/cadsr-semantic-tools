@@ -79,6 +79,8 @@ public class EvsModule
 
   public Collection<EvsResult> findBySynonym(String s, boolean includeRetired) 
   {
+    s = s.replace('%','*');
+
     Collection<EvsResult> result = new ArrayList<EvsResult>();
 
     try {

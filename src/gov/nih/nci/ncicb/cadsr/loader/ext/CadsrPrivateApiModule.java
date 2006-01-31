@@ -99,6 +99,12 @@ public class CadsrPrivateApiModule implements CadsrModule
   private void buildExample(Object o, Map<String, Object> queryFields) {
     for(String s : queryFields.keySet()) {
       Object field = queryFields.get(s);
+
+      if(field instanceof String) {
+        String sField = (String)field;
+        field = sField.replace('*','%');
+      }
+
       try {
         Method m = o.getClass().getMethod("set" + s.substring(0, 1).toUpperCase() + s.substring(1), field.getClass());
         m.invoke(o, field);

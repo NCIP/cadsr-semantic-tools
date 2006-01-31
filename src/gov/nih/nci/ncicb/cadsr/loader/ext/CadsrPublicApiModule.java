@@ -138,6 +138,11 @@ public class CadsrPublicApiModule implements CadsrModule {
         s = "publicID";
         field = new Long((String)field);
       }
+      if(field instanceof String) {
+        String sField = (String)field;
+        field = sField.replace('%','*');
+      }
+
       try {
         Method m = o.getClass().getMethod("set" + s.substring(0, 1).toUpperCase() + s.substring(1), field.getClass());
         m.invoke(o, field);
