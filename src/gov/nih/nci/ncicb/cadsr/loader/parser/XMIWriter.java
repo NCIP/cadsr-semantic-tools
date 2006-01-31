@@ -217,9 +217,15 @@ public class XMIWriter implements ElementWriter {
       List<DataElement> des = cadsrObjects.getElements(DomainObjectFactory.newDataElement());
       
       for(ObjectClass oc : ocs) {
-        Element classElement = elements.get(oc.getLongName());
-        boolean changed = changeTracker.get(oc.getLongName());
-        
+        String fullClassName = null;
+        for(AlternateName an : oc.getAlternateNames()) {
+          if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+            fullClassName = an.getName();
+        }
+
+        Element classElement = elements.get(fullClassName);
+        boolean changed = changeTracker.get(fullClassName);
+
         if(changed) {
           String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'ObjectClass') or starts-with(@tag,'ObjectQualifier') )and @modelElement='"
             + classElement.getAttributeValue("xmi.id")
@@ -242,7 +248,13 @@ public class XMIWriter implements ElementWriter {
       
       for(DataElement de : des) {
         DataElementConcept dec = de.getDataElementConcept();
-        String fullPropName = dec.getObjectClass().getLongName() + "." + dec.getProperty().getLongName();
+        String fullPropName = null;
+
+        for(AlternateName an : de.getAlternateNames()) {
+          if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
+            fullPropName = an.getName();
+        }
+
         Element attributeElement = elements.get(fullPropName);
         
         boolean changed = changeTracker.get(fullPropName);
@@ -355,14 +367,20 @@ public class XMIWriter implements ElementWriter {
       List<DataElementConcept> decs = (List<DataElementConcept>) cadsrObjects.getElements(DomainObjectFactory.newDataElementConcept().getClass());
 
       for(ObjectClass oc : ocs) {
-        Element classElement = elements.get(oc.getLongName());
+        String fullClassName = null;
+        for(AlternateName an : oc.getAlternateNames()) {
+          if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+            fullClassName = an.getName();
+        }
+
+        Element classElement = elements.get(fullClassName);
         String xpath = "//*[local-name()='TaggedValue' and @tag='HUMAN_REVIEWED' and @modelElement='"
           + classElement.getAttributeValue("xmi.id")
           + "']";
 
         JDOMXPath path = new JDOMXPath(xpath);
         Element tv = (Element)path.selectSingleNode(modelElement);
-        boolean reviewed = reviewTracker.get(oc.getLongName());
+        boolean reviewed = reviewTracker.get(fullClassName);
         if(tv == null) {
           addTaggedValue("HUMAN_REVIEWED",
                          reviewed?"1":"0",
