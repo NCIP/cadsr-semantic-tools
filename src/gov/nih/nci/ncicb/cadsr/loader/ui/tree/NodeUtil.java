@@ -41,7 +41,10 @@ public class NodeUtil
       } else if(node instanceof AttributeNode) {
         Property prop = ((DataElement)node.getUserObject()).getDataElementConcept().getProperty();
         conceptCodes = prop.getPreferredName().split(":");
-      } 
+      } else if(node instanceof ValueMeaningNode) {
+        ValueMeaning vm = ((ValueMeaning)node.getUserObject());
+        conceptCodes = vm.getShortMeaning().split(":");
+      }
       
       if((conceptCodes == null ) || StringUtil.isEmpty(conceptCodes[0])) {
         conceptCodes = new String[0];
