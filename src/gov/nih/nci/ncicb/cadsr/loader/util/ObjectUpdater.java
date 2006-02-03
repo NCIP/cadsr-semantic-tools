@@ -43,7 +43,13 @@ public class ObjectUpdater {
     
   }
 
-
+  public static void updateVM(ValueMeaning vm, Concept[] oldConcepts, Concept[] newConcepts) {
+    vm.setShortMeaning(preferredNameFromConcepts(newConcepts));
+    
+    addNewConcepts(newConcepts);
+    removeStaleConcepts(oldConcepts);
+  }
+  
   public static void update(AdminComponent ac, Concept[] oldConcepts, Concept[] newConcepts) {
 
     if(ac instanceof ObjectClass) {
