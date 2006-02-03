@@ -138,8 +138,9 @@ public class ButtonPanel extends JPanel implements ActionListener,
       {
         setSwitchButtonText(ButtonPanel.SWITCH_TO_OC);
       }
-    } 
-
+    } else if(editable == null) { 
+      return;
+    }
   }
   
   public void addReviewListener(ReviewListener listener) {
@@ -225,6 +226,9 @@ public class ButtonPanel extends JPanel implements ActionListener,
         addButton.setVisible(true);
         deleteButton.setVisible(true);
     }
+    } else if(editable == null) {
+      addButton.setVisible(true);
+      deleteButton.setVisible(true);
     }
   }
   
@@ -245,7 +249,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
       if(JOptionPane.showConfirmDialog(this, "There are unsaved changes in this concept, would you like to apply the changes now?", "Unsaved Changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) 
       {
         conceptEditorPanel.apply(false);
-        editable.applyPressed();
+        if(editable != null)
+          editable.applyPressed();
       }
     }
   }
@@ -288,6 +293,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
           switchButton.setText(SWITCH_TO_DE);
         } else if(editable instanceof OCPanel) {
           switchButton.setText(SWITCH_TO_OC);
+        } else if(editable == null) {
+        
         }
         addButton.setVisible(true);
         deleteButton.setVisible(true);
