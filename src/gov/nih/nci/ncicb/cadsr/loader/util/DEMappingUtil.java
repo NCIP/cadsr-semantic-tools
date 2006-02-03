@@ -43,22 +43,50 @@ public class DEMappingUtil {
       if(!newDe.getDataElementConcept().getObjectClass().getPublicId().equals(oc.getPublicId()) || !newDe.getDataElementConcept().getObjectClass().getVersion().equals(oc.getVersion())) {
         // Oc was already mapped by an existing DE. This DE conflicts with the previous mapping.
         // Now we need to find out what DE set the oc_id previously
+        //return newDe;
         List<DataElement> des = ElementsLists.getInstance()
           .getElements(DomainObjectFactory.newDataElement());
-        
+    
         for(DataElement de : des) {
           if(de.getDataElementConcept().getObjectClass() != oldDe.getDataElementConcept().getObjectClass())
             continue;
 
           String ocId = de.getDataElementConcept().getObjectClass().getPublicId();
-          if(oldDe != de && ocId != null && !ocId.equals(oc.getPublicId())) {
+          if(oldDe != de && ocId != null && !ocId.equals(newDe.getDataElementConcept().getObjectClass().getPublicId())) {
             return de;
           }
         }
-        // we shouldn't be here
+         //we shouldn't be here
         return null;
       }
     }
     return null;
+  }
+  
+  public static boolean checkDuplicate(DataElement currentDe, DataElement newDataElement) 
+  {
+    ElementsLists elements = ElementsLists.getInstance();
+    List<ObjectClass> ocs = (List<ObjectClass>)elements.getElements(DomainObjectFactory.newObjectClass().getClass());
+    if(ocs != null) {
+      for(ObjectClass oc : ocs) {  
+        if(oc.getPublicId() != null) {
+          if(currentDe.getDataElementConcept().getObjectClass() != oc)
+            if(oc.getPublicId().equals(newDataElement.getDataElementConcept().getObjectClass().getPublicId()))            
+                return false;
+        }
+      }
+    }
+
+//    List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());
+//    if(des != null && ocs != null) {
+//      for(ObjectClass oc : ocs) 
+////        Map<String, DataElement> deList = new HashMap<String, DataElement>();
+//        for(DataElement de : des) 
+//          if(newDataElement.getDataElementConcept().getObjectClass() == de.getDataElementConcept().getObjectClass())
+//            if(newDataElement.getPublicId() == de.getPublicId())
+//              return false;    
+//    }
+  
+    return true;
   }
 }
