@@ -58,6 +58,8 @@ public class UMLElementViewPanel extends JPanel
 
     if(node instanceof AttributeNode)
       buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);
+    else if(node instanceof ValueMeaningNode)
+      buttonPanel = new ButtonPanel(conceptEditorPanel, this, null);
     else 
       buttonPanel = new ButtonPanel(conceptEditorPanel, this, ocPanel);
 
@@ -120,14 +122,18 @@ public class UMLElementViewPanel extends JPanel
       {
         switchCards(CONCEPT_PANEL_KEY);
       }
-    } 
-
+    } else if (o instanceof ValueMeaning) { 
+      switchCards(CONCEPT_PANEL_KEY);
+    }
+      
     conceptEditorPanel.updateNode(node);
     dePanel.updateNode(node);
     ocPanel.updateNode(node);
 
     if(node instanceof AttributeNode)
       buttonPanel.setEditablePanel(dePanel);
+    else if (node instanceof ValueMeaningNode)
+      buttonPanel.setEditablePanel(null);
     else 
       buttonPanel.setEditablePanel(ocPanel);
 
