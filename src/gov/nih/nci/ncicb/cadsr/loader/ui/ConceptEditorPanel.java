@@ -160,8 +160,12 @@ public class ConceptEditorPanel extends JPanel
           DataElement de = (DataElement)o;
           ObjectUpdater.updateByAltName(de.getDataElementConcept().getProperty().getLongName(), concepts, newConcepts);
         }
-      } else
-        ObjectUpdater.update((AdminComponent)node.getUserObject(), concepts, newConcepts);
+      } else if(node.getUserObject() instanceof ValueMeaning) {
+          ValueMeaning vm = (ValueMeaning)node.getUserObject();
+          ObjectUpdater.updateVM(vm, concepts, newConcepts);
+      }
+        else
+          ObjectUpdater.update((AdminComponent)node.getUserObject(), concepts, newConcepts);
       
       concepts = newConcepts;
     } 
