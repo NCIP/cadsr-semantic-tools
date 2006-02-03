@@ -418,7 +418,8 @@ public class MainFrame extends JFrame
   }
 
   public void viewChanged(ViewChangeEvent event) {
-    if(event.getType() == ViewChangeEvent.VIEW_CONCEPTS) {
+    if(event.getType() == ViewChangeEvent.VIEW_CONCEPTS
+        || event.getType() == ViewChangeEvent.VIEW_VALUE_MEANING) {
       UMLNode node = (UMLNode)event.getViewObject();
 
       // If concept is already showing, just bring it up front
