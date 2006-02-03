@@ -2,10 +2,12 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.dao.DataElementDAO;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
+import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
+import gov.nih.nci.ncicb.cadsr.loader.util.DEMappingUtil;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -113,7 +115,13 @@ public class DEPanel extends JPanel
                   (null, PropertyAccessor.getProperty("de.conflict", new String[] {de.getDataElementConcept().getProperty().getLongName(), confDe.getDataElementConcept().getProperty().getLongName()}), "Conflict", JOptionPane.ERROR_MESSAGE);
                 return;
               }
-
+            if(tempDE != null) {
+              if(!DEMappingUtil.checkDuplicate(de, tempDE)) 
+              {
+                JOptionPane.showMessageDialog(null, "This creates a duplicate mapping", "Conflict", JOptionPane.ERROR_MESSAGE);
+                return;
+              }
+            }
               updateFields();
                            
               firePropertyChangeEvent(
@@ -245,12 +253,32 @@ public class DEPanel extends JPanel
 //     de.getDataElementConcept().getObjectClass().setPublicId(pubId);
 //     de.getDataElementConcept().getObjectClass().setVersion(version);
 
+     if(tempDE.getDataElementConcept() != null) {
      de.getDataElementConcept().getObjectClass().setPublicId
        (tempDE.getDataElementConcept().getObjectClass().getPublicId());
      de.getDataElementConcept().getObjectClass().setVersion
        (tempDE.getDataElementConcept().getObjectClass().getVersion());
      de.getDataElementConcept().getObjectClass().setLongName
        (tempDE.getDataElementConcept().getObjectClass().getLongName());
+     } else 
+     {
+      boolean found = false;
+       List<DataElement> des = ElementsLists.getInstance()
+          .getElements(DomainObjectFactory.newDataElement());
+        for(DataElement curDe : des) {
+          if(curDe.getDataElementConcept().getObjectClass() == de.getDataElementConcept().getObjectClass())
+            if(!StringUtil.isEmpty(curDe.getPublicId())) 
+            {
+              found = true;
+            }
+      
+        }
+        if(!found) 
+        {
+          de.getDataElementConcept().getObjectClass().setPublicId(null);
+          de.getDataElementConcept().getObjectClass().setVersion(null);
+        }
+     }
 
     firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, true));
 
