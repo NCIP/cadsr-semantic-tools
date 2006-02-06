@@ -43,10 +43,10 @@ import javax.security.auth.*;
 import javax.security.auth.login.*;
 import javax.security.auth.callback.CallbackHandler;
 
-
+import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 
-import gov.nih.nci.ncicb.cadsr.jaas.ConsoleCallbackHandler;
+import gov.nih.nci.ncicb.cadsr.jaas.SwingCallbackHandler;
 
 
 /**
@@ -68,6 +68,8 @@ public class UMLLoader {
   private Validator validator;
   private Parser parser;
   private Persister persister;
+
+  private UserPreferences prefs;
 
   /**
    *
@@ -94,23 +96,17 @@ public class UMLLoader {
   }
 
   private void run(String fileDir, String projectName, Float projectVersion) throws Exception {
+    prefs.setUsePrivateApi(true);
+
     InitClass initClass = new InitClass(this);
     Thread t = new Thread(initClass);
-    /* high priority because:
-     * If the user is fast at entering its user name
-     * (namely, username / password is provided automatically)
-     * Then it's possible for the login module to want to access
-     *      spring before it's initialized. 
-     * Would not happen in normal run, but in dev runs, it may.
-     * This seems to have absolutely no effect (on linux at least). Will investigate later. 
-     */
     t.setPriority(Thread.MAX_PRIORITY);
     t.start();
 
-    try {
-      Thread.currentThread().sleep(500);
-    } catch (Exception e){
-    } // end of try-catch
+//     try {
+//       Thread.currentThread().sleep(500);
+//     } catch (Exception e){
+//     } // end of try-catch
 
     UserSelections userSelections = UserSelections.getInstance();
     RunMode mode = RunMode.Loader;
@@ -132,7 +128,10 @@ public class UMLLoader {
       System.exit(0);
     }
 
-    LoginContext lc = new LoginContext("UML_Loader", new ConsoleCallbackHandler());
+    SwingCallbackHandler sch = new SwingCallbackHandler();
+    LoginContext lc = new LoginContext("UML_Loader", sch);
+
+    sch.dispose();
 
     String username = null;
     
@@ -172,9 +171,6 @@ public class UMLLoader {
       defaults.initWithDB();
       defaults.setUsername(username);
 
-
-//       XMIParser  parser = new XMIParser();
-//       parser.setEventHandler(listener);
       parser.parse(fileDir + "/" + filenames[i]);
       
     }
@@ -182,7 +178,6 @@ public class UMLLoader {
     ValidationItems items = validator.validate();
     Set<ValidationError> errors = items.getErrors();
     if(errors.size() > 0) {
-      // Ask user if we should continue
       for(ValidationError error : errors) {
         logger.error(error.getMessage());
       }
@@ -195,9 +190,7 @@ public class UMLLoader {
       for(ValidationWarning warning : warnings) {
         logger.warn(warning.getMessage());
       }
-      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-      System.out.print(PropertyAccessor.getProperty("validation.continue"));
-      String answ = br.readLine();
+      String answ = JOptionPane.showInputDialog(PropertyAccessor.getProperty("validation.continue"));
       if(!answ.equals("y")) {
         System.exit(1);
       }
@@ -218,6 +211,11 @@ public class UMLLoader {
   public void setPersister(Persister persister) {
     this.persister = persister;
   }
+
+  public void setUserPreferences(UserPreferences preferences) {
+    prefs = preferences;
+  }
+
 
 }
 
