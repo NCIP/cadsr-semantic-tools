@@ -26,6 +26,7 @@
     <property name="validator"><ref bean="mainValidator"/></property>
     <property name="parser"><ref bean="xmiParser"/></property>
     <property name="persister"><ref bean="mainPersister"/></property>
+    <property name="userPreferences"><ref bean="usersPreferences"/></property>
   </bean>
   
   <bean name="umlEventHandler"
