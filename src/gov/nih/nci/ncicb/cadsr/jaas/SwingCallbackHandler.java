@@ -19,46 +19,86 @@
  */
 package gov.nih.nci.ncicb.cadsr.jaas;
 
-import java.awt.GridLayout;
-import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Container;
-
-import java.awt.event.*;
+import java.io.*;
 
 import javax.security.auth.callback.*;
 
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+
+
 /**
- * Callback handler for Swing based apps
+ * Simple CallbackHandler that queries the standard input. This is appropriate for console mode only.
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class SwingCallbackHandler extends JDialog
-  implements CallbackHandler {
+public class SwingCallbackHandler 
+  extends JDialog
+  implements CallbackHandler, ActionListener {
 
-  private boolean done = false;
+  private JTextField usernameField = new JTextField();
+  private JLabel usernameLabel = new JLabel();
+  private JLabel passwordLabel = new JLabel();
+  private JPasswordField passwordField = new JPasswordField();
+  private JButton okButton = new JButton();
+  private JButton cancelButton = new JButton();
 
-  private JTextField userField;
-  private JPasswordField pwdField;
-
-  private JButton okButton, cancelButton;
+  private JDialog _this = this;
   
-  public SwingCallbackHandler() {
-    super((JFrame)null, "Login Dialog");
-    initUI();
+  public SwingCallbackHandler()
+  {
+    super((Frame)null, true);
+    try
+      {
+        jbInit();
+        this.setVisible(true);
+      }
+    catch(Exception e)
+      {
+        e.printStackTrace();
+      }
   }
   
+  private void jbInit() throws Exception
+  {
+    this.getContentPane().setLayout(null);
+    this.setSize(new Dimension(299, 201));
+    usernameField.setBounds(new Rectangle(130, 35, 135, 25));
+    usernameLabel.setText("Username");
+    usernameLabel.setBounds(new Rectangle(25, 35, 140, 25));
+    passwordLabel.setText("Password");
+    passwordLabel.setBounds(new Rectangle(25, 80, 150, 30));
+    passwordField.setBounds(new Rectangle(130, 80, 135, 30));
+    okButton.setText("OK");
+    okButton.setBounds(new Rectangle(135, 135, 55, 20));
+    okButton.setActionCommand("OK");
+    okButton.addActionListener(this);
+    cancelButton.setText("Cancel");
+    cancelButton.setBounds(new Rectangle(200, 135, 75, 20));
+    cancelButton.setActionCommand("Cancel");
+    cancelButton.addActionListener(this);
+    this.getContentPane().add(cancelButton, null);
+    this.getContentPane().add(okButton, null);
+    this.getContentPane().add(passwordField, null);
+    this.getContentPane().add(passwordLabel, null);
+    this.getContentPane().add(usernameLabel, null);
+    this.getContentPane().add(usernameField, null);
+    
+    this.getRootPane().setDefaultButton(okButton);
+  }
+
   public void handle(Callback[] callbacks) 
     throws java.io.IOException, UnsupportedCallbackException {
 
     for (int i = 0; i < callbacks.length; i++) {
       if (callbacks[i] instanceof NameCallback) {
-        String user=userField.getText();
-        ((NameCallback)callbacks[i]).setName(user);
-        
+        ((NameCallback)callbacks[i]).setName(usernameField.getText());
       } else if (callbacks[i] instanceof PasswordCallback) {
-        ((PasswordCallback)callbacks[i]).setPassword(pwdField.getPassword());
+        ((PasswordCallback)callbacks[i]).setPassword(passwordField.getPassword());
       } else {
         throw(new UnsupportedCallbackException(
                 callbacks[i], "Callback class not supported"));
@@ -66,65 +106,14 @@ public class SwingCallbackHandler extends JDialog
     }
   }
 
-  public boolean isDone() {
-    return done;
-  }
-
-  private void initUI() {
-    this.setSize(250, 120);
-
-    JLabel userLabel = new JLabel("Username: "), 
-      pwdLabel = new JLabel("Password");
-    
-    userField = new JTextField(12);
-    pwdField = new JPasswordField();
-
-    okButton = new JButton("Login");
-    cancelButton = new JButton("Quit");
-
-    KeyListener enterListener = new KeyAdapter() {
-        public void keyReleased(KeyEvent evt) {
-          if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            JButton button = (JButton)evt.getComponent();
-            button.doClick();
-          }
-        }
-      };
-    okButton.addKeyListener(enterListener);
-    cancelButton.addKeyListener(enterListener);
-
-    ActionListener actionListener = new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          done = true;
-          dispose();
-          if(evt.getSource() == cancelButton)
-            System.exit(0);
-        }
-      };
-    
-        
-    okButton.addActionListener(actionListener);
-    cancelButton.addActionListener(actionListener);
-
-    Container contentPane = this.getContentPane();
-    contentPane.setLayout(new BorderLayout());
-
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.setLayout(new FlowLayout());
-    buttonPanel.add(okButton, null);
-    buttonPanel.add(cancelButton);
-
-    JPanel entryPanel = new JPanel();
-    entryPanel.setLayout(new GridLayout(2, 2));
-    entryPanel.add(userLabel);
-    entryPanel.add(userField);
-    entryPanel.add(pwdLabel);
-    entryPanel.add(pwdField);
-
-    contentPane.add(buttonPanel, BorderLayout.SOUTH);
-    contentPane.add(entryPanel, BorderLayout.CENTER);
-    
+  public void actionPerformed(ActionEvent evt) {
+    if(evt.getActionCommand().equals("OK")) {
+      _this.setVisible(false);
+    } else if(evt.getActionCommand().equals("Cancel")) {
+      System.exit(0);
+    }
 
   }
 
 }
+
