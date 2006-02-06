@@ -45,7 +45,7 @@ public class AssociationValidator implements Validator {
   public ValidationItems validate() {
     ValidationItems items = ValidationItems.getInstance();
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
-    List ocrs = elements.getElements(ocr.getClass());
+    List<ObjectClassRelationship> ocrs = elements.getElements(ocr);
     if(ocrs == null) {
       return items;
     }
