@@ -58,6 +58,7 @@ public class ValueDomainPersister extends UMLPersister {
         vd.setAudit(defaults.getAudit());
 
         try {
+          System.out.println("going to call create");
           newVd = valueDomainDAO.create(vd);
           logger.info(PropertyAccessor.getProperty("created.vd"));
           valueDomains.put(newVd.getLongName(), vd);

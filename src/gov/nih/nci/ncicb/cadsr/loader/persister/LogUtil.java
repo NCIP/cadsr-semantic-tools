@@ -48,7 +48,7 @@ public class LogUtil {
     logger.info(PropertyAccessor.getProperty("version", new Float[] {ac.getVersion()}));
     logger.info(PropertyAccessor.getProperty("workflowStatus", ac.getWorkflowStatus()));
     logger.info(PropertyAccessor.getProperty("preferredDefinition", ac.getPreferredDefinition()));
-    logger.info(PropertyAccessor.getProperty("public ID", ac.getPublicId()));
+    logger.info(PropertyAccessor.getProperty("publicId", ac.getPublicId()));
   }
 
 }

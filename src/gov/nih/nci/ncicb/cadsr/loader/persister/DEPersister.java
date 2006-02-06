@@ -76,7 +76,7 @@ public class DEPersister extends UMLPersister {
                  AlternateName.TYPE_USED_BY,
                  null);
             }
-            logger.info(PropertyAccessor.getProperty("mapped.to.existing.dec"));
+            logger.info(PropertyAccessor.getProperty("mapped.to.existing.de"));
           } else {
             List l = dataElementDAO.find(newDe);
             de.setLongName(this.deriveLongName(de));

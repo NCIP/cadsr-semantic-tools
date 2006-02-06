@@ -74,6 +74,7 @@ public class UMLPersister implements Persister {
     new PropertyPersister().persist();
     new ObjectClassPersister().persist();
     new DECPersister().persist();
+    new ValueDomainPersister().persist();
     new DEPersister().persist();
     new OcRecPersister().persist();
   }

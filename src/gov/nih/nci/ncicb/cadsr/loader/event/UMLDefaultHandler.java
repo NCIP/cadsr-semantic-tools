@@ -121,7 +121,7 @@ public class UMLDefaultHandler
   public void newClass(NewClassEvent event) {
     logger.debug("Class: " + event.getName());
     
-    List concepts = createConcepts(event);
+    List<Concept> concepts = createConcepts(event);
 
     ObjectClass oc = DomainObjectFactory.newObjectClass();
 
@@ -189,7 +189,7 @@ public class UMLDefaultHandler
       try {
         result =  new ArrayList<DataElement>(cadsrModule.findDataElement(queryFields));
       } catch (Exception e){
-        logger.error("Could not query cadsr module " + e);
+        logger.error("Could not query cadsr module ", e);
       } // end of try-catch
 
       if(result.size() == 0) {
@@ -368,7 +368,13 @@ public class UMLDefaultHandler
       bDone = false;
 
     for(ObjectClass o : ocs) {
-      if (!aDone && (o.getLongName().equals(event.getAClassName()))) {
+      String classFullName = null;
+      for(AlternateName an : o.getAlternateNames()) {
+        if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+          classFullName = an.getName();
+      }
+
+      if (!aDone && (classFullName.equals(event.getAClassName()))) {
         if (event.getDirection().equals("B")) {
           ocr.setSource(o);
           ocr.setSourceRole(event.getARole());
@@ -382,7 +388,7 @@ public class UMLDefaultHandler
         }
         aDone = true;
       }
-      if (!bDone && (o.getLongName().equals(event.getBClassName()))) {
+      if (!bDone && (classFullName.equals(event.getBClassName()))) {
         if (event.getDirection().equals("B")) {
           ocr.setTarget(o);
           ocr.setTargetRole(event.getBRole());
@@ -407,8 +413,7 @@ public class UMLDefaultHandler
     ocr.setLongName(event.getRoleName());
     ocr.setType(ObjectClassRelationship.TYPE_HAS);
 
-
-//     logger.debug("Created Association :");
+//     logger.debug("New Association :");
 //     logger.debug("event.A: " + event.getAClassName());
 //     logger.debug("event.B: " + event.getBClassName());
 //     logger.debug("Source: " + ocr.getSource().getLongName());
