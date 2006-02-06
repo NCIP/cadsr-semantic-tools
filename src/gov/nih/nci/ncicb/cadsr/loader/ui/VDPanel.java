@@ -91,10 +91,12 @@ public class VDPanel extends JPanel
   
   public void apply() 
   {
-    vd.setLongName(tempVD.getLongName());
-    vd.setPublicId(tempVD.getPublicId());
-    vd.setVersion(tempVD.getVersion());
-    vd.setContext(tempVD.getContext());
+    if(tempVD != null) {
+      vd.setLongName(tempVD.getLongName());
+      vd.setPublicId(tempVD.getPublicId());
+      vd.setVersion(tempVD.getVersion());
+      vd.setContext(tempVD.getContext());
+    }
   }
   
   public void updateNode(UMLNode node) 
