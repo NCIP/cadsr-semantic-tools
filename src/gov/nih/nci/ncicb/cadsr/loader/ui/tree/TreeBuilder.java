@@ -280,6 +280,18 @@ public class TreeBuilder implements UserPreferencesListener {
 
     for(ObjectClassRelationship ocr : ocrs) {
       UMLNode node = new AssociationNode(ocr);
+
+      List<ValidationItem> items = findValidationItems(ocr);
+      for(ValidationItem item : items) {
+        ValidationNode vNode = null;
+        if (item instanceof ValidationWarning) {
+          vNode = new WarningNode(item);
+        } else {
+          vNode = new ErrorNode(item);
+        }
+        node.addValidationNode(vNode);
+      }
+
       assocNode.addChild(node);
     }
 
@@ -296,10 +308,25 @@ public class TreeBuilder implements UserPreferencesListener {
       elements.getElements(o.getClass());
 
     for(ObjectClassRelationship ocr : ocrs) {
-      UMLNode node = new AssociationNode(ocr);
       if(ocr.getSource().getLongName().equals(oc.getLongName()) 
-      | ocr.getTarget().getLongName().equals(oc.getLongName()))
+         | ocr.getTarget().getLongName().equals(oc.getLongName())) {
+
+        UMLNode node = new AssociationNode(ocr);
+
+        List<ValidationItem> items = findValidationItems(ocr);
+        for(ValidationItem item : items) {
+          ValidationNode vNode = null;
+          if (item instanceof ValidationWarning) {
+            vNode = new WarningNode(item);
+          } else {
+            vNode = new ErrorNode(item);
+          }
+          node.addValidationNode(vNode);
+        }
+
         assocNode.addChild(node);
+
+      }
     }
 
     parentNode.addChild(assocNode);
