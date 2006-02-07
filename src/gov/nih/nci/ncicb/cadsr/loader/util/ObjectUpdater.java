@@ -43,8 +43,21 @@ public class ObjectUpdater {
     
   }
 
-  public static void updateVM(ValueMeaning vm, Concept[] oldConcepts, Concept[] newConcepts) {
-    vm.setShortMeaning(preferredNameFromConcepts(newConcepts));
+  public static void update(ValueMeaning vm, Concept[] oldConcepts, Concept[] newConcepts) {
+    ConceptDerivationRule condr = DomainObjectFactory.newConceptDerivationRule();
+    List<ComponentConcept> compCons = new ArrayList<ComponentConcept>();
+ 
+    int c = 0;
+    for(Concept con : newConcepts) {
+      ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
+      compCon.setConcept(con);
+      compCon.setOrder(newConcepts.length - 1 - c);
+      compCon.setConceptDerivationRule(condr);
+      compCons.add(compCon);
+      c++;
+    }
+    condr.setComponentConcepts(compCons);
+    vm.setConceptDerivationRule(condr);
     
     addNewConcepts(newConcepts);
     removeStaleConcepts(oldConcepts);
@@ -90,8 +103,10 @@ public class ObjectUpdater {
   private static void removeStaleConcepts(Concept[] concepts) {
     ElementsLists elements = ElementsLists.getInstance();
 
-    List<ObjectClass> ocs = (List<ObjectClass>)elements.getElements(DomainObjectFactory.newObjectClass().getClass());
-    List<Property> props = (List<Property>)elements.getElements(DomainObjectFactory.newProperty().getClass());
+    List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
+    List<Property> props = elements.getElements(DomainObjectFactory.newProperty());
+    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+    List<ValueMeaning> vms = elements.getElements(DomainObjectFactory.newValueMeaning());
 
     a:
     for(Concept concept : concepts) {
@@ -116,7 +131,22 @@ public class ObjectUpdater {
           }
         }
       }
-
+      for(ValueDomain vd : vds) {
+        for(ComponentConcept compCon : vd.getConceptDerivationRule().getComponentConcepts()) {
+          if(concept.getPreferredName().equals(compCon.getConcept().getPreferredName())) {
+            found = true;
+            continue a;
+          }
+        }
+      }
+      for(ValueMeaning vm : vms) {
+        for(ComponentConcept compCon : vm.getConceptDerivationRule().getComponentConcepts()) {
+          if(concept.getPreferredName().equals(compCon.getConcept().getPreferredName())) {
+            found = true;
+            continue a;
+          }
+        }
+      }
       if(!found) {
         removeFromConcepts(concept);
       }

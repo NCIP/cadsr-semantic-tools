@@ -68,7 +68,7 @@ public class XMIParser implements Parser {
 
   private ProgressListener progressListener = null;
 
-  private final static String VD_STEREOTYPE = "CADSR Value Domain";
+  public final static String VD_STEREOTYPE = "CADSR Value Domain";
 
   public static final String TV_PROP_ID = "CADSR_PROP_ID";
   public static final String TV_PROP_VERSION = "CADSR_PROP_VERSION";
@@ -76,7 +76,7 @@ public class XMIParser implements Parser {
   public static final String TV_DE_ID = "CADSR_DE_ID";
   public static final String TV_DE_VERSION = "CADSR_DE_VERSION";
 
-  public static final String TV_VALUE_DOMAIN = "Value Domain";
+  public static final String TV_VALUE_DOMAIN = "CADSR Local Value Domain";
 
   public static final String TV_VD_ID = "CADSR_VD_ID";
   public static final String TV_VD_VERSION = "CADSR_VD_VERSION";

@@ -69,7 +69,7 @@ public class UMLDefaultHandler
   }
 
   public void newValueDomain(NewValueDomainEvent event) {
-    logger.debug("Value Domain: " + event.getName());
+    logger.info("Value Domain: " + event.getName());
     
     List<Concept> concepts = createConcepts(event);
 
@@ -86,7 +86,7 @@ public class UMLDefaultHandler
 
     vd.setConceptualDomain(cd);
     
-    if(concepts.size() > 0)
+//     if(concepts.size() > 0)
       vd.setConceptDerivationRule(createConceptDerivationRule(concepts));
 
     elements.addElement(vd);
@@ -95,8 +95,7 @@ public class UMLDefaultHandler
   }
 
   public void newValueMeaning(NewValueMeaningEvent event) {
-
-    logger.debug("Value Meaning: " + event.getName());
+    logger.info("Value Meaning: " + event.getName());
     
     List<Concept> concepts = createConcepts(event);
 
@@ -119,7 +118,7 @@ public class UMLDefaultHandler
   }
   
   public void newClass(NewClassEvent event) {
-    logger.debug("Class: " + event.getName());
+    logger.info("Class: " + event.getName());
     
     List<Concept> concepts = createConcepts(event);
 
@@ -170,7 +169,7 @@ public class UMLDefaultHandler
   }
 
   public void newAttribute(NewAttributeEvent event) {
-    logger.debug("Attribute: " + event.getClassName() + "." +
+    logger.info("Attribute: " + event.getClassName() + "." +
                  event.getName());
 
 
@@ -272,7 +271,7 @@ public class UMLDefaultHandler
         ocMapping.put(ConventionUtil.publicIdVersion(oc), de);
 
         oc.setLongName(existingDe.getDataElementConcept().getObjectClass().getLongName());
-        oc.setPreferredName(null);
+        oc.setPreferredName("");
         ChangeTracker changeTracker = ChangeTracker.getInstance();
         changeTracker.put
           (event.getClassName(), 

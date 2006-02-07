@@ -215,6 +215,7 @@ public class XMIWriter implements ElementWriter {
     try {
       List<ObjectClass> ocs = cadsrObjects.getElements(DomainObjectFactory.newObjectClass());
       List<DataElement> des = cadsrObjects.getElements(DomainObjectFactory.newDataElement());
+      List<ValueDomain> vds = cadsrObjects.getElements(DomainObjectFactory.newValueDomain());
       
       for(ObjectClass oc : ocs) {
         String fullClassName = null;
@@ -294,6 +295,32 @@ public class XMIWriter implements ElementWriter {
 
         }
       }
+
+      for(ValueDomain vd : vds) {
+        for(PermissibleValue pv : vd.getPermissibleValues()) {
+          ValueMeaning vm = pv.getValueMeaning();
+          Element attributeElement = elements.get("ValueDomains." + vd.getLongName() + "." + vm.getShortMeaning());
+          
+//           boolean changed = changeTracker.get(fullPropName);
+//           if(changed) {
+          String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'Property') or starts-with(@tag,'PropertyQualifier') or @tag='" + XMIParser.TV_DE_ID +"' or @tag='"+ XMIParser.TV_DE_VERSION +"' )and @modelElement='"
+            + attributeElement.getAttributeValue("xmi.id")
+            + "']";
+          
+          JDOMXPath path = new JDOMXPath(xpath);
+          List<Element> conceptTvs = path.selectNodes(modelElement);
+          // drop all current concept tagged values
+          for(Element tvElt : conceptTvs) {
+            tvElt.getParentElement().removeContent(tvElt);
+          }
+          
+          String [] conceptCodes = ConceptUtil.getConceptCodes(vm);
+          addConceptTvs(attributeElement, conceptCodes, XMIParser.TV_TYPE_PROPERTY);
+        }
+      }
+
+
+
       changeTracker.clear();
     } catch (JaxenException e){
       throw new ParserException(e);
@@ -468,6 +495,17 @@ public class XMIWriter implements ElementWriter {
     
     
     for (Element classElement : classes) {
+      // is it a value domain? 
+      // Check Stereotype
+      String stereoStr = "//*[local-name()='Stereotype' and @name='" + XMIParser.VD_STEREOTYPE + "'and normalize-space(@extendedElement)=normalize-space('" + classElement.getAttributeValue("xmi.id") + "')";
+      
+      JDOMXPath stereoPath = new JDOMXPath(stereoStr);
+      Collection<Element> stereotypes = (Collection<Element>)stereoPath.selectNodes(modelElement);
+
+      if(stereotypes.size() > 0) { // yes, this is a VD
+        packageName = "ValueDomains"; 
+      }
+
       String className = packageName + "." + classElement.getAttributeValue("name");
       
       elements.put(className, classElement);

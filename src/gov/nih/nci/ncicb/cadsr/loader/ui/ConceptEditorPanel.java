@@ -162,7 +162,7 @@ public class ConceptEditorPanel extends JPanel
         }
       } else if(node.getUserObject() instanceof ValueMeaning) {
           ValueMeaning vm = (ValueMeaning)node.getUserObject();
-          ObjectUpdater.updateVM(vm, concepts, newConcepts);
+          ObjectUpdater.update(vm, concepts, newConcepts);
       }
         else
           ObjectUpdater.update((AdminComponent)node.getUserObject(), concepts, newConcepts);

@@ -19,8 +19,9 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui.tree;
 import gov.nih.nci.ncicb.cadsr.domain.*;
-import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
-import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
+
+import java.util.List;
 
 public class NodeUtil 
 {
@@ -43,7 +44,7 @@ public class NodeUtil
         conceptCodes = prop.getPreferredName().split(":");
       } else if(node instanceof ValueMeaningNode) {
         ValueMeaning vm = ((ValueMeaning)node.getUserObject());
-        conceptCodes = vm.getShortMeaning().split(":");
+        conceptCodes = ConceptUtil.getConceptCodes(vm);
       }
       
       if((conceptCodes == null ) || StringUtil.isEmpty(conceptCodes[0])) {
