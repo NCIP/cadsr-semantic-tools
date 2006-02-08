@@ -38,7 +38,7 @@ public class TreeBuilder implements UserPreferencesListener {
 
   private List<TreeListener> treeListeners = new ArrayList();
   private boolean inClassAssociations = false,
-    showAssociations = true;
+    showAssociations = true, showValueDomains = true;
   
   private ReviewTracker reviewTracker = ReviewTracker.getInstance();
   private static TreeBuilder instance = new TreeBuilder();
@@ -50,6 +50,7 @@ public class TreeBuilder implements UserPreferencesListener {
   
   public void init() 
   {
+
     UserPreferences prefs = UserPreferences.getInstance();
     prefs.addUserPreferencesListener(this);
 
@@ -60,7 +61,7 @@ public class TreeBuilder implements UserPreferencesListener {
     // only show association node in Review Mode
     showAssociations = selections.getProperty("MODE").equals(RunMode.Reviewer);
 
-    
+    showValueDomains = !selections.getProperty("MODE").equals(RunMode.Curator);
   }
 
   public UMLNode buildTree(ElementsLists elements) {
@@ -70,10 +71,12 @@ public class TreeBuilder implements UserPreferencesListener {
     rootNode = new RootNode();
     doPackages(rootNode);
 
-    UMLNode vdNode = new PackageNode("Value Domain", "Value Domains");
-    doValueDomains(vdNode);
-    rootNode.addChild(vdNode);
-
+    if(showValueDomains) {
+      UMLNode vdNode = new PackageNode("Value Domain", "Value Domains");
+      doValueDomains(vdNode);
+      rootNode.addChild(vdNode);
+    }
+    
     if(!inClassAssociations && showAssociations)
       doAssociations(rootNode);
 
