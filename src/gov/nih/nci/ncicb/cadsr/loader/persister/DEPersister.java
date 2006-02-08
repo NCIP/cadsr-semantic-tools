@@ -169,7 +169,7 @@ public class DEPersister extends UMLPersister {
     DataElement de = (DataElement)ac;
     String longName = de.getDataElementConcept().getLongName() 
                      + " "
-                     +de.getValueDomain().getPreferredName();
+                     +de.getValueDomain().getLongName();
     return longName;
   }
 

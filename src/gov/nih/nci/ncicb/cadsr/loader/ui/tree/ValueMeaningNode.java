@@ -39,10 +39,10 @@ public class ValueMeaningNode
   private boolean reviewed = false;
 
 
-  public ValueMeaningNode(ValueMeaning vm) {
+    public ValueMeaningNode(ValueMeaning vm, String vdName) {
     display = vm.getShortMeaning();
 
-    fullPath = vm.getShortMeaning();
+    fullPath = "ValueDomains." + vdName + "." + vm.getShortMeaning();
 
     userObject = vm;
     

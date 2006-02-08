@@ -245,7 +245,7 @@ public class TreeBuilder implements UserPreferencesListener {
     for(ValueMeaning vm : vms) {
       try {
         if(isInValueDomain(parentNode.getFullPath(), vm)) {
-          UMLNode node = new ValueMeaningNode(vm);
+          UMLNode node = new ValueMeaningNode(vm, parentNode.getFullPath());
 
           Boolean reviewed = reviewTracker.get(node.getFullPath());
           if(reviewed != null) {

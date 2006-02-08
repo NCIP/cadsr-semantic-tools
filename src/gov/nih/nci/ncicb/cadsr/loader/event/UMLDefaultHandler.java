@@ -113,7 +113,7 @@ public class UMLDefaultHandler
     vd.addPermissibleValue(pv);
 
     elements.addElement(vm);
-    reviewTracker.put(event.getName(), event.isReviewed());
+    reviewTracker.put("ValueDomains." + event.getValueDomainName() + "." + event.getName(), event.isReviewed());
 
   }
   
@@ -479,7 +479,7 @@ public class UMLDefaultHandler
           DataElement newDe = DomainObjectFactory.newDataElement();
           newDe.setDataElementConcept(newDec);
           newDe.setValueDomain(de.getValueDomain());
-          newDe.setLongName(newDec.getLongName() + de.getValueDomain().getPreferredName());
+          newDe.setLongName(newDec.getLongName() + de.getValueDomain().getLongName());
 
           
           for(Definition def : de.getDefinitions()) {

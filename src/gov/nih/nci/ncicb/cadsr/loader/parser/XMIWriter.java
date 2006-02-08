@@ -299,26 +299,27 @@ public class XMIWriter implements ElementWriter {
       for(ValueDomain vd : vds) {
         for(PermissibleValue pv : vd.getPermissibleValues()) {
           ValueMeaning vm = pv.getValueMeaning();
-          Element attributeElement = elements.get("ValueDomains." + vd.getLongName() + "." + vm.getShortMeaning());
+          String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getShortMeaning();
+          Element attributeElement = elements.get(fullPropName);
           
-//           boolean changed = changeTracker.get(fullPropName);
-//           if(changed) {
-          String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'Property') or starts-with(@tag,'PropertyQualifier') or @tag='" + XMIParser.TV_DE_ID +"' or @tag='"+ XMIParser.TV_DE_VERSION +"' )and @modelElement='"
-            + attributeElement.getAttributeValue("xmi.id")
-            + "']";
-          
-          JDOMXPath path = new JDOMXPath(xpath);
-          List<Element> conceptTvs = path.selectNodes(modelElement);
-          // drop all current concept tagged values
-          for(Element tvElt : conceptTvs) {
-            tvElt.getParentElement().removeContent(tvElt);
+          boolean changed = changeTracker.get(fullPropName);
+          if(changed) {
+            String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'Property') or starts-with(@tag,'PropertyQualifier') or @tag='" + XMIParser.TV_DE_ID +"' or @tag='"+ XMIParser.TV_DE_VERSION +"' )and @modelElement='"
+              + attributeElement.getAttributeValue("xmi.id")
+              + "']";
+            
+            JDOMXPath path = new JDOMXPath(xpath);
+            List<Element> conceptTvs = path.selectNodes(modelElement);
+            // drop all current concept tagged values
+            for(Element tvElt : conceptTvs) {
+              tvElt.getParentElement().removeContent(tvElt);
+            }
+            
+            String [] conceptCodes = ConceptUtil.getConceptCodes(vm);
+            addConceptTvs(attributeElement, conceptCodes, XMIParser.TV_TYPE_PROPERTY);
           }
-          
-          String [] conceptCodes = ConceptUtil.getConceptCodes(vm);
-          addConceptTvs(attributeElement, conceptCodes, XMIParser.TV_TYPE_PROPERTY);
         }
       }
-
 
 
       changeTracker.clear();
