@@ -34,16 +34,11 @@ public class DescriptionValidator implements Validator
     List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());
     if(des != null) {  
       for(DataElement de : des) {  
-        for(AlternateName an : de.getAlternateNames()) {
-          if(an.getType() == AlternateName.TYPE_UML_DE) 
-            found = true;
-            break;
-        }
-      if(!found)
-        items.addItem(new ValidationWarning
-                      (PropertyAccessor.getProperty
-                       ("attribute.no.description",
-                        de.getDataElementConcept().getLongName()), de));
+        if(de.getDefinitions() == null || de.getDefinitions().size() == 0)
+          items.addItem(new ValidationWarning
+                        (PropertyAccessor.getProperty
+                         ("attribute.no.description",
+                          de.getDataElementConcept().getLongName()), de));
       }
     }
     
