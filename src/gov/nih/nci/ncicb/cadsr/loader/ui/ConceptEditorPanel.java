@@ -333,7 +333,9 @@ public class ConceptEditorPanel extends JPanel
         });
       
     }
-    if(node.getUserObject() instanceof DataElement)
+    UserSelections selections = UserSelections.getInstance();
+    if(node.getUserObject() instanceof DataElement
+      && !selections.getProperty("MODE").equals(RunMode.Curator))
       insertInBag(gridPanel, vdPanel, 0, concepts.length + 2);
     updateHeaderLabels();
     
