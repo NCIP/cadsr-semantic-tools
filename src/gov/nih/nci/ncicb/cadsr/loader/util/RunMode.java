@@ -29,7 +29,8 @@ public enum RunMode {
     Curator, 
     Reviewer, 
     Roundtrip,
-    Loader
+    Loader,
+    FixEa
     ;
 
 

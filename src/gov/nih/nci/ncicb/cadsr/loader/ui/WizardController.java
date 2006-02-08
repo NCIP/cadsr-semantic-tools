@@ -141,6 +141,9 @@ public class WizardController implements ActionListener {
         } else if(mode.equals(RunMode.Roundtrip)) {
           desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
           desc.setBackPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
+        } else if(mode.equals(RunMode.FixEa)) {
+          desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+          desc.setBackPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
         }
         
       }
@@ -174,7 +177,31 @@ public class WizardController implements ActionListener {
             .getPanelDescriptor(ProgressFileSelectionPanelDescriptor.IDENTIFIER);
 
 
-          if(mode.equals(RunMode.GenerateReport)) {
+          if(mode.equals(RunMode.FixEa)) {
+            SwingWorker worker = new SwingWorker() {
+                public Object construct() {
+                  ProgressEvent evt = new ProgressEvent();
+                  
+                  SemanticConnectorUtil semConn = new SemanticConnectorUtil();
+                  semConn.addProgressListener(progressDesc);
+                  
+                  evt.setMessage("Removing Unnecessary tags from XMI ...");
+                  progressDesc.newProgressEvent(evt);
+                  String outputXmi = semConn.fixXmi(filename);
+
+                  System.out.println("done");
+
+                  evt.setGoal(100);
+                  evt.setMessage("Done");
+                  evt.setStatus(100);
+                  progressDesc.newProgressEvent(evt);
+                  
+                  reportPanel.setOutputText("Fix Ea was run on file:<br>" + filename + "<br>Output file can be found here:<br>" + outputXmi);
+                  return null;
+                }
+              };
+            worker.start(); 
+          } else if(mode.equals(RunMode.GenerateReport)) {
             SwingWorker worker = new SwingWorker() {
                 public Object construct() {
                   try {
@@ -269,7 +296,7 @@ public class WizardController implements ActionListener {
 
                   roundtripAction.doRoundtrip(projectName, projectVersion, filename, outputFile);
 
-                  reportPanel.setOutputText("<html><body>Roundtrip was completed. The output file can be found here: <br>" + outputFile + "</body></html>");
+                  reportPanel.setOutputText("Roundtrip was completed. The output file can be found here: <br>" + outputFile);
 
                   return null;
 

@@ -33,7 +33,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
  */
 public class ModeSelectionPanel extends JPanel {
 
-  private JRadioButton roundtripOption, reportOption, curateOption, annotateOption, reviewOption;
+  private JRadioButton fixEaOption, roundtripOption, reportOption, curateOption, annotateOption, reviewOption;
   private ButtonGroup group;
   private JPanel _this = this;
 
@@ -81,6 +81,9 @@ public class ModeSelectionPanel extends JPanel {
     
     group = new ButtonGroup();
 
+    fixEaOption = new JRadioButton("Run the 'Fix-EA' Task");
+    fixEaOption.setActionCommand(RunMode.FixEa.toString());
+
     roundtripOption = new JRadioButton("Perform XMI Roundtrip");
     roundtripOption.setActionCommand(RunMode.Roundtrip.toString());
     
@@ -107,6 +110,7 @@ public class ModeSelectionPanel extends JPanel {
     else
       reportOption.setSelected(true);
       
+    group.add(fixEaOption);
     group.add(roundtripOption);
     group.add(reportOption);
     group.add(curateOption);
@@ -119,6 +123,7 @@ public class ModeSelectionPanel extends JPanel {
     buttonPanel.add
       (new JLabel("<html>Choose from the following SIW Options:</html>"));
 
+    buttonPanel.add(fixEaOption);
     buttonPanel.add(roundtripOption);
     buttonPanel.add(reportOption);
     buttonPanel.add(curateOption);

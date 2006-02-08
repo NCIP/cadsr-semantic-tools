@@ -40,6 +40,11 @@ public class ReportConfirmPanel extends JPanel {
     initUI();
   }
 
+
+  public void setOutputText(String text) {
+    reportLabel.setText("<html>" + text + "</html>");
+  }
+
   public void setFiles(String file1, String file2) {
 
     if(file1 == null || file2 == null) {
@@ -51,10 +56,6 @@ public class ReportConfirmPanel extends JPanel {
         reportLabel.setText("<html>Annotation of file <br><div align=center> " + file1 + " </div>was completed.  <br><br> The Annotated XMI can be found here: <br><div align=center>" + file2 + "</div></html>");
       }
     }
-  }
-
-  public void setOutputText(String text) {
-    reportLabel.setText(text);
   }
 
   private void initUI() {
