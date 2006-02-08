@@ -64,14 +64,12 @@ public class ConceptEditorPanel extends JPanel
   {
     this.node = node;
     initConcepts();
-    //if(node.getUserObject() instanceof DataElement)
-      vdPanel = new VDPanel(node);
+    vdPanel = new VDPanel(node);
   }
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
     propChangeListeners.add(l);
-    //if(node.getUserObject() instanceof DataElement)
-      vdPanel.addPropertyChangeListener(l);
+    vdPanel.addPropertyChangeListener(l);
   }
 
   private void firePropertyChangeEvent(PropertyChangeEvent evt) {
@@ -84,25 +82,19 @@ public class ConceptEditorPanel extends JPanel
     this.node = node;
     initConcepts();
     updateConcepts(concepts);
-    //if(node.getUserObject() instanceof DataElement)
-      vdPanel.updateNode(node);
+    vdPanel.updateNode(node);
   }
   
   private void initConcepts() 
   {
     concepts = NodeUtil.getConceptsFromNode(node);
   }
-  //new
+
   Concept[] getConcepts() 
   {
    return concepts; 
   }
-  //new
-//  public boolean isReviewed() 
-//  {
-//    return ((ReviewableUMLNode)node).isReviewed();
-//  }
-  //new
+
   public UMLNode getNode() 
   {
     return node;
@@ -180,7 +172,7 @@ public class ConceptEditorPanel extends JPanel
       new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, true));
     firePropertyChangeEvent(
       new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
-    
+
     fireElementChangeEvent(new ElementChangeEvent(node));
   }
     
