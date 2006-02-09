@@ -1,6 +1,8 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
+import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
+import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
@@ -62,6 +64,7 @@ public class VDPanel extends JPanel
     this.setSize(300, 300);
     
     searchVdButton.setActionCommand(SEARCH);
+    searchVdButton.setVisible(!isMappedToLocalVD());
     
     searchVdButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
@@ -104,16 +107,16 @@ public class VDPanel extends JPanel
     this.node = node;
     if(node.getUserObject() instanceof DataElement) {
        vd = ((DataElement)node.getUserObject()).getValueDomain();
-       
+       searchVdButton.setVisible(!isMappedToLocalVD());
+
+       vdLongNameValueLabel.setText(vd.getLongName()); 
        
        if(vd != null && !StringUtil.isEmpty(vd.getPublicId())) {
-         vdLongNameValueLabel.setText(vd.getLongName());
          vdContextNameValueLabel.setText(vd.getContext().getName());
          vdVersionValueLabel.setText(vd.getVersion().toString());
        }
        else 
          {
-           vdLongNameValueLabel.setText("");
            vdContextNameValueLabel.setText("");
            vdVersionValueLabel.setText("");
          }
@@ -142,13 +145,21 @@ public class VDPanel extends JPanel
     bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
 
-    public static void main(String[] args)
+  public boolean isMappedToLocalVD() 
   {
-//    JFrame frame = new JFrame();
-//    VDPanel vdPanel = new VDPanel();
-//    vdPanel.setVisible(true);
-//    frame.add(vdPanel);
-//    frame.setVisible(true);
-//    frame.setSize(450, 350);
+    ValueDomain vd = ((DataElement)node.getUserObject()).getValueDomain();
+    ElementsLists elements = ElementsLists.getInstance();
+    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+    if(vd.getPublicId() != null)
+      return false;
+      
+    if(vds != null) {
+      for(ValueDomain currentVd : vds) 
+        if(currentVd.getLongName().equals(vd.getLongName()))
+          return true;
+          
+    }
+    return false;
   }
+
 }
