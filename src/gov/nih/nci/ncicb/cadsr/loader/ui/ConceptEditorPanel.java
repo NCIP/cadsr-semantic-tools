@@ -1,5 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.*;
+import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
+import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeListener;
@@ -345,6 +347,8 @@ public class ConceptEditorPanel extends JPanel
     this.add(scrollPane, BorderLayout.CENTER);
     
   }
+  
+
   
   private void updateHeaderLabels()
   {
