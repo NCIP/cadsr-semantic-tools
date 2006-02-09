@@ -148,7 +148,25 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
           items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
         }
       }    
-
+    
+    List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());
+    boolean match = false;
+    
+    if(des != null) {
+      for(ValueDomain vd : vds) {
+        match = false;
+        for(DataElement de : des) {
+          if(vd.getLongName().equals(de.getValueDomain().getLongName())) {
+            match = true;
+            break;
+          }
+        }
+        if(!match)
+          items.addItem(new ValidationError
+                        (PropertyAccessor.getProperty
+                          ("vd.not.used", vd.getLongName()), vd));
+      }
+    }
     }
     return items;
   }
