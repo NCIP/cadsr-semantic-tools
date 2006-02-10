@@ -65,7 +65,7 @@ public class VDPanel extends JPanel
     
     searchVdButton.setActionCommand(SEARCH);
     searchVdButton.setVisible(!isMappedToLocalVD());
-    
+      
     searchVdButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
         JButton button = (JButton)event.getSource();
@@ -147,6 +147,7 @@ public class VDPanel extends JPanel
 
   public boolean isMappedToLocalVD() 
   {
+    if(node.getUserObject() instanceof DataElement) {
     ValueDomain vd = ((DataElement)node.getUserObject()).getValueDomain();
     ElementsLists elements = ElementsLists.getInstance();
     List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
@@ -158,6 +159,7 @@ public class VDPanel extends JPanel
         if(currentVd.getLongName().equals(vd.getLongName()))
           return true;
           
+    }
     }
     return false;
   }
