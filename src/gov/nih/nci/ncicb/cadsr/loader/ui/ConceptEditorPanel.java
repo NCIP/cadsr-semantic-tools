@@ -102,6 +102,11 @@ public class ConceptEditorPanel extends JPanel
     return node;
   }
   
+  public VDPanel getVDPanel() 
+  {
+    return vdPanel;
+  }
+  
   boolean areAllFieldEntered() {
     for(int i=0; i < conceptUIs.length; i++) {
       if(conceptUIs[i].code.getText().trim().equals("")
