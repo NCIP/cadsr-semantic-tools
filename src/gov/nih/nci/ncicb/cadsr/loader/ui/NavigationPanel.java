@@ -319,7 +319,8 @@ public class NavigationPanel extends JPanel
     DefaultMutableTreeNode selected = 
       (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
     
-      if(event.getType() == NavigationEvent.NAVIGATE_NEXT) 
+      if(event.getType() == NavigationEvent.NAVIGATE_NEXT
+        && selected.getNextNode() != null) 
       {      
         TreePath path =  new TreePath(selected.getNextNode().getPath());
         tree.setSelectionPath(path);
@@ -327,7 +328,8 @@ public class NavigationPanel extends JPanel
         newViewEvent(path);
       }
       else 
-        if(event.getType() == NavigationEvent.NAVIGATE_PREVIOUS) 
+        if(event.getType() == NavigationEvent.NAVIGATE_PREVIOUS
+          && selected.getPreviousNode() != null) 
         {
             TreePath path = new TreePath(selected.getPreviousNode().getPath());
             tree.setSelectionPath(path);
