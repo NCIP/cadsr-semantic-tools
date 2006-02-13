@@ -177,6 +177,29 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
                           ("vd.not.used", vd.getLongName()), vd));
       }
     }
+    
+    for(ValueDomain vd : vds) {
+      List<ComponentConcept> vdList = vd.getConceptDerivationRule().getComponentConcepts();
+      List<Concept> vdConceptList = new ArrayList<Concept>();
+      for(ComponentConcept cc : vdList)
+            vdConceptList.add(cc.getConcept());
+      if(vdConceptList.isEmpty())
+        break;
+      for(ValueDomain currentVd : vds)     
+        if(vd != currentVd) {
+         List<ComponentConcept> currentVdList = currentVd.getConceptDerivationRule().getComponentConcepts();
+         List<Concept> currentVdConceptList = new ArrayList<Concept>();
+         for(ComponentConcept cc : currentVdList)
+          currentVdConceptList.add(cc.getConcept());
+        if(currentVdConceptList.isEmpty())
+          break;
+        if(vdConceptList.size() == currentVdConceptList.size()
+          && vdConceptList.containsAll(currentVdConceptList)) 
+          items.addItem(new ValidationError
+                        (PropertyAccessor.getProperty
+                        ("vd.same.concepts", vd.getLongName(), currentVd.getLongName()),vd));         
+        }
+    }
     }
     return items;
   }
