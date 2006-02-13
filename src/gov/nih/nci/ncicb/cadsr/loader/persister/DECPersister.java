@@ -57,6 +57,8 @@ public class DECPersister extends UMLPersister {
 
         List<Definition> modelDefinitions = dec.getDefinitions();
         List<AlternateName> modelAltNames = dec.getAlternateNames();
+        dec.removeDefinitions();
+        dec.removeAlternateNames();
 
         String newName = dec.getLongName();
         String packageName = getPackageName(dec);
@@ -125,17 +127,20 @@ public class DECPersister extends UMLPersister {
 	  dec.setVersion(new Float(1.0f));
 	  dec.setWorkflowStatus(defaults.getWorkflowStatus());
 
-	  List props = elements.getElements(DomainObjectFactory.newProperty()
-					    .getClass());
+          dec.setProperty(LookupUtil.lookupProperty(dec.getProperty().getPreferredName()));
 
-	  for (int j = 0; j < props.size(); j++) {
-	    Property o = (Property) props.get(j);
 
-	    if (o.getLongName().equals(dec.getProperty()
-				       .getLongName())) {
-	      dec.setProperty(o);
-	    }
-	  }
+// 	  List props = elements.getElements(DomainObjectFactory.newProperty()
+// 					    .getClass());
+
+// 	  for (int j = 0; j < props.size(); j++) {
+// 	    Property o = (Property) props.get(j);
+
+// 	    if (o.getLongName().equals(dec.getProperty()
+// 				       .getLongName())) {
+// 	      dec.setProperty(o);
+// 	    }
+// 	  }
 
 	  dec.setAudit(defaults.getAudit());
 
@@ -173,7 +178,6 @@ public class DECPersister extends UMLPersister {
 
         addAlternateName(newDec, newName, AlternateName.TYPE_UML_DEC, packageName);
 
-//         for(Iterator it2 = dec.getDefinitions().iterator(); it2.hasNext(); ) {
         for(Definition def : modelDefinitions) {
           addAlternateDefinition(
             newDec, def.getDefinition(), 

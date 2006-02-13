@@ -134,6 +134,8 @@ public class WizardController implements ActionListener {
 
         if(mode.equals(RunMode.GenerateReport)) {
           desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+        } else if(mode.equals(RunMode.AnnotateXMI)) {
+          desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
         } else if(mode.equals(RunMode.Reviewer)) {
           desc.setNextPanelDescriptor("FINISH");
         } else if(mode.equals(RunMode.Curator)) {
@@ -196,7 +198,7 @@ public class WizardController implements ActionListener {
                   evt.setStatus(100);
                   progressDesc.newProgressEvent(evt);
                   
-                  reportPanel.setOutputText("Fix Ea was run on file:<br>" + filename + "<br>Output file can be found here:<br>" + outputXmi);
+                  reportPanel.setOutputText("Fix Ea was run on file:<br>" + filename + "<br><br>Output file can be found here:<br>" + outputXmi);
                   return null;
                 }
               };
@@ -210,22 +212,52 @@ public class WizardController implements ActionListener {
                     String filenameNoExt = filename.substring(filename.lastIndexOf("/")+1);
                     String inputXmi = filename;
                     
-                    // Run the fixEA task if file name does not end with _fixed
                     SemanticConnectorUtil semConn = new SemanticConnectorUtil();
                     semConn.addProgressListener(progressDesc);
 
                     if(!filenameNoExt.startsWith("fixed_")) {
-                      evt.setMessage("Removing Unnecessary tags from XMI ...");
-                      progressDesc.newProgressEvent(evt);
+                      reportPanel.setOutputText("The name of the XMI file must start with 'fixed_'. It does not. <br> Please ensure you have run the Fix EA task first.");
+                      return null;
+                    }
 
-                      inputXmi = semConn.fixXmi(filename);
+                    File csvFile = new File(SemanticConnectorUtil.getCsvFilename(filename));
+                    evt.setMessage("Creating Semantic Connector Report. This may take a minute ...");
+                    progressDesc.newProgressEvent(evt);
+                    outputFile = semConn.generateReport(inputXmi);
+
+                    reportPanel.setFiles(inputXmi, outputFile);
+
+                  } catch (SemanticConnectorException e){
+                    e.printStackTrace();
+                    reportPanel.setFiles(null, "An error occured.");
+                  } catch (Throwable t)  {// end of try-catch
+                    t.printStackTrace();
+                  }
+                  return null;
+                }
+              };
+            worker.start(); 
+          } else if(mode.equals(RunMode.AnnotateXMI)) {
+            SwingWorker worker = new SwingWorker() {
+                public Object construct() {
+                  try {
+                    ProgressEvent evt = new ProgressEvent();
+
+                    String filenameNoExt = filename.substring(filename.lastIndexOf("/")+1);
+                    String inputXmi = filename;
+                    
+                    SemanticConnectorUtil semConn = new SemanticConnectorUtil();
+                    semConn.addProgressListener(progressDesc);
+
+                    if(!filenameNoExt.startsWith("fixed_")) {
+                      reportPanel.setOutputText("The name of the XMI file should start with 'fixed_'. It does not. <br> Please ensure you have run the Fix EA task first.");
+                      return null;
                     }
 
                     File csvFile = new File(SemanticConnectorUtil.getCsvFilename(filename));
                     if(!csvFile.exists()) {
-                      evt.setMessage("Creating Semantic Connector Report. This may take a minute ...");
-                      progressDesc.newProgressEvent(evt);
-                      outputFile = semConn.generateReport(inputXmi);
+                      reportPanel.setOutputText("No EVS Report exist. Please create an EVS Report first <br><br> No Processing done.");
+                      return null;
                     } else {
                       evt.setMessage("Annotating XMI File ...");
                       progressDesc.newProgressEvent(evt);

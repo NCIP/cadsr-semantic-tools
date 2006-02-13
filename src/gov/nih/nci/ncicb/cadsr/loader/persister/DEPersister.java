@@ -97,6 +97,9 @@ public class DEPersister extends UMLPersister {
               logger.debug("Creating DE: " + de.getLongName());
               List<AlternateName> altNames = new ArrayList(de.getAlternateNames());
               List<Definition> altDefs = new ArrayList(de.getDefinitions());
+              de.removeAlternateNames();
+              de.removeDefinitions();
+
               newDe = dataElementDAO.create(de);
               
               // restore altNames

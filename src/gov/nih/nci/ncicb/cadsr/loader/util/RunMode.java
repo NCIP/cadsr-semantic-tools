@@ -26,6 +26,7 @@ package gov.nih.nci.ncicb.cadsr.loader.util;
  */
 public enum RunMode {
   GenerateReport, 
+  AnnotateXMI, 
     Curator, 
     Reviewer, 
     Roundtrip,

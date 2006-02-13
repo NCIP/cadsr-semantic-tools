@@ -126,7 +126,7 @@ public class UMLPersister implements Persister {
         for(ClassSchemeClassSchemeItem csCsi : an.getCsCsis()) {
           if(csCsi.getId().equals(packageCsCsi.getId())) {
             csFound = true;
-          } else if(csCsi.getId().equals(packageCsCsi.getParent().getId())) 
+          } else if(packageCsCsi.getParent() != null && csCsi.getId().equals(packageCsCsi.getParent().getId())) 
             parentFound = true;
         }
         if(!csFound) {
@@ -306,7 +306,7 @@ public class UMLPersister implements Persister {
 
       if(csCsi.getId().equals(packageCsCsi.getId()))
         found = true;
-      else if(csCsi.getId().equals(packageCsCsi.getParent().getId())) 
+      else if(packageCsCsi.getParent() != null && csCsi.getId().equals(packageCsCsi.getParent().getId())) 
         parentFound = true;
     }
 

@@ -101,6 +101,9 @@ public class PropertyPersister extends UMLPersister {
 
             logger.debug("Saving Property with " + prop.getPreferredName() + "v" + prop.getVersion() + " in context " + prop.getContext().getName());
 
+            prop.removeAlternateNames();
+            prop.removeDefinitions();
+
             newProp = propertyDAO.create(prop, conceptCodes);
             logger.info(PropertyAccessor.getProperty("created.prop"));
           } catch (DAOCreateException e){

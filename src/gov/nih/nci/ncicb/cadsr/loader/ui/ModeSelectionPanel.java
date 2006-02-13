@@ -94,7 +94,7 @@ public class ModeSelectionPanel extends JPanel {
     curateOption.setActionCommand(RunMode.Curator.toString());
 
     annotateOption = new JRadioButton("Run Semantic Connector (Second Run)");
-    annotateOption.setActionCommand(RunMode.GenerateReport.toString());
+    annotateOption.setActionCommand(RunMode.AnnotateXMI.toString());
        
     reviewOption = new JRadioButton("Review Annotated Model");
     reviewOption.setActionCommand(RunMode.Reviewer.toString());

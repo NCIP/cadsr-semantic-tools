@@ -63,6 +63,8 @@ public class ObjectClassPersister extends UMLPersister {
         String newName = className;
 
         List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc.getAlternateNames());
+        oc.removeAlternateNames();
+        oc.removeDefinitions();
 
         // Use case for existing Element
         if(!StringUtil.isEmpty(oc.getPublicId()) && oc.getVersion() != null) {
