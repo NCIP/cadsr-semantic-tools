@@ -362,10 +362,10 @@ public class TreeBuilder implements UserPreferencesListener {
     
     for(ValueDomain vd : vds) {
       if(vd.getLongName().equals(vdName)) {
-        for(PermissibleValue pv : vd.getPermissibleValues()) {
-          if(pv.getValueMeaning() == vm)
-            return true;
-        }
+        if(vd.getPermissibleValues() != null)
+          for(PermissibleValue pv : vd.getPermissibleValues()) 
+            if(pv.getValueMeaning() == vm)
+              return true;
         return false;
       }
     }
