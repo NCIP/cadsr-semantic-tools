@@ -95,7 +95,7 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
   
     JTabbedPane tabPane = new JTabbedPane();
     tabPane.addTab("Defaults", mainPanel);
-    tabPane.addTab("DataTypes", dataPanel);
+    //tabPane.addTab("DataTypes", dataPanel);
     
     descriptionField.setLineWrap(true);
     descriptionField.setWrapStyleWord(true);
