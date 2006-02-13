@@ -47,7 +47,7 @@ public class NodeUtil
         conceptCodes = ConceptUtil.getConceptCodes(vm);
       }
       
-      if((conceptCodes == null ) || StringUtil.isEmpty(conceptCodes[0])) {
+      if((conceptCodes == null )) {
         conceptCodes = new String[0];
       }
 
