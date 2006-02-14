@@ -145,6 +145,7 @@ public class ObjectClassPersister extends UMLPersister {
 //           addAlternateName(newOc, newName, AlternateName.TYPE_UML_CLASS ,packageName);
         
         for(AlternateName an : parsedAltNames) {
+          oc.addAlternateName(an);
           addAlternateName(newOc, an.getName(), an.getType() ,packageName);
         }
 

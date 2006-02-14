@@ -68,15 +68,6 @@ public class OcRecPersister extends UMLPersister {
 	List<ObjectClass> ocs = elements.
 	  getElements(DomainObjectFactory.newObjectClass());
 
-// 	for (ObjectClass o : ocs) {
-// 	  if (o.getPreferredName().equals(ocr.getSource().getPreferredName())) {
-// 	    ocr.setSource(o);
-// 	  } 
-//           if (o.getPreferredName().equals(ocr.getTarget()
-// 					    .getPreferredName())) {
-// 	    ocr.setTarget(o);
-// 	  }
-// 	}
         ObjectClass sOcr = ocr.getSource();
 
 socr:
