@@ -60,7 +60,7 @@ public class EVSImpl extends SubjectClass{
       event.setMessage("Searching EVS...");
       event.setGoal(umlEntities.size());
       for (int i = 0; i < umlEntities.size(); i++) {
-        event.setStatus(i+1);
+        event.setStatus(i);
         notify(event);
         map = (HashMap) umlEntities.get(i);
 
