@@ -122,7 +122,8 @@ public class UMLLoaderGUI
     }
       
     RunMode mode = (RunMode)userSelections.getProperty("MODE");
-    if(mode.equals(RunMode.GenerateReport)) 
+    //if(mode.equals(RunMode.GenerateReport))
+    if(!(mode.equals(RunMode.Reviewer) || mode.equals(RunMode.Curator))) 
       System.exit(0);
 
     mainFrame.init();
