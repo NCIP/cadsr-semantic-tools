@@ -251,8 +251,11 @@ public class ValidateConceptsDialog extends JDialog
         value = (AcListElementWrapper)list.getSelectedValue();
         order.setText(value.getOrder());
         elementPane.setText(getConceptHtml(value.getConcept()));
+        elementPane.setCaretPosition(0);
         evsByCodePane.setText(getHighlightConceptHtmlByCode(errorList.get(value.getConcept())));
+        evsByCodePane.setCaretPosition(0);
         evsByNamePane.setText(getHighlightConceptHtmlByName(errorNameList.get(value.getConcept())));
+        evsByNamePane.setCaretPosition(0);
                 
         int ind = value.getAc().getLongName().lastIndexOf(".");
         String className = value.getAc().getLongName().substring(ind + 1);
