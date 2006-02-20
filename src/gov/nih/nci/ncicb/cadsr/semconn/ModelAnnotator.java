@@ -590,7 +590,7 @@ public final class ModelAnnotator extends SubjectClass{
 
       for (int i = 0; i < evsValues.size(); i++) {
         //send event
-        event.setStatus(i+1);
+        event.setStatus(i);
         notify(event);
         
         taggedValuesMap = (HashMap) evsValues.get(i);
