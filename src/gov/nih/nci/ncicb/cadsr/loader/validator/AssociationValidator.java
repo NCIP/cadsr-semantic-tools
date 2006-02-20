@@ -59,7 +59,7 @@ public class AssociationValidator implements Validator {
                                     ocr.getTargetRole()}), 
                     ocr
                     ));
-        it.remove();
+        
         continue;
       }
       if(!areRoleNamesValid(ocr)) {
@@ -70,7 +70,7 @@ public class AssociationValidator implements Validator {
                                     ocr.getTarget().getLongName()}),
                     ocr)); 
                    ;
-        it.remove();
+        
         continue;
       }
     }
