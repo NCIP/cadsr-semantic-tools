@@ -83,11 +83,17 @@ public class UMLElementViewPanel extends JPanel
     panelKeyMap.put(CONCEPT_PANEL_KEY, conceptEditorPanel);
     panelKeyMap.put(DE_PANEL_KEY, dePanel);
     panelKeyMap.put(OC_PANEL_KEY, ocPanel);
-
-    setLayout(new BorderLayout());
-    this.add(cardPanel, BorderLayout.CENTER);
-    this.add(buttonPanel, BorderLayout.SOUTH);
     
+    setLayout(new BorderLayout());
+    
+    JPanel newPanel = new JPanel();
+    newPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); 
+    JLabel space = new JLabel("                              ");
+    newPanel.add(space);
+    newPanel.add(buttonPanel);
+    
+    this.add(cardPanel, BorderLayout.CENTER);
+    this.add(newPanel, BorderLayout.SOUTH);
   }
   
   public void switchCards(String key) 
@@ -193,10 +199,21 @@ public class UMLElementViewPanel extends JPanel
   }
 
 
+/*
+    private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
 
-  
+      insertInBag(bagComp, comp, x, y, 1, 1);
 
+    }
 
+    private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
+      JPanel p = new JPanel();
+      p.add(comp);
+
+      bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+    } 
+
+*/
 
 
 
