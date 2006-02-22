@@ -48,6 +48,7 @@ public class ModeSelectionPanel extends JPanel {
   }
 
   public void addActionListener(ActionListener l) {
+    fixEaOption.addActionListener(l);
     roundtripOption.addActionListener(l);
     reportOption.addActionListener(l);
     curateOption.addActionListener(l);
