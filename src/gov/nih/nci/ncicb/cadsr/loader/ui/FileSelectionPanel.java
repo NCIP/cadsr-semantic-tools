@@ -181,8 +181,18 @@ implements ProgressListener {
             filePathField.setText(recentFiles.get(index));
             fireActionEvent(null);
           }
-        });
+      });
       
+        jl.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent evt) {
+                jl.setForeground(Color.BLUE);
+                fireActionEvent(null);
+            }
+            public void mouseExited(MouseEvent evt) {
+                jl.setForeground(Color.BLACK);
+                fireActionEvent(null);
+            }            
+        });
 
       insertInBag(browsePanel, jl, 0, y++, 2, 1);
     }
