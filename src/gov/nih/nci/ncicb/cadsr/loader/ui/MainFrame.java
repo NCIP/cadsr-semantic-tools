@@ -53,6 +53,8 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
+import java.lang.reflect.Method;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -69,7 +71,7 @@ public class MainFrame extends JFrame
   private JMenu fileMenu = new JMenu("File");
   private JMenuItem saveMenuItem = new JMenuItem("Save");
   private JMenuItem saveAsMenuItem = new JMenuItem("Save As");
-  private JMenuItem exportErrorsMenuItem = new JMenuItem("Export");
+  //private JMenuItem exportErrorsMenuItem = new JMenuItem("Export");
   private JMenuItem exitMenuItem = new JMenuItem("Exit");
 
   private JMenu editMenu = new JMenu("Edit");
@@ -83,13 +85,13 @@ public class MainFrame extends JFrame
 
   private JMenu runMenu = new JMenu("Run");
   private JMenuItem validateMenuItem = new JMenuItem("Validate");
-  private JMenuItem uploadMenuItem = new JMenuItem("Upload");
+  //private JMenuItem uploadMenuItem = new JMenuItem("Upload");
   private JMenuItem defaultsMenuItem = new JMenuItem("Defaults");
   private JMenuItem validateConceptsMenuItem = new JMenuItem("Validate Concepts");
 
   private JMenu helpMenu = new JMenu("Help");
   private JMenuItem aboutMenuItem = new JMenuItem("About");
-  private JMenuItem indexMenuItem = new JMenuItem("Index");
+  private JMenuItem indexMenuItem = new JMenuItem("SIW on GForge");
 
   private JMenuItem semanticConnectorMenuItem = new JMenuItem("Semantic Connector");
 
@@ -183,7 +185,7 @@ public class MainFrame extends JFrame
     fileMenu.add(saveAsMenuItem);
     fileMenu.addSeparator();
     fileMenu.add(findMenuItem);
-    fileMenu.add(exportErrorsMenuItem);
+    //fileMenu.add(exportErrorsMenuItem);
     fileMenu.addSeparator();
     fileMenu.add(exitMenuItem);
     mainMenuBar.add(fileMenu);
@@ -201,9 +203,9 @@ public class MainFrame extends JFrame
 
 //     runMenu.add(validateMenuItem);
     if(runMode.equals(RunMode.Reviewer)) {
-      runMenu.add(uploadMenuItem); 
-      uploadMenuItem.setEnabled(false);
-      runMenu.addSeparator();
+      //runMenu.add(uploadMenuItem); 
+      //uploadMenuItem.setEnabled(false);
+      //runMenu.addSeparator();
       runMenu.add(defaultsMenuItem);
       runMenu.add(validateConceptsMenuItem);
       mainMenuBar.add(runMenu);
@@ -345,13 +347,13 @@ public class MainFrame extends JFrame
       }
     });
 
-
+/*
     exportErrorsMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
         } 
       });
-
+*/
     validateMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           ValidationItems.getInstance().clear();
@@ -382,13 +384,13 @@ public class MainFrame extends JFrame
         }
       }
     });
-
+/*
     uploadMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
         } 
       });
-
+*/
     applyMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
           UMLElementViewPanel viewPanel =
@@ -415,6 +417,40 @@ public class MainFrame extends JFrame
           new AboutPanel();
         }
       });
+      
+      indexMenuItem.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent evt) {
+            String errMsg = "Error attempting to launch web browser";
+            String osName = System.getProperty("os.name");
+            String url = "http://gforge.nci.nih.gov/projects/siw/";
+            try {
+               if (osName.startsWith("Mac OS")) {
+                  Class fileMgr = Class.forName("com.apple.eio.FileManager");
+                  Method openURL = fileMgr.getDeclaredMethod("openURL",
+                     new Class[] {String.class});
+                  openURL.invoke(null, new Object[] {url});
+                  }
+               else if (osName.startsWith("Windows"))
+                  Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+               else { //assume Unix or Linux
+                  String[] browsers = {
+                     "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
+                  String browser = null;
+                  for (int count = 0; count < browsers.length && browser == null; count++)
+                     if (Runtime.getRuntime().exec(
+                           new String[] {"which", browsers[count]}).waitFor() == 0)
+                        browser = browsers[count];
+                  if (browser == null)
+                     throw new Exception("Could not find web browser");
+                  else
+                     Runtime.getRuntime().exec(new String[] {browser, url});
+                  }
+               }
+            catch (Exception e) {
+               JOptionPane.showMessageDialog(null, errMsg + ":\n" + e.getLocalizedMessage());
+               }
+          }
+        });      
   }
 
   public void viewChanged(ViewChangeEvent event) {
