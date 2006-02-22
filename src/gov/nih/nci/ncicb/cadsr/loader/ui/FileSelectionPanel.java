@@ -88,6 +88,8 @@ implements ProgressListener {
       fileExtension = "xmi";
     else if(runMode.equals(RunMode.GenerateReport)) 
       fileExtension = "xmi";
+    else if(runMode.equals(RunMode.AnnotateXMI))
+      fileExtension = "xmi";
     initUI();
   }
 
