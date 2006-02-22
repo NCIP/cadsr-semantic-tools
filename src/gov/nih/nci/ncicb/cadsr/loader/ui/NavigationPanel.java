@@ -363,7 +363,7 @@ public class NavigationPanel extends JPanel
           Concept [] concepts = NodeUtil.getConceptsFromNode(n);
           for(int i=0; i < concepts.length; i++) {
             //System.out.println("Concepts" + i +" "+ concepts[i]);
-            if(event.getSearchString().equalsIgnoreCase(concepts[i].getLongName())) 
+            if(!event.getSearchString().toLowerCase().contains(concepts[i].getLongName().toLowerCase())) 
             {
               path = new TreePath(selected.getPath());
               tree.setSelectionPath(path);
@@ -376,7 +376,7 @@ public class NavigationPanel extends JPanel
         }
         else {
         //if there is a match then select that node in the tree
-        if((n.getDisplay()).equalsIgnoreCase(event.getSearchString())) 
+        if((n.getDisplay().toLowerCase()).contains(event.getSearchString().toLowerCase())) 
         {
           path = new TreePath(selected.getPath());
           tree.setSelectionPath(path);
@@ -405,7 +405,7 @@ public class NavigationPanel extends JPanel
           Concept [] concepts = NodeUtil.getConceptsFromNode(n);
           for(int i=0; i < concepts.length; i++) {
             //System.out.println("Concepts" + i +" "+ concepts[i]);
-            if(event.getSearchString().equalsIgnoreCase(concepts[i].getLongName())) 
+            if(event.getSearchString().toLowerCase().contains(concepts[i].getLongName().toLowerCase())) 
             {
               path = new TreePath(selected.getPath());
               tree.setSelectionPath(path);
@@ -419,7 +419,7 @@ public class NavigationPanel extends JPanel
         
         else {  
         //if there is a match then select that node in the tree
-        if((n.getDisplay()).equalsIgnoreCase(event.getSearchString())) 
+        if((n.getDisplay().toLowerCase()).contains(event.getSearchString().toLowerCase())) 
         {
           path = new TreePath(selected.getPath());
           tree.setSelectionPath(path);
