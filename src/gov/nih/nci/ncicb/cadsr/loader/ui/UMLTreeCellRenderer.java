@@ -47,6 +47,10 @@ public class UMLTreeCellRenderer extends DefaultTreeCellRenderer {
       (DefaultMutableTreeNode)value;
     UMLNode umlNode = (UMLNode) node.getUserObject();
     setIcon(umlNode.getIcon());
+    if(umlNode instanceof PackageNode) 
+      setToolTipText((umlNode).getFullPath());
+    else
+      setToolTipText(null);
 
     return this;
   }
