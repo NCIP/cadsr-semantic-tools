@@ -100,6 +100,11 @@ public class CadsrPrivateApiModule implements CadsrModule
     for(String s : queryFields.keySet()) {
       Object field = queryFields.get(s);
 
+      if(s.equals("publicId")) {
+        if(field instanceof Long)
+          field = ((Long)field).toString();
+      }
+
       if(field instanceof String) {
         String sField = (String)field;
         field = sField.replace('*','%');
