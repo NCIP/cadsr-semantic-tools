@@ -464,9 +464,9 @@ public class UMLDefaultHandler
           newDec.setProperty(dec.getProperty());
           newDec.setObjectClass(childOc);
 
-          for(Definition def : dec.getDefinitions()) {
-            newDec.addDefinition(def);
-          }
+//           for(Definition def : dec.getDefinitions()) {
+//             newDec.addDefinition(def);
+//           }
           
           String propName = newDec.getProperty().getLongName();
           
@@ -482,9 +482,9 @@ public class UMLDefaultHandler
           newDe.setLongName(newDec.getLongName() + de.getValueDomain().getLongName());
 
           
-          for(Definition def : de.getDefinitions()) {
-            newDe.addDefinition(def);
-          }
+//           for(Definition def : de.getDefinitions()) {
+//             newDe.addDefinition(def);
+//           }
 
           AlternateName fullName = DomainObjectFactory.newAlternateName();
           fullName.setType(AlternateName.TYPE_FULL_NAME);
