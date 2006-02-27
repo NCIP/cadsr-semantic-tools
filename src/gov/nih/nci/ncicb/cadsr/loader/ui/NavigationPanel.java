@@ -19,7 +19,10 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.domain.ClassificationSchemeItem;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
+import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
+import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
@@ -53,6 +56,7 @@ public class NavigationPanel extends JPanel
   private List<ViewChangeListener> viewListeners = new ArrayList();
   private List<NavigationListener> navigationListeners = new ArrayList();
 
+  private ElementsLists elements = ElementsLists.getInstance();
 
   public NavigationPanel()
   {
@@ -102,6 +106,7 @@ public class NavigationPanel extends JPanel
     scrollPane = new JScrollPane(tree);
     this.add(scrollPane, BorderLayout.CENTER);
 
+    ToolTipManager.sharedInstance().registerComponent(tree);
     
     buildPopupMenu();
   }
@@ -171,8 +176,12 @@ public class NavigationPanel extends JPanel
   }
   public void mouseClicked(MouseEvent e) {
   }
+
+    
+    
   public void mouseEntered(MouseEvent e) {
   }
+  
   
   public void mouseReleased(MouseEvent e) {
     showPopup(e);
