@@ -121,7 +121,7 @@ public class CadsrPublicApiModule implements CadsrModule {
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement>
     findDataElement(Map<String, Object> queryFields) throws Exception {
     
-    gov.nih.nci.cadsr.domain.DataElement searchDE = new gov.nih.nci.cadsr.domain.impl.DataElementImpl();
+    gov.nih.nci.cadsr.domain.DataElement searchDE = new gov.nih.nci.cadsr.domain.DataElement();
     
     buildExample(searchDE, queryFields);
 
@@ -136,7 +136,9 @@ public class CadsrPublicApiModule implements CadsrModule {
       Object field = queryFields.get(s);
       if(s.equals("publicId")) {
         s = "publicID";
-        field = new Long((String)field);
+        if(field instanceof String)
+          field = new Long((String)field);
+//         field = ((Long)field).toString();
       }
       if(field instanceof String) {
         String sField = (String)field;
@@ -249,7 +251,7 @@ public class CadsrPublicApiModule implements CadsrModule {
   }
 
   public static void main(String[] args) {
-    CadsrModule testModule = new CadsrPublicApiModule("http://cabio-dev.nci.nih.gov/cacore30/server/HTTPServer");
+    CadsrModule testModule = new CadsrPublicApiModule("http://cabio-stage.nci.nih.gov/cacore30/server/HTTPServer");
     try {
 //       gov.nih.nci.ncicb.cadsr.domain.DataElement de = testModule.findDataElementByPublicId("2223838", 3f);
 //       if(de == null)

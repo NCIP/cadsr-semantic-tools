@@ -25,7 +25,7 @@ import java.util.HashMap;
 import gov.nih.nci.ncicb.cadsr.semconn.ReportHandler;
 import gov.nih.nci.ncicb.cadsr.semconn.ModelAnnotator;
 import gov.nih.nci.ncicb.cadsr.semconn.Configuration;
-import gov.nih.nci.codegen.core.util.FixEAXMI;
+import gov.nih.nci.ncicb.cadsr.semconn.FixEAXMI;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
