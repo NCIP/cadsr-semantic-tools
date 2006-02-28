@@ -85,7 +85,7 @@
         <include name="*.properties"/>
         <include name="jaas.config"/>
         <include name="beans.xml"/>
-        <include name="spring-datasources.xml"/>
+        <!--        <include name="spring-datasources.xml"/> -->
         <include name="ehcache.xml"/>
         <include name="datatype-mapping.xml"/>
         <include name="about.html"/>
@@ -95,6 +95,10 @@
         <include name="*.jpg"/>
         <include name="*.gif"/>
       </fileset>
+    </copy>
+    <copy file="${config.dir}/spring-datasources-${target.env}.xml"
+      tofile="${class.dir}/spring-datasources.xml"
+      >
     </copy>
   </target>
 
