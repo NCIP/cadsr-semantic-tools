@@ -79,7 +79,7 @@
   <bean name="publicCadsrModule"
     class="gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule" 
     singleton="true">
-    <property name="serviceURL"> <value>http://cabio.nci.nih.gov/cacore30/server/HTTPServer</value></property>
+    <property name="serviceURL"> <value></value></property>
   </bean>
 
   <bean name="privateCadsrModule"

@@ -85,7 +85,7 @@
       <fileset dir="${config.dir}">
         <include name="*.properties"/>
         <include name="jaas.config"/>
-        <include name="beans.xml"/>
+        <!--        <include name="beans.xml"/> -->
         <!--        <include name="spring-datasources.xml"/> -->
         <include name="ehcache.xml"/>
         <include name="datatype-mapping.xml"/>
@@ -101,6 +101,12 @@
       tofile="${class.dir}/spring-datasources.xml"
       >
     </copy>
+    <xslt
+      in="${config.dir}/beans.xml"
+      out="${class.dir}/beans.xml"
+      style="${config.dir}/beans-transform-${target.env}.xsl"
+      />
+
   </target>
 
   <target name="dist" depends="prepare">
