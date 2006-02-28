@@ -10,6 +10,7 @@
   <property name="images.dir" value="./images" />
   <property name="jnlp.dir" value="./jnlp" />
 
+  <property name="target.env" value="default"/>
 
   <path id="proj.class.path">
     <pathelement location="${class.dir}"/>
