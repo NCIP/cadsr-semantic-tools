@@ -88,7 +88,7 @@ public class UMLElementViewPanel extends JPanel
     
     JPanel newPanel = new JPanel();
     newPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); 
-    JLabel space = new JLabel("                              ");
+    JLabel space = new JLabel("      ");
     newPanel.add(space);
     newPanel.add(buttonPanel);
     
