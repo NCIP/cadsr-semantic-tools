@@ -31,6 +31,12 @@
   </taskdef>
 -->
 
+  <target name="sign" if="keystore">
+    <signjar alias="${alias}" storepass="${storepass}" keystore="${keystore}">
+      <fileset dir="${dist.dir}/lib" includes="*.jar"/>
+    </signjar>
+  </target>
+
   <target name="format" depends="compile">
     <jalopy fileformat="auto"
             history="file"
@@ -97,6 +103,7 @@
         <include name="*.gif"/>
       </fileset>
     </copy>
+
     <copy file="${config.dir}/spring-datasources-${target.env}.xml"
       tofile="${class.dir}/spring-datasources.xml"
       >
@@ -105,6 +112,7 @@
       propertyFile="deploy.properties">
       <replacefilter token="--Public API URL Here--" property="publicAPI.${target.env}"/>
     </replace>
+
   </target>
 
   <target name="dist" depends="prepare">
@@ -231,7 +239,6 @@
   <target name="test-ui" depends="prepare">
     <java classname="gov.nih.nci.ncicb.cadsr.loader.ui.${testClass}" classpathref="proj.class.path" 
       fork="yes"
-      jvm="${java}"
       maxmemory="512m"
       >
     </java>    
@@ -240,7 +247,6 @@
   <target name="test-class" depends="prepare">
     <java classname="gov.nih.nci.ncicb.cadsr.${testClass}" classpathref="proj.class.path" 
       fork="yes"
-      jvm="${java}"
       maxmemory="512m"
       >
     </java>    
