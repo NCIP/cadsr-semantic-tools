@@ -111,8 +111,15 @@ public class CadsrPrivateApiModule implements CadsrModule
       }
 
       try {
-        Method m = o.getClass().getMethod("set" + s.substring(0, 1).toUpperCase() + s.substring(1), field.getClass());
-        m.invoke(o, field);
+        if(s.startsWith("context.")) {
+          Context context = DomainObjectFactory.newContext();
+          context.setName((String)field);
+          Method m = o.getClass().getMethod("setContext", Context.class);
+          m.invoke(o, context);
+        } else {
+          Method m = o.getClass().getMethod("set" + StringUtil.upperFirst(s), field.getClass());
+          m.invoke(o, field); 
+        }
       } catch(Exception e) {
         e.printStackTrace();
       } // end of try-catch
