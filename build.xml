@@ -31,6 +31,10 @@
   </taskdef>
 -->
 
+  <target name="nci-deploy" depends="dist, sign">
+    
+  </target>
+
   <target name="sign" if="keystore">
     <signjar alias="${alias}" storepass="${storepass}" keystore="${keystore}">
       <fileset dir="${dist.dir}/lib" includes="*.jar"/>
