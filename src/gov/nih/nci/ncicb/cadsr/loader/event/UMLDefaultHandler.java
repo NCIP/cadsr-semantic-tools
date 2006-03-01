@@ -479,7 +479,7 @@ public class UMLDefaultHandler
           DataElement newDe = DomainObjectFactory.newDataElement();
           newDe.setDataElementConcept(newDec);
           newDe.setValueDomain(de.getValueDomain());
-          newDe.setLongName(newDec.getLongName() + de.getValueDomain().getLongName());
+          newDe.setLongName(newDec.getLongName() + " " + de.getValueDomain().getLongName());
 
           
 //           for(Definition def : de.getDefinitions()) {

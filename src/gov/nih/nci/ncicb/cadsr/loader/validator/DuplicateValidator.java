@@ -23,7 +23,7 @@ public class DuplicateValidator implements Validator
   }
   
   public ValidationItems validate() {
-    List<ObjectClass> ocs = (List<ObjectClass>)elements.getElements(DomainObjectFactory.newObjectClass().getClass());
+    List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
     Map<String, ObjectClass> listed = new HashMap<String, ObjectClass>();
     Map<String, ObjectClass> prefNameList = new HashMap<String, ObjectClass>();
     Map<String, ObjectClass> deListed = new HashMap<String, ObjectClass>();
@@ -50,7 +50,7 @@ public class DuplicateValidator implements Validator
     }
     
     
-    List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());
+    List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
     if(des != null && ocs != null) {
       for(ObjectClass oc : ocs) {
         Map<String, DataElement> deList = new HashMap<String, DataElement>();
@@ -59,7 +59,7 @@ public class DuplicateValidator implements Validator
             if(deList.containsKey(de.getDataElementConcept().getProperty().getPreferredName()))
               items.addItem(new ValidationError
                             (PropertyAccessor.getProperty
-                              ("de.same.mapping", de.getLongName(),
+                             ("de.same.mapping", de.getDataElementConcept().getLongName(),
                                 (deList.get(de.getDataElementConcept().getProperty().getPreferredName())).getDataElementConcept().getLongName()),de));
             else
               deList.put(de.getDataElementConcept().getProperty().getPreferredName(), de);
