@@ -61,8 +61,9 @@ public class DuplicateValidator implements Validator
                             (PropertyAccessor.getProperty
                              ("de.same.mapping", de.getDataElementConcept().getLongName(),
                                 (deList.get(de.getDataElementConcept().getProperty().getPreferredName())).getDataElementConcept().getLongName()),de));
-            else
+            else if (!StringUtil.isEmpty(de.getDataElementConcept().getProperty().getPreferredName())){
               deList.put(de.getDataElementConcept().getProperty().getPreferredName(), de);
+            }
         }
       }
     }

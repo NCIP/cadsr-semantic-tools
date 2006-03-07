@@ -59,11 +59,11 @@ public class CadsrPublicApiModule implements CadsrModule {
   public Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme>
     findClassificationScheme(Map<String, Object> queryFields, List<String> eager) throws Exception {
 
-    DetachedCriteria criteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.ClassificationScheme.class, "cs");
+    gov.nih.nci.cadsr.domain.ClassificationScheme searchCS = new gov.nih.nci.cadsr.domain.ClassificationScheme();
 
-    buildExample(criteria, queryFields);
+    buildExample(searchCS, queryFields);
 
-    List listResult = new ArrayList(new HashSet(service.query(criteria, gov.nih.nci.cadsr.domain.ClassificationScheme.class.getName())));
+    List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.ClassificationScheme.class.getName(), searchCS)));
 
     return CadsrTransformer.csListPublicToPrivate(listResult);
   }
@@ -71,11 +71,11 @@ public class CadsrPublicApiModule implements CadsrModule {
   public Collection<gov.nih.nci.ncicb.cadsr.domain.ObjectClass>
     findObjectClass(Map<String, Object> queryFields) throws Exception {
 
-    DetachedCriteria criteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.ObjectClass.class, "oc");
+    gov.nih.nci.cadsr.domain.ObjectClass searchOC = new gov.nih.nci.cadsr.domain.ObjectClass();
 
-    prepareCriteria(criteria, queryFields, null);
+    buildExample(searchOC, queryFields);
 
-    List listResult = new ArrayList(new HashSet(service.query(criteria, gov.nih.nci.cadsr.domain.ObjectClass.class.getName())));
+    List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.ObjectClass.class.getName(), searchOC)));
 
     return CadsrTransformer.ocListPublicToPrivate(listResult);
   }
@@ -95,11 +95,12 @@ public class CadsrPublicApiModule implements CadsrModule {
   public Collection<gov.nih.nci.ncicb.cadsr.domain.Property>
     findProperty(Map<String, Object> queryFields) throws Exception {
 
-    DetachedCriteria criteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.Property.class, "prop");
 
-    prepareCriteria(criteria, queryFields, null);
+    gov.nih.nci.cadsr.domain.Property searchProp = new gov.nih.nci.cadsr.domain.Property();
 
-    List listResult = new ArrayList(new HashSet(service.query(criteria, gov.nih.nci.cadsr.domain.Property.class.getName())));
+    buildExample(searchProp, queryFields);
+
+    List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.Property.class.getName(), searchProp)));
 
     return CadsrTransformer.propListPublicToPrivate(listResult);
   }
@@ -270,16 +271,17 @@ public class CadsrPublicApiModule implements CadsrModule {
       Map<String, Object> queryFields = new HashMap<String, Object>();
 //       queryFields.put("longName", "CAP Cancer Checklists");
 //       queryFields.put("version", new Float(1));
-      queryFields.put(CadsrModule.LONG_NAME, "java.lang.Integer");
-      queryFields.put("context.name", "caCORE");
+      queryFields.put(CadsrModule.LONG_NAME, "Transcription Annotation Prioritization and Screening System");
+      queryFields.put(CadsrModule.VERSION, 1f);
+//       queryFields.put("context.name", "caCORE");
 //       queryFields.put("context.name", "caCORE");
 //       queryFields.put("longName", "Person Name Prefix *");
     
 
-      Collection<gov.nih.nci.ncicb.cadsr.domain.ValueDomain> list = testModule.findValueDomain(queryFields);
+      Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme> list = testModule.findClassificationScheme(queryFields);
       
       System.out.println(list.size());
-      for(gov.nih.nci.ncicb.cadsr.domain.ValueDomain o : list) {
+      for(gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme o : list) {
         System.out.println(o.getPreferredName());
         System.out.println(o.getPublicId());
       }
