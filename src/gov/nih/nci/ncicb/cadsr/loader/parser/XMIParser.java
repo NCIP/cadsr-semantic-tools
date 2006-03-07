@@ -555,7 +555,9 @@ public class XMIParser implements Parser {
         }
 
         Classifier classif = end.getType();
-        if(!isInPackageFilter(getPackageName(classif))) {
+        String pName = getPackageName(classif);
+
+        if(StringUtil.isEmpty(pName) || !isInPackageFilter(pName)) {
           logger.info(PropertyAccessor.getProperty("skip.association", classif.getNamespace().getName()));
           logger.debug("classif name: " + classif.getName());
           return;
@@ -597,7 +599,9 @@ public class XMIParser implements Parser {
         }
 
         Classifier classif = end.getType();
-        if(!isInPackageFilter(getPackageName(classif))) {
+        String pName = getPackageName(classif);
+
+        if(StringUtil.isEmpty(pName) || !isInPackageFilter(getPackageName(classif))) {
           logger.info(PropertyAccessor.getProperty("skip.association", classif.getName()));
           logger.debug("classif name: " + classif.getNamespace().getName());
           return;
