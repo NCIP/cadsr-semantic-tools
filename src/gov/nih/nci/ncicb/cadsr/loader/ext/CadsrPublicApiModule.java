@@ -262,29 +262,53 @@ public class CadsrPublicApiModule implements CadsrModule {
   public static void main(String[] args) {
     CadsrModule testModule = new CadsrPublicApiModule("http://cabio-stage.nci.nih.gov/cacore31/http/remoteService");
     try {
-//       gov.nih.nci.ncicb.cadsr.domain.DataElement de = testModule.findDataElementByPublicId("2223838", 3f);
-//       if(de == null)
-//         System.out.println("no result found");
-//       else
-//         System.out.println("result : " + de.getLongName());
-      
-      Map<String, Object> queryFields = new HashMap<String, Object>();
-//       queryFields.put("longName", "CAP Cancer Checklists");
-//       queryFields.put("version", new Float(1));
-      queryFields.put(CadsrModule.LONG_NAME, "Transcription Annotation Prioritization and Screening System");
-      queryFields.put(CadsrModule.VERSION, 1f);
-//       queryFields.put("context.name", "caCORE");
-//       queryFields.put("context.name", "caCORE");
-//       queryFields.put("longName", "Person Name Prefix *");
-    
 
-      Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme> list = testModule.findClassificationScheme(queryFields);
-      
-      System.out.println(list.size());
-      for(gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme o : list) {
-        System.out.println(o.getPreferredName());
-        System.out.println(o.getPublicId());
+      System.out.println("Test Find CS");
+      {
+        Map<String, Object> queryFields = new HashMap<String, Object>();
+        queryFields.put(CadsrModule.LONG_NAME, "Transcription Annotation Prioritization and Screening System");
+        queryFields.put(CadsrModule.VERSION, 1f);
+
+        Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme> list = testModule.findClassificationScheme(queryFields);
+        
+        System.out.println(list.size());
+        for(gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme o : list) {
+          System.out.println(o.getPreferredName());
+          System.out.println(o.getPublicId());
+        }
+        
       }
+
+      System.out.println("Test Find VD");
+      {
+        Map<String, Object> queryFields = new HashMap<String, Object>();
+        queryFields.put(CadsrModule.LONG_NAME, "java.lang.*");
+
+        Collection<gov.nih.nci.ncicb.cadsr.domain.ValueDomain> list = testModule.findValueDomain(queryFields);
+        
+        System.out.println(list.size());
+        for(gov.nih.nci.ncicb.cadsr.domain.ValueDomain o : list) {
+          System.out.println(o.getPreferredName());
+          System.out.println(o.getPublicId());
+        }
+        
+      }
+
+      System.out.println("Test Find DE");
+      {
+        Map<String, Object> queryFields = new HashMap<String, Object>();
+        queryFields.put(CadsrModule.LONG_NAME, "Patient*");
+
+        Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> list = testModule.findDataElement(queryFields);
+        
+        System.out.println(list.size());
+        for(gov.nih.nci.ncicb.cadsr.domain.DataElement o : list) {
+          System.out.println(o.getPreferredName());
+          System.out.println(o.getPublicId());
+        }
+        
+      }
+
 
     }
     catch (Exception e) {
