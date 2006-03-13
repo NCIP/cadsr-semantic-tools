@@ -30,13 +30,6 @@ public class CadsrPublicApiModule implements CadsrModule {
   private Logger logger = Logger.getLogger(CadsrPrivateApiModule.class.getName());
 
 
-//   public static List<gov.nih.nci.ncicb.cadsr.domain.DataElement>
-//     findDataElements(gov.nih.nci.ncicb.cadsr.domain.DataElement de) {
-
-//     return null;
-
-//   }
-
   public CadsrPublicApiModule() {
 
   }
@@ -165,39 +158,6 @@ public class CadsrPublicApiModule implements CadsrModule {
   }
 
  
-//   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement>
-//     findDataElement(Map<String, Object> queryFields) throws Exception {
-
-//     DetachedCriteria criteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.impl.DataElementImpl.class, "de");
-
-//     prepareCriteria(criteria, queryFields, null);
-
-//     System.out.println("run");
-    
-// //     List listResult = new ArrayList(new HashSet(service.query(criteria, gov.nih.nci.cadsr.domain.impl.DataElementImpl.class.getName())));
-//     List listResult = service.query(criteria, gov.nih.nci.cadsr.domain.impl.DataElementImpl.class.getName());
-                                    
-//   System.out.println("transform");
-
-//     return CadsrTransformer.deListPublicToPrivate(listResult);
-//   }
-
-//   public gov.nih.nci.ncicb.cadsr.domain.DataElement 
-//     findDataElementByPublicId(String id, Float version) throws Exception {
-    
-//     DetachedCriteria deCriteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.impl.DataElementImpl.class, "de");
-    
-//     deCriteria.add(Expression.eq("publicID", new Long(id)));
-//     deCriteria.add(Expression.eq("version", version));
-    
-//     List listResult = service.query(deCriteria, gov.nih.nci.cadsr.domain.impl.DataElementImpl.class.getName());
-    
-//     if(listResult.size() > 0) {
-//       gov.nih.nci.cadsr.domain.DataElement qResult = (gov.nih.nci.cadsr.domain.DataElement)listResult.get(0);
-//       return CadsrTransformer.dePublicToPrivate(qResult);
-//     } else
-//       return null;
-//   }
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
     findDEByClassifiedAltName(gov.nih.nci.ncicb.cadsr.domain.AlternateName altName, gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem csCsi) throws Exception {
@@ -224,7 +184,6 @@ public class CadsrPublicApiModule implements CadsrModule {
     List listResult = service.query(deCriteria, gov.nih.nci.cadsr.domain.DataElement.class.getName());
     
     if(listResult.size() > 0) {
-//       gov.nih.nci.cadsr.domain.DataElement qResult = (gov.nih.nci.cadsr.domain.DataElement)listResult.get(0);
       return CadsrTransformer.deListPublicToPrivate(listResult);
     } else
       return new ArrayList();
