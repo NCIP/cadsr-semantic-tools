@@ -82,7 +82,7 @@ public class ModeSelectionPanel extends JPanel {
     
     group = new ButtonGroup();
 
-    fixEaOption = new JRadioButton("Run the 'Fix-EA' Task");
+    fixEaOption = new JRadioButton("Run the 'Fix-XMI' Task");
     fixEaOption.setActionCommand(RunMode.FixEa.toString());
 
     roundtripOption = new JRadioButton("Perform XMI Roundtrip");
