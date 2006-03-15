@@ -200,7 +200,7 @@ public class DEPanel extends JPanel
     tempDE = DomainObjectFactory.newDataElement();
 
     ValueDomain vd = DomainObjectFactory.newValueDomain();
-    vd.setLongName("java.lang.String");
+    vd.setLongName("");
     tempDE.setValueDomain(vd);
 
     deLongNameValueLabel.setText("");
