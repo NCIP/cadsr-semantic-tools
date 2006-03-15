@@ -123,12 +123,14 @@ public class DEPanel extends JPanel
                 return;
               }
             }
-              updateFields();
+            updateFields();
                            
-              firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
-              firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
+            firePropertyChangeEvent(
+                                    new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
+
+//             firePropertyChangeEvent(
+//                                     new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
+
             }
           }
           
@@ -285,7 +287,7 @@ public class DEPanel extends JPanel
         }
      }
 
-    firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, true));
+    firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
 
     firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false));
     
