@@ -1,6 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.dao.DataElementDAO;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
+import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
@@ -167,7 +168,7 @@ public class DEPanel extends JPanel
       de = (DataElement)node.getUserObject();
       
       if(de.getPublicId() != null) {
-        deLongNameValueLabel.setText(de.getLongName());
+        deLongNameValueLabel.setText("<html><body>" + de.getLongName() + "</body></html>");
         deIdValueLabel.setText(de.getPublicId() + " v" + de.getVersion());
         deContextNameValueLabel.setText(de.getContext().getName());
         vdLongNameValueLabel.setText(de.getValueDomain().getLongName());
@@ -197,6 +198,10 @@ public class DEPanel extends JPanel
 
   private void clear() {
     tempDE = DomainObjectFactory.newDataElement();
+
+    ValueDomain vd = DomainObjectFactory.newValueDomain();
+    vd.setLongName("java.lang.String");
+    tempDE.setValueDomain(vd);
 
     deLongNameValueLabel.setText("");
     deIdValueLabel.setText("");
