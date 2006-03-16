@@ -18,12 +18,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JOptionPane;
+import javax.swing.*;
+
 
 import java.util.List;
 import java.util.ArrayList;
@@ -42,6 +38,9 @@ public class DEPanel extends JPanel
     deContextNameValueLabel = new JLabel(),
     vdLongNameTitleLabel = new JLabel("Value Domain Long Name"), vdLongNameValueLabel = new JLabel();
   
+  private JScrollPane scrollPane;
+
+
   private DataElement tempDE, de;
   private UMLNode node;
 
@@ -70,6 +69,8 @@ public class DEPanel extends JPanel
     
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
+
+    scrollPane = new JScrollPane(mainPanel);
     
     insertInBag(mainPanel, clearButton, 0, 5, 2 ,1);
     insertInBag(mainPanel, searchDeButton, 1, 5);
@@ -91,7 +92,7 @@ public class DEPanel extends JPanel
     JLabel title = new JLabel("Map to CDE");
     titlePanel.add(title);
 
-    this.add(mainPanel);
+    this.add(scrollPane);
     this.add(titlePanel, BorderLayout.NORTH);
     this.setSize(300, 300);
     
