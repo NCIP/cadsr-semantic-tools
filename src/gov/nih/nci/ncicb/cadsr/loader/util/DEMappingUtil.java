@@ -50,6 +50,9 @@ public class DEMappingUtil {
         for(DataElement de : des) {
           if(de.getDataElementConcept().getObjectClass() != oldDe.getDataElementConcept().getObjectClass())
             continue;
+          
+          if(StringUtil.isEmpty(de.getPublicId()) || de.getVersion() == null )
+            continue;
 
           String ocId = de.getDataElementConcept().getObjectClass().getPublicId();
           if(oldDe != de && ocId != null && !ocId.equals(newDe.getDataElementConcept().getObjectClass().getPublicId())) {
