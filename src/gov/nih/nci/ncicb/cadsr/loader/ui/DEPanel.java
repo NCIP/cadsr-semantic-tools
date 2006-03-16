@@ -142,16 +142,14 @@ public class DEPanel extends JPanel
         public void actionPerformed(ActionEvent event) {
           JButton button = (JButton)event.getSource();
           if(button.getActionCommand().equals(CLEAR)) {
-            if(de.getPublicId() != null) {
-              clear();
+            clear();
+            
+            firePropertyChangeEvent
+              (new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
+            
 
-              firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
-
-
-              fireElementChangeEvent(new ElementChangeEvent(node));
+//               fireElementChangeEvent(new ElementChangeEvent(node));
                   
-            }
           }
         }
         });
