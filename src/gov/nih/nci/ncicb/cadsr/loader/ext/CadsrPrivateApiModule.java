@@ -19,14 +19,18 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   public Collection<ClassificationScheme>
     findClassificationScheme(Map<String, Object> queryFields) throws Exception  {
-    return null;
+    return findClassificationScheme(queryFields, null);
   }
 
 
   public Collection<ClassificationScheme>
     findClassificationScheme(Map<String, Object> queryFields, List<String> eager) throws Exception  {
 
-    return null;
+    ClassificationScheme cs = DomainObjectFactory.newClassificationScheme();
+    buildExample(cs, queryFields);
+
+    return DAOAccessor.getClassificationSchemeDAO().find(cs);
+    
   }
 
 
