@@ -343,6 +343,14 @@ public class XMIParser implements Parser {
 
       if (g.getParent() instanceof UmlClass) {
         UmlClass p = (UmlClass) g.getParent();
+
+        // Check if the parent is not explicitely excluded.
+        String ppName = getPackageName(p);
+        if(StringUtil.isEmpty(ppName) || !isInPackageFilter(ppName)) {
+          logger.info(PropertyAccessor.getProperty("skip.inheritance", ppName + "." + p.getName(), getPackageName(clazz) + "." + clazz.getName()));
+          continue;
+        }
+
         NewGeneralizationEvent gEvent = new NewGeneralizationEvent();
         gEvent.setParentClassName(
           getPackageName(p) + "." + p.getName());
