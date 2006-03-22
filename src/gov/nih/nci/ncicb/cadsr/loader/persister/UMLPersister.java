@@ -95,15 +95,28 @@ public class UMLPersister implements Persister {
 	throw new PersisterException("Value Domain " +
 				     vd.getLongName() + " does not exist.");
       } else {
-        String excludeContext = PropertyAccessor.getProperty("vd.exclude.context");
-        
+        String excludeContext = PropertyAccessor.getProperty("vd.exclude.contexts");
+        String preferredContext = PropertyAccessor.getProperty("vd.preferred.contexts");
+
+        // see if we find a VD in our preferred context
         for(ValueDomain v : l) {
-          if(!v.getContext().getName().equals(excludeContext)) {
+          if(v.getContext().getName().equals(preferredContext)) {
             result = v;
             // store to cache
             valueDomains.put(result.getLongName(), result);
           }
         }
+        
+        // no VD in our preferred context, let's find one that's not in the list of banned contexts
+        if(result == null)
+          for(ValueDomain v : l) {
+            if(!v.getContext().getName().equals(excludeContext)) {
+              result = v;
+              // store to cache
+              valueDomains.put(result.getLongName(), result);
+            }
+          }
+        
         if(result == null)
           throw new PersisterException
             ("Value Domain " +
@@ -366,4 +379,26 @@ public class UMLPersister implements Persister {
     classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
     conceptDAO = DAOAccessor.getConceptDAO();
   }
+
+
+  public static void main(String[] args) {
+    
+    UMLPersister pers = new UMLPersister();
+
+    valueDomainDAO = DAOAccessor.getValueDomainDAO();
+
+    ValueDomain vd = DomainObjectFactory.newValueDomain();;
+    vd.setLongName("java.util.Date");
+
+    try {
+      vd = pers.lookupValueDomain(vd);
+    } catch (PersisterException e){
+      e.printStackTrace();
+    } // end of try-catch
+
+    System.out.println("publicID: " + vd.getPublicId());
+    System.out.println("context: " + vd.getContext().getName());
+
+  }
+
 }
