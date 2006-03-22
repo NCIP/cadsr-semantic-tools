@@ -19,14 +19,18 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   public Collection<ClassificationScheme>
     findClassificationScheme(Map<String, Object> queryFields) throws Exception  {
-    return null;
+    return findClassificationScheme(queryFields, null);
   }
 
 
   public Collection<ClassificationScheme>
     findClassificationScheme(Map<String, Object> queryFields, List<String> eager) throws Exception  {
 
-    return null;
+    ClassificationScheme cs = DomainObjectFactory.newClassificationScheme();
+    buildExample(cs, queryFields);
+
+    return DAOAccessor.getClassificationSchemeDAO().find(cs);
+    
   }
 
 
@@ -111,8 +115,15 @@ public class CadsrPrivateApiModule implements CadsrModule
       }
 
       try {
-        Method m = o.getClass().getMethod("set" + s.substring(0, 1).toUpperCase() + s.substring(1), field.getClass());
-        m.invoke(o, field);
+        if(s.startsWith("context.")) {
+          Context context = DomainObjectFactory.newContext();
+          context.setName((String)field);
+          Method m = o.getClass().getMethod("setContext", Context.class);
+          m.invoke(o, context);
+        } else {
+          Method m = o.getClass().getMethod("set" + StringUtil.upperFirst(s), field.getClass());
+          m.invoke(o, field); 
+        }
       } catch(Exception e) {
         e.printStackTrace();
       } // end of try-catch

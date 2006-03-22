@@ -82,7 +82,7 @@ public class ModeSelectionPanel extends JPanel {
     
     group = new ButtonGroup();
 
-    fixEaOption = new JRadioButton("Run the 'Fix-EA' Task");
+    fixEaOption = new JRadioButton("Run the 'Fix-XMI' Task");
     fixEaOption.setActionCommand(RunMode.FixEa.toString());
 
     roundtripOption = new JRadioButton("Perform XMI Roundtrip");
@@ -135,7 +135,19 @@ public class ModeSelectionPanel extends JPanel {
     this.add(infoPanel, BorderLayout.NORTH);
     this.add(buttonPanel, BorderLayout.CENTER);
 
-    this.add(privateApiCb, BorderLayout.SOUTH);
+
+    Font font = new Font("Serif", Font.PLAIN, 11);
+
+    privateApiCb.setFont(font);
+    JLabel privateApiLabel = new JLabel("<html><body>The private API is offered as an alternative to the caCORE public API.<br> It requires that the user be inside the NCI network or use VPN.</body></html>");
+    privateApiLabel.setFont(font);
+
+    JPanel privateApiPanel = new JPanel();
+    privateApiPanel.setLayout(new FlowLayout());
+    privateApiPanel.add(privateApiCb);
+    privateApiPanel.add(privateApiLabel);
+
+    this.add(privateApiPanel, BorderLayout.SOUTH);
 
   }
 

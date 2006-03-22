@@ -26,8 +26,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.persister.PersisterException;
 import gov.nih.nci.ncicb.cadsr.loader.persister.LogUtil;
 
-import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -149,7 +148,7 @@ public class UMLDefaults {
     logger.info(PropertyAccessor.getProperty("listOfPackages"));
     String filt = loaderDefault.getPackageFilter();
     packageFilterString = filt;
-    if(filt != null) {
+    if(!StringUtil.isEmpty(filt)) {
       String[] pkgs = filt.split(",");
       for(int i=0; i<pkgs.length; i++) {
         String s = pkgs[i].trim();

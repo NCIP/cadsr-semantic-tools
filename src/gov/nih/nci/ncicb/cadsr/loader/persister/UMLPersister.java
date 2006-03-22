@@ -94,11 +94,21 @@ public class UMLPersister implements Persister {
       if (l.size() == 0) {
 	throw new PersisterException("Value Domain " +
 				     vd.getLongName() + " does not exist.");
+      } else {
+        String excludeContext = PropertyAccessor.getProperty("vd.exclude.context");
+        
+        for(ValueDomain v : l) {
+          if(!v.getContext().getName().equals(excludeContext)) {
+            result = v;
+            // store to cache
+            valueDomains.put(result.getLongName(), result);
+          }
+        }
+        if(result == null)
+          throw new PersisterException
+            ("Value Domain " +
+             vd.getLongName() + " does not exist.");
       }
-
-      result = l.get(0);
-      // store to cache
-      valueDomains.put(result.getLongName(), result);
     }
 
     return result;

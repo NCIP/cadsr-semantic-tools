@@ -50,6 +50,9 @@ public class DEMappingUtil {
         for(DataElement de : des) {
           if(de.getDataElementConcept().getObjectClass() != oldDe.getDataElementConcept().getObjectClass())
             continue;
+          
+          if(StringUtil.isEmpty(de.getPublicId()) || de.getVersion() == null )
+            continue;
 
           String ocId = de.getDataElementConcept().getObjectClass().getPublicId();
           if(oldDe != de && ocId != null && !ocId.equals(newDe.getDataElementConcept().getObjectClass().getPublicId())) {
@@ -66,7 +69,11 @@ public class DEMappingUtil {
   public static boolean checkDuplicate(DataElement currentDe, DataElement newDataElement) 
   {
     ElementsLists elements = ElementsLists.getInstance();
-    List<ObjectClass> ocs = (List<ObjectClass>)elements.getElements(DomainObjectFactory.newObjectClass().getClass());
+
+
+    // 1. Verify that this DE will not implicitely map the OC to one
+    // that is already used in the model.
+    List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
     if(ocs != null) {
       for(ObjectClass oc : ocs) {  
         if(oc.getPublicId() != null) {
@@ -77,7 +84,14 @@ public class DEMappingUtil {
       }
     }
 
-//    List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());
+    // 2. Check that we don't already have this exact DE public ID
+    List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
+    for(DataElement de : des) {
+      if(de != currentDe) {
+        if(!StringUtil.isEmpty(de.getPublicId()) && de.getPublicId().equals(newDataElement.getPublicId()))
+          return false;
+      }
+    }
 //    if(des != null && ocs != null) {
 //      for(ObjectClass oc : ocs) 
 ////        Map<String, DataElement> deList = new HashMap<String, DataElement>();

@@ -128,6 +128,7 @@ public class PropertyPersister extends UMLPersister {
 
         // This object still reference in DEC, update long_name to real long name
         prop.setLongName(newProp.getLongName());
+        prop.setPreferredName(newProp.getPreferredName());
       }
     }
 

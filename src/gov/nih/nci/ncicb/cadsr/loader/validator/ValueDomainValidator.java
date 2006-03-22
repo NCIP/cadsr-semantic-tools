@@ -27,6 +27,7 @@ import gov.nih.nci.ncicb.cadsr.dao.ValueDomainDAO;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
@@ -152,11 +153,19 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
         }
 
 
-        ValueDomainDAO vdDAO = DAOAccessor.getValueDomainDAO();
-        List<ValueDomain> result =  vdDAO.find(newVd);
-        if(result.size() > 0) {
-          items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
-        }
+        Map<String, Object> queryFields = 
+          new HashMap<String, Object>();
+        queryFields.put(CadsrModule.LONG_NAME, vd.getLongName());
+        queryFields.put("context.name", UMLDefaults.getInstance().getContext().getName());
+
+        try {
+          Collection<ValueDomain> result =  cadsrModule.findValueDomain(queryFields);
+          if(result.size() > 0) {
+            items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
+          }
+        } catch (Exception e){
+          logger.error(e);
+        } // end of try-catch
       }    
     
     List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());

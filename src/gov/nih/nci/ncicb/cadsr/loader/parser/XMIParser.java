@@ -343,6 +343,14 @@ public class XMIParser implements Parser {
 
       if (g.getParent() instanceof UmlClass) {
         UmlClass p = (UmlClass) g.getParent();
+
+        // Check if the parent is not explicitely excluded.
+        String ppName = getPackageName(p);
+        if(StringUtil.isEmpty(ppName) || !isInPackageFilter(ppName)) {
+          logger.info(PropertyAccessor.getProperty("skip.inheritance", ppName + "." + p.getName(), getPackageName(clazz) + "." + clazz.getName()));
+          continue;
+        }
+
         NewGeneralizationEvent gEvent = new NewGeneralizationEvent();
         gEvent.setParentClassName(
           getPackageName(p) + "." + p.getName());
@@ -555,7 +563,9 @@ public class XMIParser implements Parser {
         }
 
         Classifier classif = end.getType();
-        if(!isInPackageFilter(getPackageName(classif))) {
+        String pName = getPackageName(classif);
+
+        if(StringUtil.isEmpty(pName) || !isInPackageFilter(pName)) {
           logger.info(PropertyAccessor.getProperty("skip.association", classif.getNamespace().getName()));
           logger.debug("classif name: " + classif.getName());
           return;
@@ -597,7 +607,9 @@ public class XMIParser implements Parser {
         }
 
         Classifier classif = end.getType();
-        if(!isInPackageFilter(getPackageName(classif))) {
+        String pName = getPackageName(classif);
+
+        if(StringUtil.isEmpty(pName) || !isInPackageFilter(getPackageName(classif))) {
           logger.info(PropertyAccessor.getProperty("skip.association", classif.getName()));
           logger.debug("classif name: " + classif.getNamespace().getName());
           return;
