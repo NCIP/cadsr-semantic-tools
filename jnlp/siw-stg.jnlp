@@ -7,8 +7,8 @@
   >
   
   <information>
-    <title>Semantic Integrator Workbench</title>
-    <description>The Workbench streamlines the process of annotating Domain Model with Evs Concepts, then loading those models to caDSR</description>
+    <title>Semantic Integration Workbench</title>
+    <description>The SIW streamlines the process of annotating Domain Model with Evs Concepts, then loading those models to caDSR</description>
     <offline-allowed/>
     <vendor>NCI</vendor>
     <icon href="http://cadsrsiw-stage.nci.nih.gov/SIW-logo.jpg"/>
@@ -17,7 +17,7 @@
     <all-permissions/>
   </security>
   <resources>
-    <j2se version="1.5+"/>
+    <j2se version="1.5+" max-heap-size="512m"/>
     <jar href="lib/uml-loader.jar" main="true"/>
     <jar href="lib/aopalliance.jar"/>
     <jar href="lib/antlr-2.7.5H3.jar"/>
