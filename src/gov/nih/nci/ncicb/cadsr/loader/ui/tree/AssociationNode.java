@@ -43,4 +43,12 @@ public class AssociationNode extends AbstractUMLNode {
 
   }
 
+  public boolean equals(Object o) 
+  {
+    if(o instanceof AssociationNode) {
+      AssociationNode tempNode = (AssociationNode)o;
+      return tempNode.getUserObject() == userObject;
+    }
+    return false;
+  }
 }
