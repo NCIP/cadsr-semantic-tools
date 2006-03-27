@@ -48,6 +48,7 @@ public class UMLElementViewPanel extends JPanel
   private JButton previousButton, nextButton;
   private JCheckBox reviewButton;
   private JLabel conceptLabel = new JLabel();
+  private JLabel nameLabel = new JLabel();
 
   private List<ReviewListener> reviewListeners 
     = new ArrayList<ReviewListener>();
@@ -176,11 +177,16 @@ public class UMLElementViewPanel extends JPanel
     prefs.addUserPreferencesListener(this);
     this.setLayout(new BorderLayout());
     
-    JPanel summaryPanel = new JPanel();
+    JPanel summaryPanel = new JPanel(new GridBagLayout());
     JLabel summaryTitle = new JLabel("UML Concept Code Summary: ");
- 
-    summaryPanel.add(summaryTitle);
-    summaryPanel.add(conceptLabel);
+    
+    JLabel summaryNameTitle = new JLabel("UML Concept Name Summary: ");
+    
+    insertInBag(summaryPanel, summaryTitle, 0, 0);
+    insertInBag(summaryPanel, conceptLabel, 1, 0);
+    insertInBag(summaryPanel, summaryNameTitle, 0, 1);
+    insertInBag(summaryPanel, nameLabel, 1, 1);
+
     this.add(summaryPanel,BorderLayout.NORTH); 
     
     initViewPanel();
@@ -198,11 +204,11 @@ public class UMLElementViewPanel extends JPanel
 
     if(prefs.getUmlDescriptionOrder().equals("first"))
       insertInBag(gridPanel, createDescriptionPanel(), 0, 0);
-          
+    
     for(int i = 0; i<concepts.length; i++) {
       conceptUIs[i] = new ConceptUI(concepts[i]);
 
-      String title = i == 0?"Primary Concept":"Qualifier Concept" +" #" + i;
+      String title = i == 0?"Primary Concept":"Qualifier Concept" +" #" + (i);
 
       conceptPanels[i] = new JPanel();
       conceptPanels[i].setBorder
@@ -238,7 +244,7 @@ public class UMLElementViewPanel extends JPanel
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
       conceptPanels[i].add(arrowPanel, BorderLayout.EAST);
 
-      insertInBag(gridPanel, conceptPanels[i], 0, i+1);
+      insertInBag(gridPanel, conceptPanels[i], 0, conceptPanels.length - i);
 
       conceptUIs[i].code.addKeyListener(this);
       conceptUIs[i].name.addKeyListener(this);
@@ -247,11 +253,11 @@ public class UMLElementViewPanel extends JPanel
 
       final int index = i;
       if(index == 0)
-        upButton.setVisible(false);
-      if(index == concepts.length-1)
         downButton.setVisible(false);
+      if(index == concepts.length-1)
+        upButton.setVisible(false);
       
-      upButton.addActionListener(new ActionListener() {
+      downButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           Concept temp = concepts[index-1];
           concepts[index-1] = concepts[index];
@@ -266,7 +272,7 @@ public class UMLElementViewPanel extends JPanel
         }
         });
       
-      downButton.addActionListener(new ActionListener() {
+      upButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           Concept temp = concepts[index];
           concepts[index] = concepts[index+1];
@@ -315,7 +321,7 @@ public class UMLElementViewPanel extends JPanel
       
     }
     
-    updateConceptLabel();
+    updateHeaderLabels();
     
     if(prefs.getUmlDescriptionOrder().equals("last"))
       insertInBag(gridPanel, createDescriptionPanel(), 0, concepts.length + 1); 
@@ -324,20 +330,33 @@ public class UMLElementViewPanel extends JPanel
     
   }
 
-  private void updateConceptLabel()
+  private void updateHeaderLabels()
   {
     String s = "";
-  	for(int i = 0; i < concepts.length; i++) {
-  	  s = s + " " + conceptUIs[i].code.getText(); 
-  	}
+    for(int i = 0; i < concepts.length; i++) {
+      s = conceptUIs[i].code.getText() + " " + s; 
+    }
     conceptLabel.setText(s);
+    
+    s = "";
+    for(int i = 0; i < concepts.length; i++) {
+      s = conceptUIs[i].name.getText() + " " + s; 
+    }
+    nameLabel.setText(s);
   }
-
 
   private JPanel createDescriptionPanel() {
     JPanel umlPanel = new JPanel();
+
+
+    String s = "UML Class Documentation";
+    Object o = node.getUserObject();
+    if(node instanceof AttributeNode) {
+      s = "UML Attribute Description";
+    }
+    
     umlPanel.setBorder
-      (BorderFactory.createTitledBorder("UML Description"));   
+      (BorderFactory.createTitledBorder(s));   
     umlPanel.setLayout(new BorderLayout());
 
     JTextArea descriptionArea = new JTextArea(5, 54);
@@ -452,7 +471,7 @@ public class UMLElementViewPanel extends JPanel
       setSaveButtonState(false);
     }
     reviewButton.setEnabled(false);
-    updateConceptLabel();
+    updateHeaderLabels();
   }
 
 
@@ -469,7 +488,7 @@ public class UMLElementViewPanel extends JPanel
   public void actionPerformed(ActionEvent evt) {
     JButton button = (JButton)evt.getSource();
     if(button.getActionCommand().equals(SAVE)) {
-      updateConceptLabel();
+      updateHeaderLabels();
       apply(false);
       
     } else if(button.getActionCommand().equals(ADD)) {
@@ -635,12 +654,12 @@ class ConceptUI {
     def.setText(concept.getPreferredDefinition());
     defSource.setText(concept.getDefinitionSource());
 
-    if(!editable) {
-      code.setEnabled(false);
-      name.setEnabled(false);
-      def.setEnabled(false);
-      defSource.setEnabled(false);
-    }
+//     if(!editable) {
+//       code.setEnabled(false);
+//       name.setEnabled(false);
+//       def.setEnabled(false);
+//       defSource.setEnabled(false);
+//     }
     
   }
 

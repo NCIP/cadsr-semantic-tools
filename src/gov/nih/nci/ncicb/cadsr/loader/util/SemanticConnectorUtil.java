@@ -55,13 +55,32 @@ public class SemanticConnectorUtil {
   /**
    * @return the location of the generated report.
    */  
+  public static String annotateXmi(String inputXmi) 
+    throws SemanticConnectorException {
+    
+
+    String filepath = inputXmi.substring(0, inputXmi.lastIndexOf("/") + 1);
+    
+    String outputXmi = filepath + "Annotated_" + inputXmi.substring(inputXmi.lastIndexOf("/") + 1);
+
+    new ModelAnnotator(inputXmi, outputXmi, filepath);
+
+
+    return outputXmi;
+    
+  }
+
+
+  /**
+   * @return the location of the generated report.
+   */  
   public static String generateReport(String inputXmi) 
     throws SemanticConnectorException {
     
 
     String filepath = inputXmi.substring(0, inputXmi.lastIndexOf("/") + 1);
     
-    new ModelAnnotator(inputXmi, inputXmi, filepath);
+    new ModelAnnotator(inputXmi, "Annotated_" + inputXmi, filepath);
 
 
     return filepath + "/" + "EVSReport_" + inputXmi.substring(inputXmi.lastIndexOf("/")+1, inputXmi.lastIndexOf(".")) + ".csv";

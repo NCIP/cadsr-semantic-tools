@@ -53,7 +53,7 @@ public class WizardController implements ActionListener {
   private Wizard wizard;
   private String username;
   private String filename;
-  private String outputCsv;
+  private String outputFile;
 
   private RunMode mode;
 
@@ -222,16 +222,16 @@ public class WizardController implements ActionListener {
 
                     File csvFile = new File(SemanticConnectorUtil.getCsvFilename(filename));
                     if(!csvFile.exists()) {
-                      evt.setMessage("Creating Annotation Report. This may take a minute ...");
+                      evt.setMessage("Creating Semantic Connector Report. This may take a minute ...");
                       progressDesc.newProgressEvent(evt);
-                      outputCsv = SemanticConnectorUtil.generateReport(inputXmi);
+                      outputFile = SemanticConnectorUtil.generateReport(inputXmi);
                     } else {
                       evt.setMessage("Annotating XMI File ...");
                       progressDesc.newProgressEvent(evt);
-                      SemanticConnectorUtil.generateReport(inputXmi);
+                      outputFile = SemanticConnectorUtil.annotateXmi(inputXmi);
                     }
 
-                    reportPanel.setFiles(inputXmi, outputCsv);
+                    reportPanel.setFiles(inputXmi, outputFile);
 
                     evt = new ProgressEvent();
                     evt.setGoal(100);

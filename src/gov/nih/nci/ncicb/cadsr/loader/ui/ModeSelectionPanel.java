@@ -34,7 +34,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 public class ModeSelectionPanel extends JPanel 
 {
 
-  private JRadioButton reportOption, curateOption, reviewOption;
+  private JRadioButton reportOption, curateOption, annotateOption, reviewOption;
   private ButtonGroup group;
   private JPanel _this = this;
 
@@ -68,11 +68,14 @@ public class ModeSelectionPanel extends JPanel
     
     group = new ButtonGroup();
     
-    reportOption = new JRadioButton("Run Semantic Connector");
+    reportOption = new JRadioButton("Run Semantic Connector (First Run)");
     reportOption.setActionCommand(RunMode.GenerateReport.toString());
         
     curateOption = new JRadioButton("Curate Semantic Connector Report");
     curateOption.setActionCommand(RunMode.Curator.toString());
+
+    annotateOption = new JRadioButton("Run Semantic Connector (Second Run)");
+    annotateOption.setActionCommand(RunMode.GenerateReport.toString());
        
     reviewOption = new JRadioButton("Review Annotated Model");
     reviewOption.setActionCommand(RunMode.Reviewer.toString());
@@ -90,16 +93,18 @@ public class ModeSelectionPanel extends JPanel
       
     group.add(reportOption);
     group.add(curateOption);
+    group.add(annotateOption);
     group.add(reviewOption);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new GridLayout(0, 1));
 
     buttonPanel.add
-      (new JLabel("<html>Semantic Integration Workbench can be run in 3 modes<br>Which would you like to use?</html>"));
+      (new JLabel("<html>Choose from the following SIW Options:</html>"));
 
     buttonPanel.add(reportOption);
     buttonPanel.add(curateOption);
+    buttonPanel.add(annotateOption);
     buttonPanel.add(reviewOption);
 
     this.setLayout(new BorderLayout());

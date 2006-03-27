@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
+ * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -68,7 +68,7 @@ public class XMIWriter implements ElementWriter {
     }
   }
 
-  public void write(ElementsLists elements) {
+  public void write(ElementsLists elements) throws ParserException {
 
     this.cadsrObjects = elements;
     
@@ -197,15 +197,17 @@ public class XMIWriter implements ElementWriter {
    * Copy / Paste from caCORE-Toolkit ModelAnnotator
    *
    */
-  private void readModel(){
+  private void readModel() throws ParserException {
     try {
-      String xpath = "//*[local-name()='Model']";
+      String xpath = "//*[local-name()='Model']/*[local-name()='Namespace.ownedElement']/*[local-name()='Package']";
+
       doPackage(xpath, "");
     } catch (JaxenException e){
+      throw new ParserException(e);
     } // end of try-catch
   }
 
-  private void updateChangedElements() {
+  private void updateChangedElements() throws ParserException {
     try {
       List<ObjectClass> ocs = (List<ObjectClass>)cadsrObjects.getElements(DomainObjectFactory.newObjectClass().getClass());
       List<DataElementConcept> decs = (List<DataElementConcept>) cadsrObjects.getElements(DomainObjectFactory.newDataElementConcept().getClass());
@@ -258,6 +260,7 @@ public class XMIWriter implements ElementWriter {
         }
     }
     } catch (JaxenException e){
+      throw new ParserException(e);
     } 
     
   }
@@ -320,7 +323,7 @@ public class XMIWriter implements ElementWriter {
   }
 
 
-  private void markHumanReviewed() {
+  private void markHumanReviewed() throws ParserException {
     try{ 
       List<ObjectClass> ocs = (List<ObjectClass>)cadsrObjects.getElements(DomainObjectFactory.newObjectClass().getClass());
       List<DataElementConcept> decs = (List<DataElementConcept>) cadsrObjects.getElements(DomainObjectFactory.newDataElementConcept().getClass());
@@ -370,19 +373,17 @@ public class XMIWriter implements ElementWriter {
         tv.setAttribute("value", reviewed?"1":"0");
       }
     }
-
-
     } catch (JaxenException e){
-    } // end of try-catch
-    
-      
-    
-
+      throw new ParserException(e);
+    } catch (RuntimeException e) {
+      throw new ParserException(e);
+    }
   }
   
   
   private void doPackage(String xpath, String packageName) throws JaxenException {
-    xpath = xpath + "/*[local-name()='Namespace.ownedElement']/*[local-name()='Package']";
+    if(packageName.length() > 0)
+      xpath = xpath + "/*[local-name()='Namespace.ownedElement']/*[local-name()='Package']";
     
     JDOMXPath path = new JDOMXPath(xpath);
     Collection<Element> packages = (Collection<Element>)path.selectNodes(modelElement);
@@ -391,39 +392,56 @@ public class XMIWriter implements ElementWriter {
       return;
 
     for(Element pkg : packages) {
-      String packName = pkg.getAttributeValue("name");
-      
-      if(packName.indexOf(" ") != -1) {
-        doPackage(xpath, packageName);
-        return;
-      }
-      
-      if (packageName.length() == 0) {
-        packageName = packName;
-      }
-      else {
-        packageName += ("." + packName);
-      }
-      
-      doPackage(xpath, packageName);
-      
-      String classXpath = xpath + "/*[local-name()='Namespace.ownedElement']/*[local-name() = 'Class']";
-      path = new JDOMXPath(classXpath);
+      doPackage(pkg, packageName);
+    }
 
-      Collection<Element> classes = (Collection<Element>)path.selectNodes(modelElement);
-      for (Element classElement : classes) {
-        String className = packageName + "." + classElement.getAttributeValue("name");
-        
-        elements.put(className, classElement);
-        
-        List<Element> attributes = getElements(classElement, "Attribute");
-        
-        for(Element attributeElt : attributes) {
-          String attributeName = 
-            className + "." + attributeElt.getAttributeValue("name");
-          elements.put(attributeName, attributeElt);
-        }
+  }
+  
+
+  private void doPackage(Element pkg, String packageName) throws JaxenException {
+ 
+    String packName = pkg.getAttributeValue("name");
+    
+    if(packName.indexOf(" ") != -1) {
+      Element namespaceElt = pkg.getChild("Namespace.ownedElement", pkg.getNamespace());
+      Collection<Element> packages = namespaceElt.getChildren("Package", pkg.getNamespace());
+      for(Element subPkg : packages) {
+        doPackage(subPkg, packageName);
+      } 
+      return;
+    }
+    
+    if (packageName.length() == 0) {
+      packageName = packName;
+    }
+    else {
+      packageName += ("." + packName);
+    }
+    
+
+    Element namespaceElt = pkg.getChild("Namespace.ownedElement", pkg.getNamespace());
+    Collection<Element> classes = namespaceElt.getChildren("Class", pkg.getNamespace());
+    
+    
+    for (Element classElement : classes) {
+      String className = packageName + "." + classElement.getAttributeValue("name");
+      
+      elements.put(className, classElement);
+      
+      List<Element> attributes = getElements(classElement, "Attribute");
+      
+      for(Element attributeElt : attributes) {
+        String attributeName = 
+          className + "." + attributeElt.getAttributeValue("name");
+        elements.put(attributeName, attributeElt);
       }
     }
+
+    namespaceElt = pkg.getChild("Namespace.ownedElement", pkg.getNamespace());
+    Collection<Element> packages = namespaceElt.getChildren("Package", pkg.getNamespace());
+    for(Element subPkg : packages) {
+      doPackage(subPkg, packageName);
+    } 
+
   }
 }
