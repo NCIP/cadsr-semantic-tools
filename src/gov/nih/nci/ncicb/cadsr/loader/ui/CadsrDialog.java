@@ -190,6 +190,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
                 if(de.getDataElementConcept().getObjectClass() == null || de.getDataElementConcept().getProperty() == null) {
                   JOptionPane.showMessageDialog
                     (null, PropertyAccessor.getProperty("de.invalid"), "Invalid Selection", JOptionPane.ERROR_MESSAGE);
+                  choiceAdminComponent = null;
                   return;
                 }
               }
