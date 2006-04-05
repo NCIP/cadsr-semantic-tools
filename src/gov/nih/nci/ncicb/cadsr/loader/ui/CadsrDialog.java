@@ -301,6 +301,17 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       
       _this.setCursor(Cursor.getDefaultCursor());
 
+      // remove excluded contexts
+      {
+        List<String> excludeContext = Arrays.asList(PropertyAccessor.getProperty("vd.exclude.contexts").split(","));
+        for(ListIterator<AdminComponent> it = resultSet.listIterator(); it.hasNext();) {
+          AdminComponent ac = it.next();
+          if(excludeContext.contains(ac.getContext().getName())) {
+            it.remove();
+          }
+        }
+      }
+
       pageIndex = 0;
       updateTable();
       
@@ -363,9 +374,9 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
  
   public static void main(String[] args) 
   {
-    CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_OC);
+    CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_VD);
 
-    dialog.setCadsrModule(new CadsrPublicApiModule("http://cabio.nci.nih.gov/cacore30/server/HTTPServer"));
+    dialog.setCadsrModule(new CadsrPublicApiModule("http://cabio.nci.nih.gov/cacore31/http/remoteService"));
     dialog.setVisible(true);
     
     
