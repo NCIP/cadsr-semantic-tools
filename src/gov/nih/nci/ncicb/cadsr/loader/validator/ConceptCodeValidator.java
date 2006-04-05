@@ -51,7 +51,7 @@ public class ConceptCodeValidator implements Validator {
       for(ObjectClass o : ocs) {
         if(StringUtil.isEmpty(o.getPublicId()) || o.getVersion() == null) {
           if(StringUtil.isEmpty(o.getPreferredName()))
-            items.addItem(new ValidationError("Class: " + o.getLongName() + " has no concept code.", o));
+            items.addItem(new ValidationConceptError("Class: " + o.getLongName() + " has no concept code.", o));
           else {
             checkConcepts(o);
           }
@@ -67,7 +67,7 @@ public class ConceptCodeValidator implements Validator {
           Property prop = de.getDataElementConcept().getProperty();
           if(StringUtil.isEmpty(prop.getPublicId()) || prop.getVersion() == null) {
             if(StringUtil.isEmpty(prop.getPreferredName()))
-              items.addItem(new ValidationError("Attribute: " + prop.getLongName() + " has no concept code.", prop));
+              items.addItem(new ValidationConceptError("Attribute: " + prop.getLongName() + " has no concept code.", prop));
             else {
               checkConcepts(prop);
             }

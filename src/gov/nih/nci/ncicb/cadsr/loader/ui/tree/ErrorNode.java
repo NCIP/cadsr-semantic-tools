@@ -29,6 +29,7 @@ public class ErrorNode extends AbstractUMLNode implements ValidationNode {
   public ErrorNode(ValidationItem item) {
     fullPath = item.getMessage();
     display = item.getMessage();
+    userObject = item;
   }
 
   public Icon getIcon() {
