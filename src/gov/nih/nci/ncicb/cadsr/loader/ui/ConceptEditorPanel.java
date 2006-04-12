@@ -253,8 +253,13 @@ public class ConceptEditorPanel extends JPanel
       
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
       conceptPanels[i].add(arrowPanel, BorderLayout.EAST);
-
-      insertInBag(gridPanel, conceptPanels[i], 0, conceptPanels.length - i);
+      
+      //display Primary Concept first
+      if(prefs.getOrderOfConcepts().equalsIgnoreCase("first"))
+        insertInBag(gridPanel, conceptPanels[i], 0, i+1);
+      //display Qualifiers first
+      else
+        insertInBag(gridPanel, conceptPanels[i], 0, conceptPanels.length - i);
 
       conceptUIs[i].code.addKeyListener(this);
       conceptUIs[i].name.addKeyListener(this);
@@ -508,7 +513,8 @@ public class ConceptEditorPanel extends JPanel
   
   public void preferenceChange(UserPreferencesEvent event) 
   {
-    if(event.getTypeOfEvent() == UserPreferencesEvent.UML_DESCRIPTION) 
+    if(event.getTypeOfEvent() == UserPreferencesEvent.UML_DESCRIPTION
+        || event.getTypeOfEvent() == UserPreferencesEvent.ORDER_CONCEPTS) 
     {
       _this.remove(scrollPane);
       initViewPanel();
