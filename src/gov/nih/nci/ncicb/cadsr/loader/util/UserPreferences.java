@@ -74,6 +74,18 @@ public class UserPreferences {
         l.setCadsrModule(b?privateCadsrModule:publicCadsrModule);
       }
   }
+  
+  public String getOrderOfConcepts() 
+  {
+    return prefs.get("OrderOfConcepts", "last");
+  }
+  
+  public void setOrderOfConcepts(String value) 
+  {
+    prefs.put("OrderOfConcepts", value);
+    UserPreferencesEvent event = new UserPreferencesEvent(UserPreferencesEvent.ORDER_CONCEPTS, value);
+    fireUserPreferencesEvent(event);
+  }
 
   public String getViewAssociationType() 
   {
