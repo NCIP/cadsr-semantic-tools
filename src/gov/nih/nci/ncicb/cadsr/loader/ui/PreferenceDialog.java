@@ -38,7 +38,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
   private JCheckBox associationBox = new JCheckBox("View Associations in Class Tree"),
     umlDescriptionBox = new JCheckBox("Display UML Description Last"),
     evsAutoSearchBox = new JCheckBox("Automatically Search EVS on EVS link"),
-    privateApiSearchBox = new JCheckBox("Use Private Api");
+    privateApiSearchBox = new JCheckBox("Use Private Api"),
+    orderOfConceptsBox = new JCheckBox("Display Primary Concept First");
 
   private JButton apply = new JButton("Apply");
   private JButton cancel = new JButton("Cancel");
@@ -60,6 +61,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     centerPanel.add(umlDescriptionBox);
     centerPanel.add(evsAutoSearchBox);
     centerPanel.add(privateApiSearchBox);
+    centerPanel.add(orderOfConceptsBox);
 
     this.getContentPane().setLayout(new BorderLayout());
     this.getContentPane().add(centerPanel);
@@ -91,6 +93,11 @@ public class PreferenceDialog extends JDialog implements ActionListener
       umlDescriptionBox.setSelected(false);
     else
       umlDescriptionBox.setSelected(true);
+    
+    if(prefs.getOrderOfConcepts().equalsIgnoreCase("first"))
+      orderOfConceptsBox.setSelected(true);
+    else
+      orderOfConceptsBox.setSelected(false);
  
     evsAutoSearchBox.setSelected(prefs.getEvsAutoSearch());
 
@@ -112,7 +119,12 @@ public class PreferenceDialog extends JDialog implements ActionListener
         prefs.setUmlDescriptionOrder("last");
       else
         prefs.setUmlDescriptionOrder("first");
-
+      
+      if(orderOfConceptsBox.isSelected())
+        prefs.setOrderOfConcepts("first");
+      else
+        prefs.setOrderOfConcepts("last");
+        
       prefs.setEvsAutoSeatch(evsAutoSearchBox.isSelected());
 
       prefs.setUsePrivateApi(privateApiSearchBox.isSelected());
