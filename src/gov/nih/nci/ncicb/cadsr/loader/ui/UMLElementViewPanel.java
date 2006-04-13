@@ -156,7 +156,7 @@ public class UMLElementViewPanel extends JPanel
     return ((ReviewableUMLNode)node).isReviewed();
   }
   //new
-  public void apply(boolean value) 
+  public void apply(boolean value) throws ApplyException
   {
     conceptEditorPanel.apply(value);
   }
@@ -189,7 +189,7 @@ public class UMLElementViewPanel extends JPanel
     ocPanel.addPropertyChangeListener(l);
   }
   
-  public void applyPressed() 
+  public void applyPressed() throws ApplyException
   {
     if(displayedPanel instanceof Editable) 
     {

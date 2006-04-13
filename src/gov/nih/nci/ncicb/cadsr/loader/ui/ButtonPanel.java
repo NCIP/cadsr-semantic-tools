@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.*;
+import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
@@ -8,6 +9,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.util.DEMappingUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import java.awt.BorderLayout;
@@ -88,6 +90,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
       reviewButton = new JCheckBox("<html>Human<br>Verified</html>");
     previousButton = new JButton("Previous");
     nextButton = new JButton("Next");
+
     reviewButton.setSelected(viewPanel.isReviewed());
 
     reviewButton.setActionCommand(REVIEW);
@@ -97,14 +100,13 @@ public class ButtonPanel extends JPanel implements ActionListener,
     previousButton.setActionCommand(PREVIOUS);
     nextButton.setActionCommand(NEXT);
     switchButton.setActionCommand(SWITCH);
-
+    
     addButton.addActionListener(this);
     deleteButton.addActionListener(this);
     saveButton.addActionListener(this);
     reviewButton.addActionListener(this);
     previousButton.addActionListener(this);
     nextButton.addActionListener(this);
-
     switchButton.addActionListener(this);
     
     this.add(addButton);
@@ -251,9 +253,12 @@ public class ButtonPanel extends JPanel implements ActionListener,
     if(saveButton.isEnabled()) {
       if(JOptionPane.showConfirmDialog(this, "There are unsaved changes in this concept, would you like to apply the changes now?", "Unsaved Changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) 
       {
-        conceptEditorPanel.apply(false);
-        if(editable != null)
-          editable.applyPressed();
+        try {
+          conceptEditorPanel.apply(false);
+          if(editable != null)
+            editable.applyPressed();
+        } catch (ApplyException e){
+        } // end of try-catch
       }
     }
   }
@@ -263,12 +268,15 @@ public class ButtonPanel extends JPanel implements ActionListener,
       l.propertyChange(evt);
   }
   
-    public void actionPerformed(ActionEvent evt) {
+  public void actionPerformed(ActionEvent evt) {
     AbstractButton button = (AbstractButton)evt.getSource();
-    if(button.getActionCommand().equals(SAVE)) {   
-      viewPanel.applyPressed();
-      //updateHeaderLabels();
-      //apply(false);
+    if(button.getActionCommand().equals(SAVE)) {
+      try {
+        viewPanel.applyPressed();
+      } catch (ApplyException e){
+        reviewButton.setEnabled(false);
+        saveButton.setEnabled(false);
+      } // end of try-catch
     } else if(button.getActionCommand().equals(ADD)) {
         conceptEditorPanel.addPressed();
  
@@ -341,6 +349,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
       }
         
     }
+    
   }
  
   
