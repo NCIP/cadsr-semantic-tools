@@ -29,7 +29,9 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   private JLabel searchLabel = new JLabel("Search:");
   private JTextField searchField = new JTextField(10);
   private JLabel whereToSearchLabel = new JLabel("Search By");
+  private JLabel numberOfResultsLabel = new JLabel("Number of Results");
   private JComboBox searchSourceCombo;
+  private JComboBox numberOfResultsCombo;
   
   private JButton searchButton = new JButton("Search");
   
@@ -61,7 +63,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
 
   private int colWidth[] = {15, 15, 15, 15, 30, 15};
 
-  private static int PAGE_SIZE = 5;
+  private static int PAGE_SIZE = 25;
 
   private int pageIndex = 0;
   
@@ -203,6 +205,14 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     
     JScrollPane scrollPane = new JScrollPane(resultTable);
     
+    Integer[] number = {new Integer(5),
+                        new Integer(10),
+                        new Integer(25),
+                        new Integer(50),
+                        new Integer(100)};
+    
+    numberOfResultsCombo = new JComboBox(number);
+    
     insertInBag(searchPanel, searchLabel, 0, 0);
     insertInBag(searchPanel, searchField, 1, 0);
     insertInBag(searchPanel, whereToSearchLabel, 2, 0);
@@ -220,6 +230,17 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     browsePanel.add(indexLabel);
     browsePanel.add(nextButton);
     browsePanel.add(closeButton);
+    browsePanel.add(numberOfResultsLabel);
+    browsePanel.add(numberOfResultsCombo);
+    
+    numberOfResultsCombo.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent event) {
+        JComboBox cb = (JComboBox)event.getSource();
+        Integer selection = (Integer)cb.getSelectedItem();
+        PAGE_SIZE = selection.intValue();
+        updateTable();
+      }
+    });
     
     previousButton.setActionCommand(PREVIOUS);
     nextButton.setActionCommand(NEXT);
@@ -234,7 +255,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     this.getContentPane().add(searchPanel, BorderLayout.NORTH);
     this.getContentPane().add(scrollPane, BorderLayout.CENTER);
     this.getContentPane().add(browsePanel, BorderLayout.SOUTH);
-    this.setSize(600,500);
+    this.setSize(600,525);
     
   }
   
@@ -338,6 +359,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       sb.append(start);
       sb.append("-");
       sb.append(end);
+      sb.append(" of " + resultSet.size());
       indexLabel.setText(sb.toString());
     }
     
@@ -374,12 +396,9 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
  
   public static void main(String[] args) 
   {
-    CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_VD);
+        CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_VD);
 
     dialog.setCadsrModule(new CadsrPublicApiModule("http://cabio.nci.nih.gov/cacore31/http/remoteService"));
     dialog.setVisible(true);
-    
-    
-
   }
 }
