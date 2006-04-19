@@ -29,7 +29,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   private JLabel searchLabel = new JLabel("Search:");
   private JTextField searchField = new JTextField(10);
   private JLabel whereToSearchLabel = new JLabel("Search By");
-  private JLabel numberOfResultsLabel = new JLabel("Number of Results");
+  private JLabel numberOfResultsLabel = new JLabel("Results Per Page");
   private JComboBox searchSourceCombo;
   private JComboBox numberOfResultsCombo;
   
@@ -212,6 +212,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
                         new Integer(100)};
     
     numberOfResultsCombo = new JComboBox(number);
+    numberOfResultsCombo.setSelectedItem(number[2]);
     
     insertInBag(searchPanel, searchLabel, 0, 0);
     insertInBag(searchPanel, searchField, 1, 0);
@@ -239,6 +240,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
         Integer selection = (Integer)cb.getSelectedItem();
         PAGE_SIZE = selection.intValue();
         updateTable();
+        updateIndexLabel();
       }
     });
     
