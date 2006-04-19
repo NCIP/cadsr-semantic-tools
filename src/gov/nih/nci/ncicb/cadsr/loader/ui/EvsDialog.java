@@ -47,8 +47,10 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
   private JLabel searchLabel = new JLabel("Search:");
   private JTextField searchField = new JTextField(10);
   private JLabel whereToSearchLabel = new JLabel("Search By");
+  private JLabel numberOfResultsLabel = new JLabel("Results Per Page");
   private JComboBox searchSourceCombo;
-
+  private JComboBox numberOfResultsCombo;
+  
   private JCheckBox includeRetiredCB = new JCheckBox("Include Retired?");
 
   private JButton searchButton = new JButton("Search");
@@ -185,6 +187,14 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
 
     JScrollPane scrollPane = new JScrollPane(resultTable);
 
+    Integer[] number = {new Integer(5),
+                        new Integer(10),
+                        new Integer(25),
+                        new Integer(50),
+                        new Integer(100)};
+    
+    numberOfResultsCombo = new JComboBox(number);
+    
     insertInBag(searchPanel,searchLabel,0, 0);
     insertInBag(searchPanel,searchField, 1, 0);
     insertInBag(searchPanel,whereToSearchLabel, 2,0);
@@ -203,6 +213,18 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
     browsePanel.add(indexLabel);
     browsePanel.add(nextButton);
     browsePanel.add(closeButton);
+    browsePanel.add(numberOfResultsLabel);
+    browsePanel.add(numberOfResultsCombo);
+    
+    numberOfResultsCombo.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent event) {
+        JComboBox cb = (JComboBox)event.getSource();
+        Integer selection = (Integer)cb.getSelectedItem();
+        PAGE_SIZE = selection.intValue();
+        updateTable();
+        updateIndexLabel();
+      }
+    });
 
     previousButton.setActionCommand(PREVIOUS);
     nextButton.setActionCommand(NEXT);
@@ -213,12 +235,11 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
     nextButton.addActionListener(this);
     closeButton.addActionListener(this);
 
-    this.getContentPane().add(searchPanel, BorderLayout.NORTH)
-;
+    this.getContentPane().add(searchPanel, BorderLayout.NORTH);
     this.getContentPane().add(scrollPane, BorderLayout.CENTER);
     this.getContentPane().add(browsePanel, BorderLayout.SOUTH);
 
-    this.setSize(600,500);
+    this.setSize(600,425);
   }
 
 
@@ -294,6 +315,7 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
       sb.append(start);
       sb.append("-");
       sb.append(end);
+      sb.append(" of " + resultSet.size());
       indexLabel.setText(sb.toString());
     }
     
