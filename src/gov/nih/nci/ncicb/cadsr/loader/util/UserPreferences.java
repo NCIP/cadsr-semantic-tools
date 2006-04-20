@@ -75,6 +75,46 @@ public class UserPreferences {
       }
   }
   
+  public int getEvsResultsPerPage() 
+  {
+    String s = prefs.get("EvsResults", "5");
+    try
+    {
+      int n = Integer.decode(s);
+      return n;
+    }
+    catch (NumberFormatException e)
+    {}
+    return 5;
+    
+    
+  }
+  
+  public void setEvsResultsPerPage(int value) 
+  {
+    prefs.put("EvsResults", new Integer(value).toString());
+  }
+  
+  public int getCadsrResultsPerPage() 
+  {
+    String s = prefs.get("CadsrResults", "25");
+    try
+    {
+      int n = Integer.decode(s);
+      return n;
+    }
+    catch (NumberFormatException e)
+    {}
+    return 25;
+    
+    
+  }
+  
+  public void setCadsrResultsPerPage(int value) 
+  {
+    prefs.put("CadsrResults", new Integer(value).toString());
+  }
+  
   public String getOrderOfConcepts() 
   {
     return prefs.get("OrderOfConcepts", "last");
