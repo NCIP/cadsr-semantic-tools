@@ -22,6 +22,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -80,7 +81,9 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
 
   private int colWidth[] = {30, 30, 30, 30, 300, 15};
 
-  private static int PAGE_SIZE = 5;
+  private UserPreferences prefs = UserPreferences.getInstance();
+
+  private int pageSize = prefs.getEvsResultsPerPage();
 
   private int pageIndex = 0;
 
@@ -102,11 +105,11 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
           return columnNames[col].toString();
         }
         public int getRowCount() { 
-          return (int)Math.min(resultSet.size(), PAGE_SIZE); 
+          return (int)Math.min(resultSet.size(), pageSize); 
         }
         public int getColumnCount() { return columnNames.length; }
         public Object getValueAt(int row, int col) {
-          row = row + PAGE_SIZE * pageIndex;
+          row = row + pageSize * pageIndex;
 
           if(row >= resultSet.size())
             return "";
@@ -178,7 +181,7 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
           if(evt.getClickCount() == 2) {
             int row = resultTable.getSelectedRow();
             if(row > -1) {
-              choiceConcept = resultSet.get(pageIndex * PAGE_SIZE + row).getConcept();
+              choiceConcept = resultSet.get(pageIndex * pageSize + row).getConcept();
               _this.dispose();
             }
           }
@@ -194,6 +197,7 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
                         new Integer(100)};
     
     numberOfResultsCombo = new JComboBox(number);
+    numberOfResultsCombo.setSelectedItem(prefs.getEvsResultsPerPage());
     
     insertInBag(searchPanel,searchLabel,0, 0);
     insertInBag(searchPanel,searchField, 1, 0);
@@ -220,9 +224,10 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
       public void actionPerformed(ActionEvent event) {
         JComboBox cb = (JComboBox)event.getSource();
         Integer selection = (Integer)cb.getSelectedItem();
-        PAGE_SIZE = selection.intValue();
+        pageSize = selection.intValue();
         updateTable();
         updateIndexLabel();
+        prefs.setEvsResultsPerPage(selection.intValue());
       }
     });
 
@@ -310,8 +315,8 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
       indexLabel.setText("");
     } else {
       StringBuilder sb = new StringBuilder();
-      int start = PAGE_SIZE * pageIndex;
-      int end = (int)Math.min(resultSet.size(), start + PAGE_SIZE); 
+      int start = pageSize * pageIndex;
+      int end = (int)Math.min(resultSet.size(), start + pageSize); 
       sb.append(start);
       sb.append("-");
       sb.append(end);
@@ -326,7 +331,7 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
 
     previousButton.setEnabled(pageIndex > 0);
 
-    nextButton.setEnabled(resultSet.size() > (pageIndex * PAGE_SIZE + PAGE_SIZE));
+    nextButton.setEnabled(resultSet.size() > (pageIndex * pageSize + pageSize));
 
   }
 
