@@ -200,7 +200,7 @@ public class UMLDefaultHandler
 
         ValidationItems.getInstance()
           .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", event.getClassName() + "." + event.getName(),
-             ConventionUtil.publicIdVersion(de)), de));
+               event.getPersistenceId() + "v" + event.getPersistenceVersion()), de));
 
         
         de.setPublicId(null);
