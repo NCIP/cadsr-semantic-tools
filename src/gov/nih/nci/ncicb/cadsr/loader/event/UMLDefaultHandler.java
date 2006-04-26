@@ -290,6 +290,7 @@ public class UMLDefaultHandler
       de.setContext(existingDe.getContext());
       de.setPublicId(existingDe.getPublicId());
       de.setVersion(existingDe.getVersion());
+      de.setLatestVersionIndicator(existingDe.getLatestVersionIndicator());
     } else
       de.setLongName(dec.getLongName() + " " + event.getType());
     //     de.setPreferredDefinition(event.getDescription());
