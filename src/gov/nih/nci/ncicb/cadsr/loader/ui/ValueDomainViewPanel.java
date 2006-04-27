@@ -6,16 +6,19 @@ import javax.swing.*;
 public class ValueDomainViewPanel extends JPanel
 {
   private JLabel vdPrefDefTitleLabel = new JLabel("VD Preferred Definition"),
-    vdPrefDefValueLabel = new JLabel(),
     vdDatatypeTitleLabel = new JLabel("VD Datatype"),
-    vdDatatypeValueLabel = new JLabel(),
     vdTypeTitleLabel = new JLabel("VD Type"),
-    vdTypeValueLabel = new JLabel(),
     vdCdIdTitleLabel = new JLabel("VD CD PublicId / Version"),
-    vdCdIdValueLabel = new JLabel(),
-    vdCdLongNameTitleLabel = new JLabel("VD CD Long Name"),
-    vdCdLongNameValueLabel = new JLabel();
-    
+    vdCdLongNameTitleLabel = new JLabel("VD CD Long Name");
+  
+  private JTextArea vdPrefDefValueTextField = new JTextArea();
+  private JTextField vdDatatypeValueLabel = new JTextField(),
+    vdTypeValueLabel = new JTextField(),
+    vdCdIdValueLabel = new JTextField(),
+    vdCdLongNameValueLabel = new JTextField();
+  
+  private JScrollPane scrollPane;
+  
   private ValueDomain vd;
 
   public ValueDomainViewPanel(ValueDomain vd)
@@ -36,27 +39,43 @@ public class ValueDomainViewPanel extends JPanel
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
     
+    vdPrefDefValueTextField.setEditable(false);
+    vdDatatypeValueLabel.setEditable(false);
+    vdTypeValueLabel.setEditable(false);
+    vdCdIdValueLabel.setEditable(false);
+    vdCdLongNameValueLabel.setEditable(false);
+        
+    vdPrefDefValueTextField.setLineWrap(true);
+    vdPrefDefValueTextField.setWrapStyleWord(true);
+    scrollPane = new JScrollPane(vdPrefDefValueTextField);
+    scrollPane
+      .setVerticalScrollBarPolicy
+      (JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    //vdPrefDefValueTextField.setSize(200,200);
+    scrollPane = new JScrollPane(vdPrefDefValueTextField);
+    scrollPane.setPreferredSize(new Dimension(200, 100));
+    
     insertInBag(mainPanel, vdPrefDefTitleLabel, 0, 1);
-    insertInBag(mainPanel, vdPrefDefValueLabel, 1, 1); 
+    insertInBag(mainPanel, scrollPane, 1, 1, 3, 1); 
     
-    insertInBag(mainPanel, vdDatatypeTitleLabel, 0, 2);
-    insertInBag(mainPanel, vdDatatypeValueLabel, 1, 2);
+    insertInBag(mainPanel, vdDatatypeTitleLabel, 0, 3);
+    insertInBag(mainPanel, vdDatatypeValueLabel, 1, 3);
     
-    insertInBag(mainPanel, vdTypeTitleLabel, 0, 3);
-    insertInBag(mainPanel, vdTypeValueLabel, 1, 3);
+    insertInBag(mainPanel, vdTypeTitleLabel, 0, 4);
+    insertInBag(mainPanel, vdTypeValueLabel, 1, 4);
     
-    insertInBag(mainPanel, vdCdIdTitleLabel, 0, 4);
-    insertInBag(mainPanel, vdCdIdValueLabel, 1, 4);
+    insertInBag(mainPanel, vdCdIdTitleLabel, 0, 5);
+    insertInBag(mainPanel, vdCdIdValueLabel, 1, 5);
     
-    insertInBag(mainPanel, vdCdLongNameTitleLabel, 0, 5);
-    insertInBag(mainPanel, vdCdLongNameValueLabel, 1, 5);
+    insertInBag(mainPanel, vdCdLongNameTitleLabel, 0, 6);
+    insertInBag(mainPanel, vdCdLongNameValueLabel, 1, 6);
     
     this.add(mainPanel);
   }
   
   private void initValues() 
   {
-    vdPrefDefValueLabel.setText(vd.getPreferredDefinition());
+    vdPrefDefValueTextField.setText(vd.getPreferredDefinition());
     vdDatatypeValueLabel.setText(vd.getDataType());
     vdTypeValueLabel.setText(vd.getVdType());
     vdCdIdValueLabel.setText(vd.getConceptualDomain().getPublicId());
