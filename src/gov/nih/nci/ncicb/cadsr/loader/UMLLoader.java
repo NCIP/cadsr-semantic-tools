@@ -36,6 +36,8 @@ import gov.nih.nci.ncicb.cadsr.loader.persister.*;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.ProgressFrame;
+
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
 import java.security.*;
@@ -196,7 +198,14 @@ public class UMLLoader {
       }
     }
 
+    ProgressFrame progressFrame = new ProgressFrame(100);
+    progressFrame.setVisible(true);
+    
+    persister.setProgressListener(progressFrame);
+
     persister.persist();
+
+    progressFrame.dispose();
 
   }
 
