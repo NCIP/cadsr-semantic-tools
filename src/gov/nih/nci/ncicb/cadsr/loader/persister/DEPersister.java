@@ -49,10 +49,17 @@ public class DEPersister extends UMLPersister {
 
     logger.debug("des...");
 
+    int count = 0;
+    sendProgressEvent(count++, des.size(), "DEs");
+
+
     if (des != null) {
       for (ListIterator<DataElement> it = des.listIterator(); it.hasNext();) {
         try {
           de = it.next();
+
+          sendProgressEvent(count++, des.size(), "DE : " + de.getLongName());
+
           DataElement newDe = DomainObjectFactory.newDataElement();
 
           String packageName = getPackageName(de);

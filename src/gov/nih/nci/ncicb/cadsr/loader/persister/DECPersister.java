@@ -49,11 +49,17 @@ public class DECPersister extends UMLPersister {
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
     List<DataElementConcept> decs = elements.getElements(dec);
 
+    int count = 0;
+    sendProgressEvent(count++, decs.size(), "DECs");
+
     logger.debug("decs... ");
     if (decs != null) {
       for (ListIterator<DataElementConcept> it = decs.listIterator(); it.hasNext();) {
         DataElementConcept newDec = DomainObjectFactory.newDataElementConcept();
 	dec = it.next();
+
+        sendProgressEvent(count++, decs.size(), "DEC : " + dec.getLongName());
+
 
         List<Definition> modelDefinitions = dec.getDefinitions();
         List<AlternateName> modelAltNames = dec.getAlternateNames();

@@ -45,11 +45,17 @@ public class PropertyPersister extends UMLPersister {
     Property prop = DomainObjectFactory.newProperty();
     List<Property> props = elements.getElements(prop);
 
+    int count = 0;
+    sendProgressEvent(count++, props.size(), "Properties");
+
     if (props != null) {
       for (ListIterator<Property> it = props.listIterator(); it.hasNext();) {
 	prop = it.next();
         logger.debug(prop.getLongName());
         logger.debug(prop.getPreferredName());
+
+        sendProgressEvent(count++, props.size(), "Property : " + prop.getLongName());
+
 
         Property newProp = null;
 

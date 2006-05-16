@@ -42,15 +42,21 @@ public class ConceptPersister extends UMLPersister {
 
   public void persist() {
     Concept con = DomainObjectFactory.newConcept();
-    List cons = elements.getElements(con.getClass());
+    List<Concept> cons = elements.getElements(con);
+
+    int consSize = cons.size();
 
     logger.debug("ConceptPersister.persist()");
 
+    sendProgressEvent(0, consSize, "Persisting Concepts");
+
+    int count = 1;
     if (cons != null) {
       for(Iterator it = cons.iterator(); it.hasNext();) {
         Concept c = (Concept)it.next();
         con.setPreferredName(c.getPreferredName());
         logger.debug("concept name: " + con.getPreferredName());
+        sendProgressEvent(count++, consSize, "Concept : " + con.getPreferredName());
         List l = conceptDAO.find(con);
 
         if(l.size() == 0) { // concept does not exist: create it

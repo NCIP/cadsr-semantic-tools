@@ -45,6 +45,10 @@ public class ObjectClassPersister extends UMLPersister {
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     List<ObjectClass> ocs = elements.getElements(oc);
 
+    int count = 0;
+    sendProgressEvent(count++, ocs.size(), "Object Class");
+
+
     String packageName = null;
 
     if (ocs != null) {
@@ -53,6 +57,9 @@ public class ObjectClassPersister extends UMLPersister {
 
 	oc = it.next();
         logger.debug(oc.getLongName());
+
+        sendProgressEvent(count++, ocs.size(), "OC : " + oc.getLongName());
+
 	oc.setContext(defaults.getMainContext());
 
 	String className = LookupUtil.lookupFullName(oc);
@@ -151,6 +158,7 @@ public class ObjectClassPersister extends UMLPersister {
 
 	it.set(newOc);
         oc.setLongName(newOc.getLongName());
+        oc.setPreferredName(newOc.getPreferredName());
         addPackageClassification(newOc, packageName);
 
       }

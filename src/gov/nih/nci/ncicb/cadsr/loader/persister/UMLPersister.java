@@ -27,6 +27,8 @@ import gov.nih.nci.ncicb.cadsr.spring.*;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.*;
+
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -61,6 +63,8 @@ public class UMLPersister implements Persister {
 
   protected UMLDefaults defaults = UMLDefaults.getInstance();
 
+  private ProgressListener progressListener = null;
+
   public UMLPersister() {
     this.elements = ElementsLists.getInstance();
   }
@@ -68,15 +72,51 @@ public class UMLPersister implements Persister {
   public void persist() throws PersisterException {
 
     initDAOs();
+    
+    Persister persister = new PackagePersister();
+    persister.setProgressListener(progressListener);
+    persister.persist();
 
-    new PackagePersister().persist();
-    new ConceptPersister().persist();
-    new PropertyPersister().persist();
-    new ObjectClassPersister().persist();
-    new DECPersister().persist();
-    new ValueDomainPersister().persist();
-    new DEPersister().persist();
-    new OcRecPersister().persist();
+    persister = new ConceptPersister();
+    persister.setProgressListener(progressListener);
+    persister.persist();
+
+    persister = new PropertyPersister();
+    persister.setProgressListener(progressListener);
+    persister.persist();
+
+    persister = new ObjectClassPersister();
+    persister.setProgressListener(progressListener);
+    persister.persist();
+
+    persister = new DECPersister();
+    persister.setProgressListener(progressListener);
+    persister.persist();
+
+    persister = new ValueDomainPersister();
+    persister.setProgressListener(progressListener);
+    persister.persist();
+
+    persister = new DEPersister();
+    persister.setProgressListener(progressListener);
+    persister.persist();
+
+    persister = new OcRecPersister();
+    persister.setProgressListener(progressListener);
+    persister.persist();
+    
+  }
+
+  protected void sendProgressEvent(int status, int goal, String message) {
+    if(progressListener != null) {
+      ProgressEvent pEvent = new ProgressEvent();
+      pEvent.setMessage(message);
+      pEvent.setStatus(status);
+      pEvent.setGoal(goal);
+      
+      progressListener.newProgressEvent(pEvent);
+
+    }
   }
 
   protected ValueDomain lookupValueDomain(ValueDomain vd)
@@ -95,7 +135,7 @@ public class UMLPersister implements Persister {
 	throw new PersisterException("Value Domain " +
 				     vd.getLongName() + " does not exist.");
       } else {
-        String excludeContext = PropertyAccessor.getProperty("vd.exclude.contexts");
+        List<String> excludeContext = Arrays.asList(PropertyAccessor.getProperty("vd.exclude.contexts").split(","));
         String preferredContext = PropertyAccessor.getProperty("vd.preferred.contexts");
 
         // see if we find a VD in our preferred context
@@ -110,7 +150,7 @@ public class UMLPersister implements Persister {
         // no VD in our preferred context, let's find one that's not in the list of banned contexts
         if(result == null)
           for(ValueDomain v : l) {
-            if(!v.getContext().getName().equals(excludeContext)) {
+            if(!excludeContext.contains(v.getContext().getName())) {
               result = v;
               // store to cache
               valueDomains.put(result.getLongName(), result);
@@ -378,6 +418,11 @@ public class UMLPersister implements Persister {
     classificationSchemeItemDAO = DAOAccessor.getClassificationSchemeItemDAO();
     classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
     conceptDAO = DAOAccessor.getConceptDAO();
+  }
+
+
+  public void setProgressListener(ProgressListener listener) {
+    progressListener = listener;
   }
 
 
