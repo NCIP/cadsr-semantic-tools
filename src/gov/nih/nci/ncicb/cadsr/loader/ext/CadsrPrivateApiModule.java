@@ -29,8 +29,11 @@ public class CadsrPrivateApiModule implements CadsrModule
     ClassificationScheme cs = DomainObjectFactory.newClassificationScheme();
     buildExample(cs, queryFields);
 
-    return DAOAccessor.getClassificationSchemeDAO().find(cs);
-    
+    if(eager == null)
+      return DAOAccessor.getClassificationSchemeDAO().find(cs);
+    else
+      return DAOAccessor.getClassificationSchemeDAO().find(cs, eager);
+
   }
 
 
@@ -91,7 +94,10 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   public Collection<DataElement> 
     findDEByClassifiedAltName(AlternateName altName, ClassSchemeClassSchemeItem csCsi) throws Exception  {
-    return null;
+
+    List<DataElement> des = DAOAccessor.getAdminComponentDAO().findByClassifiedAlternateName(altName, DomainObjectFactory.newDataElement(), csCsi, null);
+
+    return des;
 
   }
 
