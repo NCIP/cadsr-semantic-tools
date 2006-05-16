@@ -32,8 +32,10 @@ public class ProgressFrame extends JFrame
     implements ProgressListener
 {
 
-  private JProgressBar progressBar;
-  private JLabel msgLabel;
+//   private JProgressBar progressBar;
+//   private JLabel msgLabel;
+
+  private ProgressPanel progressPanel;
 
   public ProgressFrame(int maximum)
   {
@@ -41,51 +43,58 @@ public class ProgressFrame extends JFrame
   }
 
   public void newProgressEvent(ProgressEvent evt) {
-    System.out.println("new progress evt...");
-    System.out.println(evt.getMessage());
+    progressPanel.newProgressEvent(evt);
 
-    System.out.println("Goal: " + evt.getGoal());
-    System.out.println("Status: " + evt.getStatus());
+//     System.out.println("new progress evt...");
+//     System.out.println(evt.getMessage());
 
-    if(evt.getGoal() != 0) {
-      if(progressBar.getMaximum() != evt.getGoal()) {
+//     System.out.println("Goal: " + evt.getGoal());
+//     System.out.println("Status: " + evt.getStatus());
 
-        Container contentPane = this.getContentPane();
-        contentPane.remove(progressBar);
-        progressBar = new JProgressBar(0, evt.getGoal());
-        contentPane.add(progressBar, BorderLayout.CENTER);
-      }
+//     if(evt.getGoal() != 0) {
+//       if(progressBar.getMaximum() != evt.getGoal()) {
 
-      if(evt.getGoal() == evt.getStatus())
-        progressBar.setIndeterminate(false);
-    }
-    progressBar.setValue(evt.getStatus());
+//         Container contentPane = this.getContentPane();
+//         contentPane.remove(progressBar);
+//         progressBar = new JProgressBar(0, evt.getGoal());
+//         contentPane.add(progressBar, BorderLayout.CENTER);
+//       }
+
+//       if(evt.getGoal() == evt.getStatus())
+//         progressBar.setIndeterminate(false);
+//     }
+//     progressBar.setValue(evt.getStatus());
 
 
-    if(!StringUtil.isEmpty(evt.getMessage())) {
-      progressBar.setString(evt.getMessage());
-      msgLabel.setText(evt.getMessage());
-    }
+//     if(!StringUtil.isEmpty(evt.getMessage())) {
+//       progressBar.setString(evt.getMessage());
+//       msgLabel.setText(evt.getMessage());
+//     }
   }
 
   private void initUI(int maximum) {
-    if(maximum > 0)
-      progressBar = new JProgressBar(0, maximum);
-    else {
-      progressBar = new JProgressBar();
-      progressBar.setIndeterminate(true);
-    }
+//     if(maximum > 0)
+//       progressBar = new JProgressBar(0, maximum);
+//     else {
+//       progressBar = new JProgressBar();
+//       progressBar.setIndeterminate(true);
+//     }
       
 
-    msgLabel = new JLabel();
+//     msgLabel = new JLabel();
 
-    this.setSize(300, 100);
+    this.setSize(600, 100);
+    
+    progressPanel = new ProgressPanel(maximum);
 
     Container contentPane = this.getContentPane();
 
     contentPane.setLayout(new BorderLayout());
-    contentPane.add(progressBar, BorderLayout.CENTER);
-    contentPane.add(msgLabel, BorderLayout.SOUTH);
+
+    contentPane.add(progressPanel);
+//     contentPane.add(progressBar, BorderLayout.CENTER);
+
+//     contentPane.add(msgLabel, BorderLayout.SOUTH);
 
     
     this.pack();

@@ -24,6 +24,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 public class ConceptEditorPanel extends JPanel 
   implements KeyListener,
@@ -86,6 +87,57 @@ public class ConceptEditorPanel extends JPanel
     updateConcepts(concepts);
     vdPanel.updateNode(node);
   }
+
+  private String checkForDuplicateMapping() {
+    Concept[] tempConcepts = new Concept[conceptUIs.length];
+
+    for(int i = 0 ; i < conceptUIs.length; i++) {
+      Concept con = DomainObjectFactory.newConcept();
+      con.setPreferredName(conceptUIs[i].code.getText());
+      tempConcepts[i] = con;
+    }
+
+    String newPrefName = ConceptUtil.preferredNameFromConcepts(Arrays.asList(tempConcepts));
+    
+    if(node.getUserObject() instanceof ObjectClass) {
+      List<ObjectClass> ocs = ElementsLists.getInstance().
+        getElements(DomainObjectFactory.newObjectClass());
+
+      ObjectClass currentOc = (ObjectClass)node.getUserObject();
+
+      for(ObjectClass oc : ocs) {
+        if(currentOc != oc) {
+          if(newPrefName.equals(oc.getPreferredName())) 
+            return "fill in error message for OC here";
+        }
+      }
+      return null;    
+    } else if (node.getUserObject() instanceof DataElement) {
+      DataElement currentDe = 
+        (DataElement)node.getUserObject();
+      List<ObjectClass> ocs = ElementsLists.getInstance().
+        getElements(DomainObjectFactory.newObjectClass());
+      List<DataElement> des = ElementsLists.getInstance().
+        getElements(DomainObjectFactory.newDataElement());
+
+      if(des != null && ocs != null) {
+        for(DataElement de : des) {
+          if((de.getDataElementConcept().getObjectClass() == 
+              currentDe.getDataElementConcept().getObjectClass())
+             && (de != currentDe))
+            if(newPrefName
+               .equals
+               (de.getDataElementConcept()
+                .getProperty().getPreferredName()))
+              return "fill in error msg for attribute here";
+        }
+      }
+      return null;
+    }
+    
+    // shouldn't get to here.
+    return null;
+  }
   
   private void initConcepts() 
   {
@@ -127,10 +179,21 @@ public class ConceptEditorPanel extends JPanel
     this.updateUI();
   }
   
-  public void apply(boolean toAll) {
+  public void apply(boolean toAll) throws ApplyException {
     boolean update = remove;
     remove = false;
     Concept[] newConcepts = new Concept[concepts.length];
+
+    String errorMsg = checkForDuplicateMapping();
+    if(errorMsg != null) {
+      JOptionPane.showMessageDialog 
+        (null,
+         "Duplicate Mapping",
+         errorMsg,
+         JOptionPane.ERROR_MESSAGE);
+      throw new ApplyException(errorMsg);
+    }
+    
     
     for(int i = 0; i<concepts.length; i++) {
       newConcepts[i] = concepts[i];
@@ -419,8 +482,7 @@ public class ConceptEditorPanel extends JPanel
  
   }
   
-  public void applyPressed() 
-  {
+  public void applyPressed() throws ApplyException {
     updateHeaderLabels();
     apply(false);
     if(node.getUserObject() instanceof DataElement)

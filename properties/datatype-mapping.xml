@@ -22,7 +22,7 @@
   <alias name ="double"/>
   </alias-list>
 
-<alias-list name="java.lang.Char">
+<alias-list name="java.lang.Character">
   <alias name="char"/>
 </alias-list>
 
@@ -38,8 +38,14 @@
     <alias name ="string"/>
     </alias-list>
 
-<alias-list name="java.lang.Date">
+<alias-list name="java.util.Date">
   <alias name="date"/>
 </alias-list>
+
+<alias-list name="java.util.Collection">
+  <alias name="java.lang.collection"/>
+  <alias name="collection"/>
+</alias-list>
+
 
 </Datatype-mapping>

@@ -291,9 +291,20 @@ public class UMLDefaultHandler
       de.setPublicId(existingDe.getPublicId());
       de.setVersion(existingDe.getVersion());
       de.setLatestVersionIndicator(existingDe.getLatestVersionIndicator());
-    } else
+      de.setValueDomain(existingDe.getValueDomain());
+    } else {
       de.setLongName(dec.getLongName() + " " + event.getType());
     //     de.setPreferredDefinition(event.getDescription());
+
+      String datatype = event.getType().trim();
+      if(DatatypeMapping.getKeys().contains(datatype.toLowerCase())) 
+        datatype = DatatypeMapping.getMapping().get(datatype.toLowerCase());
+      
+      ValueDomain vd = DomainObjectFactory.newValueDomain();
+      vd.setLongName(datatype);
+      de.setValueDomain(vd);
+
+    }
 
     logger.debug("DE LONG_NAME: " + de.getLongName());
 
@@ -313,13 +324,6 @@ public class UMLDefaultHandler
     fullName.setName(className + ":" + propName);
     de.addAlternateName(fullName);
 
-    String datatype = event.getType().trim();
-    if(DatatypeMapping.getKeys().contains(datatype.toLowerCase())) 
-      datatype = DatatypeMapping.getMapping().get(datatype.toLowerCase());
-
-    ValueDomain vd = DomainObjectFactory.newValueDomain();
-    vd.setLongName(datatype);
-    de.setValueDomain(vd);
 
     if(!StringUtil.isEmpty(event.getDescription())) {
       Definition altDef = DomainObjectFactory.newDefinition();
