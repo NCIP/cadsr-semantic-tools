@@ -73,8 +73,11 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
     queryFields.put("longName", lastProjectName);
     queryFields.put("version", new Float(lastProjectVersion));
 
+    List<String> eager = new ArrayList<String>();
+    eager.add(EagerConstants.CS_CSI);
+
     try {
-      Collection<ClassificationScheme> results = cadsrModule.findClassificationScheme(queryFields);
+      Collection<ClassificationScheme> results = cadsrModule.findClassificationScheme(queryFields, eager);
       
       if(results.size() == 0)
         throw new RoundtripException(PropertyAccessor.getProperty("last.project.not.found", new String[]{lastProjectName, lastProjectVersion.toString()}));
