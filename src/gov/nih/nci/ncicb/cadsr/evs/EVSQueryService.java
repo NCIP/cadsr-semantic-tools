@@ -38,6 +38,7 @@ public class EVSQueryService {
   private static String SYNONYM_PROPERTY_NAME = "Synonym";
   private static String PREFERRED_NAME_PROP = "PREFERRED_NAME";
   private static String DEFINITION_PROPERTY_NAME = "DEFINITION";
+  private static String ALT_DEFINITION_PROPERTY_NAME = "ALT_DEFINITION";
   private ApplicationService evsService;
   private String cacoreServiceURL;
 
@@ -190,6 +191,21 @@ public class EVSQueryService {
         definitions.add(def);
       }
     }
+    if(definitions.size() == 0) {
+      for (int x = 0; x < propVect.size(); x++) {
+        Property p = (Property) propVect.get(x);
+        if (p.getName().equalsIgnoreCase(ALT_DEFINITION_PROPERTY_NAME)) {
+          String definition = this.retrieveDefinitionValue(p.getValue());
+          String definitionSource = this.retrieveDefinitionSource(p.getValue());
+          Definition def = new Definition();
+          Source src = new Source();
+          def.setDefinition(definition);
+          src.setAbbreviation(definitionSource);
+          def.setSource(src);
+          definitions.add(def);
+        }
+      }
+    }
 
     return definitions;
   }
@@ -239,29 +255,20 @@ public class EVSQueryService {
    * @param args
    */
   public static void main(String[] args) {
-    EVSQueryService testAction = new EVSQueryService("http://cabio.nci.nih.gov/cacore30/server/HTTPServer");
+    EVSQueryService testAction = new EVSQueryService("http://cabio.nci.nih.gov/cacore31/http/remoteService");
     try {
       //testAction.findConceptsBySynonym("gene", 100);
 //       testAction.findConceptsByCode("C41095", true, 100);
 
-      List<EVSConcept> cons = testAction.findConceptsByPreferredName("name", false);
+      List<EVSConcept> cons = testAction.findConceptsByPreferredName("Clinical Trial Protocol", false);
 
       for(EVSConcept con : cons) {
         System.out.println(con.getPreferredName());
+        for(Definition def : (List<Definition>)con.getDefinitions()) {
+          System.out.println("def: " + def.getDefinition());
+          System.out.println("def source: " + def.getSource().getAbbreviation());
+        }
       }
-
-//       ApplicationService evsService = ApplicationService.getRemoteInstance("http://cabio.nci.nih.gov/cacore30/server/HTTPServer");
-
-//       gov.nih.nci.evs.domain.DescLogicConcept concept = new gov.nih.nci.evs.domain.DescLogicConcept();
-//       DetachedCriteria criteria = DetachedCriteria.forClass(gov.nih.nci.evs.domain.DescLogicConcept.class, "concept");
-
-//       criteria.add(Expression.eq("name", "Name"));
-      
-//       List<DescLogicConcept> l = evsService.query(criteria, gov.nih.nci.evs.domain.DescLogicConcept.class.getName());
-
-//       for(DescLogicConcept con : l) {
-//         System.out.println(con.getName());
-//       }
 
     }
     catch (Exception e) {
