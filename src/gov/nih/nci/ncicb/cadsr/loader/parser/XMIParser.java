@@ -117,14 +117,24 @@ public class XMIParser implements Parser {
   public static final String TV_QUALIFIER = "Qualifier";
 
   /**
-   * Qualifier Tagged Value prepender. 
+   * ObjectClass Tagged Value prepender. 
    */
   public static final String TV_TYPE_CLASS = "ObjectClass";
 
   /**
-   * Qualifier Tagged Value prepender. 
+   * Property Tagged Value prepender. 
    */
   public static final String TV_TYPE_PROPERTY = "Property";
+
+  /**
+   * ValueDomain Tagged Value prepender. 
+   */
+  public static final String TV_TYPE_VD = "ValueDomain";
+
+  /**
+   * Value Meaning Tagged Value prepender. 
+   */
+  public static final String TV_TYPE_VM = "ValueMeaning";
 
 
 
@@ -134,6 +144,8 @@ public class XMIParser implements Parser {
   public static final String TV_DOCUMENTATION = "documentation";
   public static final String TV_DESCRIPTION = "description";
   public static final String TV_HUMAN_REVIEWED = "HUMAN_REVIEWED";
+
+  private int totalNumberOfElements = 0, currentElementIndex = 0;
 
 
   private String[] bannedClassNames = null;
@@ -167,6 +179,12 @@ public class XMIParser implements Parser {
       
       Model model = UML13Utils.getModel(umlExtent, "EA Model");
 
+      totalNumberOfElements = countNumberOfElements(model);
+
+      evt.setMessage("Parsing ...");
+      evt.setGoal(totalNumberOfElements);
+      fireProgressEvent(evt);
+
       Iterator it = model.getOwnedElement().iterator();
 
       while (it.hasNext()) {
@@ -196,6 +214,39 @@ public class XMIParser implements Parser {
 //       logger.fatal(e, e);
       throw new ParserException(e);
     } // end of try-catch
+  }
+
+  private int countNumberOfElements(Model model) {
+    int count = 0;
+    for(Object o : model.getOwnedElement()) {
+      if (o instanceof UmlPackage) {
+        count = countPackage((UmlPackage) o, count);
+      } else if (o instanceof UmlClass) {
+        count++;
+        count = countClass((UmlClass) o, count);
+      }
+    }
+    return count;
+  }
+  private int countPackage(UmlPackage pkg, int count) {
+    for(Object o : pkg.getOwnedElement()) {
+      if (o instanceof UmlPackage) {
+        count = countPackage((UmlPackage) o, count);
+      } else if (o instanceof UmlClass) {
+        count++;
+        count = countClass((UmlClass) o, count);
+      }
+    }
+    return count;
+  }
+
+  private int countClass(UmlClass clazz, int count) {
+    for(Object o : clazz.getFeature()) {
+      if (o instanceof Attribute) {
+        count++;
+      } 
+    }
+    return count;
   }
 
   private void doPackage(UmlPackage pack) {
@@ -266,8 +317,10 @@ public class XMIParser implements Parser {
       className = pName + "." + className;
     }
 
+    currentElementIndex++;
     ProgressEvent evt = new ProgressEvent();
     evt.setMessage("Parsing " + className);
+    evt.setStatus(currentElementIndex);
     fireProgressEvent(evt);
 
     NewClassEvent event = new NewClassEvent(className.trim());
@@ -370,14 +423,16 @@ public class XMIParser implements Parser {
 
     className = clazz.getName();
 
+    currentElementIndex++;
     ProgressEvent evt = new ProgressEvent();
     evt.setMessage("Parsing " + className);
+    evt.setStatus(currentElementIndex);
     fireProgressEvent(evt);
 
     NewValueDomainEvent event = new NewValueDomainEvent(className.trim());
 //     event.setPackageName("ValueDomains");
 
-    setConceptInfo(clazz, event, TV_TYPE_CLASS);
+    setConceptInfo(clazz, event, TV_TYPE_VD);
 
     logger.debug("Value Domain: " + className);
 
@@ -415,7 +470,6 @@ public class XMIParser implements Parser {
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
-
 
     listener.newValueDomain(event);
 
@@ -461,6 +515,13 @@ public class XMIParser implements Parser {
   private void doAttribute(Attribute att) {
     NewAttributeEvent event = new NewAttributeEvent(att.getName().trim());
     event.setClassName(className);
+
+    currentElementIndex++;
+    ProgressEvent evt = new ProgressEvent();
+    evt.setMessage("Parsing " + att.getName());
+    evt.setStatus(currentElementIndex);
+    fireProgressEvent(evt);
+
 
     if(att.getType() == null || att.getType().getName() == null) {
       ValidationItems.getInstance()
@@ -519,12 +580,18 @@ public class XMIParser implements Parser {
     NewValueMeaningEvent event = new NewValueMeaningEvent(att.getName().trim());
     event.setValueDomainName(className);
 
+    currentElementIndex++;
+    ProgressEvent evt = new ProgressEvent();
+    evt.setMessage("Parsing " + att.getName());
+    evt.setStatus(currentElementIndex);
+    fireProgressEvent(evt);
+
     TaggedValue tv = UML13Utils.getTaggedValue(att, TV_HUMAN_REVIEWED);
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
 
-    setConceptInfo(att, event, TV_TYPE_PROPERTY);
+    setConceptInfo(att, event, TV_TYPE_VM);
 
     listener.newValueMeaning(event);
   }

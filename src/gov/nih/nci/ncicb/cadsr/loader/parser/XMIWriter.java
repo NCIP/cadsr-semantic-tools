@@ -304,7 +304,7 @@ public class XMIWriter implements ElementWriter {
           
           boolean changed = changeTracker.get(fullPropName);
           if(changed) {
-            String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'Property') or starts-with(@tag,'PropertyQualifier') or @tag='" + XMIParser.TV_DE_ID +"' or @tag='"+ XMIParser.TV_DE_VERSION +"' )and @modelElement='"
+            String xpath = "//*[local-name()='TaggedValue' and (starts-with(@tag,'ValueMeaning') or starts-with(@tag,'ValueMeaningQualifier') and @modelElement='"
               + attributeElement.getAttributeValue("xmi.id")
               + "']";
             
@@ -316,7 +316,7 @@ public class XMIWriter implements ElementWriter {
             }
             
             String [] conceptCodes = ConceptUtil.getConceptCodes(vm);
-            addConceptTvs(attributeElement, conceptCodes, XMIParser.TV_TYPE_PROPERTY);
+            addConceptTvs(attributeElement, conceptCodes, XMIParser.TV_TYPE_VM);
           }
         }
       }
