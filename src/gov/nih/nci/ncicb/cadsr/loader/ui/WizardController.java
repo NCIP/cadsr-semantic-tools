@@ -38,6 +38,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
 import gov.nih.nci.ncicb.cadsr.semconn.SemanticConnectorException;
+import gov.nih.nci.ncicb.cadsr.semconn.*;
 
 import java.io.File;
 
@@ -213,7 +214,8 @@ public class WizardController implements ActionListener {
                     String inputXmi = filename;
                     
                     SemanticConnectorUtil semConn = new SemanticConnectorUtil();
-                    semConn.addProgressListener(progressDesc);
+                    SemanticConnector sem = BeansAccessor.getSemanticConnector();
+                    sem.setProgressListener(progressDesc);
 
                     if(!filenameNoExt.startsWith("fixed_")) {
                       reportPanel.setOutputText("The name of the XMI file must start with 'fixed_'. It does not. <br> Please ensure you have run the Fix EA task first.");
@@ -223,11 +225,18 @@ public class WizardController implements ActionListener {
                     File csvFile = new File(SemanticConnectorUtil.getCsvFilename(filename));
                     evt.setMessage("Creating Semantic Connector Report. This may take a minute ...");
                     progressDesc.newProgressEvent(evt);
-                    outputFile = semConn.generateReport(inputXmi);
-
-                    reportPanel.setFiles(inputXmi, outputFile);
-
-                  } catch (SemanticConnectorException e){
+                    String outputXmi = inputXmi.substring(0, inputXmi.lastIndexOf("/") + 1)
+                        + "FirstPass_" 
+                        + inputXmi.substring(inputXmi.lastIndexOf("/") + 1, inputXmi.lastIndexOf("."))
+                        + ".xmi";
+                    sem.firstPass(inputXmi, outputXmi);
+//                    outputFile = semConn.generateReport(inputXmi);
+             
+                    reportPanel.setFiles(inputXmi, outputXmi);
+                    
+                    evt.setCompleted(true);
+                    progressDesc.newProgressEvent(evt);
+                  } catch (ParserException e){
                     e.printStackTrace();
                     reportPanel.setFiles(null, "An error occured.");
                   } catch (Throwable t)  {// end of try-catch
