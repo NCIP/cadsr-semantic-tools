@@ -29,6 +29,8 @@ public class ProgressEvent {
   private String message;
   private int goal;
   private int status;
+  
+  private boolean done = false;
 
   /**
    * Get the Message value.
@@ -44,6 +46,16 @@ public class ProgressEvent {
    */
   public int getGoal() {
     return goal;
+  }
+
+  public void setCompleted(boolean completed) 
+  {
+    done = completed;
+  }
+
+  public boolean isCompleted() 
+  {
+    return done;
   }
 
   /**
