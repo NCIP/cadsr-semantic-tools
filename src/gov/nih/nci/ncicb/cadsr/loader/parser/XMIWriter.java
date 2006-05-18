@@ -110,6 +110,9 @@ public class XMIWriter implements ElementWriter {
       taggedValue.setAttribute(new Attribute("xmi.id", newId));
       taggedValue.setAttribute(new Attribute("tag", tagName));
       taggedValue.setAttribute(new Attribute("modelElement", xmiid));
+      
+      if(value == null)
+        value = "";
       taggedValue.setAttribute(new Attribute("value", value));
       
       Element elem1 = getElement(modelElement, "//*[local-name()='Model'");
