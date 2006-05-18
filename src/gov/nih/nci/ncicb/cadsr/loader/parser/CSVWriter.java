@@ -26,6 +26,7 @@ import gov.nih.nci.ncicb.cadsr.domain.Property;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -158,7 +159,11 @@ public class CSVWriter implements ElementWriter
       {
         write.close();
       }
-    }
+  }
   
+  public void setProgressListener(ProgressListener progressListener) {
+    
+  }
+
 }
 
