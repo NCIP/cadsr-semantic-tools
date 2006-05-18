@@ -22,6 +22,8 @@ package gov.nih.nci.ncicb.cadsr.loader.parser;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.NewConceptEvent;
 
@@ -57,6 +59,7 @@ public class XMIWriter implements ElementWriter {
   private ReviewTracker reviewTracker = ReviewTracker.getInstance();
   private ChangeTracker changeTracker = ChangeTracker.getInstance();
 
+  private ProgressListener progressListener;
   
   public XMIWriter() {
     try {
@@ -72,15 +75,23 @@ public class XMIWriter implements ElementWriter {
 
     this.cadsrObjects = elements;
     
+    sendProgressEvent(0, 0, "Parsing Model");
     readModel();
+    sendProgressEvent(0, 0, "Marking Human reviewed");
     markHumanReviewed();
+    sendProgressEvent(0, 0, "Updating Elements");
     updateChangedElements();
+    sendProgressEvent(0, 0, "ReWriting Model");
     writeModel();
 
   }
 
   public void setOutput(String url) {
     this.output = url;
+  }
+
+  public void setProgressListener(ProgressListener listener) {
+    progressListener = listener;
   }
 
   /**
@@ -217,12 +228,18 @@ public class XMIWriter implements ElementWriter {
       List<DataElement> des = cadsrObjects.getElements(DomainObjectFactory.newDataElement());
       List<ValueDomain> vds = cadsrObjects.getElements(DomainObjectFactory.newValueDomain());
       
+      int goal = ocs.size() + des.size() + vds.size();
+      int status = 0;
+      sendProgressEvent(status, goal, "");
+
       for(ObjectClass oc : ocs) {
         String fullClassName = null;
         for(AlternateName an : oc.getAlternateNames()) {
           if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
             fullClassName = an.getName();
         }
+
+        sendProgressEvent(status++, goal, "Class: " + fullClassName);
 
         Element classElement = elements.get(fullClassName);
         boolean changed = changeTracker.get(fullClassName);
@@ -255,6 +272,7 @@ public class XMIWriter implements ElementWriter {
           if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
             fullPropName = an.getName();
         }
+        sendProgressEvent(status++, goal, "Attribute: " + fullPropName);
 
         Element attributeElement = elements.get(fullPropName);
         
@@ -297,6 +315,9 @@ public class XMIWriter implements ElementWriter {
       }
 
       for(ValueDomain vd : vds) {
+
+        sendProgressEvent(status++, goal, "Value Domain: " + vd.getLongName());
+
         for(PermissibleValue pv : vd.getPermissibleValues()) {
           ValueMeaning vm = pv.getValueMeaning();
           String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getShortMeaning();
@@ -527,4 +548,17 @@ public class XMIWriter implements ElementWriter {
     } 
 
   }
+
+  protected void sendProgressEvent(int status, int goal, String message) {
+    if(progressListener != null) {
+      ProgressEvent pEvent = new ProgressEvent();
+      pEvent.setMessage(message);
+      pEvent.setStatus(status);
+      pEvent.setGoal(goal);
+      
+      progressListener.newProgressEvent(pEvent);
+    }
+  }
+  
+
 }
