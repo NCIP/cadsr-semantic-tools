@@ -19,6 +19,8 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.parser;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 
 public interface ElementWriter {
 
@@ -27,5 +29,7 @@ public interface ElementWriter {
 //  public void setOutput(java.io.Writer writer);
 //  
   public void setOutput(String url);
+
+  public void setProgressListener(ProgressListener progressListener);
 
 }
