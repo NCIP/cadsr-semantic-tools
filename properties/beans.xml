@@ -29,6 +29,23 @@
     <property name="userPreferences"><ref bean="usersPreferences"/></property>
   </bean>
 
+  <bean name="semanticConnector"
+    class="gov.nih.nci.ncicb.cadsr.semconn.SemanticConnector">
+    <property name="parser"><ref bean="xmiSemConnParser"/></property>
+    <property name="writer"><ref bean="xmiWriter"/></property>
+  </bean>
+  
+  <bean name="xmiSemConnParser"
+    class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser">
+    <property name="eventHandler"><ref bean="semConnEventHandler"/></property>
+  </bean>
+
+  
+  <bean name="semConnEventHandler"
+    class="gov.nih.nci.ncicb.cadsr.semconn.SemConnEventHandler">
+  </bean>
+  
+
   <bean name="umlEventHandler"
     class="gov.nih.nci.ncicb.cadsr.loader.event.UMLDefaultHandler">
   </bean>
