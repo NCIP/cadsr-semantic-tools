@@ -518,7 +518,17 @@ public class ConceptEditorPanel extends JPanel
                 new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false));
   }
   
+  
   public void removePressed() 
+  {
+    removePressed(0);
+  }
+
+  
+  /**
+   * @parameter index index starting with 0, 0 is the primaryConcept. n is conceptQualifierN
+   */
+  public void removePressed(int index) 
   {
       Concept[] newConcepts = new Concept[concepts.length - 1];
       for(int i = 0; i<newConcepts.length; i++) {
