@@ -257,7 +257,7 @@ public class UMLPersister implements Persister {
     ClassSchemeClassSchemeItem packageCsCsi = (ClassSchemeClassSchemeItem)defaults.getPackageCsCsis().get(packageName);
 
     for(Definition def : altDefs) {
-      if(def.getType().equals(type) && def.getDefinition().equals(newDef)) {
+      if(def.getType() != null && def.getType().equals(type) && def.getDefinition().equals(newDef)) {
         found = true;
         logger.info(PropertyAccessor.getProperty(
                       "existed.altDef", newDef));
