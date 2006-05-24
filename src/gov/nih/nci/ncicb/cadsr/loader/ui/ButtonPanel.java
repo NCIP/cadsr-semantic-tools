@@ -110,7 +110,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     switchButton.addActionListener(this);
     
     this.add(addButton);
-    this.add(deleteButton);
+    //this.add(deleteButton);
     this.add(saveButton);
     this.add(reviewButton);
     this.add(previousButton);
