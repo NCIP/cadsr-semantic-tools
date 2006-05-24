@@ -277,6 +277,8 @@ public class ConceptEditorPanel extends JPanel
 
     if(prefs.getUmlDescriptionOrder().equals("first"))
       insertInBag(gridPanel, createDescriptionPanel(), 0, 0);
+
+    boolean primaryConceptFirst = prefs.getOrderOfConcepts().equalsIgnoreCase("first");
     
     for(int i = 0; i<concepts.length; i++) {
       conceptUIs[i] = new ConceptUI(concepts[i]);
@@ -304,21 +306,32 @@ public class ConceptEditorPanel extends JPanel
       JButton evsButton = new JButton("Evs Link");
       insertInBag(mainPanel, evsButton, 2, 3);
       
+      JButton deleteButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("delete-x.gif")));
+      //insertInBag(mainPanel, deleteButton, 2, 0);
+      
       JButton upButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("up-arrow.gif")));
       JButton downButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("down-arrow.gif")));
-
+      
+      upButton.setToolTipText("Move this Concept up");
+      downButton.setToolTipText("Move this Concept down");
+      deleteButton.setToolTipText("Delete this Concept");
+      
       upButton.setPreferredSize(new Dimension(28, 35));
+      deleteButton.setPreferredSize(new Dimension(28,29));
       downButton.setPreferredSize(new Dimension(28, 35));
+
+      //deleteButton.
 
       JPanel arrowPanel = new JPanel(new GridBagLayout());
       insertInBag(arrowPanel, upButton, 0, 0);
-      insertInBag(arrowPanel, downButton, 0, 6);
+      insertInBag(arrowPanel, deleteButton, 0, 1);
+      insertInBag(arrowPanel, downButton, 0, 2);
       
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
       conceptPanels[i].add(arrowPanel, BorderLayout.EAST);
       
       //display Primary Concept first
-      if(prefs.getOrderOfConcepts().equalsIgnoreCase("first"))
+      if(primaryConceptFirst)
         insertInBag(gridPanel, conceptPanels[i], 0, i+1);
       //display Qualifiers first
       else
@@ -330,12 +343,29 @@ public class ConceptEditorPanel extends JPanel
       conceptUIs[i].defSource.addKeyListener(this);
 
       final int index = i;
-      if(index == 0)
-        downButton.setVisible(false);
-      if(index == concepts.length-1)
-        upButton.setVisible(false);
+      if(!primaryConceptFirst ){
+        if(index == 0)
+          downButton.setVisible(false);
+        if(index == concepts.length-1)
+          upButton.setVisible(false);
+      }
+      else {
+        if(index == 0)
+          upButton.setVisible(false);
+        if(index == concepts.length-1)
+          downButton.setVisible(false);
+      }
+
+      if(concepts.length <= 1)
+        deleteButton.setVisible(false);
       
-      downButton.addActionListener(new ActionListener() {
+      deleteButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent event) {
+          removePressed(index);
+        }
+      });
+      
+      ActionListener action1 = new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           Concept temp = concepts[index-1];
           concepts[index-1] = concepts[index];
@@ -351,9 +381,9 @@ public class ConceptEditorPanel extends JPanel
           firePropertyChangeEvent(
             new PropertyChangeEvent(this, ButtonPanel.ADD, null, false));          
         }
-        });
+      };
       
-      upButton.addActionListener(new ActionListener() {
+      ActionListener action2 = new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           Concept temp = concepts[index];
           concepts[index] = concepts[index+1];
@@ -372,7 +402,11 @@ public class ConceptEditorPanel extends JPanel
             new PropertyChangeEvent(this, ButtonPanel.ADD, null, false)); 
           //addButton.setEnabled(false);
         }
-        });
+      };
+      
+      downButton.addActionListener(primaryConceptFirst?action2:action1);
+      
+      upButton.addActionListener(primaryConceptFirst?action1:action2);
 
 
       evsButton.addActionListener(new ActionListener() {
@@ -531,8 +565,12 @@ public class ConceptEditorPanel extends JPanel
   public void removePressed(int index) 
   {
       Concept[] newConcepts = new Concept[concepts.length - 1];
-      for(int i = 0; i<newConcepts.length; i++) {
-        newConcepts[i] = concepts[i];
+      for(int i = 0, j=0; i<newConcepts.length; i++) {
+        if(i == index) 
+          j++;
+        
+          newConcepts[i] = concepts[j++];
+        
       }
       concepts = newConcepts;
       
