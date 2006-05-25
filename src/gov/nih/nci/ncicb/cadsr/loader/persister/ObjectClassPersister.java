@@ -69,9 +69,6 @@ public class ObjectClassPersister extends UMLPersister {
         String newDef = oc.getPreferredDefinition();
         String newName = className;
 
-        List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc.getAlternateNames());
-        oc.removeAlternateNames();
-        oc.removeDefinitions();
 
         // Use case for existing Element
         if(!StringUtil.isEmpty(oc.getPublicId()) && oc.getVersion() != null) {
@@ -80,7 +77,6 @@ public class ObjectClassPersister extends UMLPersister {
           addPackageClassification(newOc, packageName);
 
 	  logger.info(PropertyAccessor.getProperty("mapped.to.existing.oc"));
-
           continue;
         } // otherwise search by concepts
 
@@ -112,8 +108,16 @@ public class ObjectClassPersister extends UMLPersister {
 
           List acCsCsis = oc.getAcCsCsis();
           try {
+            List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc.getAlternateNames());
+            oc.removeAlternateNames();
+            oc.removeDefinitions();
+
             newOc = objectClassDAO.create(oc, conceptCodes);
             logger.info(PropertyAccessor.getProperty("created.oc"));
+
+            for(AlternateName ann : parsedAltNames) {
+              oc.addAlternateName(ann);
+            }
           } catch (DAOCreateException e){
             logger.error(PropertyAccessor.getProperty("created.oc.failed", e.getMessage()));
           } // end of try-catch
@@ -125,9 +129,9 @@ public class ObjectClassPersister extends UMLPersister {
           String newConceptDef = primaryConcept.getPreferredDefinition();
 	  newOc = l.get(0);
           
-          for(AlternateName an : parsedAltNames) {
-            newOc.addAlternateName(an);
-          }
+//           for(AlternateName an : parsedAltNames) {
+//             newOc.addAlternateName(an);
+//           }
 
 	  logger.info(PropertyAccessor.getProperty("existed.oc"));
 
@@ -151,10 +155,10 @@ public class ObjectClassPersister extends UMLPersister {
 
 //           addAlternateName(newOc, newName, AlternateName.TYPE_UML_CLASS ,packageName);
         
-        for(AlternateName an : parsedAltNames) {
-          oc.addAlternateName(an);
-          addAlternateName(newOc, an.getName(), an.getType() ,packageName);
-        }
+//         for(AlternateName an : parsedAltNames) {
+//           oc.addAlternateName(an);
+//           addAlternateName(newOc, an.getName(), an.getType() ,packageName);
+//         }
 
 	it.set(newOc);
         oc.setLongName(newOc.getLongName());
