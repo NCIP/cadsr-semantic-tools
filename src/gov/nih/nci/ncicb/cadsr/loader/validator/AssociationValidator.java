@@ -19,6 +19,7 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.validator;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 import java.util.*;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
@@ -74,6 +75,52 @@ public class AssociationValidator implements Validator {
         continue;
       }
     }
+    
+    
+    //validates whether there is more than 1 Association between
+    //two classes
+    Map<ObjectClass, String> s = new HashMap<ObjectClass, String>();
+    Map<String, List<ObjectClassRelationship>> mapOfOcrs = new HashMap<String, List<ObjectClassRelationship>>();
+    for(ObjectClassRelationship currentOcr : ocrs)
+      //check to make sure the ocr is an association 
+      if(currentOcr.getType().equals(ObjectClassRelationship.TYPE_HAS)) {
+          String an = LookupUtil.lookupFullName(ocr.getSource());
+          //if the alternate name is not in the map put it in 
+          if(!mapOfOcrs.containsKey(an)) {
+//        if(!mapOfOcrs.containsKey(currentOcr.getSource())) {
+          List<ObjectClassRelationship> listOfOcr = new ArrayList<ObjectClassRelationship>();
+          listOfOcr.add(currentOcr);
+          mapOfOcrs.put(an, listOfOcr);
+          //else add the ocr to the list for that alternate name 
+          } else
+            mapOfOcrs.get(an).add(currentOcr);
+            //listOfOcrs.put(ocr.getSource(), oocrcr.getTarget());
+    }
+  
+    for(List<ObjectClassRelationship> list : mapOfOcrs.values())
+      for(ObjectClassRelationship ocr1 : list)
+        for(ObjectClassRelationship ocr2 : list)
+        if(ocr1 != ocr2) {
+          String oc1Source = LookupUtil.lookupFullName(ocr1.getSource());
+          String oc1Target = LookupUtil.lookupFullName(ocr1.getTarget());
+          String oc2Source = LookupUtil.lookupFullName(ocr2.getSource());
+          String oc2Target = LookupUtil.lookupFullName(ocr2.getTarget());
+          if((oc1Source.equals(oc2Source) &&
+            oc1Target.equals(oc2Target)) ||
+            oc1Target.equals(oc2Source) &&
+            oc1Source.equals(oc2Target))
+            
+            items.addItem(new ValidationWarning
+                   (PropertyAccessor.getProperty(
+                    "association.more.than.one", 
+                    ocr1.getSource().getLongName(), ocr1.getTarget().getLongName()),
+                    ocr1
+                    ));
+            
+        }
+        
+      
+    
     
     return items;
   }
