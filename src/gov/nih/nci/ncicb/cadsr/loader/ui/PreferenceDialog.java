@@ -39,7 +39,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
     umlDescriptionBox = new JCheckBox("Display UML Description Last"),
     evsAutoSearchBox = new JCheckBox("Automatically Search EVS on EVS link"),
     privateApiSearchBox = new JCheckBox("Use Private Api"),
-    orderOfConceptsBox = new JCheckBox("Display Primary Concept First");
+    orderOfConceptsBox = new JCheckBox("Display Primary Concept First"),
+    showInheritedAttributesBox = new JCheckBox("Display Inherited Attributes");
 
   private JButton apply = new JButton("Apply");
   private JButton cancel = new JButton("Cancel");
@@ -62,6 +63,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     centerPanel.add(evsAutoSearchBox);
     centerPanel.add(privateApiSearchBox);
     centerPanel.add(orderOfConceptsBox);
+    centerPanel.add(showInheritedAttributesBox);
 
     this.getContentPane().setLayout(new BorderLayout());
     this.getContentPane().add(centerPanel);
@@ -102,6 +104,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
     evsAutoSearchBox.setSelected(prefs.getEvsAutoSearch());
 
     privateApiSearchBox.setSelected(prefs.isUsePrivateApi());
+    
+    showInheritedAttributesBox.setSelected(prefs.getShowInheritedAttributes());
   }
   
   public void actionPerformed(ActionEvent event) 
@@ -129,6 +133,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
 
       prefs.setUsePrivateApi(privateApiSearchBox.isSelected());
 
+      prefs.setShowInheritedAttributes(showInheritedAttributesBox.isSelected());
+      
       if(button.getActionCommand().equals(OK))
         this.dispose();
     }
