@@ -150,6 +150,19 @@ public class UserPreferences {
     UserPreferencesEvent event = new UserPreferencesEvent(UserPreferencesEvent.UML_DESCRIPTION, value);
     fireUserPreferencesEvent(event);
   }
+  
+  public boolean getShowInheritedAttributes() 
+  {
+    return prefs.getBoolean("showInheritedAttributes", false);
+  }
+  
+  public void setShowInheritedAttributes(boolean show) 
+  {
+    prefs.putBoolean("showInheritedAttributes", true);
+    UserPreferencesEvent event = 
+      new UserPreferencesEvent(UserPreferencesEvent.SHOW_INHERITED_ATTRIBUTES,(Boolean.valueOf(show)).toString());
+    fireUserPreferencesEvent(event);
+  }
 
   public boolean getEvsAutoSearch() 
   {
