@@ -38,7 +38,8 @@ public class TreeBuilder implements UserPreferencesListener {
 
   private List<TreeListener> treeListeners = new ArrayList();
   private boolean inClassAssociations = false,
-    showAssociations = true, showValueDomains = true;
+    showAssociations = true, showValueDomains = true,
+    showInheritedAttributes = false;
   
   private ReviewTracker reviewTracker = ReviewTracker.getInstance();
   private static TreeBuilder instance = new TreeBuilder();
@@ -167,7 +168,9 @@ public class TreeBuilder implements UserPreferencesListener {
     // Find all DEs that have this OC.
     DataElement o = DomainObjectFactory.newDataElement();
     List<DataElement> des = elements.getElements(o);
-
+    List<UMLNode> inherited = new ArrayList();
+    PackageNode inheritedPackage = new PackageNode("Inherited Attributes", "Inherited Attributes");
+    
       for(DataElement de : des) {
         try {
           String fullClassName = null;
@@ -184,6 +187,10 @@ public class TreeBuilder implements UserPreferencesListener {
             if(reviewed != null) {
               parentNode.addChild(node);
               ((AttributeNode) node).setReviewed(reviewed);
+            }
+            else {
+              node = new InheritedAttributeNode(de);
+              inherited.add(node);
             }
             
             List<ValidationItem> items = findValidationItems(de.getDataElementConcept().getProperty());
@@ -210,6 +217,11 @@ public class TreeBuilder implements UserPreferencesListener {
         } catch (NullPointerException e){
           e.printStackTrace();
         } // end of try-catch
+      }
+      if(showInheritedAttributes) {
+        parentNode.addChild(inheritedPackage);
+        for(UMLNode inherit : inherited)
+          inheritedPackage.addChild(inherit);
       }
   }
 
@@ -343,6 +355,13 @@ public class TreeBuilder implements UserPreferencesListener {
       buildTree(elements);
       TreeEvent tEvent = new TreeEvent();
       fireTreeEvent(tEvent);
+    }
+    if(event.getTypeOfEvent() == UserPreferencesEvent.SHOW_INHERITED_ATTRIBUTES)
+    {
+      showInheritedAttributes = Boolean.valueOf(event.getValue());
+      buildTree(elements);
+      TreeEvent treeEvent = new TreeEvent();
+      fireTreeEvent(treeEvent);
     }
   }
 
