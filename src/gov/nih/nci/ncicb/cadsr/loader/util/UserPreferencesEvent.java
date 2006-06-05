@@ -27,6 +27,7 @@ public class UserPreferencesEvent
   public static final int UML_DESCRIPTION = 2;
   public static final int MODE_SELECTION = 3;
   public static final int ORDER_CONCEPTS = 4;
+  public static final int SHOW_INHERITED_ATTRIBUTES = 5;
   private int typeOfEvent;
   private String value;
   
