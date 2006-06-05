@@ -1,10 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
-import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
-import gov.nih.nci.ncicb.cadsr.domain.Concept;
-import gov.nih.nci.ncicb.cadsr.domain.DataElementConcept;
-import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
-import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
+import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
@@ -74,6 +71,8 @@ public class ValidateConceptsDialog extends JDialog
   
   private List<SearchListener> searchListeners = new ArrayList();
   
+  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+  
   public ValidateConceptsDialog(JFrame owner)
   {
     super(owner, "Validate Concepts");
@@ -133,9 +132,10 @@ public class ValidateConceptsDialog extends JDialog
         List<ObjectClass> ocs = ElementsLists.getInstance().
             getElements(DomainObjectFactory.newObjectClass());
         
-        List<DataElementConcept> decs = ElementsLists.getInstance().
-            getElements(DomainObjectFactory.newDataElementConcept());
-        
+        List<DataElement> des = ElementsLists.getInstance().
+            getElements(DomainObjectFactory.newDataElement());
+     
+
         for(ObjectClass oc : ocs)
           for(Concept concept : errorList.keySet()) {
             String temp = oc.getPreferredName();
@@ -145,7 +145,15 @@ public class ValidateConceptsDialog extends JDialog
                 wrapperList.add(new AcListElementWrapper(oc, concept));
           }
         
-        for(DataElementConcept dec : decs)
+        for(DataElement de : des) {
+          DataElementConcept dec = de.getDataElementConcept();
+          String fullName = null;
+          for(AlternateName an : de.getAlternateNames()) {
+            if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
+              fullName = an.getName();
+          }
+          Boolean reviewed = reviewTracker.get(fullName);
+          if(reviewed != null) {
           for(Concept concept : errorList.keySet()) {
             String temp = dec.getProperty().getPreferredName();
             String split[] = temp.split(":");
@@ -153,6 +161,8 @@ public class ValidateConceptsDialog extends JDialog
               if(split[i].equals(concept.getPreferredName()))
                 wrapperList.add(new AcListElementWrapper(dec, concept));
           }
+          }
+        }
         
         for(ObjectClass oc : ocs)
           for(Concept concept : errorNameList.keySet()) {
@@ -161,12 +171,22 @@ public class ValidateConceptsDialog extends JDialog
                 wrapperList.add(new AcListElementWrapper(oc, concept));
           }
         
-        for(DataElementConcept dec : decs)
+        for(DataElement de : des) {
+          DataElementConcept dec = de.getDataElementConcept();
+          String fullName = null;
+          for(AlternateName an : de.getAlternateNames()) {
+            if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
+              fullName = an.getName();
+          }
+          Boolean reviewed = reviewTracker.get(fullName);
+          if(reviewed != null) {
           for(Concept concept : errorNameList.keySet()) {
             String temp = dec.getProperty().getLongName();
               if(temp.equals(concept.getLongName()))
                 wrapperList.add(new AcListElementWrapper(dec, concept));
           }
+          }
+        }
         
         
         event = new ProgressEvent();
