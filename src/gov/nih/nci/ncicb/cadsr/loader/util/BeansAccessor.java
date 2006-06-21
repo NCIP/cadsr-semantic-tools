@@ -34,6 +34,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.UMLHandler;
 import gov.nih.nci.ncicb.cadsr.loader.validator.Validator;
 import gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
+import gov.nih.nci.ncicb.cadsr.semconn.*;
 
 public class BeansAccessor {
   
@@ -50,8 +51,11 @@ public class BeansAccessor {
     }
     else return null;
   }
-    
-
+  
+  public static SemanticConnector getSemanticConnector() {
+    return (SemanticConnector)getFactory().getBean("semanticConnector");
+  }
+  
   public static CadsrPublicApiModule getCadsrPublicApiModule() {
     return (CadsrPublicApiModule)getFactory().getBean("cadsrPublicApiModule");
   }
