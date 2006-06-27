@@ -3,11 +3,16 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
+import gov.nih.nci.ncicb.cadsr.loader.validator.MismatchDefByCodeError;
+import gov.nih.nci.ncicb.cadsr.loader.validator.ConceptValidator;
+import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItem;
+import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -18,12 +23,12 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-
+import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 
 
 
 public class ValidateConceptsDialog extends JDialog 
-  implements ListSelectionListener
+  implements ListSelectionListener, ProgressListener
 {
   private EvsModule module = new EvsModule();
   private Map<Concept, Concept> errorList = new HashMap<Concept, Concept>();
@@ -73,6 +78,9 @@ public class ValidateConceptsDialog extends JDialog
   
   private ReviewTracker reviewTracker = ReviewTracker.getInstance();
   
+  private Map<String,EvsResult> cacheByConceptCode = new HashMap<String,EvsResult>();
+  private Map<String,Collection<EvsResult>> cacheByPreferredName = new HashMap<String,Collection<EvsResult>>();
+  
   public ValidateConceptsDialog(JFrame owner)
   {
     super(owner, "Validate Concepts");
@@ -90,45 +98,100 @@ public class ValidateConceptsDialog extends JDialog
         progressPanel.newProgressEvent(event);
         
         int pStatus = 0;
-        for(Concept con : concepts) 
+//        for(Concept con : concepts) 
+//        {
+//          event = new ProgressEvent();
+//          event.setMessage("Validating " + con.getLongName());
+//          event.setStatus(pStatus++);
+//          progressPanel.newProgressEvent(event);
+//          
+//          EvsResult result = null;
+//          
+//          
+//          //check to see if concept has already been searched by Concept Code
+//          if(cacheByConceptCode.containsKey(con.getPreferredName())) 
+//            result = (EvsResult)cacheByConceptCode.get(con.getPreferredName());          
+//          else
+//            result = module.findByConceptCode(con.getPreferredName(), false);
+//
+//          if(result != null) 
+//          {  
+//              if(con.getLongName() == null || !con.getLongName().equals(result.getConcept().getLongName())) {
+//                highlightDifferentNameByCode.add(result.getConcept());
+//                errorList.put(con, result.getConcept());
+//              }
+//              if(con.getPreferredDefinition() == null || !con.getPreferredDefinition().trim().equals(result.getConcept().getPreferredDefinition().trim())) {
+//                highlightDifferentDefByCode.add(result.getConcept());
+//                errorList.put(con, result.getConcept());
+//              }
+//              //put concept in the cache
+//              cacheByConceptCode.put(con.getPreferredName(), result);
+//          }
+//          
+//          Collection<EvsResult> nameResult = null;
+//          
+//          //check cache to see if concept has already been searched by Preferred Name
+//          if(cacheByPreferredName.containsKey(con.getLongName()))
+//            nameResult = (Collection<EvsResult>)cacheByPreferredName.get(con.getLongName());
+//          else
+//            nameResult = module.findByPreferredName(con.getLongName(), false);
+//            
+//          if(nameResult != null && nameResult.size() == 1) 
+//          {
+//            for(EvsResult name : nameResult) { 
+//            if(con.getPreferredName() == null || !con.getPreferredName().equals(name.getConcept().getPreferredName())) { 
+//              highlightDifferentCodeByName.add(name.getConcept());
+//              errorNameList.put(con, name.getConcept());
+//            }
+//            if(con.getPreferredDefinition() == null || !con.getPreferredDefinition().trim().equals(name.getConcept().getPreferredDefinition().trim())) { 
+//              highlightDifferentDefByName.add(name.getConcept());      
+//              errorNameList.put(con, name.getConcept());
+//            }
+//          }
+//          //put concept in the cache
+//          cacheByPreferredName.put(con.getLongName(), nameResult);
+//        }
+//        }
+        
+        ValidationItems.getInstance().clear();
+        
+        ConceptValidator conValidator = new ConceptValidator();
+        conValidator.addProgressListener(progressPanel);
+        ValidationItems vItems = conValidator.validate();
+        
+        List<ValidationItem> items = new ArrayList<ValidationItem>(vItems.getErrors());
+        items.addAll(vItems.getWarnings());
+
+        for(ValidationItem vItem : items) 
         {
-          event = new ProgressEvent();
-          event.setMessage("Validating " + con.getLongName());
-          event.setStatus(pStatus++);
-          progressPanel.newProgressEvent(event);
-          
-          //EvsResult result = null;
-          
-          //if(con.getPreferredName() != null) {
-            EvsResult result = module.findByConceptCode(con.getPreferredName(), false);
-          //}
-          if(result != null) 
-          {  
-              if(con.getLongName() == null || !con.getLongName().equals(result.getConcept().getLongName())) {
-                highlightDifferentNameByCode.add(result.getConcept());
-                errorList.put(con, result.getConcept());
-              }
-              if(con.getPreferredDefinition() == null || !con.getPreferredDefinition().trim().equals(result.getConcept().getPreferredDefinition().trim())) {
-                highlightDifferentDefByCode.add(result.getConcept());
-                errorList.put(con, result.getConcept());
-              }
+          if(((ConceptMismatchWrapper)vItem.getRootCause()).getType() == 1) {
+            highlightDifferentNameByCode.add(((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+            errorList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
+              ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+          }    
+          if(((ConceptMismatchWrapper)vItem.getRootCause()).getType() == 2) {
+            highlightDifferentDefByCode.add(((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+            errorList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
+              ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+          }    
+          if(((ConceptMismatchWrapper)vItem.getRootCause()).getType() == 3) {
+            highlightDifferentCodeByName.add(((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+            errorNameList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
+              ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+          }    
+          if(((ConceptMismatchWrapper)vItem.getRootCause()).getType() == 4) {
+            highlightDifferentDefByName.add(((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+            errorNameList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
+              ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
           }
-          
-          Collection<EvsResult> nameResult = module.findByPreferredName(con.getLongName(), false);
-          if(nameResult != null && nameResult.size() == 1) 
-          {
-            for(EvsResult name : nameResult) { 
-            if(con.getPreferredName() == null || !con.getPreferredName().equals(name.getConcept().getPreferredName())) { 
-              highlightDifferentCodeByName.add(name.getConcept());
-              errorNameList.put(con, name.getConcept());
-            }
-            if(con.getPreferredDefinition() == null || !con.getPreferredDefinition().trim().equals(name.getConcept().getPreferredDefinition().trim())) { 
-              highlightDifferentDefByName.add(name.getConcept());      
-              errorNameList.put(con, name.getConcept());
-            }
-          }
+//          if(vItem.getRootCause() instanceof MismatchDefByCodeError)
+//            highlightDifferentDefByCode.add(vItem.getRootCause());
+//          if(vItem.getRootCause() instanceof MismatchCodeByNameError)
+//             highlightDifferentCodeByName.add(vItem.getRootCause());
+//          if(vItem.getRootCause() instanceof MismatchDefByNameError)
+//            highlightDifferentDefByName.add(vItem.getRootCause());
         }
-        }
+        
         List<ObjectClass> ocs = ElementsLists.getInstance().
             getElements(DomainObjectFactory.newObjectClass());
         
@@ -262,6 +325,11 @@ public class ValidateConceptsDialog extends JDialog
         UIUtil.putToCenter(this);
         
 
+  }
+  
+  public void newProgressEvent(ProgressEvent evt) 
+  {
+    evt.getStatus();
   }
   
   public void valueChanged(ListSelectionEvent e) 
