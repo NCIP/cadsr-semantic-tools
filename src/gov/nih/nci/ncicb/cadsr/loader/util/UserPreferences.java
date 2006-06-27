@@ -158,7 +158,7 @@ public class UserPreferences {
   
   public void setShowInheritedAttributes(boolean show) 
   {
-    prefs.putBoolean("showInheritedAttributes", true);
+    prefs.putBoolean("showInheritedAttributes", show);
     UserPreferencesEvent event = 
       new UserPreferencesEvent(UserPreferencesEvent.SHOW_INHERITED_ATTRIBUTES,(Boolean.valueOf(show)).toString());
     fireUserPreferencesEvent(event);
