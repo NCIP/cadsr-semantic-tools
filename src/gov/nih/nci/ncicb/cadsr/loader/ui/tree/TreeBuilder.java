@@ -63,6 +63,8 @@ public class TreeBuilder implements UserPreferencesListener {
     showAssociations = selections.getProperty("MODE").equals(RunMode.Reviewer);
 
     showValueDomains = !selections.getProperty("MODE").equals(RunMode.Curator);
+    
+    showInheritedAttributes = prefs.getShowInheritedAttributes();
   }
 
   public UMLNode buildTree(ElementsLists elements) {
