@@ -98,60 +98,6 @@ public class ValidateConceptsDialog extends JDialog
         progressPanel.newProgressEvent(event);
         
         int pStatus = 0;
-//        for(Concept con : concepts) 
-//        {
-//          event = new ProgressEvent();
-//          event.setMessage("Validating " + con.getLongName());
-//          event.setStatus(pStatus++);
-//          progressPanel.newProgressEvent(event);
-//          
-//          EvsResult result = null;
-//          
-//          
-//          //check to see if concept has already been searched by Concept Code
-//          if(cacheByConceptCode.containsKey(con.getPreferredName())) 
-//            result = (EvsResult)cacheByConceptCode.get(con.getPreferredName());          
-//          else
-//            result = module.findByConceptCode(con.getPreferredName(), false);
-//
-//          if(result != null) 
-//          {  
-//              if(con.getLongName() == null || !con.getLongName().equals(result.getConcept().getLongName())) {
-//                highlightDifferentNameByCode.add(result.getConcept());
-//                errorList.put(con, result.getConcept());
-//              }
-//              if(con.getPreferredDefinition() == null || !con.getPreferredDefinition().trim().equals(result.getConcept().getPreferredDefinition().trim())) {
-//                highlightDifferentDefByCode.add(result.getConcept());
-//                errorList.put(con, result.getConcept());
-//              }
-//              //put concept in the cache
-//              cacheByConceptCode.put(con.getPreferredName(), result);
-//          }
-//          
-//          Collection<EvsResult> nameResult = null;
-//          
-//          //check cache to see if concept has already been searched by Preferred Name
-//          if(cacheByPreferredName.containsKey(con.getLongName()))
-//            nameResult = (Collection<EvsResult>)cacheByPreferredName.get(con.getLongName());
-//          else
-//            nameResult = module.findByPreferredName(con.getLongName(), false);
-//            
-//          if(nameResult != null && nameResult.size() == 1) 
-//          {
-//            for(EvsResult name : nameResult) { 
-//            if(con.getPreferredName() == null || !con.getPreferredName().equals(name.getConcept().getPreferredName())) { 
-//              highlightDifferentCodeByName.add(name.getConcept());
-//              errorNameList.put(con, name.getConcept());
-//            }
-//            if(con.getPreferredDefinition() == null || !con.getPreferredDefinition().trim().equals(name.getConcept().getPreferredDefinition().trim())) { 
-//              highlightDifferentDefByName.add(name.getConcept());      
-//              errorNameList.put(con, name.getConcept());
-//            }
-//          }
-//          //put concept in the cache
-//          cacheByPreferredName.put(con.getLongName(), nameResult);
-//        }
-//        }
         
         ValidationItems.getInstance().clear();
         
@@ -184,12 +130,7 @@ public class ValidateConceptsDialog extends JDialog
             errorNameList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
               ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
           }
-//          if(vItem.getRootCause() instanceof MismatchDefByCodeError)
-//            highlightDifferentDefByCode.add(vItem.getRootCause());
-//          if(vItem.getRootCause() instanceof MismatchCodeByNameError)
-//             highlightDifferentCodeByName.add(vItem.getRootCause());
-//          if(vItem.getRootCause() instanceof MismatchDefByNameError)
-//            highlightDifferentDefByName.add(vItem.getRootCause());
+
         }
         
         List<ObjectClass> ocs = ElementsLists.getInstance().
