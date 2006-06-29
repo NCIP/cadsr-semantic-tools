@@ -308,6 +308,13 @@ public class UMLDefaults {
   public Map getPackageFilter() {
     return packageFilter;
   }
+  
+  /**
+   * Sets the packageFilter to the filter passed in
+   */
+  public void setPackageFilter(Map packageFilter) {
+    this.packageFilter = packageFilter;
+  }
 
   public String getDefaultPackageAlias() {
     return defaultPackage;
