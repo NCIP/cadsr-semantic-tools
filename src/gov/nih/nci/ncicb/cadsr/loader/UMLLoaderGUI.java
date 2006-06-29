@@ -89,6 +89,9 @@ public class UMLLoaderGUI
     WizardPanelDescriptor modeSelDesc = new ModeSelectionPanelDescriptor();
     wizard.registerWizardPanel(ModeSelectionPanelDescriptor.IDENTIFIER, modeSelDesc);
 
+    WizardPanelDescriptor packageDesc = new PackageFilterSelectionPanelDescriptor();
+    wizard.registerWizardPanel(PackageFilterSelectionPanelDescriptor.IDENTIFIER, packageDesc);
+
     WizardPanelDescriptor descriptor2 = new FileSelectionPanelDescriptor();
     wizard.registerWizardPanel(FileSelectionPanelDescriptor.IDENTIFIER, descriptor2);
 
@@ -112,7 +115,6 @@ public class UMLLoaderGUI
 
     WizardPanelDescriptor descriptor4 = new ProgressSemanticConnectorPanelDescriptor();
     wizard.registerWizardPanel(ProgressSemanticConnectorPanelDescriptor.IDENTIFIER, descriptor4);
-
     
     wizard.setCurrentPanel(ModeSelectionPanelDescriptor.IDENTIFIER);
     int wizResult = wizard.showModalDialog();
