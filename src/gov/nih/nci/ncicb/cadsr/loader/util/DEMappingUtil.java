@@ -66,7 +66,7 @@ public class DEMappingUtil {
     return null;
   }
   
-  public static boolean checkDuplicate(DataElement currentDe, DataElement newDataElement) 
+  public static AdminComponent checkDuplicate(DataElement currentDe, DataElement newDataElement) 
   {
     ElementsLists elements = ElementsLists.getInstance();
 
@@ -79,7 +79,7 @@ public class DEMappingUtil {
         if(oc.getPublicId() != null) {
           if(currentDe.getDataElementConcept().getObjectClass() != oc)
             if(oc.getPublicId().equals(newDataElement.getDataElementConcept().getObjectClass().getPublicId()))            
-                return false;
+                return oc;
         }
       }
     }
@@ -89,7 +89,7 @@ public class DEMappingUtil {
     for(DataElement de : des) {
       if(de != currentDe) {
         if(!StringUtil.isEmpty(de.getPublicId()) && de.getPublicId().equals(newDataElement.getPublicId()))
-          return false;
+          return de;
       }
     }
 //    if(des != null && ocs != null) {
@@ -101,6 +101,6 @@ public class DEMappingUtil {
 //              return false;    
 //    }
   
-    return true;
+    return null;
   }
 }
