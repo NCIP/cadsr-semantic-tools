@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.dao.DataElementDAO;
+import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
@@ -118,9 +119,13 @@ public class DEPanel extends JPanel
                 return;
               }
             if(tempDE != null) {
-              if(!DEMappingUtil.checkDuplicate(de, tempDE)) 
+              AdminComponent ac = DEMappingUtil.checkDuplicate(de,tempDE);
+              if(ac != null) 
               {
-                JOptionPane.showMessageDialog(null, "This creates a duplicate mapping", "Conflict", JOptionPane.ERROR_MESSAGE);
+                if(ac instanceof ObjectClass)
+                JOptionPane.showMessageDialog(null, "This creates a duplicate mapping with " + LookupUtil.lookupFullName((ObjectClass)ac), "Conflict", JOptionPane.ERROR_MESSAGE);
+                if(ac instanceof DataElement)
+                JOptionPane.showMessageDialog(null, "This creates a duplicate mapping with " + ((DataElement)ac).getDataElementConcept().getProperty().getLongName(), "Conflict", JOptionPane.ERROR_MESSAGE);
                 return;
               }
             }
