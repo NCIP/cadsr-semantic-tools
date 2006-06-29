@@ -151,6 +151,13 @@ public class WizardController implements ActionListener {
         
       }
 
+      if(descriptor.getPanelDescriptorIdentifier().equals(PackageFilterSelectionPanelDescriptor.IDENTIFIER)) {
+        PackageFilterSelectionPanel panel = 
+            (PackageFilterSelectionPanel)descriptor.getPanelComponent();
+        Map temp = panel.getPackageFilter();
+        UMLDefaults defaults = UMLDefaults.getInstance();
+        defaults.setPackageFilter(temp);
+      }
       if(descriptor.getPanelDescriptorIdentifier().equals(RoundtripPanelDescriptor.IDENTIFIER)) {
         RoundtripPanel panel = 
           (RoundtripPanel)descriptor.getPanelComponent();
@@ -194,9 +201,10 @@ public class WizardController implements ActionListener {
 
                   System.out.println("done");
 
-                  evt.setGoal(100);
-                  evt.setMessage("Done");
-                  evt.setStatus(100);
+//                  evt.setGoal(100);
+//                  evt.setMessage("Done");
+//                  evt.setStatus(100);
+                  evt.setCompleted(true);
                   progressDesc.newProgressEvent(evt);
                   
                   reportPanel.setOutputText("Fix Ea was run on file:<br>" + filename + "<br><br>Output file can be found here:<br>" + outputXmi);
