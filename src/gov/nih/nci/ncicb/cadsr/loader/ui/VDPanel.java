@@ -25,10 +25,14 @@ public class VDPanel extends JPanel
   
   private JLabel vdLongNameTitleLabel = new JLabel("Long Name"),
   vdLongNameValueLabel = new JLabel(),
+  vdPublicIdTitleLabel = new JLabel("Public Id"),
+  vdPublicIdValueLabel = new JLabel(),
   vdContextNameTitleLabel = new JLabel("Context Name"),
   vdContextNameValueLabel = new JLabel(),
   vdVersionTitleLabel = new JLabel("Version"),
-  vdVersionValueLabel = new JLabel();
+  vdVersionValueLabel = new JLabel(),
+  vdDatatypeTitleLabel = new JLabel("Datatype"),
+  vdDatatypeValueLabel = new JLabel();
 
   private static final String SEARCH = "SEARCH";
   
@@ -49,12 +53,16 @@ public class VDPanel extends JPanel
     
     insertInBag(mainPanel, vdLongNameTitleLabel, 0, 0);
     insertInBag(mainPanel, vdLongNameValueLabel, 1, 0);
-    insertInBag(mainPanel, vdContextNameTitleLabel, 0, 1);
-    insertInBag(mainPanel, vdContextNameValueLabel, 1, 1);
-    insertInBag(mainPanel, vdVersionTitleLabel, 0, 2);
-    insertInBag(mainPanel, vdVersionValueLabel, 1, 2);
+    insertInBag(mainPanel, vdPublicIdTitleLabel, 0, 1);
+    insertInBag(mainPanel, vdPublicIdValueLabel, 1, 1);
+    insertInBag(mainPanel, vdContextNameTitleLabel, 0, 2);
+    insertInBag(mainPanel, vdContextNameValueLabel, 1, 2);
+    insertInBag(mainPanel, vdVersionTitleLabel, 0, 3);
+    insertInBag(mainPanel, vdVersionValueLabel, 1, 3);
+    insertInBag(mainPanel, vdDatatypeTitleLabel, 0, 4);
+    insertInBag(mainPanel, vdDatatypeValueLabel, 1, 4);
     
-    insertInBag(mainPanel, searchVdButton, 1, 3, 2, 1);
+    insertInBag(mainPanel, searchVdButton, 1, 5, 2, 1);
 
     mainPanel.setBorder
         (BorderFactory.createTitledBorder("Value Domain"));
@@ -76,8 +84,10 @@ public class VDPanel extends JPanel
           tempVD = (ValueDomain)cd.getAdminComponent();
           if(tempVD != null) {
             vdLongNameValueLabel.setText(tempVD.getLongName());
+            vdPublicIdValueLabel.setText(tempVD.getPublicId());
             vdContextNameValueLabel.setText(tempVD.getContext().getName());
             vdVersionValueLabel.setText(tempVD.getVersion().toString());
+            vdDatatypeValueLabel.setText(tempVD.getDataType());
             
             firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
@@ -99,6 +109,7 @@ public class VDPanel extends JPanel
       vd.setPublicId(tempVD.getPublicId());
       vd.setVersion(tempVD.getVersion());
       vd.setContext(tempVD.getContext());
+      vd.setDataType(tempVD.getDataType());
     }
   }
   
