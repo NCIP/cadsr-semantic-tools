@@ -137,4 +137,13 @@ public class LookupUtil {
     return null;
   }
 
+  public static String lookupFullName(DataElement de) {
+    for(AlternateName altName : de.getAlternateNames()) {
+      if(altName.getType().equals(AlternateName.TYPE_FULL_NAME))
+        return altName.getName();
+    }
+    return null;
+  }
+
+
 }
