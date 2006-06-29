@@ -88,7 +88,7 @@ public class ConceptEditorPanel extends JPanel
     vdPanel.updateNode(node);
   }
 
-  private String checkForDuplicateMapping() {
+  private AdminComponent checkForDuplicateMapping() {
     Concept[] tempConcepts = new Concept[conceptUIs.length];
 
     for(int i = 0 ; i < conceptUIs.length; i++) {
@@ -108,7 +108,7 @@ public class ConceptEditorPanel extends JPanel
       for(ObjectClass oc : ocs) {
         if(currentOc != oc) {
           if(newPrefName.equals(oc.getPreferredName())) 
-            return "fill in error message for OC here";
+            return oc;
         }
       }
       return null;    
@@ -129,7 +129,7 @@ public class ConceptEditorPanel extends JPanel
                .equals
                (de.getDataElementConcept()
                 .getProperty().getPreferredName()))
-              return "fill in error msg for attribute here";
+              return de;
         }
       }
       return null;
@@ -184,14 +184,21 @@ public class ConceptEditorPanel extends JPanel
     remove = false;
     Concept[] newConcepts = new Concept[concepts.length];
 
-    String errorMsg = checkForDuplicateMapping();
-    if(errorMsg != null) {
+    AdminComponent ac = checkForDuplicateMapping();
+    if(ac != null) {
+      if(ac instanceof ObjectClass)
       JOptionPane.showMessageDialog 
         (null,
-         "Duplicate Mapping",
-         errorMsg,
+         "Duplicate Mapping with " + LookupUtil.lookupFullName((ObjectClass)ac),
+         "Same Concept List",
          JOptionPane.ERROR_MESSAGE);
-      throw new ApplyException(errorMsg);
+      if(ac instanceof DataElement)
+      JOptionPane.showMessageDialog 
+        (null,
+         "Duplicate Mapping with " + LookupUtil.lookupFullName((DataElement)ac),
+         "Same Concept List",
+         JOptionPane.ERROR_MESSAGE);
+      throw new ApplyException("Same Concept List");
     }
     
     
