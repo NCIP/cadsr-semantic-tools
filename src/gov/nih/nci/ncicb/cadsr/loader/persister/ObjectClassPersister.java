@@ -80,6 +80,12 @@ public class ObjectClassPersister extends UMLPersister {
           it.set(newOc);
           addPackageClassification(newOc, packageName);
 
+          for(AlternateName an : parsedAltNames) {
+            oc.addAlternateName(an);
+            addAlternateName(newOc, an.getName(), an.getType() ,packageName);
+          }
+          
+
 	  logger.info(PropertyAccessor.getProperty("mapped.to.existing.oc"));
           continue;
         } // otherwise search by concepts
