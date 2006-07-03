@@ -68,7 +68,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     this.getContentPane().setLayout(new BorderLayout());
     this.getContentPane().add(centerPanel);
     this.getContentPane().add(southPanel,BorderLayout.SOUTH);
-    this.setSize(300,200);
+    this.setSize(300,225);
     
     apply.setActionCommand(APPLY);
     cancel.setActionCommand(CANCEL);
