@@ -42,6 +42,10 @@
   <alias name="date"/>
 </alias-list>
 
+<alias-list name="java.util.Map">
+  <alias name="map"/>
+</alias-list>
+
 <alias-list name="java.util.Collection">
   <alias name="java.lang.collection"/>
   <alias name="collection"/>
