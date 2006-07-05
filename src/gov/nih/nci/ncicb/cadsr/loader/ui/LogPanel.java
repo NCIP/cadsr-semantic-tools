@@ -17,14 +17,16 @@ import org.apache.log4j.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.LogListener;
 
 public class LogPanel extends JPanel 
-  implements LogListener {
+  implements LogListener, MouseListener {
 
   private LogPanel _this = this;
 
-  private JCheckBox debugCb = new JCheckBox("Debug", false),
-    infoCb = new JCheckBox("Info", true),
-    warnCb = new JCheckBox("Warnings", true),
-    errorCb = new JCheckBox("Errors", true);
+  private JPopupMenu popupMenu;
+
+  private JCheckBoxMenuItem debugCb = new JCheckBoxMenuItem("Debug", false),
+    infoCb = new JCheckBoxMenuItem("Info", true),
+    warnCb = new JCheckBoxMenuItem("Warnings", true),
+    errorCb = new JCheckBoxMenuItem("Errors", true);
 
   private List<LoggingEvent> events = new ArrayList<LoggingEvent>();
   private List<LoggingEvent> displayEvents =
@@ -88,19 +90,27 @@ public class LogPanel extends JPanel
     JScrollPane scrollPane = new JScrollPane(list);
     add(scrollPane, BorderLayout.CENTER);
 
-    JPanel cbPanel = new JPanel();
-    cbPanel.setLayout(new GridLayout(4, 1));
+    setupMenus();
+
+    list.addMouseListener(this);
+
+  }
+
+  private void setupMenus() {
+    popupMenu = new JPopupMenu();
+    
+    JMenuItem viewLabel = new JMenuItem("Select Event View Level");
 
     ActionListener cbAl = new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         rebuildDisplay();
       }
     };
-
-    cbPanel.add(debugCb);
-    cbPanel.add(infoCb);
-    cbPanel.add(warnCb);
-    cbPanel.add(errorCb);
+    
+    debugCb.addActionListener(cbAl);
+    infoCb.addActionListener(cbAl);
+    warnCb.addActionListener(cbAl);
+    errorCb.addActionListener(cbAl);
 
     infoCb.setSelected(true);
     warnCb.setSelected(true);
@@ -111,9 +121,41 @@ public class LogPanel extends JPanel
     warnCb.addActionListener(cbAl);
     errorCb.addActionListener(cbAl);
 
-    add(cbPanel, BorderLayout.EAST);
+    popupMenu.add(viewLabel);
+    popupMenu.add(debugCb);
+    popupMenu.add(infoCb);
+    popupMenu.add(warnCb);
+    popupMenu.add(errorCb);
 
+  }
 
+  public void mousePressed(MouseEvent e) {
+    showPopup(e);
+  }
+  
+  public void mouseExited(MouseEvent e) {}
+  
+  public void mouseClicked(MouseEvent e) {}
+  
+  public void mouseEntered(MouseEvent e) {}
+  
+  public void mouseReleased(MouseEvent e) {
+    showPopup(e);
+  }
+  
+  private void showPopup(MouseEvent e) {
+    if (e.isPopupTrigger()) {
+      popupMenu.show(e.getComponent(), e.getX(), e.getY());
+    }
+  }
+
+  public static void main(String[] args) {
+    JFrame testFrame = new JFrame();
+    testFrame.setSize(400, 300);
+
+    testFrame.getContentPane().add(new LogPanel());
+    
+    testFrame.setVisible(true);
   }
 
 }
