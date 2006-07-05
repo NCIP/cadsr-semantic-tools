@@ -45,20 +45,21 @@ import org.apache.log4j.spi.LoggingEvent;
  */
 public class ErrorPanel extends JPanel implements MouseListener {
 
-    private JTree tree;
-    private Set<UMLNode> displaySet = new HashSet<UMLNode>();
-    private JPopupMenu popup;
-    private JCheckBox conceptCb = new JCheckBox("<html>Hide<br>Concept<br>Errors</html>", false);
-    private boolean hideConceptError = false;
-    private UMLNode node;
-    private JPanel cbPanel;
+  private JTree tree;
+  private Set<UMLNode> displaySet = new HashSet<UMLNode>();
+  private JPopupMenu popup;
+  
+  private JCheckBoxMenuItem conceptCb = new JCheckBoxMenuItem("Hide Concept Errors", false);
+  private boolean hideConceptError = false;
+  private UMLNode node;
+  private JPanel cbPanel;
 
-    public ErrorPanel(UMLNode rootNode) {
-        node = rootNode;
-        initCb();
-        initUI(rootNode);
-    }
-
+  public ErrorPanel(UMLNode rootNode) {
+    node = rootNode;
+    initCb();
+    initUI(rootNode);
+  }
+  
     public void update(UMLNode rootNode) {
         node = rootNode;
         this.removeAll();
@@ -94,27 +95,15 @@ public class ErrorPanel extends JPanel implements MouseListener {
         this.setPreferredSize(new Dimension(450, 110));
         this.add(scrollPane, BorderLayout.CENTER);
 
-        add(cbPanel, BorderLayout.EAST);
+        buildPopupMenu();
+
+//         add(cbPanel, BorderLayout.EAST);
     }
 
     private void initCb() {
-        cbPanel = new JPanel();
-        cbPanel.setLayout(new GridLayout(4, 1));
-        ActionListener cbAl = new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                JCheckBox cb = (JCheckBox)evt.getSource();
-                boolean isSel = cb.isSelected();
-                if (isSel) {
-                    hideConceptError = true;
-                } else {
-                    hideConceptError = false;
-                }
-                update();
-            }
-        };
-        cbPanel.add(conceptCb);
-        conceptCb.addActionListener(cbAl);
 
+      
+      
     }
     
 
@@ -142,9 +131,26 @@ public class ErrorPanel extends JPanel implements MouseListener {
     }
 
     private void buildPopupMenu() {
-        popup = new JPopupMenu();
-        JMenuItem menuItem = new JMenuItem("Export Errors");
-        popup.add(menuItem);
+      popup = new JPopupMenu();
+      JMenuItem menuItem = new JMenuItem("Export Errors");
+      popup.add(menuItem);
+      popup.addSeparator();
+      popup.add(conceptCb);
+
+      ActionListener cbAl = new ActionListener() {
+          public void actionPerformed(ActionEvent evt) {
+            AbstractButton cb = (AbstractButton)evt.getSource();
+            boolean isSel = cb.isSelected();
+            if (isSel) {
+              hideConceptError = true;
+            } else {
+              hideConceptError = false;
+            }
+            update();
+          }
+        };
+
+      conceptCb.addActionListener(cbAl);
     }
 
     private void firstRun(UMLNode node) {
