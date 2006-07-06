@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<jnlp
+  spec="1.0+"
+  href="http://cadsrsiw-stage.nci.nih.gov/siw.jnlp"
+  codebase="http://cadsrsiw-stage.nci.nih.gov/"
+  >
+  
+  <information>
+    <title>Semantic Integration Workbench</title>
+    <description>The SIW streamlines the process of annotating Domain Model with Evs Concepts, then loading those models to caDSR</description>
+    <offline-allowed/>
+    <vendor>NCI</vendor>
+    <icon href="http://cadsrsiw-stage.nci.nih.gov/SIW-logo.jpg"/>
+  </information>
+  <security>
+    <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.5+" max-heap-size="512m"/>
+    <jar href="lib/uml-loader.jar" main="true"/>
+    <jar href="lib/aopalliance.jar"/>
+    <jar href="lib/antlr-2.7.5H3.jar"/>
+    <jar href="lib/cadsr-api.jar"/>
+    <jar href="lib/codegen.jar"/>
+    <jar href="lib/cacore-client.jar"/>
+    <jar href="lib/cglib-full-2.0.1.jar"/>
+    <jar href="lib/commons-collections-2.1.jar"/>
+    <jar href="lib/commons-logging.jar"/>
+    <jar href="lib/datafile.jar"/>
+    <jar href="lib/dom4j-1.4.jar"/>
+    <jar href="lib/ehcache-0.7.jar"/>
+    <jar href="lib/freemarker.jar"/>
+    <jar href="lib/hibernate3.jar"/>
+    <jar href="lib/jakarta-oro-2.0.8.jar"/>
+    <jar href="lib/jaxen-jdom.jar"/>
+    <jar href="lib/jaxen-core.jar"/>
+    <jar href="lib/jdom.jar"/>
+    <jar href="lib/jmi.jar"/>
+    <jar href="lib/jmiutils.jar"/>
+    <jar href="lib/jta.jar"/>
+    <jar href="lib/log4j-1.2.8.jar"/>
+    <jar href="lib/mdrapi.jar"/>
+    <jar href="lib/mof.jar"/>
+    <jar href="lib/nbmdr.jar"/>
+    <jar href="lib/odmg-3.0.jar"/>
+    <jar href="lib/ojdbc14.jar"/>
+    <jar href="lib/openide-util.jar"/>
+    <jar href="lib/spring-aop-1.2.4.jar"/>
+    <jar href="lib/spring-core-1.2.4.jar"/>
+    <jar href="lib/spring-1.2.4.jar"/>
+    <jar href="lib/spring-orm-1.2.4.jar"/>
+    <jar href="lib/uml-1.3.jar"/>
+  </resources>
+  <application-desc main-class="gov.nih.nci.ncicb.cadsr.loader.SIW"/>
+  
+</jnlp> 
