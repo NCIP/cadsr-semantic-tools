@@ -73,7 +73,7 @@ public class ModeSelectionPanel extends JPanel {
     infoPanel.setBackground(Color.WHITE);
     infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("SIW-logo.jpg"))));
+    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif"))));
 
     JLabel infoLabel = new JLabel("<html>Welcome to the Semantic Integration Workbench</html>");
     infoPanel.add(infoLabel);

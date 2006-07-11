@@ -128,7 +128,7 @@ implements ProgressListener {
     infoPanel.setBackground(Color.WHITE);
     infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("SIW-logo.jpg"))));
+    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif"))));
 
     JLabel infoLabel = new JLabel("<html>Please choose a file to parse<br>The file must be in " + fileExtension.toUpperCase() + " format</html>");
     infoPanel.add(infoLabel);

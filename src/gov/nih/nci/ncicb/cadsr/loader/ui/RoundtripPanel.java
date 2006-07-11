@@ -78,7 +78,7 @@ public class RoundtripPanel extends JPanel implements KeyListener, CadsrModuleLi
     infoPanel.setBackground(Color.WHITE);
     infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("SIW-logo.jpg"))));
+    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif"))));
 
     JLabel infoLabel = new JLabel("<html>Please select a project to start from<br> Version must be a number</html>");
     infoPanel.add(infoLabel);

@@ -58,7 +58,7 @@ public class PackageFilterSelectionPanel extends JPanel
     infoPanel.setBackground(Color.WHITE);
     infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("SIW-logo.jpg"))));
+    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif"))));
     
     JLabel infoLabel = new JLabel("<html>Enter the packages that you would like to filter by</html>");
     infoPanel.add(infoLabel);
