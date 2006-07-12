@@ -24,6 +24,7 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import org.apache.log4j.Logger;
 
@@ -57,17 +58,35 @@ public class ValueDomainPersister extends UMLPersister {
         vd.setWorkflowStatus(defaults.getWorkflowStatus());
         vd.setAudit(defaults.getAudit());
 
-        try {
-          System.out.println("going to call create");
-          newVd = valueDomainDAO.create(vd);
-          logger.info(PropertyAccessor.getProperty("created.vd"));
-          valueDomains.put(newVd.getLongName(), vd);
-        } catch (DAOCreateException e){
-          logger.error(PropertyAccessor.getProperty("created.vd.failed", e.getMessage()));
-        } // end of try-catch
 
+        Boolean ignoreVD = (Boolean)UserSelections.getInstance().getProperty("ignore-vd");
+        if(ignoreVD){
+          System.out.println("ignore VD");
+
+          ValueDomain searchVD = DomainObjectFactory.newValueDomain();
+          searchVD.setLongName(vd.getLongName());
+          searchVD.setContext(vd.getContext());
+          searchVD.setVersion(vd.getVersion());
+            
+          List<ValueDomain> result = valueDomainDAO.find(searchVD);
+          
+          if(result.size() != 0) {
+            newVd = result.get(0);
+          }
+        }
+
+        if(newVd == null) {
+          try {
+            newVd = valueDomainDAO.create(vd);
+            logger.info(PropertyAccessor.getProperty("created.vd"));
+            valueDomains.put(newVd.getLongName(), vd);
+          } catch (DAOCreateException e){
+            logger.error(PropertyAccessor.getProperty("created.vd.failed", e.getMessage()));
+          } // end of try-catch
+        }        
+        
 	LogUtil.logAc(newVd, logger);
-
+        
 	it.set(newVd);
       }
     }

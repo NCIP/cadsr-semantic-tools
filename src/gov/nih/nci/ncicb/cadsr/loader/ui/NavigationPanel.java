@@ -31,6 +31,8 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+
 import java.awt.BorderLayout;
 import java.awt.event.*;
 import javax.swing.*;
@@ -49,7 +51,7 @@ public class NavigationPanel extends JPanel
   KeyListener, SearchListener, TreeListener
 {
   private JTree tree;
-  private JPopupMenu popup;
+  private JPopupMenu nodePopup, blankPopup;
   private JScrollPane scrollPane;
   private UMLNode rootNode = TreeBuilder.getInstance().getRootNode(); 
 
@@ -198,8 +200,10 @@ public class NavigationPanel extends JPanel
         if((o instanceof ClassNode)
            || (o instanceof AttributeNode)
            )
-          popup.show(e.getComponent(),
+          nodePopup.show(e.getComponent(),
                      e.getX(), e.getY());
+      } else {
+        
       }
     }
   }
@@ -267,13 +271,25 @@ public class NavigationPanel extends JPanel
     newTabItem.setActionCommand("OPEN_NEW_TAB");
     openItem.setActionCommand("OPEN");
 
-    popup = new JPopupMenu();
+    JMenu subMenu = new JMenu("Preferences");
+    JCheckBoxMenuItem inheritedAttItem = new JCheckBoxMenuItem(PropertyAccessor.getProperty("preference.inherited.attributes"));
+    JCheckBoxMenuItem assocItem = new JCheckBoxMenuItem(PropertyAccessor.getProperty("preference.view.association"));
+
+    subMenu.add(inheritedAttItem);
+    subMenu.add(assocItem);
+
+    nodePopup = new JPopupMenu();
 
     newTabItem.addActionListener(this);
     openItem.addActionListener(this);
 
-    popup.add(openItem);
-    popup.add(newTabItem);
+    nodePopup.add(openItem);
+    nodePopup.add(newTabItem);
+    nodePopup.addSeparator();
+
+
+    blankPopup = new JPopupMenu();
+    
     
     tree.addMouseListener(this);
    

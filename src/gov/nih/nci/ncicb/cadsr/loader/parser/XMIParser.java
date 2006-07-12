@@ -129,12 +129,12 @@ public class XMIParser implements Parser {
   /**
    * ValueDomain Tagged Value prepender. 
    */
-  public static final String TV_TYPE_VD = "ValueDomain";
+  public static final String TV_TYPE_VD = "ObjectClass";
 
   /**
    * Value Meaning Tagged Value prepender. 
    */
-  public static final String TV_TYPE_VM = "ValueMeaning";
+  public static final String TV_TYPE_VM = "Property";
 
 
 
