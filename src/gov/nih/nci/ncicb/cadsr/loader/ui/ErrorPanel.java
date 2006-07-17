@@ -20,6 +20,9 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+import java.io.File;
+import java.io.FileWriter;
 import javax.swing.*;
 
 import java.awt.*;
@@ -37,6 +40,9 @@ import java.util.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.apache.log4j.spi.LoggingEvent;
+import org.jdom.*;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * The error viewer.
@@ -53,6 +59,8 @@ public class ErrorPanel extends JPanel implements MouseListener {
   private boolean hideConceptError = false;
   private UMLNode node;
   private JPanel cbPanel;
+  
+  private JLabel infoLabel = new JLabel(" ");
 
   public ErrorPanel(UMLNode rootNode) {
     node = rootNode;
@@ -94,6 +102,7 @@ public class ErrorPanel extends JPanel implements MouseListener {
         JScrollPane scrollPane = new JScrollPane(tree);
         this.setPreferredSize(new Dimension(450, 110));
         this.add(scrollPane, BorderLayout.CENTER);
+        this.add(infoLabel, BorderLayout.SOUTH);
 
         buildPopupMenu();
 
@@ -151,8 +160,51 @@ public class ErrorPanel extends JPanel implements MouseListener {
         };
 
       conceptCb.addActionListener(cbAl);
-    }
-
+      
+      menuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent event) {
+          String saveDir = UserPreferences.getInstance().getRecentDir();
+          JFileChooser chooser = new JFileChooser();
+          javax.swing.filechooser.FileFilter filter = 
+            new javax.swing.filechooser.FileFilter() {
+              String fileExtension = "xml";
+              
+              public boolean accept(File f) {
+                if (f.isDirectory()) {
+                  return true;
+                }                
+                return f.getName().endsWith("." + fileExtension);
+              }
+              public String getDescription() {
+                return fileExtension.toUpperCase() + " Files";
+              }
+            };
+            
+          chooser.setFileFilter(filter);
+          int returnVal = chooser.showSaveDialog(null);
+          if(returnVal == JFileChooser.APPROVE_OPTION) {
+            String filePath = chooser.getSelectedFile().getAbsolutePath(); 
+            //export here
+            //writeXML();
+            String fileExtension = "xml";
+            if(!filePath.endsWith(fileExtension))
+              filePath = filePath + "." + fileExtension;
+          try 
+          {
+            FileWriter fw = new FileWriter(filePath);
+          
+            new XMLOutputter(Format.getPrettyFormat()).output(writeXML(filePath), fw);
+            infoLabel.setText("File Exported");
+          }
+          catch (Exception e) 
+          {
+            infoLabel.setText("Save Failed!!");
+            throw new RuntimeException("Error writing to " + filePath,  e);
+          }            
+        }
+        }
+      });
+}
     private void firstRun(UMLNode node) {
         Set<UMLNode> children = node.getChildren();
         Set<ValidationNode> valNodes = node.getValidationNodes();
@@ -182,6 +234,54 @@ public class ErrorPanel extends JPanel implements MouseListener {
 
         return doNode(node);
     }
+
+    private Element writeXML(String filePath) {
+      Element rootElement = new Element("File");
+      rootElement.setAttribute("name", filePath);
+      doNode(rootElement, node);
+      return rootElement;
+    }
+    
+    private void doNode(Element element, UMLNode node) 
+    {
+      Set<UMLNode> children = node.getChildren();
+      Set<ValidationNode> valNodes = node.getValidationNodes();
+      
+      for (ValidationNode valNode: valNodes) {
+        String elementName = "ValidationError";
+        if(valNode instanceof WarningNode)
+          elementName = "ValidationWarning";
+          
+        Element validationElement = new Element(elementName);
+        validationElement.addContent(valNode.getDisplay());
+        element.addContent(validationElement);
+      }
+        
+      for (UMLNode child: children) {
+        //DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(child);
+        Element childElement = new Element("child");
+        if(child instanceof PackageNode) {
+          childElement = new Element("Package");
+          childElement.setAttribute("name", child.getDisplay());
+        }
+        if(child instanceof ClassNode) {
+          childElement = new Element("Class");
+          childElement.setAttribute("name", child.getDisplay());
+        }
+        if(child instanceof AttributeNode) {
+          childElement = new Element("Attribute");
+          childElement.setAttribute("name", child.getDisplay());
+        }
+        
+        if (displaySet.contains(child)) {   
+          element.addContent(childElement);
+          //node.add(newNode);
+        }
+          doNode(childElement, child);
+        }
+
+    }
+
 
     private DefaultMutableTreeNode doNode(DefaultMutableTreeNode node) {
         UMLNode umlNode = (UMLNode)node.getUserObject();
