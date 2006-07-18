@@ -198,7 +198,7 @@ public class ErrorPanel extends JPanel implements MouseListener {
           }
           catch (Exception e) 
           {
-            infoLabel.setText("Save Failed!!");
+            infoLabel.setText("Export Failed!!");
             throw new RuntimeException("Error writing to " + filePath,  e);
           }            
         }
