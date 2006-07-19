@@ -59,8 +59,6 @@ public class ErrorPanel extends JPanel implements MouseListener {
   private boolean hideConceptError = false;
   private UMLNode node;
   private JPanel cbPanel;
-  
-  private JLabel infoLabel = new JLabel(" ");
 
   public ErrorPanel(UMLNode rootNode) {
     node = rootNode;
@@ -102,7 +100,6 @@ public class ErrorPanel extends JPanel implements MouseListener {
         JScrollPane scrollPane = new JScrollPane(tree);
         this.setPreferredSize(new Dimension(450, 110));
         this.add(scrollPane, BorderLayout.CENTER);
-        this.add(infoLabel, BorderLayout.SOUTH);
 
         buildPopupMenu();
 
@@ -192,13 +189,11 @@ public class ErrorPanel extends JPanel implements MouseListener {
           try 
           {
             FileWriter fw = new FileWriter(filePath);
-          
             new XMLOutputter(Format.getPrettyFormat()).output(writeXML(filePath), fw);
-            infoLabel.setText("File Exported");
+            
           }
           catch (Exception e) 
           {
-            infoLabel.setText("Export Failed!!");
             throw new RuntimeException("Error writing to " + filePath,  e);
           }            
         }
