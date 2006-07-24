@@ -25,6 +25,7 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.dao.ValueDomainDAO;
 
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
@@ -160,8 +161,16 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
 
         try {
           Collection<ValueDomain> result =  cadsrModule.findValueDomain(queryFields);
+          
+          Boolean ignoreVD = (Boolean)UserSelections.getInstance().getProperty("ignore-vd");
+          if(ignoreVD == null)
+            ignoreVD = false;
+
           if(result.size() > 0) {
-            items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
+            if(ignoreVD)
+              items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
+            else
+              items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
           }
         } catch (Exception e){
           logger.error(e);
