@@ -26,6 +26,8 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.InputStreamResource;
 
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import org.apache.log4j.Logger;
 
 import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
@@ -40,7 +42,8 @@ public class BeansAccessor {
   
   private static Logger logger = Logger.getLogger(BeansAccessor.class.getName());
 
-  private static XmlBeanFactory factory = null;
+//   private static XmlBeanFactory factory = null;
+  private static BeanFactory factory = null;
 
   public static ElementWriter getWriter() {
     RunMode mode = (RunMode)UserSelections.getInstance().getProperty("MODE");
@@ -51,7 +54,7 @@ public class BeansAccessor {
     }
     else return null;
   }
-  
+
   public static SemanticConnector getSemanticConnector() {
     return (SemanticConnector)getFactory().getBean("semanticConnector");
   }
@@ -93,7 +96,8 @@ public class BeansAccessor {
       if(factory != null) {
         return factory;
       }
-      factory = new XmlBeanFactory(new InputStreamResource(Thread.currentThread().getContextClassLoader().getResourceAsStream("beans.xml")));
+      factory = new ClassPathXmlApplicationContext(new String[]{"beans.xml", "spring-datasources.xml"});
+//       factory = new XmlBeanFactory(new InputStreamResource(Thread.currentThread().getContextClassLoader().getResourceAsStream("beans.xml")));
       return factory;
     } catch (Exception e){
       logger.error(e.getMessage());

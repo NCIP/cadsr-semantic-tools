@@ -19,9 +19,7 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
-import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
-import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -35,13 +33,14 @@ import javax.swing.*;
  */
 public class PreferenceDialog extends JDialog implements ActionListener
 {
-  private JCheckBox associationBox = new JCheckBox("View Associations in Class Tree"),
-    umlDescriptionBox = new JCheckBox("Display UML Description Last"),
-    evsAutoSearchBox = new JCheckBox("Automatically Search EVS on EVS link"),
-    privateApiSearchBox = new JCheckBox("Use Private Api"),
-    orderOfConceptsBox = new JCheckBox("Display Primary Concept First"),
-    showInheritedAttributesBox = new JCheckBox("Display Inherited Attributes");
 
+  private JCheckBox associationBox = new JCheckBox(PropertyAccessor.getProperty("preference.view.association")),
+    umlDescriptionBox = new JCheckBox(PropertyAccessor.getProperty("preference.uml.description")),
+    evsAutoSearchBox = new JCheckBox(PropertyAccessor.getProperty("preference.auto.evs")),
+    privateApiSearchBox = new JCheckBox(PropertyAccessor.getProperty("preference.private.api")),
+    orderOfConceptsBox = new JCheckBox(PropertyAccessor.getProperty("preference.concept.order")),
+    showInheritedAttributesBox = new JCheckBox(PropertyAccessor.getProperty("preference.inherited.attributes"));
+  
   private JButton apply = new JButton("Apply");
   private JButton cancel = new JButton("Cancel");
   private JButton ok = new JButton("OK");

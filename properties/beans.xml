@@ -32,7 +32,7 @@
   <bean name="semanticConnector"
     class="gov.nih.nci.ncicb.cadsr.semconn.SemanticConnector">
     <property name="parser"><ref bean="xmiSemConnParser"/></property>
-    <property name="writer"><ref bean="xmiWriter"/></property>
+    <property name="writer"><ref bean="xmiInOutWriter"/></property>
   </bean>
   
   <bean name="xmiSemConnParser"
@@ -57,6 +57,11 @@
 
   <bean name="xmiParser"
     class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser">
+    <property name="eventHandler"><ref bean="umlEventHandler"/></property>
+  </bean>
+
+  <bean name="xmiParser2"
+    class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser2">
     <property name="eventHandler"><ref bean="umlEventHandler"/></property>
   </bean>
 
@@ -100,8 +105,16 @@
     singleton="true">
   </bean>
 
+  <!--
   <bean name="xmiWriter"
     class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIWriter" 
+    singleton="true">
+  </bean>
+-->
+
+
+  <bean name="xmiInOutWriter"
+    class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIWriter2" 
     singleton="true">
   </bean>
 
@@ -116,6 +129,13 @@
     singleton="true">
   </bean>
 
+  <bean name="freestyleModule"
+    class="gov.nih.nci.ncicb.cadsr.loader.ext.FreestyleModule" 
+    singleton="true">
+    <property name="datasource">
+      <ref bean="dataSource"/>
+    </property>
+  </bean>
 
   <bean name="umlRoundtrip"
     class="gov.nih.nci.ncicb.cadsr.loader.roundtrip.UMLRoundtrip" 
@@ -181,6 +201,9 @@
     class="gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog"
     >
     <constructor-arg><value>4</value></constructor-arg>
+    <property name="freestyleModule">
+      <ref bean="freestyleModule"/>
+    </property>
   </bean>
 
   <bean name="cadsrVDDialog"
@@ -193,6 +216,9 @@
     class="gov.nih.nci.ncicb.cadsr.loader.ui.MainFrame">
     <property name="logTab">
       <ref bean="logTab"/>
+    </property>
+    <property name="xmiWriter">
+      <ref bean="xmiInOutWriter"/>
     </property>
   </bean>
 

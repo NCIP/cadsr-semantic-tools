@@ -357,7 +357,7 @@ public class WizardController implements ActionListener {
             SwingWorker worker = new SwingWorker() {
                 public Object construct() {
                   try {
-                    XMIParser  parser = new XMIParser();
+                    XMIParser2 parser = new XMIParser2();
                     ElementsLists elements = ElementsLists.getInstance();
                     UMLHandler listener = BeansAccessor.getUMLHandler();
                     parser.setEventHandler(listener);

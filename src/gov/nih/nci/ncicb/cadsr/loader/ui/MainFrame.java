@@ -38,9 +38,9 @@ import java.awt.Toolkit;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
@@ -119,8 +119,9 @@ public class MainFrame extends JFrame
 
   private String saveFilename = "";
 
-  private static Logger logger = Logger.getLogger(MainFrame.class);
+  private ElementWriter xmiWriter = null;
 
+  private static Logger logger = Logger.getLogger(MainFrame.class);
 
   public MainFrame()
   {
@@ -274,11 +275,10 @@ public class MainFrame extends JFrame
     
     saveMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
-        ElementWriter writer = BeansAccessor.getWriter();
-        writer.setOutput(saveFilename);
+        xmiWriter.setOutput(saveFilename);
 
         try {
-          writer.write(ElementsLists.getInstance());
+          xmiWriter.write(ElementsLists.getInstance());
           
           infoLabel.setText("File Saved");
         } catch (ParserException e){
@@ -333,11 +333,10 @@ public class MainFrame extends JFrame
 	      filePath = filePath + "." + fileExtension;
 
             UserPreferences.getInstance().setRecentDir(filePath);
-            ElementWriter writer = BeansAccessor.getWriter();
-            writer.setOutput(filePath);
+            xmiWriter.setOutput(filePath);
             saveFilename = filePath;
             try {
-              writer.write(ElementsLists.getInstance());
+              xmiWriter.write(ElementsLists.getInstance());
               infoLabel.setText("File Saved");
             } catch (ParserException e){
               JOptionPane.showMessageDialog(_this, "There was an error saving your File. Please contact support.", "Error Saving File", JOptionPane.ERROR_MESSAGE);
@@ -554,6 +553,10 @@ public class MainFrame extends JFrame
     viewPanels.remove(c.getName());
 
     return true;
+  }
+
+  public void setXmiWriter(ElementWriter writer) {
+    this.xmiWriter = writer;
   }
  
   public void setLogTab(JPanel panel) {

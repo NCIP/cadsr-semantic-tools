@@ -31,7 +31,8 @@ public enum RunMode {
     Reviewer, 
     Roundtrip,
     Loader,
-    FixEa
+    FixEa,
+    UnannotatedXmi
     ;
 
 

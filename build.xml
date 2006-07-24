@@ -205,6 +205,7 @@
       input="input.properties"
       >
       <jvmarg value="-Djava.security.auth.login.config=classes/jaas.config"/>
+      <jvmarg value="-Dignore-vd=false"/>
       <arg value="${dir}"/>
       <arg value="${projectName}"/>
       <arg value="${projectVersion}"/>

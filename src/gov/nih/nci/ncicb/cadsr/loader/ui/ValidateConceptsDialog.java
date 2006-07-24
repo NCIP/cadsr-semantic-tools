@@ -9,7 +9,6 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
-import gov.nih.nci.ncicb.cadsr.loader.validator.MismatchDefByCodeError;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ConceptValidator;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItem;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;

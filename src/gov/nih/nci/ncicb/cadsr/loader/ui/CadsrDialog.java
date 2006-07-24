@@ -49,6 +49,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   private JLabel indexLabel = new JLabel("");
 
   private CadsrModule cadsrModule;
+  private FreestyleModule freestyleModule;
 
   private static String SEARCH = "SEARCH",
     PREVIOUS = "PREVIOUS",
@@ -319,7 +320,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
           resultSet.addAll(cadsrModule.findProperty(queryFields));
           break;
         case MODE_DE:
-          resultSet.addAll(cadsrModule.findDataElement(queryFields));
+//           resultSet.addAll(cadsrModule.findDataElement(queryFields));
+          resultSet.addAll(freestyleModule.findDataElements(text));
           break;
         case MODE_VD:
           resultSet.addAll(cadsrModule.findValueDomain(queryFields));       
@@ -402,6 +404,10 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     this.cadsrModule = module;
   }
  
+  public void setFreestyleModule(FreestyleModule freestyleModule) {
+    this.freestyleModule = freestyleModule;
+  }
+
   public static void main(String[] args) 
   {
         CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_VD);
