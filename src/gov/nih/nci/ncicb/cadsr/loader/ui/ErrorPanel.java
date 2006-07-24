@@ -18,6 +18,7 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
@@ -59,6 +60,8 @@ public class ErrorPanel extends JPanel implements MouseListener {
   private boolean hideConceptError = false;
   private UMLNode node;
   private JPanel cbPanel;
+  
+  private UserSelections userSelections = UserSelections.getInstance();
 
   public ErrorPanel(UMLNode rootNode) {
     node = rootNode;
@@ -232,7 +235,8 @@ public class ErrorPanel extends JPanel implements MouseListener {
 
     private Element writeXML(String filePath) {
       Element rootElement = new Element("File");
-      rootElement.setAttribute("name", filePath);
+      File file = new File((String)userSelections.getProperty("FILENAME"));
+      rootElement.setAttribute("name", file.getName());
       doNode(rootElement, node);
       return rootElement;
     }
@@ -265,6 +269,14 @@ public class ErrorPanel extends JPanel implements MouseListener {
         }
         if(child instanceof AttributeNode) {
           childElement = new Element("Attribute");
+          childElement.setAttribute("name", child.getDisplay());
+        }
+        if(child instanceof ValueDomainNode) {
+          childElement = new Element("ValueDomain");
+          childElement.setAttribute("name", child.getDisplay());
+        }
+        if(child instanceof ValueMeaningNode) {
+          childElement = new Element("ValueMeaning");
           childElement.setAttribute("name", child.getDisplay());
         }
         
