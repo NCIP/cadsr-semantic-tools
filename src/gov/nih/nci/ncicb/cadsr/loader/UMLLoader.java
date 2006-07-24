@@ -94,7 +94,18 @@ public class UMLLoader {
     }
 
     UMLLoader loader = BeansAccessor.getUmlLoader();
+
+    String ignoreVd = (String)(System.getProperties().get("ignore-vd"));
+    if((ignoreVd != null) & (ignoreVd.equals("true"))) {
+      System.out.println("********** IGNORE VD ************");
+      
+      UserSelections.getInstance().setProperty("ignore-vd", new Boolean(true));
+    } else 
+      UserSelections.getInstance().setProperty("ignore-vd", new Boolean(false));
+
+
     loader.run(args[0], args[1], projectVersion);
+
   }
 
   private void run(String fileDir, String projectName, Float projectVersion) throws Exception {
