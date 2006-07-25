@@ -308,7 +308,7 @@ public class ErrorPanel extends JPanel implements MouseListener {
         for (UMLNode child: children) {
             DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(child);
 
-            if (displaySet.contains(child))
+            if (displaySet.contains(child) && child.getDisplay() != "Inherited Attributes")
                 node.add(newNode);
 
             doNode(newNode);
