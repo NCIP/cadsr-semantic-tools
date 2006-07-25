@@ -221,10 +221,12 @@ public class TreeBuilder implements UserPreferencesListener {
         } // end of try-catch
       }
       if(showInheritedAttributes) {
-        parentNode.addChild(inheritedPackage);
         for(UMLNode inherit : inherited)
           inheritedPackage.addChild(inherit);
       }
+      
+      if(inheritedPackage.getChildren().size() > 0)
+        parentNode.addChild(inheritedPackage);
   }
 
   private void doValueDomains(UMLNode parentNode) {
