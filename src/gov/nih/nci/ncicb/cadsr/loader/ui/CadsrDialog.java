@@ -220,11 +220,21 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     numberOfResultsCombo = new JComboBox(number);
     numberOfResultsCombo.setSelectedItem(prefs.getCadsrResultsPerPage());
     
-    insertInBag(searchPanel, searchLabel, 0, 0);
-    insertInBag(searchPanel, searchField, 1, 0);
-    insertInBag(searchPanel, whereToSearchLabel, 2, 0);
-    insertInBag(searchPanel, searchSourceCombo, 3, 0);
-    insertInBag(searchPanel, searchButton, 4, 0);
+    if(mode == MODE_DE) {
+      searchButton.setText("Freestyle Search");
+      searchField.setColumns(20);
+      insertInBag(searchPanel, searchLabel, 0, 0);
+      insertInBag(searchPanel, searchField, 1, 0);
+      insertInBag(searchPanel, searchButton, 4, 0);
+    }
+    
+    else {
+      insertInBag(searchPanel, searchLabel, 0, 0);
+      insertInBag(searchPanel, searchField, 1, 0);
+      insertInBag(searchPanel, whereToSearchLabel, 2, 0);
+      insertInBag(searchPanel, searchSourceCombo, 3, 0);
+      insertInBag(searchPanel, searchButton, 4, 0);
+    }
     
     searchField.addKeyListener(this);
 
