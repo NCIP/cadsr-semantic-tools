@@ -279,6 +279,10 @@ public class ErrorPanel extends JPanel implements MouseListener {
           childElement = new Element("ValueMeaning");
           childElement.setAttribute("name", child.getDisplay());
         }
+        if(child instanceof AssociationNode) {
+          childElement = new Element("Association");
+          childElement.setAttribute("name", child.getDisplay());
+        }
         
         if (displaySet.contains(child)) {   
           element.addContent(childElement);
