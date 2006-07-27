@@ -540,7 +540,7 @@ public class XMIParser2 implements Parser {
       navig += 'A';
     }
     
-    UMLClass endClass = end.getUMLClass();
+    UMLClass endClass = (UMLClass)(end.getUMLElement());
     String pName = getPackageName(endClass.getPackage());
     
     if(StringUtil.isEmpty(pName) || !isInPackageFilter(pName)) {
@@ -572,7 +572,7 @@ public class XMIParser2 implements Parser {
     }
     
 
-    endClass = end.getUMLClass();
+    endClass = (UMLClass)(end.getUMLElement());
     pName = getPackageName(endClass.getPackage());
     
     if(StringUtil.isEmpty(pName) || !isInPackageFilter(pName)) {
