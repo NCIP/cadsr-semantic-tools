@@ -164,7 +164,12 @@ public class MainFrame extends JFrame
         infoLabel.setText("Unsaved Changes");
       else
         infoLabel.setText("Changes Applied");
+    } else if(evt.getPropertyName().equals("EXPORT_ERRORS")) {
+      infoLabel.setText("Export Errors Complete");
+    } else if(evt.getPropertyName().equals("EXPORT_ERRORS_FAILED")) {
+      infoLabel.setText("Export Errors Failed !");
     }
+    
   }
 
   private void jbInit() {
@@ -172,7 +177,7 @@ public class MainFrame extends JFrame
     this.setSize(new Dimension(830, 650));
     this.setJMenuBar(mainMenuBar);
     
-    this.setIconImage(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("SIW-logo.jpg")).getImage());
+    this.setIconImage(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif")).getImage());
 
     UserSelections selections = UserSelections.getInstance();
     String fileName = new File((String)selections.getProperty("FILENAME")).getName();
@@ -218,6 +223,8 @@ public class MainFrame extends JFrame
     mainMenuBar.add(helpMenu);
 
     errorPanel = new ErrorPanel(TreeBuilder.getInstance().getRootNode());
+
+    errorPanel.addPropertyChangeListener(this);
 
     jTabbedPane1.addTab("Errors", errorPanel);
 
