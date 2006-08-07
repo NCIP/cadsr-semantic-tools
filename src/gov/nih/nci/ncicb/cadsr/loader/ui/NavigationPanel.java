@@ -51,6 +51,7 @@ public class NavigationPanel extends JPanel
   KeyListener, SearchListener, TreeListener
 {
   private JTree tree;
+  private TreeNode rootTreeNode;
   private JPopupMenu nodePopup, blankPopup;
   private JScrollPane scrollPane;
   private UMLNode rootNode = TreeBuilder.getInstance().getRootNode(); 
@@ -91,15 +92,15 @@ public class NavigationPanel extends JPanel
   
   private void initUI() throws Exception
   {
-    DefaultMutableTreeNode top = buildTree();
-      
-    tree = new JTree(top);
+    rootTreeNode = buildTree();
+
+    tree = new JTree(rootTreeNode);
     tree.setRootVisible(false);
     tree.setShowsRootHandles(true);
     tree.addKeyListener(this);
     
     //Traverse Tree expanding all nodes    
-    TreeUtil.expandAll(tree, top);
+    TreeUtil.expandAll(tree, rootTreeNode);
 
     tree.setCellRenderer(new UMLTreeCellRenderer());
    
@@ -115,23 +116,36 @@ public class NavigationPanel extends JPanel
 
   public void actionPerformed(ActionEvent event) {
     DefaultMutableTreeNode dmtn, node;
+
     
     TreePath path = tree.getSelectionPath();
-    dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
 
-    if(event.getSource() instanceof JMenuItem) {
-      JMenuItem menuItem = (JMenuItem)event.getSource();
-      
-      ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
-      evt.setViewObject(dmtn.getUserObject());
+    if(path != null) {
+      dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
+      if(event.getSource() instanceof JMenuItem) {
+        JMenuItem menuItem = (JMenuItem)event.getSource();
+        
+        ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
+        evt.setViewObject(dmtn.getUserObject());
+        
+        if(menuItem.getActionCommand().equals("OPEN_NEW_TAB"))
+          evt.setInNewTab(true);
+        else 
+          evt.setInNewTab(false);
 
-      if(menuItem.getActionCommand().equals("OPEN_NEW_TAB"))
-        evt.setInNewTab(true);
-      else 
-        evt.setInNewTab(false);
+        fireViewChangeEvent(evt);
+        
+      }
+    } else {
+      if(event.getSource() instanceof JMenuItem) {
+        JMenuItem menuItem = (JMenuItem)event.getSource();
+        if(menuItem.getActionCommand().equals("COLLAPSE_ALL")) {
+          TreeUtil.collapseAll(tree);
+        } else if(menuItem.getActionCommand().equals("EXPAND_ALL")) {
+          TreeUtil.expandAll(tree, rootTreeNode);
+        }
 
-      fireViewChangeEvent(evt);
-
+      }
     }
   }
   
@@ -203,7 +217,8 @@ public class NavigationPanel extends JPanel
           nodePopup.show(e.getComponent(),
                      e.getX(), e.getY());
       } else {
-        
+        blankPopup.show(e.getComponent(),
+                       e.getX(), e.getY());
       }
     }
   }
@@ -271,13 +286,6 @@ public class NavigationPanel extends JPanel
     newTabItem.setActionCommand("OPEN_NEW_TAB");
     openItem.setActionCommand("OPEN");
 
-    JMenu subMenu = new JMenu("Preferences");
-    JCheckBoxMenuItem inheritedAttItem = new JCheckBoxMenuItem(PropertyAccessor.getProperty("preference.inherited.attributes"));
-    JCheckBoxMenuItem assocItem = new JCheckBoxMenuItem(PropertyAccessor.getProperty("preference.view.association"));
-
-    subMenu.add(inheritedAttItem);
-    subMenu.add(assocItem);
-
     nodePopup = new JPopupMenu();
 
     newTabItem.addActionListener(this);
@@ -287,9 +295,26 @@ public class NavigationPanel extends JPanel
     nodePopup.add(newTabItem);
     nodePopup.addSeparator();
 
-
-    blankPopup = new JPopupMenu();
     
+    JMenu subMenu = new JMenu("Preferences");
+    JCheckBoxMenuItem inheritedAttItem = new JCheckBoxMenuItem(PropertyAccessor.getProperty("preference.inherited.attributes"));
+    JCheckBoxMenuItem assocItem = new JCheckBoxMenuItem(PropertyAccessor.getProperty("preference.view.association"));
+
+    subMenu.add(inheritedAttItem);
+    subMenu.add(assocItem);
+
+    JMenuItem collapseAllItem = new JMenuItem("Collapse All");
+    collapseAllItem.setActionCommand("COLLAPSE_ALL");
+    collapseAllItem.addActionListener(this);
+
+    JMenuItem expandAllItem = new JMenuItem("Expand All");
+    expandAllItem.setActionCommand("EXPAND_ALL");
+    expandAllItem.addActionListener(this);
+    
+    blankPopup = new JPopupMenu();
+    blankPopup.add(collapseAllItem);
+    blankPopup.add(expandAllItem);
+//     blankPopup.add(subMenu);
     
     tree.addMouseListener(this);
    
