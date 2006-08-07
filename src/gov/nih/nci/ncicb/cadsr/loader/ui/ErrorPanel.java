@@ -29,6 +29,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -63,52 +66,58 @@ public class ErrorPanel extends JPanel implements MouseListener {
   
   private UserSelections userSelections = UserSelections.getInstance();
 
+  private java.util.List<PropertyChangeListener> propChangeListeners = 
+    new ArrayList<PropertyChangeListener>();
+
   public ErrorPanel(UMLNode rootNode) {
     node = rootNode;
     initCb();
     initUI(rootNode);
   }
   
-    public void update(UMLNode rootNode) {
-        node = rootNode;
-        this.removeAll();
-        initUI(rootNode);
-        this.updateUI();
-    }
+  public void addPropertyChangeListener(PropertyChangeListener l) {
+    propChangeListeners.add(l);
+  }
+
+  public void update(UMLNode rootNode) {
+    node = rootNode;
+    this.removeAll();
+    initUI(rootNode);
+    this.updateUI();
+  }
+  
+  private void update() {
+    update(node);
+  }    
+  
+  
+  private void initUI(UMLNode rootNode) {
+    displaySet.clear();
+    firstRun(rootNode);
     
-    private void update() {
-        update(node);
-    }    
-
-
-    private void initUI(UMLNode rootNode) {
-        displaySet.clear();
-        firstRun(rootNode);
-
-        DefaultMutableTreeNode node = buildTree(rootNode);
-
-        //create tree and make root not visible
-        tree = new JTree(node);
-        tree.setRootVisible(false);
-        tree.setShowsRootHandles(true);
-
-        //Traverse Tree expanding all nodes
-        TreeUtil.expandAll(tree, node);
-
-        tree.setCellRenderer(new UMLTreeCellRenderer());
-        tree.addMouseListener(this);
-
-        this.setLayout(new BorderLayout());
-
-        JScrollPane scrollPane = new JScrollPane(tree);
-        this.setPreferredSize(new Dimension(450, 110));
-        this.add(scrollPane, BorderLayout.CENTER);
-
-        buildPopupMenu();
-
-//         add(cbPanel, BorderLayout.EAST);
-    }
-
+    DefaultMutableTreeNode node = buildTree(rootNode);
+    
+    //create tree and make root not visible
+    tree = new JTree(node);
+    tree.setRootVisible(false);
+    tree.setShowsRootHandles(true);
+    
+    //Traverse Tree expanding all nodes
+    TreeUtil.expandAll(tree, node);
+    
+    tree.setCellRenderer(new UMLTreeCellRenderer());
+    tree.addMouseListener(this);
+    
+    this.setLayout(new BorderLayout());
+    
+    JScrollPane scrollPane = new JScrollPane(tree);
+    this.setPreferredSize(new Dimension(450, 110));
+    this.add(scrollPane, BorderLayout.CENTER);
+    
+    buildPopupMenu();
+    
+  }
+  
     private void initCb() {
 
       
@@ -193,10 +202,12 @@ public class ErrorPanel extends JPanel implements MouseListener {
           {
             FileWriter fw = new FileWriter(filePath);
             new XMLOutputter(Format.getPrettyFormat()).output(writeXML(filePath), fw);
+            firePropertyChange(new PropertyChangeEvent(this, "EXPORT_ERRORS", null, null));
             
           }
           catch (Exception e) 
           {
+            firePropertyChange(new PropertyChangeEvent(this, "EXPORT_ERRORS_FAILED", null, null));
             throw new RuntimeException("Error writing to " + filePath,  e);
           }            
         }
@@ -322,6 +333,11 @@ public class ErrorPanel extends JPanel implements MouseListener {
 
     }
 
+  private void firePropertyChange(PropertyChangeEvent evt) {
+    for(PropertyChangeListener l : propChangeListeners) {
+      l.propertyChange(evt);
+    }
+  }
 
 }
 
