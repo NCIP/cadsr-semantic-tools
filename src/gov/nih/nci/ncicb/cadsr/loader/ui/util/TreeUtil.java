@@ -26,6 +26,12 @@ import javax.swing.*;
 
 public class TreeUtil 
 {
+  
+  public static void collapseAll(JTree tree) {
+    for (int i = tree.getRowCount() - 1; i >= 0; i--) {
+      tree.collapseRow(i);
+    }
+  }
 
   public static void expandAll(JTree tree, TreeNode root) {
     //Create TreePath from the root 
