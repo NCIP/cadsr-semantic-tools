@@ -187,6 +187,9 @@ public class MainFrame extends JFrame
     jSplitPane1.setDividerLocation(160);
     jSplitPane2.setDividerLocation(400);
 
+    jSplitPane1.setOneTouchExpandable(true);
+    jSplitPane2.setOneTouchExpandable(true);
+
     fileMenu.add(saveMenuItem);
     fileMenu.add(saveAsMenuItem);
     fileMenu.addSeparator();
