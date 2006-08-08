@@ -278,6 +278,7 @@ public class MainFrame extends JFrame
     final PreferenceDialog pd = new PreferenceDialog(_this);
     prefMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
+        pd.updatePreferences();
         UIUtil.putToCenter(pd);
         pd.setVisible(true);
       }
