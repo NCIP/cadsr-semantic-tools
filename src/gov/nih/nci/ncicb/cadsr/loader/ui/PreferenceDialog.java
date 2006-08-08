@@ -83,28 +83,23 @@ public class PreferenceDialog extends JDialog implements ActionListener
     if(runMode.equals(RunMode.Curator)) 
       associationBox.setVisible(false);
       
+  }
+
+  public void updatePreferences() {
     UserPreferences prefs = UserPreferences.getInstance();
-      
-    if(prefs.getViewAssociationType().equalsIgnoreCase("true"))
-      associationBox.setSelected(true);
-    else
-      associationBox.setSelected(false);
-      
-    if(prefs.getUmlDescriptionOrder().equals("first"))
-      umlDescriptionBox.setSelected(false);
-    else
-      umlDescriptionBox.setSelected(true);
     
-    if(prefs.getOrderOfConcepts().equalsIgnoreCase("first"))
-      orderOfConceptsBox.setSelected(true);
-    else
-      orderOfConceptsBox.setSelected(false);
+    associationBox.setSelected(prefs.getViewAssociationType().equalsIgnoreCase("true"));
+      
+    umlDescriptionBox.setSelected(!prefs.getUmlDescriptionOrder().equals("first"));
+    
+    orderOfConceptsBox.setSelected(prefs.getOrderOfConcepts().equalsIgnoreCase("first"));
  
     evsAutoSearchBox.setSelected(prefs.getEvsAutoSearch());
 
     privateApiSearchBox.setSelected(prefs.isUsePrivateApi());
     
     showInheritedAttributesBox.setSelected(prefs.getShowInheritedAttributes());
+
   }
   
   public void actionPerformed(ActionEvent event) 
