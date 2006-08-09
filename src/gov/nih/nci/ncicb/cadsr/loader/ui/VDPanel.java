@@ -125,11 +125,15 @@ public class VDPanel extends JPanel
        if(vd != null && !StringUtil.isEmpty(vd.getPublicId())) {
          vdContextNameValueLabel.setText(vd.getContext().getName());
          vdVersionValueLabel.setText(vd.getVersion().toString());
+         vdPublicIdValueLabel.setText(vd.getPublicId());
+         vdDatatypeValueLabel.setText(vd.getDataType());
        }
        else 
          {
            vdContextNameValueLabel.setText("");
            vdVersionValueLabel.setText("");
+           vdPublicIdValueLabel.setText("");
+           vdDatatypeValueLabel.setText("");
          }
     }
   }
