@@ -19,8 +19,7 @@ public class PackageFilterSelectionPanel extends JPanel
 {
   private JLabel packageLabel = new JLabel("Package Name");
   private JLabel aliasLabel = new JLabel("Alias Name");
-  private JTextField packagePathField = new JTextField(32);
-  private JTextField aliasPathField = new JTextField(10);
+  private JTextField packagePathField = new JTextField(23);
   private JButton addButton = new JButton("Add");
   private JList packageList;
   private JButton removeButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("delete-x.gif")));
@@ -69,7 +68,10 @@ public class PackageFilterSelectionPanel extends JPanel
     JScrollPane scrollPane = new JScrollPane(packageList);
     
     removeButton.setPreferredSize(new Dimension(28,29));
-    
+
+    packagePathField.setFont(new Font("Serif", Font.PLAIN, 12));
+    packageList.setFont(new Font("Serif", Font.PLAIN, 12));
+
     insertInBag(centerPanel, packageLabel, 0, 0);
     //insertInBag(centerPanel, aliasLabel, 1, 0);
     insertInBag(centerPanel, packagePathField, 0, 1);
