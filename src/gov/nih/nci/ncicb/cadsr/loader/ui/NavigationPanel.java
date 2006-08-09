@@ -33,6 +33,8 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+
 import java.awt.BorderLayout;
 import java.awt.event.*;
 import javax.swing.*;
@@ -60,6 +62,8 @@ public class NavigationPanel extends JPanel
   private List<NavigationListener> navigationListeners = new ArrayList();
 
   private ElementsLists elements = ElementsLists.getInstance();
+
+  private JCheckBoxMenuItem inheritedAttItem, assocItem;
 
   public NavigationPanel()
   {
@@ -136,15 +140,19 @@ public class NavigationPanel extends JPanel
         fireViewChangeEvent(evt);
         
       }
-    } else {
-      if(event.getSource() instanceof JMenuItem) {
-        JMenuItem menuItem = (JMenuItem)event.getSource();
-        if(menuItem.getActionCommand().equals("COLLAPSE_ALL")) {
-          TreeUtil.collapseAll(tree);
-        } else if(menuItem.getActionCommand().equals("EXPAND_ALL")) {
-          TreeUtil.expandAll(tree, rootTreeNode);
-        }
-
+    } 
+    if(event.getSource() instanceof JMenuItem) {
+      JMenuItem menuItem = (JMenuItem)event.getSource();
+      if(menuItem.getActionCommand().equals("COLLAPSE_ALL")) {
+        TreeUtil.collapseAll(tree);
+      } else if(menuItem.getActionCommand().equals("EXPAND_ALL")) {
+        TreeUtil.expandAll(tree, rootTreeNode);
+      } else if(menuItem.getActionCommand().equals("PREF_INHERITED_ATT")) {
+        UserPreferences prefs = UserPreferences.getInstance();
+        prefs.setShowInheritedAttributes(inheritedAttItem.isSelected());
+      } else if(menuItem.getActionCommand().equals("PREF_INCLASS_ASSOC")) {
+        UserPreferences prefs = UserPreferences.getInstance();
+        prefs.setViewAssociationType(assocItem.isSelected()?"true":"false");
       }
     }
   }
@@ -296,12 +304,21 @@ public class NavigationPanel extends JPanel
     nodePopup.addSeparator();
 
     
-    JMenu subMenu = new JMenu("Preferences");
-    JCheckBoxMenuItem inheritedAttItem = new JCheckBoxMenuItem(PropertyAccessor.getProperty("preference.inherited.attributes"));
-    JCheckBoxMenuItem assocItem = new JCheckBoxMenuItem(PropertyAccessor.getProperty("preference.view.association"));
+    JMenu preferenceMenu = new JMenu("Preferences");
+    inheritedAttItem = new JCheckBoxMenuItem(PropertyAccessor.getProperty("preference.inherited.attributes"));
+    inheritedAttItem.setActionCommand("PREF_INHERITED_ATT");
+    assocItem = new JCheckBoxMenuItem(PropertyAccessor.getProperty("preference.view.association"));
+    assocItem.setActionCommand("PREF_INCLASS_ASSOC");
 
-    subMenu.add(inheritedAttItem);
-    subMenu.add(assocItem);
+    UserPreferences prefs = UserPreferences.getInstance();
+    inheritedAttItem.setSelected(prefs.getShowInheritedAttributes());
+    inheritedAttItem.addActionListener(this);
+
+    assocItem.setSelected(prefs.getViewAssociationType().equalsIgnoreCase("true"));
+    assocItem.addActionListener(this);
+
+    preferenceMenu.add(inheritedAttItem);
+    preferenceMenu.add(assocItem);
 
     JMenuItem collapseAllItem = new JMenuItem("Collapse All");
     collapseAllItem.setActionCommand("COLLAPSE_ALL");
@@ -314,7 +331,11 @@ public class NavigationPanel extends JPanel
     blankPopup = new JPopupMenu();
     blankPopup.add(collapseAllItem);
     blankPopup.add(expandAllItem);
-//     blankPopup.add(subMenu);
+    blankPopup.add(preferenceMenu);
+
+//     nodePopup.add(collapseAllItem);
+//     nodePopup.add(expandAllItem);
+//     nodePopup.add(preferenceMenu);
     
     tree.addMouseListener(this);
    
