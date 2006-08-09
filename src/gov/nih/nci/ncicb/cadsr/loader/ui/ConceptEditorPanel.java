@@ -67,7 +67,9 @@ public class ConceptEditorPanel extends JPanel
   {
     this.node = node;
     initConcepts();
-    vdPanel = new VDPanel(node);
+
+    if(node.getUserObject() instanceof DataElement)
+      vdPanel = new VDPanel(node);
   }
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
@@ -85,7 +87,8 @@ public class ConceptEditorPanel extends JPanel
     this.node = node;
     initConcepts();
     updateConcepts(concepts);
-    vdPanel.updateNode(node);
+    if(node.getUserObject() instanceof DataElement)
+      vdPanel.updateNode(node);
   }
 
   private AdminComponent checkForDuplicateMapping() {
@@ -316,16 +319,29 @@ public class ConceptEditorPanel extends JPanel
       JButton deleteButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("delete-x.gif")));
       //insertInBag(mainPanel, deleteButton, 2, 0);
       
-      JButton upButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("up-arrow.gif")));
-      JButton downButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("down-arrow.gif")));
+      JButton upButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("up-arrow.png")));
+      JButton downButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("down-arrow.png")));
       
+      upButton.setBorder(null);
+      upButton.setContentAreaFilled(false);
+      upButton.setOpaque(true);
+
+      downButton.setBorder(null);
+      downButton.setContentAreaFilled(false);
+      downButton.setOpaque(true);
+
+      deleteButton.setBorder(null);
+      deleteButton.setContentAreaFilled(false);
+      deleteButton.setOpaque(true);
+
+
       upButton.setToolTipText("Move this Concept up");
       downButton.setToolTipText("Move this Concept down");
       deleteButton.setToolTipText("Delete this Concept");
       
-      upButton.setPreferredSize(new Dimension(28, 35));
+      upButton.setPreferredSize(new Dimension(31, 32));
       deleteButton.setPreferredSize(new Dimension(28,29));
-      downButton.setPreferredSize(new Dimension(28, 35));
+      downButton.setPreferredSize(new Dimension(31, 32));
 
       //deleteButton.
 
