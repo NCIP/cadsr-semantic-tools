@@ -94,6 +94,9 @@ public class ConceptEditorPanel extends JPanel
   private AdminComponent checkForDuplicateMapping() {
     Concept[] tempConcepts = new Concept[conceptUIs.length];
 
+    if(tempConcepts.length == 0)
+      return null;
+
     for(int i = 0 ; i < conceptUIs.length; i++) {
       Concept con = DomainObjectFactory.newConcept();
       con.setPreferredName(conceptUIs[i].code.getText());
