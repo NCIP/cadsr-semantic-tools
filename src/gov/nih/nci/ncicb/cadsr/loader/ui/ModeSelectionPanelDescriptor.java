@@ -35,7 +35,10 @@ public class ModeSelectionPanelDescriptor
     setPanelComponent(panel);
     panel.addActionListener(this);
 
-    nextPanelDescriptor = FileSelectionPanelDescriptor.IDENTIFIER;
+    if(panel.getSelection().equals(RunMode.GenerateReport.toString()))
+      nextPanelDescriptor = PackageFilterSelectionPanelDescriptor.IDENTIFIER;
+    else
+      nextPanelDescriptor = FileSelectionPanelDescriptor.IDENTIFIER;
     backPanelDescriptor = ModeSelectionPanelDescriptor.IDENTIFIER;
 
   }
