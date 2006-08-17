@@ -19,6 +19,9 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 import java.awt.event.*;
 import java.io.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
@@ -33,16 +36,23 @@ public class FileSelectionPanelDescriptor
   
   public static final String IDENTIFIER = "FILE_SELECTION_PANEL";
   private FileSelectionPanel panel;
-    
+  private UserPreferences prefs = UserPreferences.getInstance();
+  
   public FileSelectionPanelDescriptor() {
     panel =  new FileSelectionPanel();
     setPanelDescriptorIdentifier(IDENTIFIER);
     setPanelComponent(panel);
-
+        
     nextPanelDescriptor = ProgressFileSelectionPanelDescriptor.IDENTIFIER;
-    backPanelDescriptor = ModeSelectionPanelDescriptor.IDENTIFIER;
+  }
+  
+  public Object getBackPanelDescriptor() {
+    if(prefs.getModeSelection().equals(RunMode.GenerateReport.toString()))
+      backPanelDescriptor = PackageFilterSelectionPanelDescriptor.IDENTIFIER;
+    else
+      backPanelDescriptor = ModeSelectionPanelDescriptor.IDENTIFIER;
     
-   
+    return backPanelDescriptor;
   }
 
   public void aboutToDisplayPanel() 
@@ -55,7 +65,7 @@ public class FileSelectionPanelDescriptor
     panel.addActionListener(this);
   }
   
-  public void actionPerformed(ActionEvent evt) {
+  public void actionPerformed(ActionEvent evt) {      
     setNextButtonAccordingToSelection();
   }
     
