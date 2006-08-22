@@ -49,6 +49,8 @@ public class FileSelectionPanelDescriptor
   public Object getBackPanelDescriptor() {
     if(prefs.getModeSelection().equals(RunMode.GenerateReport.toString()))
       backPanelDescriptor = PackageFilterSelectionPanelDescriptor.IDENTIFIER;
+    else if(prefs.getModeSelection().equals(RunMode.Roundtrip.toString()))
+      backPanelDescriptor = RoundtripPanelDescriptor.IDENTIFIER;
     else
       backPanelDescriptor = ModeSelectionPanelDescriptor.IDENTIFIER;
     
