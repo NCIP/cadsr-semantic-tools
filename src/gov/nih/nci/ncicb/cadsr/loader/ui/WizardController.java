@@ -221,16 +221,14 @@ public class WizardController implements ActionListener {
                     String filenameNoExt = filename.substring(filename.lastIndexOf("/")+1);
                     String inputXmi = filename;
                     
-                    SemanticConnectorUtil semConn = new SemanticConnectorUtil();
                     SemanticConnector sem = BeansAccessor.getSemanticConnector();
                     sem.setProgressListener(progressDesc);
 
-                    if(!filenameNoExt.startsWith("fixed_")) {
-                      reportPanel.setOutputText("The name of the XMI file must start with 'fixed_'. It does not. <br> Please ensure you have run the Fix EA task first.");
-                      return null;
-                    }
+//                    if(!filenameNoExt.startsWith("fixed_")) {
+//                      reportPanel.setOutputText("The name of the XMI file must start with 'fixed_'. It does not. <br> Please ensure you have run the Fix EA task first.");
+//                      return null;
+//                    }
 
-                    File csvFile = new File(SemanticConnectorUtil.getCsvFilename(filename));
                     evt.setMessage("Creating Semantic Connector Report. This may take a minute ...");
                     progressDesc.newProgressEvent(evt);
                     String outputXmi = inputXmi.substring(0, inputXmi.lastIndexOf("/") + 1)
@@ -238,7 +236,6 @@ public class WizardController implements ActionListener {
                         + inputXmi.substring(inputXmi.lastIndexOf("/") + 1, inputXmi.lastIndexOf("."))
                         + ".xmi";
                     sem.firstPass(inputXmi, outputXmi);
-//                    outputFile = semConn.generateReport(inputXmi);
              
                     reportPanel.setFiles(inputXmi, outputXmi);
                     
@@ -368,6 +365,7 @@ public class WizardController implements ActionListener {
                     parser.parse(filename);
                     
                     Validator validator = BeansAccessor.getValidator();
+                    validator.addProgressListener(progressDesc);
                     validator.validate();
 
                     Set<ValidationFatal> fatals = ValidationItems.getInstance().getFatals();
