@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import java.util.*;
+import javax.swing.ToolTipManager;
 
 public class PackageFilterSelectionPanel extends JPanel
   implements ActionListener
@@ -58,9 +59,25 @@ public class PackageFilterSelectionPanel extends JPanel
     infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
     infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif"))));
-    
-    JLabel infoLabel = new JLabel("<html>Enter the packages that you would like to filter by</html>");
+    JLabel infoLabel = new JLabel("<html>Enter the packages that you would like to filter by. </html>");
+    JLabel explainLabel = new JLabel("<html><u color=BLUE>Explain this</u></html>");
+    ToolTipManager.sharedInstance().registerComponent(explainLabel);
+    ToolTipManager.sharedInstance().setDismissDelay(3600000);
+    explainLabel.setToolTipText("<html>Each model is divided into packages. This  " +
+    "<br>panel lets you filter by certain packages. " +
+    "<br>To filter by a certain package " +
+    "<br>you must enter the name of the package " +
+    "<br>in the field and then click the add button.  By " +
+    "<br>clicking add you put that package into the " +
+    "<br>filter list.  Only the packages in the filter list will " +
+    "<br>have their items processed by the Semantic " +
+    "<br>Connector. To remove a package from the list" +
+    "<br>click on the name of the package you want" +
+    "<br>to remove and click on the X button.  If the " +
+    "<br>list is empty then all packages will be " +
+    "<br>processed (no filtering will occur). </html>");
     infoPanel.add(infoLabel);
+    infoPanel.add(explainLabel);
     
     JPanel centerPanel = new JPanel();
     centerPanel.setLayout(new GridBagLayout());
