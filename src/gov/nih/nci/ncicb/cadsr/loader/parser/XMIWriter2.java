@@ -237,23 +237,30 @@ public class XMIWriter2 implements ElementWriter {
 
     String tvName = type + pre + XMIParser.TV_CONCEPT_CODE + ((n>0)?""+n:"");
 
-    elt.addTaggedValue(tvName,
-                       con.getPreferredName());
+    if(con.getPreferredName() != null)
+      elt.addTaggedValue(tvName,
+                         con.getPreferredName());
     
     tvName = type + pre + XMIParser.TV_CONCEPT_DEFINITION + ((n>0)?""+n:"");
-    elt.addTaggedValue
-      (tvName,
-       con.getPreferredDefinition());
+
+    if(con.getPreferredDefinition() != null)
+      elt.addTaggedValue
+        (tvName,
+         con.getPreferredDefinition());
     
     tvName = type + pre + XMIParser.TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:"");
-    elt.addTaggedValue
-      (tvName,
-       con.getDefinitionSource());
-      
-      tvName = type + pre + XMIParser.TV_CONCEPT_PREFERRED_NAME + ((n>0)?""+n:"");
-    elt.addTaggedValue
-      (tvName,
-       con.getLongName());
+
+    if(con.getDefinitionSource() != null)
+      elt.addTaggedValue
+        (tvName,
+         con.getDefinitionSource());
+    
+    tvName = type + pre + XMIParser.TV_CONCEPT_PREFERRED_NAME + ((n>0)?""+n:"");
+
+    if(con.getLongName() != null)
+      elt.addTaggedValue
+        (tvName,
+         con.getLongName());
   }
   
   private void markHumanReviewed() throws ParserException {
