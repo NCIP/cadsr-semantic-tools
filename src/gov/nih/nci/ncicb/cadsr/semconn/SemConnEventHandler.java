@@ -1,6 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.semconn;
+
+import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
 import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
-import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.DataElementConcept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
@@ -9,87 +10,89 @@ import gov.nih.nci.ncicb.cadsr.domain.Property;
 import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
-import gov.nih.nci.ncicb.cadsr.loader.event.*;
-import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
-import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewAssociationEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewAttributeEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewClassEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewDataTypeEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewGeneralizationEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewInterfaceEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewOperationEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewPackageEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewStereotypeEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewValueDomainEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewValueMeaningEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
+import gov.nih.nci.ncicb.cadsr.loader.event.UMLHandler;
 
-import gov.nih.nci.ncicb.cadsr.loader.parser.Parser;
-import gov.nih.nci.ncicb.cadsr.loader.util.ConceptUtil;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
 
 public class SemConnEventHandler implements UMLHandler
 {
-  private EvsModule evsModule = new EvsModule();
-  
   private ElementsLists elements;
   private ReviewTracker reviewTracker = ReviewTracker.getInstance();
 
-  private Map<String,Collection<Concept>> cache = new HashMap();
+  private static Logger logger = Logger.getLogger(SemConnEventHandler.class);
 
-  private static Logger logger = Logger.getLogger(SemConnEventHandler.class.getName());
-
+  // support for asynchronous EVS queries
+  private final ExecutorService executor = Executors.newFixedThreadPool(10);
+  private final BlockingQueue<FutureName> futures = new LinkedBlockingQueue<FutureName>();
+  private final AsyncConceptConsumer conceptConsumer = new AsyncConceptConsumer();
+  private final Thread conceptConsumerThread = new Thread(conceptConsumer);
+  
+  private ProgressListener progressListener;
+  
   public SemConnEventHandler()
   {
     this.elements = ElementsLists.getInstance();
   }
   
-  public void setParser(Parser parser) 
-  {
-    
-  }
+  public void newPackage(NewPackageEvent event) {}
+  public void newOperation(NewOperationEvent event) {}
   
-  public void newPackage(NewPackageEvent event) 
-  {
-    
-  }
-  public void newOperation(NewOperationEvent event) 
-  {
-    
-  }
   public void newClass(NewClassEvent event) 
   {
-  
-    ObjectClass oc = DomainObjectFactory.newObjectClass();
- 
     String className = event.getName();
-    List<Concept> concepts = termToConcepts(className);
-      
-    oc.setPreferredName(ConceptUtil.preferredNameFromConcepts(concepts));
-    oc.setLongName(event.getName());
     
+    ObjectClass oc = DomainObjectFactory.newObjectClass();
+    oc.setLongName(className);
     AlternateName fullName = DomainObjectFactory.newAlternateName();
     fullName.setType(AlternateName.TYPE_CLASS_FULL_NAME);
-    fullName.setName(event.getName());
+    fullName.setName(className);
     AlternateName classAltName = DomainObjectFactory.newAlternateName();
     classAltName.setType(AlternateName.TYPE_UML_CLASS);
-    classAltName.setName(event.getName().substring(event.getName().lastIndexOf(".") + 1));
-
+    classAltName.setName(className.substring(className.lastIndexOf(".") + 1));
     oc.addAlternateName(fullName);
     oc.addAlternateName(classAltName);
-    
-    reviewTracker.put(event.getName(), false);
-    ChangeTracker.getInstance().put(event.getName(), true);
 
+    reviewTracker.put(className, false);
+    ChangeTracker.getInstance().put(className, true);
+    
+    // asynchronously look up EVS concept
+    Future<String> preferredName = termToPreferredName(className);
+    futures.add(new FutureName(oc, preferredName));
+    
     elements.addElement(oc);
-    
   }
-  public void newValueDomain(NewValueDomainEvent event) 
-  {
-  }
+  
+  public void newValueDomain(NewValueDomainEvent event) {}
   public void newValueMeaning(NewValueMeaningEvent event) {}
-  public void newAttribute(NewAttributeEvent event){
-    DataElement de = DomainObjectFactory.newDataElement();
-    
+  
+  public void newAttribute(NewAttributeEvent event)
+  {
     String propName = event.getName();
-    List<Concept> concepts = termToConcepts(propName);
-    
-    de.setLongName(event.getName());
+      
+    DataElement de = DomainObjectFactory.newDataElement();
+    de.setLongName(propName);
     
     String s = event.getClassName();
     int ind = s.lastIndexOf(".");
@@ -97,12 +100,7 @@ public class SemConnEventHandler implements UMLHandler
     String packageName = s.substring(0, ind);
     
     Property prop = DomainObjectFactory.newProperty();
-
-    // store concept codes in preferredName
-    prop.setPreferredName(ConceptUtil.preferredNameFromConcepts(concepts));
-
-    //     prop.setPreferredName(event.getName());
-    prop.setLongName(event.getName());
+    prop.setLongName(propName);
     
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
     dec.setLongName(className + ":" + propName);
@@ -125,7 +123,7 @@ public class SemConnEventHandler implements UMLHandler
     dec.setObjectClass(oc);
     de.setDataElementConcept(dec);
     
-        // Store alt Name for DE:
+    // Store alt Name for DE:
     // packageName.ClassName.PropertyName
     AlternateName fullName = DomainObjectFactory.newAlternateName();
     fullName.setType(AlternateName.TYPE_FULL_NAME);
@@ -145,74 +143,126 @@ public class SemConnEventHandler implements UMLHandler
     elements.addElement(de);
     elements.addElement(dec);
     elements.addElement(prop);
-    
+
+    // asynchronously look up EVS concept
+    Future<String> preferredName = termToPreferredName(propName);
+    futures.add(new FutureName(prop, preferredName));
   }
+  
   public void newInterface(NewInterfaceEvent event){}
   public void newStereotype(NewStereotypeEvent event){}
   public void newDataType(NewDataTypeEvent event){}
   public void newAssociation(NewAssociationEvent event){}
   public void newGeneralization(NewGeneralizationEvent event){}
-  
-  public Collection<Concept> searchEvs(String word) 
-  {
-    if(cache.containsKey(word.toLowerCase())) {
-      logger.debug(word + " found in cache");
-      return cache.get(word.toLowerCase());
-    }
-    
-    logger.debug("Search for EVS: " + word);
-    Collection<EvsResult> evsResult = evsModule.findBySynonym(word,false);
-    Collection<Concept> result = new ArrayList();
-    for(EvsResult  er : evsResult)
-      if(er.getConcept().getPreferredName().equals(word))
-        result.add(er.getConcept());
-   
-    if(result.isEmpty())
-      for(EvsResult  er : evsResult)
-        result.add(er.getConcept());
-      //result = evsResult;
-    cache.put(word.toLowerCase(),result);
-    return result;  
+
+  public void beginParsing() {
+      logger.info("Starting concept consumer thread");
+      conceptConsumerThread.start();
   }
   
-  private List<Concept> termToConcepts(String term)
-  {
-    List<Concept> found = new ArrayList();
-    List<String> options = new ArrayList();
-    List<String> words = new ArrayList();
-    SemmConnUtility.evaluateString(term, options, words);
-//    ProgressEvent event = new ProgressEvent();
-//    event.setMessage("Searching EVS...");
-//    event.setGoal(options.size()); 
-//    int i = 1;
-    for(String s : options) {
-//      event.setMessage("Searching: " + s);
-//      event.setStatus(i++);
-      List<Concept> result = (List<Concept>)searchEvs(s);
-      if(!result.isEmpty() && found.isEmpty()) 
-        found.addAll(result);
-    }
+  public void endParsing() {
+    // tell the consumer that parsing is over
+    conceptConsumer.endWhenQueueIsEmpty();
     
-    if(found.isEmpty()) {
-//      //make OC here
-//      oc.setPreferredName(ConceptUtil.preferredNameFromConcepts(found));
-//      oc.setLongName(event.getName());
-//      //return;
+    try {
+        // upgrade progress bar with what's left to do
+        ProgressEvent evt = new ProgressEvent();
+        evt.setMessage("Searching");
+        evt.setGoal(futures.size());
+        evt.setStatus(0);
+        fireProgressEvent(evt);
+        
+        // wait for consumer thread to finish
+        logger.info("Waiting for concept consumer thread");
+        conceptConsumerThread.join();
+        logger.info("Joined with concept consumer thread");
+    }
+    catch (InterruptedException e) {
+        // ignore
+    }
+  }
+  
+  /**
+   * Returns a future preferred name for the specified term.
+   */
+  private Future<String> termToPreferredName(String term) {
+      return executor.submit(new AsyncConceptQuery(term));
+  }
 
-      for(String s : words) {
-        List<Concept> result2 = (List<Concept>)searchEvs(s);
-      if(!result2.isEmpty() && found.isEmpty()) 
-        found.addAll(result2);
-        //return;
+  /**
+   * Groups an AdminComponent with its future name for processing.
+   * 
+   * @author <a href="mailto:rokickik@mail.nih.gov">Konrad Rokicki</a>
+   */
+  private class FutureName {
+      private AdminComponent ac;
+      private Future<String> name;
+      public FutureName(AdminComponent ac, Future<String> name) {
+        this.ac = ac;
+        this.name = name;
+      }
+      public AdminComponent getComponent() {
+        return ac;
+      }
+      public Future<String> getName() {
+          return name;
       }
   }
   
-  for(Concept con : found) 
-  {
-   ElementsLists.getInstance().addElement(con); 
+  /**
+   * Consumes the results of finished EVS concept queries. This class runs
+   * in a thread and consumes FutureNames until parsing is finished.
+   * 
+   * @author <a href="mailto:rokickik@mail.nih.gov">Konrad Rokicki</a>
+   */
+  private class AsyncConceptConsumer implements Runnable {
+    private boolean running = true;
+    private int numConsumed = 0;
+      
+    public void run()  {
+        
+        // keep consuming until parsing is over and 
+        // the futures queue has been depleted 
+        while (running || !futures.isEmpty()) {
+            try  {
+                FutureName fname = futures.poll(1, TimeUnit.SECONDS);
+                if (fname != null) {
+                    fname.getComponent().setPreferredName(fname.getName().get());
+                    
+                    numConsumed++; 
+                    ProgressEvent evt = new ProgressEvent();
+                    String name = fname.getComponent().getLongName();
+                    evt.setMessage("Searching " + name);
+                    evt.setStatus(numConsumed);
+                    fireProgressEvent(evt);
+                    
+                    // Since these threads tend to finish in batches, we need to
+                    // slow things down just a little bit so that each message
+                    // can be displayed on the screen, albeit very quickly.
+                    Thread.sleep(20);
+                }
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public void endWhenQueueIsEmpty() {
+        running = false;
+    }
   }
-  
-  return found;
+
+  private void fireProgressEvent(ProgressEvent evt) {
+    if(progressListener != null)
+      progressListener.newProgressEvent(evt);
+  }
+
+  public void addProgressListener(ProgressListener listener) {
+    progressListener = listener;
   }
   
   public static void main(String[] args) 
@@ -226,6 +276,7 @@ public class SemConnEventHandler implements UMLHandler
       "Gene", "C12345:C45678", "C12345:C45678"
     };
     
+    /* KR - API changed, test harness must be rewritten 
     SemConnEventHandler handler = new SemConnEventHandler();
     for(int i=0; i<testData.length; i++) 
     {
@@ -233,6 +284,6 @@ public class SemConnEventHandler implements UMLHandler
       String prefName = ConceptUtil.preferredNameFromConcepts(concepts);
       System.out.println(prefName.equals(testResults[i]));
     }
-    
+    */
   }
 }
