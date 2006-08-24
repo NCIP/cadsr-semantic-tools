@@ -89,6 +89,12 @@ public class VDPanel extends JPanel
             vdVersionValueLabel.setText(tempVD.getVersion().toString());
             vdDatatypeValueLabel.setText(tempVD.getDataType());
             
+            vdLongNameTitleLabel.setVisible(true);
+            vdPublicIdTitleLabel.setVisible(true);
+            vdContextNameTitleLabel.setVisible(true);
+            vdVersionTitleLabel.setVisible(true);
+            vdDatatypeTitleLabel.setVisible(true);
+            
             firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
           }
@@ -127,14 +133,31 @@ public class VDPanel extends JPanel
          vdVersionValueLabel.setText(vd.getVersion().toString());
          vdPublicIdValueLabel.setText(vd.getPublicId());
          vdDatatypeValueLabel.setText(vd.getDataType());
+         
+        vdLongNameTitleLabel.setVisible(true);
+        vdPublicIdTitleLabel.setVisible(true);
+        vdContextNameTitleLabel.setVisible(true);
+        vdVersionTitleLabel.setVisible(true);
+        vdDatatypeTitleLabel.setVisible(true);
        }
        else 
-         {
+         { 
            vdContextNameValueLabel.setText("");
            vdVersionValueLabel.setText("");
            vdPublicIdValueLabel.setText("");
            vdDatatypeValueLabel.setText("");
          }
+      
+      if(vdLongNameValueLabel.getText().equals(""))
+          vdLongNameTitleLabel.setVisible(false);
+      if(vdVersionValueLabel.getText().equals(""))
+          vdVersionTitleLabel.setVisible(false);
+      if(vdPublicIdValueLabel.getText().equals(""))
+          vdPublicIdTitleLabel.setVisible(false);
+      if(vdDatatypeValueLabel.getText().equals(""))
+          vdDatatypeTitleLabel.setVisible(false);
+      if(vdContextNameValueLabel.getText().equals(""))
+          vdContextNameTitleLabel.setVisible(false);
     }
   }
 
