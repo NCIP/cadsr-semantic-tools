@@ -160,10 +160,12 @@ public class XMIParser implements Parser {
   public void parse(String filename) throws ParserException {
     try {
 
+      listener.beginParsing();
+        
       ProgressEvent evt = new ProgressEvent();
       evt.setMessage("Parsing ...");
       fireProgressEvent(evt);
-
+      
       ModelAccess access = new UML13ModelAccess();
 
       String s = filename.replaceAll("\\ ", "%20");
@@ -208,6 +210,8 @@ public class XMIParser implements Parser {
       }
 
       fireLastEvents();
+      
+      listener.endParsing();
     }
     catch (Exception e) {
 //       logger.fatal("Could not parse: " + filename);

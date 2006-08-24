@@ -68,6 +68,8 @@ public class CsvParser implements Parser {
       NewClassEvent classEvent = null;
       NewAttributeEvent attributeEvent = null;
 
+      listener.beginParsing();
+      
       // skip first line
       DataRow row = reader.next();
       while( (row = reader.next()) != null ) {
@@ -121,7 +123,8 @@ public class CsvParser implements Parser {
       // flush last line
       if(attributeEvent != null)
         listener.newAttribute(attributeEvent);
-      
+
+      listener.endParsing();
       
     } catch(IOException e) {
       System.exit(1);
