@@ -66,7 +66,7 @@ public class ElementsLists {
    *
    * @param o an <code>Object</code>
    */
-  public void addElement(Object o) {
+  public synchronized void addElement(Object o) {
     List list = (List)objects.get(o.getClass().getName());
     if(list == null)
       list = new ArrayList();
