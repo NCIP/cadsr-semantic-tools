@@ -147,11 +147,18 @@ public class XMIParser2 implements Parser {
 
   public void setEventHandler(LoaderHandler handler) {
     this.listener = (UMLHandler) handler;
+    if (progressListener != null) {
+      listener.addProgressListener(progressListener);
+    }
   }
 
   public void parse(String filename) throws ParserException {
     try {
 
+      long start = System.currentTimeMillis();
+      
+      listener.beginParsing();
+        
       ProgressEvent evt = new ProgressEvent();
       evt.setMessage("Parsing ...");
       fireProgressEvent(evt);
@@ -170,7 +177,7 @@ public class XMIParser2 implements Parser {
       UMLModel model = handler.getModel("EA Model");
 
       totalNumberOfElements = countNumberOfElements(model);
-
+      
       evt.setMessage("Parsing ...");
       evt.setGoal(totalNumberOfElements);
       fireProgressEvent(evt);
@@ -207,6 +214,10 @@ public class XMIParser2 implements Parser {
       
       
       fireLastEvents();
+      
+      listener.endParsing();
+      long stop = System.currentTimeMillis();
+      System.err.println("parsing took: "+(stop-start)+" ms");
     }
     catch (Exception e) {
       throw new ParserException(e);
@@ -662,7 +673,7 @@ public class XMIParser2 implements Parser {
     ProgressEvent evt = new ProgressEvent();
     evt.setGoal(100);
     evt.setStatus(100);
-    evt.setMessage("Done");
+    evt.setMessage("Done parsing");
     fireProgressEvent(evt);
 
   }
@@ -760,8 +771,11 @@ public class XMIParser2 implements Parser {
       progressListener.newProgressEvent(evt);
   }
 
-  public void addProgressListener(ProgressListener listener) {
-    progressListener = listener;
+  public void addProgressListener(ProgressListener progressListener) {
+    this.progressListener = progressListener;
+    if (listener != null) {
+      listener.addProgressListener(progressListener);
+    }
   }
   
 }
