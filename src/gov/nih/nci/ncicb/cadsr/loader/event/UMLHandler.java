@@ -19,12 +19,6 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.event;
 
-import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
-
-import gov.nih.nci.ncicb.cadsr.domain.*;
-
-import java.util.List;
-
 /**
  * UML Loader Handler interface
  *
@@ -43,5 +37,8 @@ public interface UMLHandler extends LoaderHandler {
   public void newDataType(NewDataTypeEvent event);
   public void newAssociation(NewAssociationEvent event);
   public void newGeneralization(NewGeneralizationEvent event);
-
+  public void beginParsing();
+  public void endParsing(); 
+  public void addProgressListener(ProgressListener listener);
+  
 }

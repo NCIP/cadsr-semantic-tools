@@ -34,8 +34,10 @@ import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationError;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
 
 /**
- * This class implements UMLHandler specifically to handle UML events and convert them into caDSR objects.<br/> The handler's responsibility is to transform events received into cadsr domain objects, and store those objects in the Elements List.
- *
+ * This class implements UMLHandler specifically to handle UML events and 
+ * convert them into caDSR objects.<br/> The handler's responsibility is to 
+ * transform events received into cadsr domain objects, and store those objects 
+ * in the Elements List.
  *
  * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
  */
@@ -612,4 +614,7 @@ public class UMLDefaultHandler
     this.cadsrModule = module;
   }
 
+  public void beginParsing() {}
+  public void endParsing() {}
+  public void addProgressListener(ProgressListener listener) {}
 }
