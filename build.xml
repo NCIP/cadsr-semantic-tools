@@ -131,8 +131,8 @@
       tofile="${dist.dir}/siw.jnlp"
       >
     </copy>
-    <copy file="${images.dir}/SIW-logo.jpg"
-      tofile="${dist.dir}/SIW-logo.jpg"
+    <copy file="${images.dir}/siw-logo3_2.gif"
+      tofile="${dist.dir}/siw-logo3_2.gif"
       >
     </copy>
     <copy todir="${dist.dir}/lib">
@@ -154,6 +154,7 @@
         <include name="dom4j-1.4.jar"/>
         <include name="ehcache-0.7.jar"/>
         <include name="freemarker.jar"/>
+        <include name="freestylesearch.jar"/>
         <include name="hibernate3.jar"/>
         <include name="jakarta-oro-2.0.8.jar"/>
         <include name="jaxen-jdom.jar"/>
@@ -171,6 +172,7 @@
         <include name="openide-util.jar"/>
         <include name="spring*.jar"/>
         <include name="uml-1.3.jar"/>
+        <include name="xmi.in.out.jar"/>
       </fileset>
     </copy>
   </target>
