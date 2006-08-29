@@ -211,13 +211,11 @@ public class XMIParser2 implements Parser {
 
       }
       
-      
-      
       fireLastEvents();
       
       listener.endParsing();
       long stop = System.currentTimeMillis();
-      System.err.println("parsing took: "+(stop-start)+" ms");
+      logger.debug("parsing took: "+(stop-start)+" ms");
     }
     catch (Exception e) {
       throw new ParserException(e);
