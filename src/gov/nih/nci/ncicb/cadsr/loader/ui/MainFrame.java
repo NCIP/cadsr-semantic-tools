@@ -517,11 +517,10 @@ public class MainFrame extends JFrame
             + "." + tabTitle;
         viewTabbedPane.setTitleAt(viewTabbedPane.getSelectedIndex(), tabTitle);
 
-        infoLabel.setText(tabTitle);
-
         viewPanel.setName(node.getFullPath());
         viewPanel.updateNode(node);
         viewPanels.put(viewPanel.getName(), viewPanel);
+        infoLabel.setText(tabTitle);
       }
 
     } else if(event.getType() == ViewChangeEvent.VIEW_ASSOCIATION) {
