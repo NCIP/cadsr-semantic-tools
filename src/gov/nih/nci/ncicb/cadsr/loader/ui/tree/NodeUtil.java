@@ -31,34 +31,57 @@ public class NodeUtil
 
   public static Concept[] getConceptsFromNode(UMLNode node) 
   {
-    Concept[] concepts = null;
-      String[] conceptCodes = null;
-      if(node instanceof ClassNode) {
-        ObjectClass oc = (ObjectClass)node.getUserObject();
-        if(oc.getPreferredName() != null)
-          conceptCodes = oc.getPreferredName().split(":");
-        else
-          return new Concept[0];
-      } else if(node instanceof AttributeNode) {
-        Property prop = ((DataElement)node.getUserObject()).getDataElementConcept().getProperty();
-        conceptCodes = prop.getPreferredName().split(":");
-      } else if(node instanceof ValueMeaningNode) {
-        ValueMeaning vm = ((ValueMeaning)node.getUserObject());
-        conceptCodes = ConceptUtil.getConceptCodes(vm);
-      }
-      
-      if((conceptCodes == null )) {
-        conceptCodes = new String[0];
-      }
+    String[] conceptCodes = null;
+    if(node instanceof ClassNode) {
+      ObjectClass oc = (ObjectClass)node.getUserObject();
+      if(oc.getPreferredName() != null)
+        conceptCodes = oc.getPreferredName().split(":");
+      else
+        return new Concept[0];
+    } else if(node instanceof AttributeNode) {
+      Property prop = ((DataElement)node.getUserObject()).getDataElementConcept().getProperty();
+      conceptCodes = prop.getPreferredName().split(":");
+    } else if(node instanceof ValueMeaningNode) {
+      ValueMeaning vm = ((ValueMeaning)node.getUserObject());
+      conceptCodes = ConceptUtil.getConceptCodes(vm);
+    }
+    
+    return conceptCodesToConcepts(conceptCodes);
+  }
 
-      concepts = new Concept[conceptCodes.length];
+  public static Concept[] getAssociationSourceConcepts(AssociationNode node) {
+    ObjectClassRelationship ocr = (ObjectClassRelationship)node.getUserObject();
+    return getAssociationConcepts(ocr.getSourceRoleConceptDerivationRule());
+  }
 
-      for(int i=0, n = concepts.length; i<n; 
-          concepts[n-1-i] = LookupUtil.lookupConcept(conceptCodes[i++])
-          );
-      if((concepts.length > 0) && (concepts[0] == null))
-        concepts = new Concept[0];
+  public static Concept[] getAssociationTargetConcepts(AssociationNode node) {
+    ObjectClassRelationship ocr = (ObjectClassRelationship)node.getUserObject();
+    return getAssociationConcepts(ocr.getTargetRoleConceptDerivationRule());
+  }
+
+  private static Concept[] getAssociationConcepts(ConceptDerivationRule conDR) {
+    String[] conceptCodes = ConceptUtil.getConceptCodes(conDR);
+    
+    return conceptCodesToConcepts(conceptCodes);
+  }
+ 
+  private static Concept[] conceptCodesToConcepts(String[] conceptCodes) {
+    
+    if((conceptCodes == null )) {
+      conceptCodes = new String[0];
+    }
+    
+    Concept[] concepts = new Concept[conceptCodes.length];
+    
+    for(int i=0, n = concepts.length; i<n; 
+        concepts[n-1-i] = LookupUtil.lookupConcept(conceptCodes[i++])
+        );
+    if((concepts.length > 0) && (concepts[0] == null))
+      concepts = new Concept[0];
     
     return concepts;
+    
   }
+  
+
 }

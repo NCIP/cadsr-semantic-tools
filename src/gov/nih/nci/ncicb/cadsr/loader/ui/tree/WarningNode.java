@@ -24,7 +24,7 @@ import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItem;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-public class WarningNode extends AbstractUMLNode implements ValidationNode {
+public class WarningNode<UMLNode> extends AbstractUMLNode implements ValidationNode {
 
   public WarningNode(ValidationItem item) {
     fullPath = item.getMessage();

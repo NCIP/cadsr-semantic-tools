@@ -25,7 +25,10 @@ import gov.nih.nci.ncicb.cadsr.loader.persister.OCRRoleNameBuilder;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-public class AssociationNode extends AbstractUMLNode {
+public class AssociationNode<PackageNode> extends AbstractUMLNode 
+  implements ReviewableUMLNode {
+
+  private boolean reviewed;
 
   public AssociationNode(ObjectClassRelationship ocr) {
     OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
@@ -51,4 +54,15 @@ public class AssociationNode extends AbstractUMLNode {
     }
     return false;
   }
+
+  public void setReviewed(boolean currentStatus) 
+  {
+    // TODO set the parent too. Look at ClassNode
+    reviewed = currentStatus;
+  }
+
+   public boolean isReviewed() {
+     return reviewed;
+   }
+
 }

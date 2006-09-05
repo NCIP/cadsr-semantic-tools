@@ -312,9 +312,34 @@ public class TreeBuilder implements UserPreferencesListener {
       }
 
       assocNode.addChild(node);
+
+      doAssociationEnd(node, AssociationEndNode.TYPE_SOURCE);
+      doAssociationEnd(node, AssociationEndNode.TYPE_TARGET);
     }
 
     parentNode.addChild(assocNode);
+
+  }
+
+  private void doAssociationEnd(UMLNode parentNode, int type) {
+    
+    ObjectClassRelationship ocr = (ObjectClassRelationship)parentNode.getUserObject();
+
+
+    UMLNode node = new AssociationEndNode(ocr, type);
+        
+//     List<ValidationItem> items = findValidationItems(ocr);
+//     for(ValidationItem item : items) {
+//       ValidationNode vNode = null;
+//       if (item instanceof ValidationWarning) {
+//         vNode = new WarningNode(item);
+//       } else {
+//         vNode = new ErrorNode(item);
+//       }
+//       node.addValidationNode(vNode);
+//     }
+    
+    parentNode.addChild(node);
 
   }
   

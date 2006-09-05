@@ -19,67 +19,63 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui.tree;
 
-import gov.nih.nci.ncicb.cadsr.domain.ClassificationSchemeItem;
-import gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem;
+import gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship;
+import gov.nih.nci.ncicb.cadsr.loader.persister.OCRRoleNameBuilder;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-public class PackageNode extends AbstractUMLNode<UMLNode> 
-  implements ReviewableUMLNode 
-  {
+public class AssociationEndNode extends AbstractUMLNode<AssociationNode> 
+  implements ReviewableUMLNode
+ {
 
-  static final Icon REVIEWED_ICON = 
-    new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-package-checked.gif"));
+   public static int TYPE_SOURCE = 1, TYPE_TARGET = 2;
 
-  static final Icon DEFAULT_ICON = 
-    new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-package.gif"));
+  private int type;
 
-  private boolean reviewed = true;
+  private boolean reviewed = false;
 
-  public PackageNode(String fullName, String display) {
-    fullPath = fullName;
+  public AssociationEndNode(ObjectClassRelationship ocr, int type) {
+    this.type = type;
 
-    this.display = display != null?
-      display:fullName;
+    OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
+    String roleName = nameBuilder.buildRoleName(ocr);
+    String shortRoleName = nameBuilder.buildDisplayRoleName(ocr);
     
-    icon = DEFAULT_ICON;
+    fullPath = roleName;
+    display = shortRoleName;
+    
+    userObject = ocr;
   }
 
-  public void setReviewed(boolean currentStatus) 
-  {    
-    boolean changeIcon = true;
-    
-    for(UMLNode l : getChildren()) 
-    {
-      if(l instanceof ClassNode) {
-        ClassNode next = (ClassNode) l;
-        if(!next.getIcon().equals(ClassNode.REVIEWED_ICON)) 
-          {
-            changeIcon = false;
-            break;
-          }
-      } else if(l instanceof ValueDomainNode) {
-        ValueDomainNode next = (ValueDomainNode) l;
-        if(!next.getIcon().equals(ValueDomainNode.REVIEWED_ICON)) 
-          {
-            changeIcon = false;
-            break;
-          }
-      }
-    }
-    
-    if(changeIcon)
-    {
-      setIcon(REVIEWED_ICON);
-    }
-    else
-      setIcon(DEFAULT_ICON);
+  public Icon getIcon() {
+    return new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-class.gif"));
+
   }
-  
-  public boolean isReviewed() 
-  {
-    return reviewed;
-  }
+
+   public boolean equals(Object o) 
+   {
+     if(o instanceof AssociationNode) {
+       AssociationNode tempNode = (AssociationNode)o;
+       return tempNode.getUserObject() == userObject;
+     }
+     return false;
+   }
+   
+   public int getType() {
+     return type;
+   }
+
+   public void setReviewed(boolean currentStatus) 
+   {
+     // TODO set the parent too. Look at ClassNode
+     reviewed = currentStatus;
+   }
+   
+   public boolean isReviewed() {
+     return reviewed;
+   }
+   
+   
 
 }

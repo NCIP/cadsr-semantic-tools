@@ -24,7 +24,7 @@ import java.util.LinkedHashSet;
 
 import javax.swing.Icon;
 
-public abstract class AbstractUMLNode implements UMLNode {
+public abstract class AbstractUMLNode<ParentNode extends UMLNode> implements UMLNode<ParentNode> {
 
   protected String fullPath;
 
@@ -37,7 +37,7 @@ public abstract class AbstractUMLNode implements UMLNode {
   
   private Set<ValidationNode> validationNodes = new LinkedHashSet();
 
-  private UMLNode parent;
+  private ParentNode parent;
 
   protected Object userObject;
 
@@ -90,11 +90,11 @@ public abstract class AbstractUMLNode implements UMLNode {
     return display;
   }
 
-  public UMLNode getParent() {
+  public ParentNode getParent() {
     return parent;
   }
 
-  public void setParent(UMLNode parent) {
+  public void setParent(ParentNode parent) {
     this.parent = parent;
   }
   

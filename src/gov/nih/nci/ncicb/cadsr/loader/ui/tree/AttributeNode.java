@@ -25,7 +25,7 @@ import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-public class AttributeNode extends AbstractUMLNode 
+public class AttributeNode extends AbstractUMLNode<ClassNode>
   implements ReviewableUMLNode
   {
   static final Icon REVIEWED_ICON = 

@@ -22,7 +22,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui.tree;
 import java.util.Set;
 import javax.swing.Icon;
 
-public interface UMLNode {
+public interface UMLNode<ParentNode extends UMLNode> {
 
   /**
    * Returns the field that should be displayer in a tree
@@ -62,12 +62,12 @@ public interface UMLNode {
   /**
    * A reference to the parent node
    */
-  public UMLNode getParent();
+  public ParentNode getParent();
   
   /**
    * Set the parent Node
    */
-  public void setParent(UMLNode parent);
+  public void setParent(ParentNode parent);
 
   /**
    * set icon to the newIcon 

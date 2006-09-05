@@ -25,7 +25,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 public class ValueDomainNode 
-  extends AbstractUMLNode 
+  extends AbstractUMLNode<UMLNode> 
   implements ReviewableUMLNode
 {
 
