@@ -44,6 +44,16 @@ public class ObjectUpdater {
   }
 
   public static void update(ValueMeaning vm, Concept[] oldConcepts, Concept[] newConcepts) {
+
+    ConceptDerivationRule condr = newConDR(newConcepts);
+
+    vm.setConceptDerivationRule(condr);
+    
+    addNewConcepts(newConcepts);
+    removeStaleConcepts(oldConcepts);
+  }
+
+  private static ConceptDerivationRule newConDR(Concept[] newConcepts) {
     ConceptDerivationRule condr = DomainObjectFactory.newConceptDerivationRule();
     List<ComponentConcept> compCons = new ArrayList<ComponentConcept>();
  
@@ -57,10 +67,29 @@ public class ObjectUpdater {
       c++;
     }
     condr.setComponentConcepts(compCons);
-    vm.setConceptDerivationRule(condr);
+
+    return condr;
+  }
+
+  public static void updateAssociationSource(ObjectClassRelationship ocr, Concept[] oldConcepts, Concept[] newConcepts) {
+
+    ConceptDerivationRule condr = newConDR(newConcepts);
+
+    ocr.setSourceRoleConceptDerivationRule(condr);
     
     addNewConcepts(newConcepts);
     removeStaleConcepts(oldConcepts);
+  }
+
+  public static void updateAssociationTarget(ObjectClassRelationship ocr, Concept[] oldConcepts, Concept[] newConcepts) {
+
+    ConceptDerivationRule condr = newConDR(newConcepts);
+
+    ocr.setTargetRoleConceptDerivationRule(condr);
+    
+    addNewConcepts(newConcepts);
+    removeStaleConcepts(oldConcepts);
+
   }
   
   public static void update(AdminComponent ac, Concept[] oldConcepts, Concept[] newConcepts) {

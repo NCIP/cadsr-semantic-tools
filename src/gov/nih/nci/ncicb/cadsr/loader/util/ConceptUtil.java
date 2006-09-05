@@ -80,4 +80,13 @@ public class ConceptUtil {
     return conceptCodes;
   }
 
+  public static String[] getConceptCodes(ConceptDerivationRule conDR) {
+    List<ComponentConcept> compCons = conDR.getComponentConcepts();
+    String[] conceptCodes = new String[compCons.size()];
+    for(int i = 0; i<compCons.size(); i++) 
+      conceptCodes[i] = compCons.get(i).getConcept().getPreferredName();
+    
+    return conceptCodes;
+  }
+
 }

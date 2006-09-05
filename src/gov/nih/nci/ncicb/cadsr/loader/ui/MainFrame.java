@@ -527,12 +527,13 @@ public class MainFrame extends JFrame
       UMLNode node = (UMLNode)event.getViewObject();
 
       if(associationViewPanel == null) {
-        associationViewPanel = new AssociationViewPanel((ObjectClassRelationship)node.getUserObject());
+        associationViewPanel = new AssociationViewPanel(node);
         viewTabbedPane.addTab("Association", associationViewPanel);
         associationViewPanel.setName("Association");
         infoLabel.setText("Association");
+        associationViewPanel.addCustomPropertyChangeListener(this);
       } else
-        associationViewPanel.update((ObjectClassRelationship)node.getUserObject());
+        associationViewPanel.update(node);
 
       viewTabbedPane.setSelectedComponent(associationViewPanel);
 

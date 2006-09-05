@@ -43,7 +43,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     = new ArrayList<PropertyChangeListener>();
   
   private ConceptEditorPanel conceptEditorPanel;
-  private UMLElementViewPanel viewPanel;
+  private Editable viewPanel;
   private Editable editable;
   
   static final String ADD = "ADD",
@@ -69,7 +69,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
   }
   
   public ButtonPanel(ConceptEditorPanel conceptEditorPanel, 
-    UMLElementViewPanel viewPanel, Editable editable) 
+    Editable viewPanel, Editable editable) 
   {
 
     this.conceptEditorPanel = conceptEditorPanel;
@@ -91,7 +91,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     previousButton = new JButton("Previous");
     nextButton = new JButton("Next");
 
-    reviewButton.setSelected(viewPanel.isReviewed());
+    reviewButton.setSelected(isReviewed());
 
     reviewButton.setActionCommand(REVIEW);
     addButton.setActionCommand(ADD);
@@ -121,7 +121,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
   
   public void update() 
   {
-    reviewButton.setSelected(viewPanel.isReviewed());
+    reviewButton.setSelected(isReviewed());
     if(editable instanceof DEPanel) {
       DataElement de = (DataElement)conceptEditorPanel.getNode().getUserObject();
       if(!StringUtil.isEmpty(de.getPublicId())) 
@@ -204,7 +204,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     switchButton.setVisible(editable instanceof DEPanel);
 //    switchButton.setVisible(editable instanceof OCPanel);
     
-    if(conceptEditorPanel.getVDPanel().isMappedToLocalVD())
+    if(editable instanceof DEPanel && conceptEditorPanel.getVDPanel().isMappedToLocalVD())
       switchButton.setEnabled(false);
     
     // disable add if DEPanel is showing
@@ -294,12 +294,12 @@ public class ButtonPanel extends JPanel implements ActionListener,
       //remove = false;
     } else if(button.getActionCommand().equals(SWITCH)) {
       if(switchButton.getText().equals(SWITCH_TO_DE)) {
-        viewPanel.switchCards(UMLElementViewPanel.DE_PANEL_KEY);
+        ((UMLElementViewPanel)viewPanel).switchCards(UMLElementViewPanel.DE_PANEL_KEY);
         switchButton.setText(SWITCH_TO_CONCEPT);
         addButton.setVisible(false);
         deleteButton.setVisible(false);
       } else if (switchButton.getText().equals(SWITCH_TO_CONCEPT)) {
-        viewPanel.switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
+        ((UMLElementViewPanel)viewPanel).switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
         if(editable instanceof DEPanel) {
           switchButton.setText(SWITCH_TO_DE);
         } else if(editable instanceof OCPanel) {
@@ -310,28 +310,10 @@ public class ButtonPanel extends JPanel implements ActionListener,
         addButton.setVisible(true);
         deleteButton.setVisible(true);
       } else if(switchButton.getText().equals(SWITCH_TO_OC)) {
-         viewPanel.switchCards(UMLElementViewPanel.OC_PANEL_KEY);
+         ((UMLElementViewPanel)viewPanel).switchCards(UMLElementViewPanel.OC_PANEL_KEY);
          switchButton.setText(SWITCH_TO_CONCEPT);
       }
     }
-
-//     else if(button.getActionCommand().equals(AC)) {
-//         if(deButton.getText().equals("Switch to DE")) {
-//         viewPanel.switchCards(UMLElementViewPanel.DE_PANEL_KEY);
-//         deButton.setText("Switch to Concept");
-//         } else if (deButton.getText().equals("Switch to Concept")) {
-//           viewPanel.switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
-//           deButton.setText("Switch to DE");
-//         }
-//     } else if(button.getActionCommand().equals(OC)) {
-//         if(ocButton.getText().equals("Switch to OC")) {
-//         viewPanel.switchCards(UMLElementViewPanel.OC_PANEL_KEY);
-//         ocButton.setText("Switch to Concept");
-//       } else if (ocButton.getText().equals("Switch to Concept")) {
-//           viewPanel.switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
-//           ocButton.setText("Switch to OC");
-//       }
-//     }
 
     else if(button.getActionCommand().equals(REVIEW)) {
 
@@ -358,5 +340,10 @@ public class ButtonPanel extends JPanel implements ActionListener,
       l.reviewChanged(event);
   }
   
+  private boolean isReviewed() 
+  {
+    UMLNode node = conceptEditorPanel.getNode();
+    return ((ReviewableUMLNode)node).isReviewed();
+  }
   
 }

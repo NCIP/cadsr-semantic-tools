@@ -62,19 +62,22 @@ public class ConceptEditorPanel extends JPanel
   }
   
   private UserPreferences prefs = UserPreferences.getInstance();
-  
+
   public ConceptEditorPanel(UMLNode node) 
   {
     this.node = node;
     initConcepts();
 
-    if(node.getUserObject() instanceof DataElement)
+    if(node instanceof AttributeNode)
       vdPanel = new VDPanel(node);
   }
+
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
     propChangeListeners.add(l);
-    vdPanel.addPropertyChangeListener(l);
+
+    if(node instanceof AttributeNode)
+      vdPanel.addPropertyChangeListener(l);
   }
 
   private void firePropertyChangeEvent(PropertyChangeEvent evt) {
@@ -147,7 +150,16 @@ public class ConceptEditorPanel extends JPanel
   
   private void initConcepts() 
   {
-    concepts = NodeUtil.getConceptsFromNode(node);
+    if(node instanceof AssociationEndNode) {
+      AssociationEndNode assocNode = (AssociationEndNode)node;
+
+      if(assocNode.getType() == AssociationEndNode.TYPE_SOURCE)
+        concepts = NodeUtil.getAssociationSourceConcepts(assocNode.getParent());
+      else
+        concepts = NodeUtil.getAssociationTargetConcepts(assocNode.getParent());
+        
+    } else
+      concepts = NodeUtil.getConceptsFromNode(node);
   }
 
   Concept[] getConcepts() 
@@ -166,7 +178,7 @@ public class ConceptEditorPanel extends JPanel
   }
   
   boolean areAllFieldEntered() {
-    for(int i=0; i < conceptUIs.length; i++) {
+     for(int i=0; i < conceptUIs.length; i++) {
       if(conceptUIs[i].code.getText().trim().equals("")
          | conceptUIs[i].name.getText().trim().equals("")
          | conceptUIs[i].defSource.getText().trim().equals("")
@@ -229,15 +241,22 @@ public class ConceptEditorPanel extends JPanel
     update = orderChanged | update;
     
     if(update) {
+      Object o = node.getUserObject();
       if(toAll) {
-        Object o = node.getUserObject();
         if(o instanceof DataElement) {
           DataElement de = (DataElement)o;
           ObjectUpdater.updateByAltName(de.getDataElementConcept().getProperty().getLongName(), concepts, newConcepts);
         }
-      } else if(node.getUserObject() instanceof ValueMeaning) {
-          ValueMeaning vm = (ValueMeaning)node.getUserObject();
-          ObjectUpdater.update(vm, concepts, newConcepts);
+      } else if(o instanceof ValueMeaning) {
+        ValueMeaning vm = (ValueMeaning)o;
+        ObjectUpdater.update(vm, concepts, newConcepts);
+      } else if(o instanceof ObjectClassRelationship) {
+        ObjectClassRelationship ocr = (ObjectClassRelationship)o;
+        AssociationEndNode endNode = (AssociationEndNode)node;
+        if(endNode.getType() == AssociationEndNode.TYPE_SOURCE)
+          ObjectUpdater.updateAssociationSource(ocr, concepts, newConcepts);
+        else
+          ObjectUpdater.updateAssociationTarget(ocr, concepts, newConcepts);
       }
         else
           ObjectUpdater.update((AdminComponent)node.getUserObject(), concepts, newConcepts);
