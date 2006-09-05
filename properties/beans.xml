@@ -36,7 +36,7 @@
   </bean>
   
   <bean name="xmiSemConnParser"
-    class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser">
+    class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser2">
     <property name="eventHandler"><ref bean="semConnEventHandler"/></property>
   </bean>
 
