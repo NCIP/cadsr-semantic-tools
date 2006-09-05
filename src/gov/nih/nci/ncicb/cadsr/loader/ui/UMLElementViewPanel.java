@@ -23,7 +23,7 @@ import java.awt.event.*;
 import javax.swing.event.*;
 
 public class UMLElementViewPanel extends JPanel
-  implements NavigationListener {
+  implements NavigationListener, Editable {
 
   private UMLElementViewPanel _this = this;
 
@@ -38,7 +38,6 @@ public class UMLElementViewPanel extends JPanel
   private UMLNode node;
 
   private JPanel cardPanel;
-  // initialize once the mode in which we're running
   
   private JPanel displayedPanel;
 
@@ -103,7 +102,6 @@ public class UMLElementViewPanel extends JPanel
     displayedPanel = panelKeyMap.get(key);
   }
   
-  //new 
   public void updateNode(UMLNode node) 
   {
   
@@ -151,19 +149,17 @@ public class UMLElementViewPanel extends JPanel
     
   }
 
-  public boolean isReviewed() 
-  {
-    return ((ReviewableUMLNode)node).isReviewed();
-  }
-  //new
+//  public boolean isReviewed() 
+//  {
+//    return ((ReviewableUMLNode)node).isReviewed();
+//  }
+
   public void apply(boolean value) throws ApplyException
   {
     conceptEditorPanel.apply(value);
   }
 
   public void navigate(NavigationEvent evt) {  
-//      for(NavigationListener nl : navigationListeners)
-//        nl.navigate(evt);
     buttonPanel.navigate(evt);
   }
 
@@ -173,7 +169,6 @@ public class UMLElementViewPanel extends JPanel
 
   public void addNavigationListener(NavigationListener listener) 
   {
-//    navigationListeners.add(listener);
     buttonPanel.addNavigationListener(listener);
   }
   
@@ -197,59 +192,7 @@ public class UMLElementViewPanel extends JPanel
     }
     
   }
-
-
-/*
-    private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-
-      insertInBag(bagComp, comp, x, y, 1, 1);
-
-    }
-
-    private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-      JPanel p = new JPanel();
-      p.add(comp);
-
-      bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    } 
-
-*/
-
-
-
-
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  
-
-
-  
-
-  
-
-  
-
-
-  
-
-
 }
 
       
