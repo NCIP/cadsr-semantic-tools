@@ -425,6 +425,17 @@ public class UMLDefaultHandler
 //     logger.debug("Source: " + ocr.getSource().getLongName());
 //     logger.debug("Target: " + ocr.getTarget().getLongName());
 
+    ConceptDerivationRule srcConDR = DomainObjectFactory.newConceptDerivationRule(), 
+      tgtConDR = DomainObjectFactory.newConceptDerivationRule();
+    
+    // TODO Following has to be implemented
+    {
+      ocr.setSourceRoleConceptDerivationRule(srcConDR);
+      ocr.setTargetRoleConceptDerivationRule(tgtConDR);
+      srcConDR.setComponentConcepts(new ArrayList<ComponentConcept>());
+      tgtConDR.setComponentConcepts(new ArrayList<ComponentConcept>());
+    }
+
     if(!aDone)
       logger.debug("!aDone: " + event.getAClassName() + " -- " + event.getBClassName());
 
