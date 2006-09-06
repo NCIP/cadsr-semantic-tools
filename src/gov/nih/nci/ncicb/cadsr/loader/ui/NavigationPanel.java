@@ -50,7 +50,7 @@ import java.util.*;
  */
 public class NavigationPanel extends JPanel 
   implements ActionListener, MouseListener, ReviewListener, NavigationListener,
-  KeyListener, SearchListener, TreeListener
+             KeyListener, SearchListener, TreeListener
 {
   private JTree tree;
   private TreeNode rootTreeNode;
@@ -68,14 +68,14 @@ public class NavigationPanel extends JPanel
   public NavigationPanel()
   {
     try
-    {
-      initUI();
-      TreeBuilder.getInstance().addTreeListener(this);
-    }
+      {
+        initUI();
+        TreeBuilder.getInstance().addTreeListener(this);
+      }
     catch(Exception e)
-    {
-      e.printStackTrace();
-    }
+      {
+        e.printStackTrace();
+      }
 
   }
 
@@ -164,25 +164,25 @@ public class NavigationPanel extends JPanel
     //if the down arrow is pressed then display the next element
     //in the tree in the ViewPanel    
     if(e.getKeyCode() == KeyEvent.VK_DOWN  && selected != null) 
-    {
-      if (selected.getNextNode() != null) 
       {
-        TreePath path =  new TreePath(selected.getNextNode().getPath());
-        tree.makeVisible(path);
-        newViewEvent(path);
+        if (selected.getNextNode() != null) 
+          {
+            TreePath path =  new TreePath(selected.getNextNode().getPath());
+            tree.makeVisible(path);
+            newViewEvent(path);
+          }
       }
-    }
     //if the up arrow is pressed then display the previous element
     //in the tree in the ViewPanel
     if(e.getKeyCode() == KeyEvent.VK_UP && selected != null)
-    {
-      if (selected.getPreviousNode() != null) 
       {
-        TreePath path =  new TreePath(selected.getPreviousNode().getPath());
-        tree.makeVisible(path);
-        newViewEvent(path);
-      }  
-    }
+        if (selected.getPreviousNode() != null) 
+          {
+            TreePath path =  new TreePath(selected.getPreviousNode().getPath());
+            tree.makeVisible(path);
+            newViewEvent(path);
+          }  
+      }
 
   }
   
@@ -223,10 +223,10 @@ public class NavigationPanel extends JPanel
            || (o instanceof AttributeNode)
            )
           nodePopup.show(e.getComponent(),
-                     e.getX(), e.getY());
+                         e.getX(), e.getY());
       } else {
         blankPopup.show(e.getComponent(),
-                       e.getX(), e.getY());
+                        e.getX(), e.getY());
       }
     }
   }
@@ -246,43 +246,43 @@ public class NavigationPanel extends JPanel
         fireViewChangeEvent(evt);
       }
     }
-   }
+  }
 
   private void newViewEvent(TreePath path)
   {
-  	if(path != null) {
-  	  DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
+    if(path != null) {
+      DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
   	  
-  	  Object o = dmtn.getUserObject();
-  	  if((o instanceof ClassNode)
-  	     || (o instanceof AttributeNode)
-  	     ) {
-  	    ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
-  	    evt.setViewObject(dmtn.getUserObject());
-  	    evt.setInNewTab(false);
+      Object o = dmtn.getUserObject();
+      if((o instanceof ClassNode)
+         || (o instanceof AttributeNode)
+         ) {
+        ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
+        evt.setViewObject(dmtn.getUserObject());
+        evt.setInNewTab(false);
 
-            fireViewChangeEvent(evt);
-  	  } else if(o instanceof AssociationNode) {
-  	    ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_ASSOCIATION);
-  	    evt.setViewObject(dmtn.getUserObject());
-  	    evt.setInNewTab(false);
+        fireViewChangeEvent(evt);
+      } else if(o instanceof AssociationNode) {
+        ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_ASSOCIATION);
+        evt.setViewObject(dmtn.getUserObject());
+        evt.setInNewTab(false);
 
-            fireViewChangeEvent(evt);
-  	  }
-        else if(o instanceof ValueDomainNode) {
+        fireViewChangeEvent(evt);
+      }
+      else if(o instanceof ValueDomainNode) {
         ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_VALUE_DOMAIN);
         evt.setViewObject(dmtn.getUserObject());
         evt.setInNewTab(false);
         
         fireViewChangeEvent(evt);
-        }
-        else if(o instanceof ValueMeaningNode) {
+      }
+      else if(o instanceof ValueMeaningNode) {
         ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_VALUE_MEANING);
         evt.setViewObject(dmtn.getUserObject());
         evt.setInNewTab(false);
         
         fireViewChangeEvent(evt);
-        }
+      }
     }
   }
 
@@ -333,9 +333,9 @@ public class NavigationPanel extends JPanel
     blankPopup.add(expandAllItem);
     blankPopup.add(preferenceMenu);
 
-//     nodePopup.add(collapseAllItem);
-//     nodePopup.add(expandAllItem);
-//     nodePopup.add(preferenceMenu);
+    //     nodePopup.add(collapseAllItem);
+    //     nodePopup.add(expandAllItem);
+    //     nodePopup.add(preferenceMenu);
     
     tree.addMouseListener(this);
    
@@ -346,9 +346,9 @@ public class NavigationPanel extends JPanel
 
   private DefaultMutableTreeNode buildTree() {
   
-     DefaultMutableTreeNode node = new DefaultMutableTreeNode(rootNode);
+    DefaultMutableTreeNode node = new DefaultMutableTreeNode(rootNode);
           
-     return doNode(node, rootNode);
+    return doNode(node, rootNode);
     
   }
 
@@ -359,7 +359,7 @@ public class NavigationPanel extends JPanel
       DefaultMutableTreeNode newNode = 
         new DefaultMutableTreeNode(child);
 
-      if(!(child instanceof ValidationNode))
+      if(!(child instanceof ValidationNode) && !(child instanceof AssociationEndNode))
         node.add(newNode);  
       doNode(newNode, child);
     }
@@ -374,13 +374,13 @@ public class NavigationPanel extends JPanel
     rootNode = TreeBuilder.getInstance().getRootNode();
           
     try
-    {
-      initUI();
-    }
+      {
+        initUI();
+      }
     catch (Exception e)
-    {
+      {
       
-    }
+      }
    
     this.updateUI();
   }
@@ -390,22 +390,22 @@ public class NavigationPanel extends JPanel
     DefaultMutableTreeNode selected = 
       (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
     
-      if(event.getType() == NavigationEvent.NAVIGATE_NEXT
-        && selected.getNextNode() != null) 
+    if(event.getType() == NavigationEvent.NAVIGATE_NEXT
+       && selected.getNextNode() != null) 
       {      
         TreePath path =  new TreePath(selected.getNextNode().getPath());
         tree.setSelectionPath(path);
         tree.scrollPathToVisible(path);
         newViewEvent(path);
       }
-      else 
-        if(event.getType() == NavigationEvent.NAVIGATE_PREVIOUS
-          && selected.getPreviousNode() != null) 
+    else 
+      if(event.getType() == NavigationEvent.NAVIGATE_PREVIOUS
+         && selected.getPreviousNode() != null) 
         {
-            TreePath path = new TreePath(selected.getPreviousNode().getPath());
-            tree.setSelectionPath(path);
-            tree.scrollPathToVisible(path);
-            newViewEvent(path);            
+          TreePath path = new TreePath(selected.getPreviousNode().getPath());
+          tree.setSelectionPath(path);
+          tree.scrollPathToVisible(path);
+          newViewEvent(path);            
         }
     
   }
@@ -413,7 +413,7 @@ public class NavigationPanel extends JPanel
   public void search(SearchEvent event) 
   {
     DefaultMutableTreeNode selected =
-     (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+      (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 
     TreePath path = null;
     if(event.getSearchFromBeginning())
@@ -430,32 +430,32 @@ public class NavigationPanel extends JPanel
       while(selected != null) {
         AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
         if(event.getSearchByLongName()) 
-        {
-          Concept [] concepts = NodeUtil.getConceptsFromNode(n);
-          for(int i=0; i < concepts.length; i++) {
-            //System.out.println("Concepts" + i +" "+ concepts[i]);
-            if(!event.getSearchString().toLowerCase().contains(concepts[i].getLongName().toLowerCase())) 
+          {
+            Concept [] concepts = NodeUtil.getConceptsFromNode(n);
+            for(int i=0; i < concepts.length; i++) {
+              //System.out.println("Concepts" + i +" "+ concepts[i]);
+              if(!event.getSearchString().toLowerCase().contains(concepts[i].getLongName().toLowerCase())) 
+                {
+                  path = new TreePath(selected.getPath());
+                  tree.setSelectionPath(path);
+                  tree.scrollPathToVisible(path);
+                  newViewEvent(path);
+                  selected = null;
+                  break;
+                }
+            }    
+          }
+        else {
+          //if there is a match then select that node in the tree
+          if((n.getDisplay().toLowerCase()).contains(event.getSearchString().toLowerCase())) 
             {
               path = new TreePath(selected.getPath());
               tree.setSelectionPath(path);
               tree.scrollPathToVisible(path);
               newViewEvent(path);
-              selected = null;
-              break;
+              break;        
             }
-          }    
         }
-        else {
-        //if there is a match then select that node in the tree
-        if((n.getDisplay().toLowerCase()).contains(event.getSearchString().toLowerCase())) 
-        {
-          path = new TreePath(selected.getPath());
-          tree.setSelectionPath(path);
-          tree.scrollPathToVisible(path);
-          newViewEvent(path);
-          break;        
-        }
-      }
         if(selected != null)
           selected = selected.getNextNode();
       }
@@ -463,46 +463,46 @@ public class NavigationPanel extends JPanel
     
     //search the tree in backward direction from bottom to top
     else 
-    {
-      //if no node is selected then select the last node in the tree
-      if(selected == null)
-        selected = (DefaultMutableTreeNode)tree.getPathForRow(tree.getRowCount()-1).getLastPathComponent();
+      {
+        //if no node is selected then select the last node in the tree
+        if(selected == null)
+          selected = (DefaultMutableTreeNode)tree.getPathForRow(tree.getRowCount()-1).getLastPathComponent();
 
-      selected = selected.getPreviousNode();
-      while(selected != null) {
-        AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
-        if(event.getSearchByLongName()) 
-        {
-          Concept [] concepts = NodeUtil.getConceptsFromNode(n);
-          for(int i=0; i < concepts.length; i++) {
-            //System.out.println("Concepts" + i +" "+ concepts[i]);
-            if(event.getSearchString().toLowerCase().contains(concepts[i].getLongName().toLowerCase())) 
+        selected = selected.getPreviousNode();
+        while(selected != null) {
+          AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
+          if(event.getSearchByLongName()) 
             {
-              path = new TreePath(selected.getPath());
-              tree.setSelectionPath(path);
-              tree.scrollPathToVisible(path);
-              newViewEvent(path);
-              selected = null;
-              break;
+              Concept [] concepts = NodeUtil.getConceptsFromNode(n);
+              for(int i=0; i < concepts.length; i++) {
+                //System.out.println("Concepts" + i +" "+ concepts[i]);
+                if(event.getSearchString().toLowerCase().contains(concepts[i].getLongName().toLowerCase())) 
+                  {
+                    path = new TreePath(selected.getPath());
+                    tree.setSelectionPath(path);
+                    tree.scrollPathToVisible(path);
+                    newViewEvent(path);
+                    selected = null;
+                    break;
+                  }
+              }    
             }
-          }    
-        }
         
-        else {  
-        //if there is a match then select that node in the tree
-        if((n.getDisplay().toLowerCase()).contains(event.getSearchString().toLowerCase())) 
-        {
-          path = new TreePath(selected.getPath());
-          tree.setSelectionPath(path);
-          tree.scrollPathToVisible(path);
-          newViewEvent(path);
-          break;        
+          else {  
+            //if there is a match then select that node in the tree
+            if((n.getDisplay().toLowerCase()).contains(event.getSearchString().toLowerCase())) 
+              {
+                path = new TreePath(selected.getPath());
+                tree.setSelectionPath(path);
+                tree.scrollPathToVisible(path);
+                newViewEvent(path);
+                break;        
+              }
+          }
+          if(selected != null)
+            selected = selected.getPreviousNode();
         }
-        }
-        if(selected != null)
-          selected = selected.getPreviousNode();
       }
-    }
     
 
     //if no match was found display error message
