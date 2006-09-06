@@ -24,7 +24,7 @@
     class="gov.nih.nci.ncicb.cadsr.loader.UMLLoader"
     >
     <property name="validator"><ref bean="mainValidator"/></property>
-    <property name="parser"><ref bean="xmiParser"/></property>
+    <property name="parser"><ref bean="xmiParser2"/></property>
     <property name="persister"><ref bean="mainPersister"/></property>
     <property name="userPreferences"><ref bean="usersPreferences"/></property>
   </bean>
@@ -55,10 +55,12 @@
     class="gov.nih.nci.ncicb.cadsr.loader.event.UMLDefaultHandler">
   </bean>
 
+  <!--
   <bean name="xmiParser"
     class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser">
     <property name="eventHandler"><ref bean="umlEventHandler"/></property>
   </bean>
+-->
 
   <bean name="xmiParser2"
     class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser2">
@@ -148,7 +150,7 @@
     singleton="true"
     >
     <property name="roundtrip"><ref bean="umlRoundtrip"/></property>
-    <property name="parser"><ref bean="xmiParser"/></property>
+    <property name="parser"><ref bean="xmiParser2"/></property>
   </bean>
 
   <!-- Validators -->
@@ -168,6 +170,9 @@
   <bean name="duplicateValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateValidator"/>
 
+  <bean name="latestVersionValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.LatestVersionValidator"/>
+
   <bean name="mainValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.UMLValidator">
     <property name="validators">
@@ -178,6 +183,7 @@
         <ref bean="valueDomainValidator"/>
         <ref bean="associationValidator"/>
         <ref bean="duplicateValidator"/>
+        <ref bean="latestVersionValidator"/>
       </list>
     </property>
   </bean>
