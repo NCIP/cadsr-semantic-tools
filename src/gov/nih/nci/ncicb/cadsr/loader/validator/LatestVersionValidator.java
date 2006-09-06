@@ -27,7 +27,7 @@ public class LatestVersionValidator implements Validator
     if(des != null) {
       for(DataElement de : des) {
         if(de.getLatestVersionIndicator().equals(
-            AdminComponent.LATEST_VERSION_IND_YES))
+            AdminComponent.LATEST_VERSION_IND_NO))
               items.addItem(new ValidationError
                             (PropertyAccessor.getProperty
                               ("de.no.latestversion",
