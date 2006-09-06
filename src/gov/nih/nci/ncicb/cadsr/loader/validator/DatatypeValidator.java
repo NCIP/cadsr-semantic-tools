@@ -61,6 +61,10 @@ public class DatatypeValidator implements Validator
     if(des != null)
       for(DataElement de : des) 
       {
+        // dont validate if mapped to existing DE.
+        if(de.getPublicId() != null && de.getVersion() != null)
+          continue;
+
         String prefName = de.getValueDomain().getLongName();
 
         // Is the datatype a simple datatype?
