@@ -83,7 +83,7 @@ implements ProgressListener {
     
     runMode = (RunMode)(selections.getProperty("MODE"));
     if(runMode.equals(RunMode.Curator)) 
-      fileExtension = "csv";
+      fileExtension = "xmi";
     else if(runMode.equals(RunMode.Reviewer)) 
       fileExtension = "xmi";
     else if(runMode.equals(RunMode.GenerateReport)) 
