@@ -33,7 +33,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
  */
 public class ModeSelectionPanel extends JPanel {
 
-  private JRadioButton fixEaOption, roundtripOption, reportOption, curateOption, annotateOption, reviewOption;
+  private JRadioButton unannotatedXmiOption, roundtripOption, annotateOption, reviewOption, curateOption;
   private ButtonGroup group;
   private JPanel _this = this;
 
@@ -48,11 +48,10 @@ public class ModeSelectionPanel extends JPanel {
   }
 
   public void addActionListener(ActionListener l) {
-    fixEaOption.addActionListener(l);
+    unannotatedXmiOption.addActionListener(l);
     roundtripOption.addActionListener(l);
-    reportOption.addActionListener(l);
-    curateOption.addActionListener(l);
     annotateOption.addActionListener(l);
+    curateOption.addActionListener(l);
     reviewOption.addActionListener(l);
   }
 
@@ -82,40 +81,38 @@ public class ModeSelectionPanel extends JPanel {
     
     group = new ButtonGroup();
 
-    fixEaOption = new JRadioButton("Run the 'Fix-XMI' Task");
-    fixEaOption.setActionCommand(RunMode.FixEa.toString());
+    unannotatedXmiOption = new JRadioButton("Review un-annotated XMI File");
+    unannotatedXmiOption.setActionCommand(RunMode.UnannotatedXmi.toString());
 
     roundtripOption = new JRadioButton("Perform XMI Roundtrip");
     roundtripOption.setActionCommand(RunMode.Roundtrip.toString());
     
-    reportOption = new JRadioButton("Run Semantic Connector (First Run)");
-    reportOption.setActionCommand(RunMode.GenerateReport.toString());
+    annotateOption = new JRadioButton("Run Semantic Connector");
+    annotateOption.setActionCommand(RunMode.GenerateReport.toString());
         
-    curateOption = new JRadioButton("Curate Semantic Connector Report");
-    curateOption.setActionCommand(RunMode.Curator.toString());
-
-    annotateOption = new JRadioButton("Run Semantic Connector (Second Run)");
-    annotateOption.setActionCommand(RunMode.AnnotateXMI.toString());
-       
     reviewOption = new JRadioButton("Review Annotated Model");
     reviewOption.setActionCommand(RunMode.Reviewer.toString());
 
+    curateOption = new JRadioButton("Curate XMI File");
+    curateOption.setActionCommand(RunMode.Curator.toString());
+
     if(prefs.getModeSelection() == null) 
-      reportOption.setSelected(true);
-    else if(prefs.getModeSelection().equals(RunMode.GenerateReport.toString()))
-      reportOption.setSelected(true);
+      unannotatedXmiOption.setSelected(true);
+    else if(prefs.getModeSelection().equals(RunMode.AnnotateXMI.toString()))
+      reviewOption.setSelected(true);
     else if(prefs.getModeSelection().equals(RunMode.Curator.toString()))
       curateOption.setSelected(true);
+    else if(prefs.getModeSelection().equals(RunMode.Roundtrip.toString()))
+      reviewOption.setSelected(true);
     else if(prefs.getModeSelection().equals(RunMode.Reviewer.toString()))
       reviewOption.setSelected(true);
     else
-      reportOption.setSelected(true);
+      unannotatedXmiOption.setSelected(true);
       
-    group.add(fixEaOption);
+    group.add(unannotatedXmiOption);
     group.add(roundtripOption);
-    group.add(reportOption);
-    group.add(curateOption);
     group.add(annotateOption);
+    group.add(curateOption);
     group.add(reviewOption);
 
     JPanel buttonPanel = new JPanel();
@@ -124,11 +121,10 @@ public class ModeSelectionPanel extends JPanel {
     buttonPanel.add
       (new JLabel("<html>Choose from the following SIW Options:</html>"));
 
-    buttonPanel.add(fixEaOption);
+    buttonPanel.add(unannotatedXmiOption);
     buttonPanel.add(roundtripOption);
-    buttonPanel.add(reportOption);
-    buttonPanel.add(curateOption);
     buttonPanel.add(annotateOption);
+    buttonPanel.add(curateOption);
     buttonPanel.add(reviewOption);
 
     this.setLayout(new BorderLayout());
@@ -163,5 +159,11 @@ public class ModeSelectionPanel extends JPanel {
 
     bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
-  
+ 
+  public static void main(String[] args) {
+    JFrame frame = new JFrame("Prototype");
+    frame.getContentPane().add(new ModeSelectionPanel());
+    frame.setVisible(true);
+  }
+ 
 }
