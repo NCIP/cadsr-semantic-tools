@@ -95,6 +95,13 @@ public class UMLLoaderGUI
     WizardPanelDescriptor descriptor2 = new FileSelectionPanelDescriptor();
     wizard.registerWizardPanel(FileSelectionPanelDescriptor.IDENTIFIER, descriptor2);
 
+//     WizardPanelDescriptor fpDescForRoundtrip = new FileSelectionPanelDescriptor(FileSelectionPanelDescriptor.MODE_ROUNDTRIP);
+//     wizard.registerWizardPanel(FileSelectionPanelDescriptor.ROUNDTRIP_IDENTIFIER, fpDescForRoundtrip);
+
+//     WizardPanelDescriptor fpDescForPackageFilter = new FileSelectionPanelDescriptor(FileSelectionPanelDescriptor.MODE_SC);
+//     wizard.registerWizardPanel(FileSelectionPanelDescriptor.PACKAGE_FILTER_IDENTIFIER, fpDescForPackageFilter);
+
+
 //     WizardPanelDescriptor roundtrip = new RoundtripPanelDescriptor();
     wizard.registerWizardPanel(RoundtripPanelDescriptor.IDENTIFIER, roundtripDesc);
 
@@ -125,7 +132,7 @@ public class UMLLoaderGUI
       
     RunMode mode = (RunMode)userSelections.getProperty("MODE");
     //if(mode.equals(RunMode.GenerateReport))
-    if(!(mode.equals(RunMode.Reviewer) || mode.equals(RunMode.Curator))) 
+    if(!(mode.equals(RunMode.Reviewer) || mode.equals(RunMode.Curator) || mode.equals(RunMode.UnannotatedXmi))) 
       System.exit(0);
 
     mainFrame.init();

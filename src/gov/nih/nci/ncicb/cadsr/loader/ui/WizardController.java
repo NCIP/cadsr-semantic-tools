@@ -291,40 +291,40 @@ public class WizardController implements ActionListener {
               };
             worker.start(); 
           }
-          else if(mode.equals(RunMode.Curator)) {
-            SwingWorker worker = new SwingWorker() {
-                public Object construct() {
-                  try {
-                    Parser parser = new CsvParser();
-                    ElementsLists elements = ElementsLists.getInstance();
-                    UMLHandler listener = BeansAccessor.getUMLHandler();
-                    parser.setEventHandler(listener);
-                    parser.addProgressListener(progressDesc);
+//           else if(mode.equals(RunMode.Curator)) {
+//             SwingWorker worker = new SwingWorker() {
+//                 public Object construct() {
+//                   try {
+//                     Parser parser = new CsvParser();
+//                     ElementsLists elements = ElementsLists.getInstance();
+//                     UMLHandler listener = BeansAccessor.getUMLHandler();
+//                     parser.setEventHandler(listener);
+//                     parser.addProgressListener(progressDesc);
                     
-                    UMLDefaults defaults = UMLDefaults.getInstance();
-                    defaults.initParams(filename);
+//                     UMLDefaults defaults = UMLDefaults.getInstance();
+//                     defaults.initParams(filename);
                     
-                    parser.parse(filename);
+//                     parser.parse(filename);
                     
-                    Validator validator = BeansAccessor.getValidator();
-                    validator.validate();
+//                     Validator validator = BeansAccessor.getValidator();
+//                     validator.validate();
                     
-                    TreeBuilder tb = TreeBuilder.getInstance();
-                    tb.init();
-                    tb.buildTree(elements);
+//                     TreeBuilder tb = TreeBuilder.getInstance();
+//                     tb.init();
+//                     tb.buildTree(elements);
 
-                    wizard.close(Wizard.FINISH_RETURN_CODE);
+//                     wizard.close(Wizard.FINISH_RETURN_CODE);
                     
-                    return null;
-                  } catch (Exception e){
-                    e.printStackTrace();
-                    logger.error(e);
-                    return null;
-                  } // end of try-catch
-                }
-              };
-            worker.start(); 
-          } 
+//                     return null;
+//                   } catch (Exception e){
+//                     e.printStackTrace();
+//                     logger.error(e);
+//                     return null;
+//                   } // end of try-catch
+//                 }
+//               };
+//             worker.start(); 
+//           } 
           else if(mode.equals(RunMode.Roundtrip)) {
             SwingWorker worker = new SwingWorker() {
                 public Object construct() {
@@ -350,10 +350,13 @@ public class WizardController implements ActionListener {
               };
             worker.start(); 
 
-          } else if(mode.equals(RunMode.Reviewer)) {
+          } else if(mode.equals(RunMode.Reviewer) || mode.equals(RunMode.UnannotatedXmi) || mode.equals(RunMode.Curator)) {
             SwingWorker worker = new SwingWorker() {
                 public Object construct() {
                   try {
+                    if(mode.equals(RunMode.UnannotatedXmi))
+                      userSelections.setProperty("HIDE_CONCEPT_ERRORS", new Boolean(true));
+
                     XMIParser2 parser = new XMIParser2();
                     ElementsLists elements = ElementsLists.getInstance();
                     UMLHandler listener = BeansAccessor.getUMLHandler();
