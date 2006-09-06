@@ -68,15 +68,14 @@ public class ConceptEditorPanel extends JPanel
     this.node = node;
     initConcepts();
 
-    if(node instanceof AttributeNode)
-      vdPanel = new VDPanel(node);
+    vdPanel = new VDPanel(node);
   }
 
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
     propChangeListeners.add(l);
 
-    if(node instanceof AttributeNode)
+    if(node.getUserObject() instanceof DataElement)
       vdPanel.addPropertyChangeListener(l);
   }
 
@@ -90,8 +89,9 @@ public class ConceptEditorPanel extends JPanel
     this.node = node;
     initConcepts();
     updateConcepts(concepts);
-    if(node.getUserObject() instanceof DataElement)
+    if(node.getUserObject() instanceof DataElement) {
       vdPanel.updateNode(node);
+    }
   }
 
   private AdminComponent checkForDuplicateMapping() {
