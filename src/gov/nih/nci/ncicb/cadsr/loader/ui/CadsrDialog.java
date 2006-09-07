@@ -34,7 +34,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   private JComboBox searchSourceCombo;
   private JComboBox numberOfResultsCombo;
   
-  private JButton searchButton = new JButton("Freestyle Search");
+  private JButton searchButton = new JButton("Search");
   
   private AbstractTableModel tableModel = null;
   private JTable resultTable = null;
@@ -221,6 +221,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     numberOfResultsCombo.setSelectedItem(prefs.getCadsrResultsPerPage());
     
     if(mode == MODE_DE) {
+      searchButton.setText("Freestyle Search");
       searchField.setColumns(20);
       insertInBag(searchPanel, searchLabel, 0, 0);
       insertInBag(searchPanel, searchField, 1, 0);
