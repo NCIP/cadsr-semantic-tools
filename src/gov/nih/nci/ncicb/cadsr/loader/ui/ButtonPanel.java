@@ -254,9 +254,9 @@ public class ButtonPanel extends JPanel implements ActionListener,
       if(JOptionPane.showConfirmDialog(this, "There are unsaved changes in this concept, would you like to apply the changes now?", "Unsaved Changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) 
       {
         try {
-          conceptEditorPanel.apply(false);
           if(editable != null)
             editable.applyPressed();
+          conceptEditorPanel.applyPressed();
         } catch (ApplyException e){
         } // end of try-catch
       }
