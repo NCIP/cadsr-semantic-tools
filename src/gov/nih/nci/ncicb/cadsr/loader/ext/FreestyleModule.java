@@ -28,6 +28,14 @@ public class FreestyleModule {
 
     return new ArrayList(CadsrTransformer.deListPublicToPrivate(result));
   }
+  
+  public List<SearchResults> findSearchResults(String searchString) 
+  {
+    search.restrictResultsByType(SearchAC.DE);
+    Vector<SearchResults> srResult = search.findReturningSearchResults(searchString);
+    
+    return srResult;
+  }
 
 
   public void setDatasource(DataSource ds) {
