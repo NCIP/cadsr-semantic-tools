@@ -1,6 +1,5 @@
 Loading models to caDSR
 
-
 - Have caDSR database installed: http://ncicb.nci.nih.gov/core/caDSR
 - Have Java 1.4+ install http://java.sun.com
 - Have ant installed: http://ant.apache.org/
