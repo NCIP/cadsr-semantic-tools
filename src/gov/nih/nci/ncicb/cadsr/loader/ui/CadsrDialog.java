@@ -1,5 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.cadsr.freestylesearch.util.SearchResults;
+import gov.nih.nci.cadsr.freestylesearch.util.SearchResultsWithAC;
 import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
@@ -56,7 +58,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     NEXT = "NEXT",
     CLOSE = "CLOSE";
     
-  private java.util.List<AdminComponent> resultSet = new ArrayList<AdminComponent>();
+  private java.util.List<SearchResultWrapper> resultSet = new ArrayList<SearchResultWrapper>();
 
   private String[] columnNames = {
     "LongName", "Preferred Name", "Public Id", "Version", 
@@ -130,7 +132,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
           if(row >= resultSet.size())
             return "";
 
-          AdminComponent res = resultSet.get(row);
+          SearchResultWrapper res = resultSet.get(row);
           
           String s = "";
           switch (col) {
@@ -144,13 +146,13 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
             s = res.getPublicId();
             break;
           case 3:
-            s = res.getVersion().toString();
+            s = res.getVersion();
             break;
           case 4:
             s = res.getPreferredDefinition();
             break;
           case 5:
-            s = res.getContext().getName();
+            s = res.getContextName();
             break;
           default:
             break;
@@ -189,20 +191,42 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
           if(evt.getClickCount() == 2) {
             int row = resultTable.getSelectedRow();
             if(row > -1) {
-              choiceAdminComponent = (resultSet.get(pageIndex * pageSize + row));
+              SearchResultWrapper choiceSearchResultWrapper = (resultSet.get(pageIndex * pageSize + row));
               if(mode == MODE_DE) {
-                DataElement de = (DataElement)choiceAdminComponent;
+                Map<String, Object> queryFields = new HashMap<String, Object>();
+                queryFields.put(CadsrModule.PUBLIC_ID, new String(choiceSearchResultWrapper.getPublicId()));
+                queryFields.put(CadsrModule.VERSION, new Float(choiceSearchResultWrapper.getVersion()));
+                
+                
+                try {
+                Collection<DataElement> result = cadsrModule.findDataElement(queryFields);
+                                if(result.size() == 0)
+                  JOptionPane.showMessageDialog
+                    (null, "No Results Found","Empty Result", JOptionPane.ERROR_MESSAGE);
+                
+                DataElement de = result.iterator().next();
+                choiceAdminComponent = de;
+                //DataElement de = (DataElement)choiceSearchResultWrapper;
                 // is this DE valid?
                 // i.e does it have an Object Class and Property?
                 // if not, throw error message
                 if(de.getDataElementConcept().getObjectClass() == null || de.getDataElementConcept().getProperty() == null) {
                   JOptionPane.showMessageDialog
                     (null, PropertyAccessor.getProperty("de.invalid"), "Invalid Selection", JOptionPane.ERROR_MESSAGE);
-                  choiceAdminComponent = null;
+                  choiceSearchResultWrapper = null;
                   return;
                 }
+                }
+                catch (Exception e) {
+                  logger.error("Error querying Cadsr " + e);
+                }
+                
+
               }
-              
+              else 
+              {
+                choiceAdminComponent = choiceSearchResultWrapper.getAdminComponent();
+              }
               _this.setVisible(false);
             }
           }
@@ -324,17 +348,22 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
         }
         switch (mode) {
         case MODE_OC:
-          resultSet.addAll(cadsrModule.findObjectClass(queryFields));
+          for(ObjectClass oc : cadsrModule.findObjectClass(queryFields))
+            resultSet.add(new SearchResultWrapper(oc));
           break;
         case MODE_PROP:
-          resultSet.addAll(cadsrModule.findProperty(queryFields));
+          for(Property p : cadsrModule.findProperty(queryFields))
+            resultSet.add(new SearchResultWrapper(p));
           break;
         case MODE_DE:
-//           resultSet.addAll(cadsrModule.findDataElement(queryFields));
-          resultSet.addAll(freestyleModule.findDataElements(text));
+          for(SearchResults sr : freestyleModule.findSearchResults(text)) {
+            if(sr != null)
+              resultSet.add(new SearchResultWrapper(sr));
+          }
           break;
         case MODE_VD:
-          resultSet.addAll(cadsrModule.findValueDomain(queryFields));       
+          for(ValueDomain vd : cadsrModule.findValueDomain(queryFields))
+          resultSet.add(new SearchResultWrapper(vd));       
         }
       } catch (Exception e){
         logger.error("Error querying Cadsr " + e);
@@ -345,9 +374,9 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       // remove excluded contexts
       {
         List<String> excludeContext = Arrays.asList(PropertyAccessor.getProperty("vd.exclude.contexts").split(","));
-        for(ListIterator<AdminComponent> it = resultSet.listIterator(); it.hasNext();) {
-          AdminComponent ac = it.next();
-          if(excludeContext.contains(ac.getContext().getName())) {
+        for(ListIterator<SearchResultWrapper> it = resultSet.listIterator(); it.hasNext();) {
+          SearchResultWrapper sr = it.next();
+          if(excludeContext.contains(sr.getContextName())) {
             it.remove();
           }
         }
@@ -424,5 +453,76 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
 
     dialog.setCadsrModule(new CadsrPublicApiModule("http://cabio.nci.nih.gov/cacore31/http/remoteService"));
     dialog.setVisible(true);
+  }
+}
+
+class SearchResultWrapper {
+  private AdminComponent ac;
+  private SearchResults sr;
+  
+  public SearchResultWrapper(Object o)
+  {
+    if(o instanceof AdminComponent)
+      ac = (AdminComponent)o;
+    else
+      sr = (SearchResults)o;
+  }
+  
+  public AdminComponent getAdminComponent() 
+  {
+    return ac;
+  }
+  
+  public SearchResults getSearchResults() 
+  {
+    return sr;
+  }
+  
+  public String getLongName() 
+  {
+    if(ac != null)
+      return ac.getLongName();
+    else
+      return sr.getLongName();
+  }
+  
+  public String getPreferredName() 
+  {
+    if(ac != null)
+      return ac.getPreferredName();
+    else
+      return sr.getPreferredName();
+  }
+  
+  public String getPublicId() 
+  {
+    if(ac != null)
+      return ac.getPublicId();
+    else
+      return new Integer(sr.getPublicID()).toString();
+  }
+  
+  public String getVersion() 
+  {
+    if (ac != null)
+      return ac.getVersion().toString();
+    else
+      return new Float(sr.getVersion()).toString();
+  }
+  
+  public String getPreferredDefinition() 
+  {
+    if(ac != null)
+      return ac.getPreferredDefinition();
+    else
+      return sr.getPreferredDefinition();
+  }
+  
+  public String getContextName()
+  {
+    if(ac != null)
+      return ac.getContext().getName();
+    else
+      return sr.getContextName();
   }
 }
