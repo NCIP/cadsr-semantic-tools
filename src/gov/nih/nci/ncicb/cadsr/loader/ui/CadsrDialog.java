@@ -1,29 +1,56 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.cadsr.freestylesearch.util.SearchResults;
-import gov.nih.nci.cadsr.freestylesearch.util.SearchResultsWithAC;
-import gov.nih.nci.ncicb.cadsr.dao.*;
-import gov.nih.nci.ncicb.cadsr.domain.*;
-import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
-import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
+import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
+import gov.nih.nci.ncicb.cadsr.domain.DataElement;
+import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
+import gov.nih.nci.ncicb.cadsr.domain.Property;
+import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
+import gov.nih.nci.ncicb.cadsr.loader.ext.FreestyleModule;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
-import gov.nih.nci.ncicb.cadsr.loader.ext.*;
-
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.apache.log4j.*;
+import org.apache.log4j.Logger;
 
 public class CadsrDialog extends JDialog implements ActionListener, KeyListener, CadsrModuleListener
 {
@@ -46,6 +73,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   
   private JButton previousButton = new JButton("Previous"),
     nextButton = new JButton("Next"), 
+    suggestButton = new JButton("Suggest"), 
     closeButton = new JButton("Close");
   
   private JLabel indexLabel = new JLabel("");
@@ -56,6 +84,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   private static String SEARCH = "SEARCH",
     PREVIOUS = "PREVIOUS",
     NEXT = "NEXT",
+    SUGGEST = "SUGGEST",
     CLOSE = "CLOSE";
     
   private java.util.List<SearchResultWrapper> resultSet = new ArrayList<SearchResultWrapper>();
@@ -85,7 +114,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
 
   private static Logger logger = Logger.getLogger(CadsrDialog.class.getName());
   
-  
+  private UMLNode node;
   
   public CadsrDialog(int runMode)
   {
@@ -249,6 +278,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       insertInBag(searchPanel, searchLabel, 0, 0);
       insertInBag(searchPanel, searchField, 1, 0);
       insertInBag(searchPanel, searchButton, 4, 0);
+      insertInBag(searchPanel, suggestButton, 5, 0);
     }
     
     else {
@@ -264,6 +294,9 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     searchButton.addActionListener(this);
     searchButton.addKeyListener(this);
     searchButton.setActionCommand(SEARCH);
+    
+    suggestButton.addActionListener(this);
+    suggestButton.setActionCommand(SUGGEST);
     
     JPanel browsePanel = new JPanel();
     browsePanel.add(previousButton);
@@ -385,6 +418,32 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       updateTable();
       
     }
+    else if(button.getActionCommand().equals(SUGGEST)) {
+        
+        searchField.setText("");
+        resultSet = new ArrayList();
+        
+        ClassNode classNode = (ClassNode)node.getParent();
+        AttributeNode attrNode = (AttributeNode)node;
+        String className = classNode.getDisplay();
+        String attrName = attrNode.getDisplay();
+
+        _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        
+        try {
+            for(DataElement de : cadsrModule.suggestDataElement(className, attrName))
+                resultSet.add(new SearchResultWrapper(de));
+        }
+        catch (Exception e) {
+            logger.error("Error querying Cadsr " + e);
+        }
+
+        _this.setCursor(Cursor.getDefaultCursor());
+
+        pageIndex = 0;
+        updateTable();
+        
+    }
     else if(button.getActionCommand().equals(PREVIOUS)) {
       pageIndex--;
       updateTable();
@@ -446,6 +505,10 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     this.freestyleModule = freestyleModule;
   }
 
+  public void init(UMLNode node) {
+      this.node = node;
+  }
+  
   public static void main(String[] args) 
   {
         CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_VD);
