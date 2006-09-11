@@ -1,8 +1,12 @@
 package gov.nih.nci.ncicb.cadsr.loader.ext;
 
+
+import gov.nih.nci.ncicb.cadsr.domain.Concept;
+import gov.nih.nci.ncicb.cadsr.domain.DataElement;
+
 import java.util.Collection;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 public interface CadsrModule
 {
@@ -40,6 +44,13 @@ public interface CadsrModule
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
     findDEByClassifiedAltName(gov.nih.nci.ncicb.cadsr.domain.AlternateName altName, gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem csCsi) throws Exception;
 
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
+    findDataElement(Concept[] ocConcepts, Concept[] propConcepts, 
+    String vdLongName) throws Exception;
+
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
+    suggestDataElement(String className, String attrName) throws Exception;
+  
   public void setServiceURL(String url);
 
 }

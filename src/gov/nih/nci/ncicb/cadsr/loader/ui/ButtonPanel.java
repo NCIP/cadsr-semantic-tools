@@ -1,37 +1,40 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
-import gov.nih.nci.ncicb.cadsr.domain.*;
-import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.domain.Concept;
+import gov.nih.nci.ncicb.cadsr.domain.DataElement;
+import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
-import gov.nih.nci.ncicb.cadsr.loader.util.DEMappingUtil;
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
-import java.awt.BorderLayout;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import java.util.*;
 
 public class ButtonPanel extends JPanel implements ActionListener, 
   PropertyChangeListener
 {
   private JButton addButton, deleteButton, saveButton, switchButton;
-  private JButton previousButton, nextButton;
+  private JButton previousButton, nextButton, previewButton;
   private JCheckBox reviewButton;
+  private DEReuseDialog reuseDialog;
   
   private List<ReviewListener> reviewListeners 
     = new ArrayList<ReviewListener>();
@@ -51,6 +54,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     SAVE = "APPLY", 
     PREVIOUS = "PREVIOUS",
     NEXT = "NEXT",
+    PREVIEW = "PREVIEW",
     REVIEW = "REVIEW",
     SETUP = "SETUP",
     SWITCH = "SWITCH",
@@ -90,6 +94,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
       reviewButton = new JCheckBox("<html>Human<br>Verified</html>");
     previousButton = new JButton("Previous");
     nextButton = new JButton("Next");
+    previewButton = new JButton("Preview DE Reuse");
+
 
     reviewButton.setSelected(isReviewed());
 
@@ -99,6 +105,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     saveButton.setActionCommand(SAVE);
     previousButton.setActionCommand(PREVIOUS);
     nextButton.setActionCommand(NEXT);
+    previewButton.setActionCommand(PREVIEW);
     switchButton.setActionCommand(SWITCH);
     
     addButton.addActionListener(this);
@@ -107,6 +114,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     reviewButton.addActionListener(this);
     previousButton.addActionListener(this);
     nextButton.addActionListener(this);
+    previewButton.addActionListener(this);
     switchButton.addActionListener(this);
     
     this.add(addButton);
@@ -115,6 +123,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     this.add(reviewButton);
     this.add(previousButton);
     this.add(nextButton);
+    this.add(previewButton);
     this.add(switchButton);
 
   }
@@ -215,9 +224,11 @@ public class ButtonPanel extends JPanel implements ActionListener,
 //         addButton.setEnabled(false);
         addButton.setVisible(false);
         deleteButton.setVisible(false);
+        previewButton.setVisible(false);
       } else {
         addButton.setVisible(true);
         deleteButton.setVisible(true);
+        previewButton.setVisible(true);
         
       }
     } else if(editable instanceof OCPanel) {
@@ -227,14 +238,21 @@ public class ButtonPanel extends JPanel implements ActionListener,
 //         addButton.setEnabled(false);
         addButton.setVisible(false);
         deleteButton.setVisible(false);
+        previewButton.setVisible(false);
       } else {
         addButton.setVisible(true);
         deleteButton.setVisible(true);
-    }
+        previewButton.setVisible(true);
+      }
     } else if(editable == null) {
       addButton.setVisible(true);
       deleteButton.setVisible(true);
+      previewButton.setVisible(true);
     }
+    if (!(conceptEditorPanel.getNode() instanceof AttributeNode)) {
+        previewButton.setVisible(false);
+    }
+    
   }
   
   
@@ -254,9 +272,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
       if(JOptionPane.showConfirmDialog(this, "There are unsaved changes in this concept, would you like to apply the changes now?", "Unsaved Changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) 
       {
         try {
-          if(editable != null)
-            editable.applyPressed();
-          conceptEditorPanel.applyPressed();
+          viewPanel.applyPressed();
         } catch (ApplyException e){
         } // end of try-catch
       }
@@ -292,12 +308,22 @@ public class ButtonPanel extends JPanel implements ActionListener,
       fireNavigationEvent(event);
       conceptEditorPanel.setRemove(false);
       //remove = false;
+    } else if(button.getActionCommand().equals(PREVIEW)) {
+        if (this.reuseDialog == null) {
+          this.reuseDialog = BeansAccessor.getDEReuseDialog();
+        }
+        // update dialog with current node
+        reuseDialog.init(conceptEditorPanel.getNode());
+        UIUtil.putToCenter(this.reuseDialog);
+        reuseDialog.setVisible(true);
+        
     } else if(button.getActionCommand().equals(SWITCH)) {
       if(switchButton.getText().equals(SWITCH_TO_DE)) {
         ((UMLElementViewPanel)viewPanel).switchCards(UMLElementViewPanel.DE_PANEL_KEY);
         switchButton.setText(SWITCH_TO_CONCEPT);
         addButton.setVisible(false);
         deleteButton.setVisible(false);
+        previewButton.setVisible(false);
       } else if (switchButton.getText().equals(SWITCH_TO_CONCEPT)) {
         ((UMLElementViewPanel)viewPanel).switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
         if(editable instanceof DEPanel) {
@@ -309,6 +335,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
         }
         addButton.setVisible(true);
         deleteButton.setVisible(true);
+        previewButton.setVisible(true);
       } else if(switchButton.getText().equals(SWITCH_TO_OC)) {
          ((UMLElementViewPanel)viewPanel).switchCards(UMLElementViewPanel.OC_PANEL_KEY);
          switchButton.setText(SWITCH_TO_CONCEPT);

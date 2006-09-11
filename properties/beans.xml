@@ -95,6 +95,7 @@
         <ref bean="roundtripPanel"/>
         <ref bean="cadsrDEDialog"/>
         <ref bean="cadsrVDDialog"/>
+        <ref bean="deReuseDialog"/>
         <ref bean="umlEventHandler" />
       </list>
     </property>
@@ -218,6 +219,11 @@
     <constructor-arg><value>3</value></constructor-arg>
   </bean>
 
+  <bean name="deReuseDialog"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.DEReuseDialog"
+    >
+  </bean>
+  
   <bean name="mainFrame"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.MainFrame">
     <property name="logTab">

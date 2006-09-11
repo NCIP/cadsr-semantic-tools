@@ -1,20 +1,23 @@
 package gov.nih.nci.ncicb.cadsr.loader.ext;
 
-import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.domain.Concept;
+import gov.nih.nci.ncicb.cadsr.domain.bean.DataElementBean;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
-
-import java.util.*;
-
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Expression;
-import org.hibernate.FetchMode;
-
 import gov.nih.nci.system.applicationservice.ApplicationService;
 
-import org.apache.log4j.Logger;
-
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Expression;
 
 /**
  * Layer to the EVS external API.
@@ -188,9 +191,60 @@ public class CadsrPublicApiModule implements CadsrModule {
     } else
       return new ArrayList();
   }
+
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
+    findDataElement(Concept[] ocConcepts, Concept[] propConcepts, 
+    String vdLongName) throws Exception {
+
+    int i = 0;
+    StringBuffer ocNames = new StringBuffer();
+    for(Concept concept : ocConcepts) {
+        if (i++ > 0)  ocNames.append(":");
+        ocNames.append(concept.getPreferredName());
+    }
+
+    int j = 0;
+    StringBuffer propNames = new StringBuffer();
+    for(Concept concept : propConcepts) {
+        if (j++ > 0)  propNames.append(":");
+        propNames.append(concept.getPreferredName());
+    }
   
+    DetachedCriteria criteria = DetachedCriteria.forClass(
+            gov.nih.nci.cadsr.domain.DataElement.class, "de");
+      
+    DetachedCriteria deCriteria = criteria.createCriteria("dataElementConcept");
+    DetachedCriteria vdCriteria = criteria.createCriteria("valueDomain").
+            add(Expression.eq("longName", vdLongName));
+      
+    DetachedCriteria ocCriteria = deCriteria.createCriteria("objectClass")
+            .createCriteria("conceptDerivationRule")
+            .add(Expression.eq("codesConcatenation", ocNames.toString()));
+      
+    DetachedCriteria propCriteria = deCriteria.createCriteria("property")
+            .createCriteria("conceptDerivationRule")
+            .add(Expression.eq("codesConcatenation", ocNames.toString()));
+
+    return service.query(deCriteria, 
+            gov.nih.nci.cadsr.domain.DataElement.class.getName());
+  }
 
 
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
+    suggestDataElement(String className, String attrName) throws Exception {
+
+      // for now, just search on this, but we can do more searches in the future
+      final String altName = className+":"+attrName;
+
+      DetachedCriteria criteria = DetachedCriteria.forClass(
+              gov.nih.nci.cadsr.domain.DataElement.class, "de");
+      DetachedCriteria deCriteria = criteria.createCriteria("alternateNames").
+              add(Expression.eq("name", altName));
+      
+      return service.query(criteria, 
+              gov.nih.nci.cadsr.domain.DataElement.class.getName());
+  }
+  
   public void setServiceURL(String url) {
     this.serviceURL = url;
     service = ApplicationService.getRemoteInstance(serviceURL);

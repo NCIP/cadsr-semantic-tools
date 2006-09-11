@@ -101,8 +101,21 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   }
 
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
+    findDataElement(Concept[] ocConcepts, Concept[] propConcepts, 
+    String vdLongName) throws Exception {
+    
+    return DAOAccessor.getDataElementDAO().find(ocConcepts, propConcepts, 
+            vdLongName);
+  }
 
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
+    suggestDataElement(String className, String attrName) throws Exception {
 
+      return DAOAccessor.getDataElementDAO().findCandidate(
+              className, attrName);
+  }
+  
   public void setServiceURL(String url){ 
   }
 

@@ -19,24 +19,21 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.util;
 
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
-import java.io.FileInputStream;
-
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.InputStreamResource;
-
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import gov.nih.nci.ncicb.cadsr.loader.RoundtripAction;
+import gov.nih.nci.ncicb.cadsr.loader.UMLLoader;
+import gov.nih.nci.ncicb.cadsr.loader.UMLLoaderGUI;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+import gov.nih.nci.ncicb.cadsr.loader.event.UMLHandler;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
+import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
+import gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog;
+import gov.nih.nci.ncicb.cadsr.loader.ui.DEReuseDialog;
+import gov.nih.nci.ncicb.cadsr.loader.validator.Validator;
+import gov.nih.nci.ncicb.cadsr.semconn.SemanticConnector;
 
 import org.apache.log4j.Logger;
-
-import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
-import gov.nih.nci.ncicb.cadsr.loader.*;
-import gov.nih.nci.ncicb.cadsr.loader.event.UMLHandler;
-import gov.nih.nci.ncicb.cadsr.loader.validator.Validator;
-import gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog;
-import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
-import gov.nih.nci.ncicb.cadsr.semconn.*;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class BeansAccessor {
   
@@ -81,6 +78,10 @@ public class BeansAccessor {
 
   public static CadsrDialog getCadsrVDDialog() {
     return (CadsrDialog)getFactory().getBean("cadsrVDDialog");
+  }
+
+  public static DEReuseDialog getDEReuseDialog() {
+    return (DEReuseDialog)getFactory().getBean("deReuseDialog");
   }
 
   public static Validator getValidator() {
