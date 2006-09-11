@@ -341,8 +341,8 @@ public class ConceptEditorPanel extends JPanel
       JButton deleteButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("delete-x.gif")));
       //insertInBag(mainPanel, deleteButton, 2, 0);
       
-      JButton upButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("up-arrow.png")));
-      JButton downButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("down-arrow.png")));
+      JButton upButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("up-arrow.gif")));
+      JButton downButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("down-arrow.gif")));
       
       upButton.setBorder(null);
       upButton.setContentAreaFilled(false);
