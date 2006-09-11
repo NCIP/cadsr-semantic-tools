@@ -193,37 +193,36 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
             if(row > -1) {
               SearchResultWrapper choiceSearchResultWrapper = (resultSet.get(pageIndex * pageSize + row));
               if(mode == MODE_DE) {
+                _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 Map<String, Object> queryFields = new HashMap<String, Object>();
                 queryFields.put(CadsrModule.PUBLIC_ID, new String(choiceSearchResultWrapper.getPublicId()));
                 queryFields.put(CadsrModule.VERSION, new Float(choiceSearchResultWrapper.getVersion()));
                 
                 
                 try {
-                Collection<DataElement> result = cadsrModule.findDataElement(queryFields);
-                                if(result.size() == 0)
-                  JOptionPane.showMessageDialog
-                    (null, "No Results Found","Empty Result", JOptionPane.ERROR_MESSAGE);
+                  Collection<DataElement> result = cadsrModule.findDataElement(queryFields);
+                  if(result.size() == 0)
+                    JOptionPane.showMessageDialog
+                      (null, "No Results Found","Empty Result", JOptionPane.ERROR_MESSAGE);
                 
-                DataElement de = result.iterator().next();
-                choiceAdminComponent = de;
-                //DataElement de = (DataElement)choiceSearchResultWrapper;
-                // is this DE valid?
-                // i.e does it have an Object Class and Property?
-                // if not, throw error message
-                if(de.getDataElementConcept().getObjectClass() == null || de.getDataElementConcept().getProperty() == null) {
-                  JOptionPane.showMessageDialog
-                    (null, PropertyAccessor.getProperty("de.invalid"), "Invalid Selection", JOptionPane.ERROR_MESSAGE);
-                  choiceSearchResultWrapper = null;
-                  return;
-                }
-                }
-                catch (Exception e) {
+                  DataElement de = result.iterator().next();
+                  choiceAdminComponent = de;
+                  //DataElement de = (DataElement)choiceSearchResultWrapper;
+                  // is this DE valid?
+                  // i.e does it have an Object Class and Property?
+                  // if not, throw error message
+                  if(de.getDataElementConcept().getObjectClass() == null || de.getDataElementConcept().getProperty() == null) {
+                    JOptionPane.showMessageDialog
+                      (null, PropertyAccessor.getProperty("de.invalid"), "Invalid Selection", JOptionPane.ERROR_MESSAGE);
+                    choiceSearchResultWrapper = null;
+                    return;
+                  }
+                } catch (Exception e) {
                   logger.error("Error querying Cadsr " + e);
+                } finally {
+                  _this.setCursor(Cursor.getDefaultCursor());
                 }
-                
-
-              }
-              else 
+              } else 
               {
                 choiceAdminComponent = choiceSearchResultWrapper.getAdminComponent();
               }
