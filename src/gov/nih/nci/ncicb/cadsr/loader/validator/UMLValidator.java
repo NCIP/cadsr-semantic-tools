@@ -37,7 +37,8 @@ public class UMLValidator implements Validator {
   }
   
   public void addProgressListener(ProgressListener l) {
-    
+    for(Validator val : validators)
+      val.addProgressListener(l);
   }
   
   
