@@ -192,6 +192,11 @@ public class CadsrPublicApiModule implements CadsrModule {
       return new ArrayList();
   }
 
+  /**
+   * Returns a collection containing the DataElement that has the ObjectClass
+   * and Property specified by the given concepts, and the Value Domain
+   * specified by the given long name. 
+   */
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
     findDataElement(Concept[] ocConcepts, Concept[] propConcepts, 
     String vdLongName) throws Exception {
@@ -209,7 +214,7 @@ public class CadsrPublicApiModule implements CadsrModule {
         if (j++ > 0)  propNames.append(":");
         propNames.append(concept.getPreferredName());
     }
-  
+    
     DetachedCriteria criteria = DetachedCriteria.forClass(
             gov.nih.nci.cadsr.domain.DataElement.class, "de");
       
@@ -219,17 +224,23 @@ public class CadsrPublicApiModule implements CadsrModule {
       
     DetachedCriteria ocCriteria = deCriteria.createCriteria("objectClass")
             .createCriteria("conceptDerivationRule")
-            .add(Expression.eq("codesConcatenation", ocNames.toString()));
+            .add(Expression.eq("name", ocNames.toString()));
       
     DetachedCriteria propCriteria = deCriteria.createCriteria("property")
             .createCriteria("conceptDerivationRule")
-            .add(Expression.eq("codesConcatenation", ocNames.toString()));
+            .add(Expression.eq("name", propNames.toString()));
 
-    return service.query(deCriteria, 
-            gov.nih.nci.cadsr.domain.DataElement.class.getName());
+    Collection<gov.nih.nci.cadsr.domain.DataElement> results = 
+        service.query(deCriteria, gov.nih.nci.cadsr.domain.DataElement.class.getName());
+
+    return CadsrTransformer.deListPublicToPrivate(results);
   }
 
-
+  /**
+   * Returns a list containing DataElements that are good candidates for the
+   * given class/attribute names. Currently, it searches for DataElements
+   * which have "class:attribute" as an alternate name (designation).
+   */
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
     suggestDataElement(String className, String attrName) throws Exception {
 
@@ -238,11 +249,12 @@ public class CadsrPublicApiModule implements CadsrModule {
 
       DetachedCriteria criteria = DetachedCriteria.forClass(
               gov.nih.nci.cadsr.domain.DataElement.class, "de");
-      DetachedCriteria deCriteria = criteria.createCriteria("alternateNames").
+      DetachedCriteria deCriteria = criteria.createCriteria("designationCollection").
               add(Expression.eq("name", altName));
-      
-      return service.query(criteria, 
-              gov.nih.nci.cadsr.domain.DataElement.class.getName());
+
+      Collection<gov.nih.nci.cadsr.domain.DataElement> results =  
+          service.query(criteria, gov.nih.nci.cadsr.domain.DataElement.class.getName());
+      return CadsrTransformer.deListPublicToPrivate(results);
   }
   
   public void setServiceURL(String url) {
