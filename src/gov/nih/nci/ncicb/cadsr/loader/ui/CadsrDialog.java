@@ -91,10 +91,10 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
 
   private String[] columnNames = {
     "LongName", "Preferred Name", "Public Id", "Version", 
-    "Preferred Definition", "Context Name"
+    "Preferred Definition", "Context Name", "Registration Status"
   };
 
-  private int colWidth[] = {15, 15, 15, 15, 30, 15};
+  private int colWidth[] = {15, 15, 15, 15, 30, 15, 15};
 
   private UserPreferences prefs = UserPreferences.getInstance();
 
@@ -154,7 +154,9 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
         public int getRowCount() { 
           return (int)Math.min(resultSet.size(), pageSize); 
         }
-        public int getColumnCount() { return columnNames.length; }
+        public int getColumnCount() { 
+          return columnNames.length; 
+        }
         public Object getValueAt(int row, int col) {
           row = row + pageSize * pageIndex;
 
@@ -183,6 +185,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
           case 5:
             s = res.getContextName();
             break;
+          case 6:
+            s = res.getRegistrationStatus();
           default:
             break;
           }
@@ -209,6 +213,11 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     resultTable.getColumnModel().getColumn(3).setCellRenderer(tcrColumn);
     resultTable.getColumnModel().getColumn(4).setCellRenderer(tcrColumn);
     
+    if(mode == MODE_VD) {
+      resultTable.getColumnModel().getColumn(6).setMaxWidth(0);
+      resultTable.getColumnModel().getColumn(6).setResizable(false);
+    }
+
     int c = 0;
     for(int width : colWidth) {
       TableColumn col = resultTable.getColumnModel().getColumn(c++);
@@ -331,6 +340,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     this.getContentPane().add(scrollPane, BorderLayout.CENTER);
     this.getContentPane().add(browsePanel, BorderLayout.SOUTH);
     this.setSize(600,525);
+
+    suggestButton.setVisible(false);
     
   }
   
@@ -587,4 +598,13 @@ class SearchResultWrapper {
     else
       return sr.getContextName();
   }
+
+  public String getRegistrationStatus() 
+  {
+    if(ac != null)
+      return "";
+    else
+      return sr.getRegistrationStatus();
+  }
+
 }
