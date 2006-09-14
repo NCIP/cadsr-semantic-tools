@@ -59,6 +59,11 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
   public void addProgressListener(ProgressListener l) {
     progressListener = l;
   }
+  
+  private void fireProgressEvent(ProgressEvent evt) {
+    if(progressListener != null)
+      progressListener.newProgressEvent(evt);
+  }
 
   /**
    * returns a list of Validation errors.
@@ -71,8 +76,13 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
       evt.setMessage("Validating Value Domains ...");
       evt.setGoal(vds.size());
       evt.setStatus(0);
-
+      fireProgressEvent(evt);
+      int count = 1;
       for(ValueDomain vd : vds) {
+        evt = new ProgressEvent();
+        evt.setMessage(" Validating " + vd.getLongName());
+        evt.setStatus(count++);
+        fireProgressEvent(evt);
         // Search only by long Name
         ValueDomain newVd = DomainObjectFactory.newValueDomain();
         newVd.setLongName(vd.getLongName());
@@ -152,7 +162,6 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
           } // end of try-catch
 
         }
-
 
         Map<String, Object> queryFields = 
           new HashMap<String, Object>();
