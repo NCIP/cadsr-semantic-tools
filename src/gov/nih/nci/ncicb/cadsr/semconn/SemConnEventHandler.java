@@ -61,8 +61,11 @@ public class SemConnEventHandler implements UMLHandler
   
   public void newClass(NewClassEvent event) 
   {
-    String className = event.getName();
+    if(event.isReviewed())
+      return;
     
+    String className = event.getName();
+
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     oc.setLongName(className);
     AlternateName fullName = DomainObjectFactory.newAlternateName();
@@ -89,6 +92,9 @@ public class SemConnEventHandler implements UMLHandler
   
   public void newAttribute(NewAttributeEvent event)
   {
+    if(event.isReviewed())
+      return;
+
     String propName = event.getName();
       
     DataElement de = DomainObjectFactory.newDataElement();
