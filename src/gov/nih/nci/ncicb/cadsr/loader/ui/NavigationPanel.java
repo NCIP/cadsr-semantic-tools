@@ -106,7 +106,7 @@ public class NavigationPanel extends JPanel
 
   private ElementsLists elements = ElementsLists.getInstance();
 
-  private JCheckBoxMenuItem inheritedAttItem, assocItem;
+  private JCheckBoxMenuItem inheritedAttItem, assocItem, sortItem;
 
   private TreePath selectedPath;
   
@@ -316,6 +316,9 @@ public class NavigationPanel extends JPanel
       } else if(menuItem.getActionCommand().equals("PREF_INCLASS_ASSOC")) {
         UserPreferences prefs = UserPreferences.getInstance();
         prefs.setViewAssociationType(assocItem.isSelected()?"true":"false");
+      } else if(menuItem.getActionCommand().equals("PREF_SORT_ELEM")) {
+        UserPreferences prefs = UserPreferences.getInstance();
+        prefs.setSortElements(sortItem.isSelected());
       }
     }
   }
@@ -470,7 +473,9 @@ public class NavigationPanel extends JPanel
     inheritedAttItem.setActionCommand("PREF_INHERITED_ATT");
     assocItem = new JCheckBoxMenuItem(PropertyAccessor.getProperty("preference.view.association"));
     assocItem.setActionCommand("PREF_INCLASS_ASSOC");
-
+    sortItem = new JCheckBoxMenuItem(PropertyAccessor.getProperty("preference.sort.elements"));
+    sortItem.setActionCommand("PREF_SORT_ELEM");
+    
     UserPreferences prefs = UserPreferences.getInstance();
     inheritedAttItem.setSelected(prefs.getShowInheritedAttributes());
     inheritedAttItem.addActionListener(this);
@@ -478,8 +483,12 @@ public class NavigationPanel extends JPanel
     assocItem.setSelected(prefs.getViewAssociationType().equalsIgnoreCase("true"));
     assocItem.addActionListener(this);
 
+    sortItem.setSelected(prefs.getSortElements());
+    sortItem.addActionListener(this);
+    
     preferenceMenu.add(inheritedAttItem);
     preferenceMenu.add(assocItem);
+    preferenceMenu.add(sortItem);
 
     JMenuItem collapseAllItem = new JMenuItem("Collapse All");
     collapseAllItem.setActionCommand("COLLAPSE_ALL");

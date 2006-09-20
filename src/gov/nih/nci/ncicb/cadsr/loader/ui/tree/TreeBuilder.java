@@ -392,6 +392,12 @@ public class TreeBuilder implements UserPreferencesListener {
       TreeEvent treeEvent = new TreeEvent();
       fireTreeEvent(treeEvent);
     }
+    if(event.getTypeOfEvent() == UserPreferencesEvent.SORT_ELEMENTS)
+    {
+      buildTree(elements);
+      TreeEvent treeEvent = new TreeEvent();
+      fireTreeEvent(treeEvent);
+    }
   }
 
   public void addTreeListener(TreeListener listener) 
