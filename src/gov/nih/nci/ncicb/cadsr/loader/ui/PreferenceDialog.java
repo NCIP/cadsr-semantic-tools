@@ -39,7 +39,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
     evsAutoSearchBox = new JCheckBox(PropertyAccessor.getProperty("preference.auto.evs")),
     privateApiSearchBox = new JCheckBox(PropertyAccessor.getProperty("preference.private.api")),
     orderOfConceptsBox = new JCheckBox(PropertyAccessor.getProperty("preference.concept.order")),
-    showInheritedAttributesBox = new JCheckBox(PropertyAccessor.getProperty("preference.inherited.attributes"));
+    showInheritedAttributesBox = new JCheckBox(PropertyAccessor.getProperty("preference.inherited.attributes")),
+    sortElementsBox = new JCheckBox(PropertyAccessor.getProperty("preference.sort.elements"));
   
   private JButton apply = new JButton("Apply");
   private JButton cancel = new JButton("Cancel");
@@ -63,6 +64,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     centerPanel.add(privateApiSearchBox);
     centerPanel.add(orderOfConceptsBox);
     centerPanel.add(showInheritedAttributesBox);
+    centerPanel.add(sortElementsBox);
 
     this.getContentPane().setLayout(new BorderLayout());
     this.getContentPane().add(centerPanel);
@@ -99,6 +101,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
     privateApiSearchBox.setSelected(prefs.isUsePrivateApi());
     
     showInheritedAttributesBox.setSelected(prefs.getShowInheritedAttributes());
+    
+    sortElementsBox.setSelected(prefs.getSortElements());
 
   }
   
@@ -128,6 +132,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
       prefs.setUsePrivateApi(privateApiSearchBox.isSelected());
 
       prefs.setShowInheritedAttributes(showInheritedAttributesBox.isSelected());
+
+      prefs.setSortElements(sortElementsBox.isSelected());
       
       if(button.getActionCommand().equals(OK))
         this.dispose();

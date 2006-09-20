@@ -19,41 +19,84 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
-import gov.nih.nci.ncicb.cadsr.domain.ClassificationSchemeItem;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
-import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
-
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
-
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchEvent;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchListener;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.TreeEvent;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.TreeListener;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.ViewChangeEvent;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.ViewChangeListener;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AbstractUMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AssociationEndNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AssociationNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.NodeUtil;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.RootNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValidationNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueDomainNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueMeaningNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
-
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
-
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesEvent;
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesListener;
 
 import java.awt.BorderLayout;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Set;
 
-import java.util.*;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.ToolTipManager;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 /**
  * Panel from where you navigate the UML Elements.
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
+ * @author <a href="mailto:rokickik@mail.nih.gov">Konrad Rokicki</a>
  */
 public class NavigationPanel extends JPanel 
   implements ActionListener, MouseListener, ReviewListener, NavigationListener,
-             KeyListener, SearchListener, TreeListener
+             KeyListener, SearchListener, TreeListener, UserPreferencesListener
 {
   private JTree tree;
   private TreeNode rootTreeNode;
+  
+  // only one of these tree nodes is used at a time, 
+  // the one being used is pointed to by rootTreeNode
+  private TreeNode rootUnsortedTreeNode;
+  private TreeNode rootSortedTreeNode;
+  
   private JPopupMenu nodePopup, blankPopup;
   private JScrollPane scrollPane;
   private UMLNode rootNode = TreeBuilder.getInstance().getRootNode(); 
@@ -65,18 +108,21 @@ public class NavigationPanel extends JPanel
 
   private JCheckBoxMenuItem inheritedAttItem, assocItem;
 
+  private TreePath selectedPath;
+  
   public NavigationPanel()
   {
     try
       {
         initUI();
         TreeBuilder.getInstance().addTreeListener(this);
+        UserPreferences prefs = UserPreferences.getInstance();
+        prefs.addUserPreferencesListener(this);
       }
     catch(Exception e)
       {
         e.printStackTrace();
       }
-
   }
 
   public void addViewChangeListener(ViewChangeListener l) {
@@ -97,17 +143,23 @@ public class NavigationPanel extends JPanel
   private void initUI() throws Exception
   {
     rootTreeNode = buildTree();
+    rootUnsortedTreeNode = rootTreeNode;
 
-    tree = new JTree(rootTreeNode);
+    tree = new JTree(new DefaultTreeModel(rootTreeNode));
     tree.setRootVisible(false);
     tree.setShowsRootHandles(true);
     tree.addKeyListener(this);
     
+    UserPreferences prefs = UserPreferences.getInstance();
+    if (prefs.getSortElements()) {
+        showSortedTree(true);
+    }
+
     //Traverse Tree expanding all nodes    
     TreeUtil.expandAll(tree, rootTreeNode);
-
+    
     tree.setCellRenderer(new UMLTreeCellRenderer());
-   
+
     this.setLayout(new BorderLayout());
 
     scrollPane = new JScrollPane(tree);
@@ -117,11 +169,122 @@ public class NavigationPanel extends JPanel
     
     buildPopupMenu();
   }
+  
+  /**
+   * Replace the current tree model with a sorted or unsorted one, depending
+   * on the boolean parameter. 
+   * @param sorted true to show a sorted tree, false to show the original tree
+   */
+  private void showSortedTree(boolean sorted) {
 
+      if (sorted) {
+          if (rootSortedTreeNode == null) {
+              // this extra tree is only built if the user requests it
+              rootSortedTreeNode = buildSortedTree(
+                      (DefaultMutableTreeNode)rootUnsortedTreeNode);
+          }
+          rootTreeNode = rootSortedTreeNode;
+      }
+      else {
+          rootTreeNode = rootUnsortedTreeNode;
+      }
+
+      tree.setModel(new DefaultTreeModel(rootTreeNode));
+  }
+
+  /**
+   * Find the specified path in the given tree. To compare objects between 
+   * the path and the tree, toString() is called on the respective objects.
+   * Thus, the path could be composed of Strings or TreeNodes from another 
+   * tree or whatever.
+   * @param path list of objects on the path, beginning with the root
+   * @param node root of the subtree to search
+   * @return nodes in the tree forming the path, or null if the path is not found
+   */
+  private List<TreeNode> translatePath(List path, TreeNode node) {
+
+      // TODO: Find the correct node given two identical paths. 
+      // For example suppose we have two paths Classes/String and Classes/String.
+      // This method will always translate to the first path, regardless of the
+      // actual path given.
+      
+      List tail = new ArrayList();
+      tail.addAll(path);
+      Object target = tail.remove(0);
+      
+      if (!node.toString().equals(target.toString())) {
+          return null;
+      }
+      
+      List<TreeNode> newPath = new ArrayList<TreeNode>();
+      newPath.add(node);
+
+      // no more nodes to find, just return this one
+      if (tail.isEmpty()) return newPath;
+      
+      Enumeration e = node.children();
+      while(e.hasMoreElements()) {
+          TreeNode child = (TreeNode)e.nextElement();
+          List nodes = translatePath(tail, child);
+          if (nodes != null) {
+              newPath.addAll(nodes);
+              return newPath;
+          }
+      }
+      
+      // the path was not found under this subtree
+      return null;
+  }
+
+  
+  /**
+   * Builds a sorted version of the tree.
+   * @param oldNode the root of the unsorted tree
+   * @return the root of the sorted tree
+   */
+  private DefaultMutableTreeNode buildSortedTree(DefaultMutableTreeNode oldNode) {
+      return buildSortedTree(oldNode, 
+              new DefaultMutableTreeNode(oldNode.getUserObject()));
+  }
+
+  /**
+   * Builds a sorted version of the specified subtree.
+   * @param oldNode the node on the unsorted tree
+   * @param newNode the node on the sorted tree
+   * @return the node on the sorted tree
+   */
+  private DefaultMutableTreeNode buildSortedTree(DefaultMutableTreeNode oldNode, 
+          DefaultMutableTreeNode newNode) {
+      
+      List<DefaultMutableTreeNode> children = new ArrayList();
+      Enumeration e = oldNode.children();
+      while(e.hasMoreElements()) {
+          DefaultMutableTreeNode child = (DefaultMutableTreeNode)e.nextElement();
+          children.add(child);
+      }
+      
+      // sort everything except the first level
+      if (!(oldNode.getUserObject() instanceof RootNode)) {
+          Collections.sort(children, new Comparator<DefaultMutableTreeNode>() {
+              public int compare(DefaultMutableTreeNode node1, DefaultMutableTreeNode node2) {
+                  return node1.getUserObject().toString().compareTo(
+                          node2.getUserObject().toString());
+              }
+            });
+      }
+      
+      for(DefaultMutableTreeNode oldChild : children) {
+          DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(oldChild.getUserObject());
+          newNode.add(newChild);
+          buildSortedTree(oldChild, newChild);
+      }
+    
+      return newNode;
+  }
+  
   public void actionPerformed(ActionEvent event) {
     DefaultMutableTreeNode dmtn, node;
 
-    
     TreePath path = tree.getSelectionPath();
 
     if(path != null) {
@@ -187,7 +350,6 @@ public class NavigationPanel extends JPanel
   }
   
   public void keyTyped(KeyEvent e) {
-
   }
   
   public void keyReleased(KeyEvent e) {
@@ -196,16 +358,15 @@ public class NavigationPanel extends JPanel
   public void mousePressed(MouseEvent e) {
     showPopup(e);
   }
+  
   public void mouseExited(MouseEvent e) {
   }
+  
   public void mouseClicked(MouseEvent e) {
   }
 
-    
-    
   public void mouseEntered(MouseEvent e) {
   }
-  
   
   public void mouseReleased(MouseEvent e) {
     showPopup(e);
@@ -233,12 +394,12 @@ public class NavigationPanel extends JPanel
 
   private void doMouseEvent(MouseEvent e) {
     if(e.getButton() == MouseEvent.BUTTON1) {
-      TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-      newViewEvent(path);
+      selectedPath = tree.getPathForLocation(e.getX(), e.getY());
+      newViewEvent(selectedPath);
     } else if(e.getButton() == MouseEvent.BUTTON2) {
-      TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-      if(path != null) {
-        DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
+      selectedPath = tree.getPathForLocation(e.getX(), e.getY());
+      if(selectedPath != null) {
+        DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
         ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
         evt.setViewObject(dmtn.getUserObject());
         evt.setInNewTab(true);
@@ -342,12 +503,9 @@ public class NavigationPanel extends JPanel
   } 
 
 
-
-
   private DefaultMutableTreeNode buildTree() {
-  
+      
     DefaultMutableTreeNode node = new DefaultMutableTreeNode(rootNode);
-          
     return doNode(node, rootNode);
     
   }
@@ -529,5 +687,24 @@ public class NavigationPanel extends JPanel
       nl.navigate(evt);
     }
   }
+  
+
+  public void preferenceChange(UserPreferencesEvent event) 
+  {
+    if(event.getTypeOfEvent() == UserPreferencesEvent.SORT_ELEMENTS) 
+    {
+      Boolean sortClasses = new Boolean (event.getValue());
+      showSortedTree(sortClasses);
+      TreeUtil.expandAll(tree, rootTreeNode);
+
+      if (selectedPath != null) {
+          // reselect the node which was selected
+          List pathList = Arrays.asList(selectedPath.getPath());
+          List newPath = translatePath(pathList, rootTreeNode);
+          tree.setSelectionPath(new TreePath(newPath.toArray()));
+      }
+    }
+  }
+
 
 }

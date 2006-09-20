@@ -19,13 +19,17 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.util;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
-import gov.nih.nci.ncicb.cadsr.loader.ext.*;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.prefs.Preferences;
-import java.util.*;
 
 import org.apache.log4j.Logger;
-
 
 /**
  * Persists user preferences using os specific mechanism. 
@@ -164,6 +168,19 @@ public class UserPreferences {
     fireUserPreferencesEvent(event);
   }
 
+  public boolean getSortElements() 
+  {
+    return prefs.getBoolean("sortElements", false);
+  }
+  
+  public void setSortElements(boolean sort) 
+  {
+    prefs.putBoolean("sortElements", sort);
+    UserPreferencesEvent event = 
+      new UserPreferencesEvent(UserPreferencesEvent.SORT_ELEMENTS,(Boolean.valueOf(sort)).toString());
+    fireUserPreferencesEvent(event);
+  }
+  
   public boolean getEvsAutoSearch() 
   {
     return prefs.getBoolean("evsAutoSearch", true);
