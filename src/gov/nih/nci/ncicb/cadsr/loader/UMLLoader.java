@@ -20,35 +20,34 @@
 
 package gov.nih.nci.ncicb.cadsr.loader;
 
-import java.util.*;
-
-import org.omg.uml.foundation.core.*;
-import org.omg.uml.foundation.extensionmechanisms.*;
-
-import org.omg.uml.modelmanagement.Model;
-import org.omg.uml.modelmanagement.UmlPackage;
-
-import java.io.*;
-
-import gov.nih.nci.ncicb.cadsr.loader.event.*;
-import gov.nih.nci.ncicb.cadsr.loader.parser.*;
-import gov.nih.nci.ncicb.cadsr.loader.persister.*;
-import gov.nih.nci.ncicb.cadsr.loader.validator.*;
-import gov.nih.nci.ncicb.cadsr.loader.util.*;
-
-import gov.nih.nci.ncicb.cadsr.loader.ui.ProgressFrame;
-
-import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
-
-import java.security.*;
-import javax.security.auth.*;
-import javax.security.auth.login.*;
-import javax.security.auth.callback.CallbackHandler;
-
-import javax.swing.JOptionPane;
-import org.apache.log4j.Logger;
-
 import gov.nih.nci.ncicb.cadsr.jaas.SwingCallbackHandler;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.parser.Parser;
+import gov.nih.nci.ncicb.cadsr.loader.persister.Persister;
+import gov.nih.nci.ncicb.cadsr.loader.ui.ProgressFrame;
+import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationError;
+import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
+import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationWarning;
+import gov.nih.nci.ncicb.cadsr.loader.validator.Validator;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.security.auth.Subject;
+import javax.security.auth.login.LoginContext;
+import javax.sql.DataSource;
+import javax.swing.JOptionPane;
+
+import org.apache.log4j.Logger;
 
 
 /**
@@ -72,7 +71,9 @@ public class UMLLoader {
   private Persister persister;
 
   private UserPreferences prefs;
-
+  
+  private DataSource dataSource;
+  
   /**
    *
    * @param args a <code>String[]</code> value
@@ -216,6 +217,23 @@ public class UMLLoader {
 
     persister.persist();
 
+    // Refresh the views
+    Connection conn = null;
+    CallableStatement cs = null;
+    try {
+        conn = dataSource.getConnection();
+        cs = conn.prepareCall("{call sbrext_admin_mv.refresh_mvw}");
+        cs.execute();
+    }
+    catch (SQLException e) {
+        e.printStackTrace();
+    }
+    finally {
+        if (conn != null) {
+            conn.close();
+        }
+    }
+    
     progressFrame.dispose();
 
   }
@@ -236,6 +254,8 @@ public class UMLLoader {
     prefs = preferences;
   }
 
+  public void setDataSource(DataSource dataSource) {
+    this.dataSource = dataSource;
+  }
 
 }
-
