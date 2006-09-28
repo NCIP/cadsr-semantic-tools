@@ -60,18 +60,18 @@ public class ErrorPanel extends JPanel implements MouseListener {
   private JPopupMenu popup;
   
   private JCheckBoxMenuItem conceptCb = new JCheckBoxMenuItem("Hide Concept Errors", false);
-  private boolean hideConceptError = false;
   private UMLNode node;
   private JPanel cbPanel;
   
   private UserSelections userSelections = UserSelections.getInstance();
+
+  private boolean hideConceptError = false;
 
   private java.util.List<PropertyChangeListener> propChangeListeners = 
     new ArrayList<PropertyChangeListener>();
 
   public ErrorPanel(UMLNode rootNode) {
     node = rootNode;
-    initCb();
     initUI(rootNode);
   }
   
@@ -118,59 +118,52 @@ public class ErrorPanel extends JPanel implements MouseListener {
     
   }
   
-    private void initCb() {
+  public void mousePressed(MouseEvent e) {
+    showPopup(e);
+  }
 
-      
-      
+  public void mouseExited(MouseEvent e) {
+  }
+
+  public void mouseClicked(MouseEvent e) {
+  }
+
+  public void mouseEntered(MouseEvent e) {
+  }
+
+  public void mouseReleased(MouseEvent e) {
+    showPopup(e);
+  }
+
+  private void showPopup(MouseEvent e) {
+    if (e.isPopupTrigger()) {
+      popup.show(e.getComponent(), e.getX(), e.getY());
     }
-    
+  }
 
-    public void mousePressed(MouseEvent e) {
-        showPopup(e);
-    }
+  private void buildPopupMenu() {
+    popup = new JPopupMenu();
+    JMenuItem menuItem = new JMenuItem("Export Errors");
+    popup.add(menuItem);
+    popup.addSeparator();
+    popup.add(conceptCb);
 
-    public void mouseExited(MouseEvent e) {
-    }
-
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseReleased(MouseEvent e) {
-        showPopup(e);
-    }
-
-    private void showPopup(MouseEvent e) {
-        if (e.isPopupTrigger()) {
-            popup.show(e.getComponent(), e.getX(), e.getY());
-        }
-    }
-
-    private void buildPopupMenu() {
-      popup = new JPopupMenu();
-      JMenuItem menuItem = new JMenuItem("Export Errors");
-      popup.add(menuItem);
-      popup.addSeparator();
-      popup.add(conceptCb);
-
-      ActionListener cbAl = new ActionListener() {
-          public void actionPerformed(ActionEvent evt) {
-            AbstractButton cb = (AbstractButton)evt.getSource();
-            boolean isSel = cb.isSelected();
-            if (isSel) {
-              hideConceptError = true;
-            } else {
-              hideConceptError = false;
-            }
-            update();
+    ActionListener cbAl = new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          AbstractButton cb = (AbstractButton)evt.getSource();
+          boolean isSel = cb.isSelected();
+          if (isSel) {
+            hideConceptError = true;
+          } else {
+            hideConceptError = false;
           }
-        };
+          update();
+        }
+      };
 
-      conceptCb.addActionListener(cbAl);
+    conceptCb.addActionListener(cbAl);
       
-      menuItem.addActionListener(new ActionListener() {
+    menuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           String saveDir = UserPreferences.getInstance().getRecentDir();
           JFileChooser chooser = new JFileChooser();
@@ -198,135 +191,135 @@ public class ErrorPanel extends JPanel implements MouseListener {
             String fileExtension = "xml";
             if(!filePath.endsWith(fileExtension))
               filePath = filePath + "." + fileExtension;
-          try 
-          {
-            FileWriter fw = new FileWriter(filePath);
-            new XMLOutputter(Format.getPrettyFormat()).output(writeXML(filePath), fw);
-            firePropertyChange(new PropertyChangeEvent(this, "EXPORT_ERRORS", null, null));
+            try 
+              {
+                FileWriter fw = new FileWriter(filePath);
+                new XMLOutputter(Format.getPrettyFormat()).output(writeXML(filePath), fw);
+                firePropertyChange(new PropertyChangeEvent(this, "EXPORT_ERRORS", null, null));
             
+              }
+            catch (Exception e) 
+              {
+                firePropertyChange(new PropertyChangeEvent(this, "EXPORT_ERRORS_FAILED", null, null));
+                throw new RuntimeException("Error writing to " + filePath,  e);
+              }            
           }
-          catch (Exception e) 
-          {
-            firePropertyChange(new PropertyChangeEvent(this, "EXPORT_ERRORS_FAILED", null, null));
-            throw new RuntimeException("Error writing to " + filePath,  e);
-          }            
-        }
         }
       });
-}
-    private void firstRun(UMLNode node) {
-        Set<UMLNode> children = node.getChildren();
-        Set<ValidationNode> valNodes = node.getValidationNodes();
-        //     displaySet = new HashSet<UMLNode>();
+  }
+  private void firstRun(UMLNode node) {
+    Set<UMLNode> children = node.getChildren();
+    Set<ValidationNode> valNodes = node.getValidationNodes();
+    //     displaySet = new HashSet<UMLNode>();
 
-        for (ValidationNode valNode: valNodes) {
-            if (!(hideConceptError && valNode.getUserObject() instanceof ValidationConceptError)) {
-                navTree(valNode);
-            }
-        }
-
-        for (UMLNode child: children) {
-            firstRun(child);
-        }
+    for (ValidationNode valNode: valNodes) {
+      if (!(hideConceptError && valNode.getUserObject() instanceof ValidationConceptError)) {
+        navTree(valNode);
+      }
     }
 
-    private void navTree(UMLNode node) {
-        UMLNode pNode = node.getParent();
-        if (pNode != null) {
-            navTree(pNode);
-        }
-        displaySet.add(node);
+    for (UMLNode child: children) {
+      firstRun(child);
     }
+  }
 
-    private DefaultMutableTreeNode buildTree(UMLNode rootNode) {
-        DefaultMutableTreeNode node = new DefaultMutableTreeNode(rootNode);
-
-        return doNode(node);
+  private void navTree(UMLNode node) {
+    UMLNode pNode = node.getParent();
+    if (pNode != null) {
+      navTree(pNode);
     }
+    displaySet.add(node);
+  }
 
-    private Element writeXML(String filePath) {
-      Element rootElement = new Element("File");
-      File file = new File((String)userSelections.getProperty("FILENAME"));
-      rootElement.setAttribute("name", file.getName());
-      doNode(rootElement, node);
-      return rootElement;
-    }
+  private DefaultMutableTreeNode buildTree(UMLNode rootNode) {
+    DefaultMutableTreeNode node = new DefaultMutableTreeNode(rootNode);
+
+    return doNode(node);
+  }
+
+  private Element writeXML(String filePath) {
+    Element rootElement = new Element("File");
+    File file = new File((String)userSelections.getProperty("FILENAME"));
+    rootElement.setAttribute("name", file.getName());
+    doNode(rootElement, node);
+    return rootElement;
+  }
     
-    private void doNode(Element element, UMLNode node) 
-    {
-      Set<UMLNode> children = node.getChildren();
-      Set<ValidationNode> valNodes = node.getValidationNodes();
+  private void doNode(Element element, UMLNode node) 
+  {
+    Set<UMLNode> children = node.getChildren();
+    Set<ValidationNode> valNodes = node.getValidationNodes();
       
-      for (ValidationNode valNode: valNodes) {
-        String elementName = "ValidationError";
-        if(valNode instanceof WarningNode)
-          elementName = "ValidationWarning";
+    for (ValidationNode valNode: valNodes) {
+      String elementName = "ValidationError";
+      if(valNode instanceof WarningNode)
+        elementName = "ValidationWarning";
           
-        Element validationElement = new Element(elementName);
-        validationElement.addContent(valNode.getDisplay());
-        element.addContent(validationElement);
+      Element validationElement = new Element(elementName);
+      validationElement.addContent(valNode.getDisplay());
+      element.addContent(validationElement);
+    }
+        
+    for (UMLNode child: children) {
+      //DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(child);
+      Element childElement = new Element("child");
+      if(child instanceof PackageNode) {
+        childElement = new Element("Package");
+        childElement.setAttribute("name", child.getDisplay());
+      }
+      if(child instanceof ClassNode) {
+        childElement = new Element("Class");
+        childElement.setAttribute("name", child.getDisplay());
+      }
+      if(child instanceof AttributeNode) {
+        childElement = new Element("Attribute");
+        childElement.setAttribute("name", child.getDisplay());
+      }
+      if(child instanceof ValueDomainNode) {
+        childElement = new Element("ValueDomain");
+        childElement.setAttribute("name", child.getDisplay());
+      }
+      if(child instanceof ValueMeaningNode) {
+        childElement = new Element("ValueMeaning");
+        childElement.setAttribute("name", child.getDisplay());
+      }
+      if(child instanceof AssociationNode) {
+        childElement = new Element("Association");
+        childElement.setAttribute("name", child.getDisplay());
       }
         
-      for (UMLNode child: children) {
-        //DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(child);
-        Element childElement = new Element("child");
-        if(child instanceof PackageNode) {
-          childElement = new Element("Package");
-          childElement.setAttribute("name", child.getDisplay());
-        }
-        if(child instanceof ClassNode) {
-          childElement = new Element("Class");
-          childElement.setAttribute("name", child.getDisplay());
-        }
-        if(child instanceof AttributeNode) {
-          childElement = new Element("Attribute");
-          childElement.setAttribute("name", child.getDisplay());
-        }
-        if(child instanceof ValueDomainNode) {
-          childElement = new Element("ValueDomain");
-          childElement.setAttribute("name", child.getDisplay());
-        }
-        if(child instanceof ValueMeaningNode) {
-          childElement = new Element("ValueMeaning");
-          childElement.setAttribute("name", child.getDisplay());
-        }
-        if(child instanceof AssociationNode) {
-          childElement = new Element("Association");
-          childElement.setAttribute("name", child.getDisplay());
-        }
-        
-        if (displaySet.contains(child)) {   
-          element.addContent(childElement);
-          //node.add(newNode);
-        }
-          doNode(childElement, child);
-        }
-
+      if (displaySet.contains(child)) {   
+        element.addContent(childElement);
+        //node.add(newNode);
+      }
+      doNode(childElement, child);
     }
 
+  }
 
-    private DefaultMutableTreeNode doNode(DefaultMutableTreeNode node) {
-        UMLNode umlNode = (UMLNode)node.getUserObject();
 
-        Set<UMLNode> children = umlNode.getChildren();
-        Set<ValidationNode> valNodes = umlNode.getValidationNodes();
+  private DefaultMutableTreeNode doNode(DefaultMutableTreeNode node) {
+    UMLNode umlNode = (UMLNode)node.getUserObject();
 
-        for (ValidationNode valNode: valNodes) {
-            if (!(hideConceptError && valNode.getUserObject() instanceof ValidationConceptError)) {
-                DefaultMutableTreeNode newNode = 
-                    new DefaultMutableTreeNode(valNode);
+    Set<UMLNode> children = umlNode.getChildren();
+    Set<ValidationNode> valNodes = umlNode.getValidationNodes();
 
-                node.add(newNode);
+    for (ValidationNode valNode: valNodes) {
+      if (!(hideConceptError && valNode.getUserObject() instanceof ValidationConceptError)) {
+        DefaultMutableTreeNode newNode = 
+          new DefaultMutableTreeNode(valNode);
+
+        node.add(newNode);
             }
 
         }
         for (UMLNode child: children) {
-            DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(child);
+          DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(child);
 
-            if (displaySet.contains(child) && child.getDisplay() != "Inherited Attributes")
-                node.add(newNode);
+          if (displaySet.contains(child) && child.getDisplay() != "Inherited Attributes")
+            node.add(newNode);
 
-            doNode(newNode);
+          doNode(newNode);
         }
 
         return node;
