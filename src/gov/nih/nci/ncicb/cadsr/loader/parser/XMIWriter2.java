@@ -54,12 +54,14 @@ public class XMIWriter2 implements ElementWriter {
 
   private ProgressListener progressListener;
   
-  UMLModel model = null;
-  XmiInOutHandler handler = null;
+  private UMLModel model = null;
+  private XmiInOutHandler handler = null;
 
   public XMIWriter2() {
     try {
-      handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
+
+//       handler = (XmiInOutHandler)(UserSelections.getInstance().getProperty("XMI_HANDLER"));
+//       handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
       
 
     } catch (Exception ex) {
@@ -69,16 +71,20 @@ public class XMIWriter2 implements ElementWriter {
 
   public void write(ElementsLists elements) throws ParserException {
     try {
-      String input = (String)userSelections.getProperty("FILENAME");
-      String s = input.replaceAll("\\ ", "%20");
+//       String input = (String)userSelections.getProperty("FILENAME");
+//       String s = input.replaceAll("\\ ", "%20");
     
-      // Some file systems use absolute URIs that do 
-      // not start with '/'. 
-      if(!s.startsWith("/"))
-        s = "/" + s;    
-      java.net.URI uri = new java.net.URI("file://" + s);
-      handler.load(uri);
+//       // Some file systems use absolute URIs that do 
+//       // not start with '/'. 
+//       if(!s.startsWith("/"))
+//         s = "/" + s;    
+//       java.net.URI uri = new java.net.URI("file://" + s);
+//       handler.load(uri);
+      handler = (XmiInOutHandler)(UserSelections.getInstance().getProperty("XMI_HANDLER"));
+
       model = handler.getModel("EA Model");
+
+//       model = (UMLModel)(UserSelections.getInstance().getProperty("UML_MODEL"));
 
       this.cadsrObjects = elements;
     

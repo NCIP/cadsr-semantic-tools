@@ -29,6 +29,8 @@ import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+
 import gov.nih.nci.ncicb.xmiinout.handler.*;
 import gov.nih.nci.ncicb.xmiinout.domain.*;
 
@@ -175,6 +177,9 @@ public class XMIParser2 implements Parser {
       handler.load(uri);
 
       UMLModel model = handler.getModel("EA Model");
+
+      // save in memory for fast-save
+      UserSelections.getInstance().setProperty("XMI_HANDLER", handler);
 
       totalNumberOfElements = countNumberOfElements(model);
       
