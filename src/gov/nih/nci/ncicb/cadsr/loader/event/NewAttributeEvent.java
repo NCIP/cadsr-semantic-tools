@@ -29,6 +29,9 @@ public class NewAttributeEvent extends NewConceptualEvent {
   private String name;
   private String className;
   private String type;
+  
+  private String typeId;
+  private Float typeVersion;
 
 
   public NewAttributeEvent(String name) {
@@ -53,6 +56,30 @@ public class NewAttributeEvent extends NewConceptualEvent {
 
   public void setClassName(String className) {
     this.className = className;
+  }
+
+
+  public void setTypeId(String typeId)
+  {
+    this.typeId = typeId;
+  }
+
+
+  public String getTypeId()
+  {
+    return typeId;
+  }
+
+
+  public void setTypeVersion(Float typeVersion)
+  {
+    this.typeVersion = typeVersion;
+  }
+
+
+  public Float getTypeVersion()
+  {
+    return typeVersion;
   }
 
 }
