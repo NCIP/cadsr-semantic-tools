@@ -180,6 +180,19 @@ public class XMIWriter2 implements ElementWriter {
                              de.getVersion().toString());
 
         } else {
+          att.removeTaggedValue(XMIParser.TV_DE_ID);
+          att.removeTaggedValue(XMIParser.TV_DE_VERSION);
+          
+           if(!StringUtil.isEmpty(de.getValueDomain().getPublicId()) && de.getValueDomain().getVersion() != null) {
+            att.addTaggedValue(XMIParser.TV_VD_ID,
+                               de.getValueDomain().getPublicId());
+            att.addTaggedValue(XMIParser.TV_VD_VERSION,
+                               de.getValueDomain().getVersion().toString());
+           }
+           else {
+            att.removeTaggedValue(XMIParser.TV_VD_ID);
+            att.removeTaggedValue(XMIParser.TV_VD_VERSION);
+           }
           String [] conceptCodes = dec.getProperty().getPreferredName().split(":");
           addConceptTvs(att, conceptCodes, XMIParser.TV_TYPE_PROPERTY);
         }
@@ -201,13 +214,13 @@ public class XMIWriter2 implements ElementWriter {
           // drop all current concept tagged values
           Collection<UMLTaggedValue> allTvs = att.getTaggedValues();
           for(UMLTaggedValue tv : allTvs) {
-            if(tv.getName().startsWith("Property") ||
-               tv.getName().startsWith("PropertyQualifier"));
+            if(tv.getName().startsWith(XMIParser2.TV_TYPE_VM) ||
+               tv.getName().startsWith(XMIParser2.TV_TYPE_VM + "Qualifier"))
             att.removeTaggedValue(tv.getName());
           }
 
           String [] conceptCodes = ConceptUtil.getConceptCodes(vm);
-          addConceptTvs(att, conceptCodes, XMIParser.TV_TYPE_VM);
+          addConceptTvs(att, conceptCodes, XMIParser2.TV_TYPE_VM);
         }
       }
     }
