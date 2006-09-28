@@ -74,8 +74,8 @@ public class ConceptUtil {
   public static String[] getConceptCodes(ValueMeaning vm) {
     List<ComponentConcept> compCons = vm.getConceptDerivationRule().getComponentConcepts();
     String[] conceptCodes = new String[compCons.size()];
-    for(int i = 0; i<compCons.size(); i++) 
-      conceptCodes[i] = compCons.get(i).getConcept().getPreferredName();
+    for(int i = 0; i < compCons.size(); i++) 
+      conceptCodes[compCons.size()-i-1] = compCons.get(i).getConcept().getPreferredName();
     
     return conceptCodes;
   }
