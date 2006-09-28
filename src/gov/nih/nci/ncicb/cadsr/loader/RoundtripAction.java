@@ -63,7 +63,7 @@ public class RoundtripAction {
       roundtrip.setProgressListener(progressListener);
       roundtrip.start();
 
-      RoundtripWriter writer = new RoundtripWriter(inputFile);
+      RoundtripWriter2 writer = new RoundtripWriter2(inputFile);
       writer.setProgressListener(progressListener);
       writer.setOutput(outputFile);
       writer.write(ElementsLists.getInstance());
@@ -71,6 +71,7 @@ public class RoundtripAction {
       pEvt.setGoal(100);
       pEvt.setMessage("Done");
       pEvt.setStatus(100);
+      pEvt.setCompleted(true);
       progressListener.newProgressEvent(pEvt);
 
     } catch (PersisterException e){
