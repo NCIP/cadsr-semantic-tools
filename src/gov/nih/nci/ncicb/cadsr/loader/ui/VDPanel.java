@@ -24,15 +24,15 @@ public class VDPanel extends JPanel
   private JButton searchVdButton = new JButton("Search Value Domain");
   
   private JLabel vdLongNameTitleLabel = new JLabel("Long Name"),
-  vdLongNameValueLabel = new JLabel(),
+  vdLongNameValueLabel = new JLabel(""),
   vdPublicIdTitleLabel = new JLabel("Public Id"),
-  vdPublicIdValueLabel = new JLabel(),
+  vdPublicIdValueLabel = new JLabel(""),
   vdContextNameTitleLabel = new JLabel("Context Name"),
-  vdContextNameValueLabel = new JLabel(),
+  vdContextNameValueLabel = new JLabel(""),
   vdVersionTitleLabel = new JLabel("Version"),
-  vdVersionValueLabel = new JLabel(),
+  vdVersionValueLabel = new JLabel(""),
   vdDatatypeTitleLabel = new JLabel("Datatype"),
-  vdDatatypeValueLabel = new JLabel();
+  vdDatatypeValueLabel = new JLabel("");
 
   private static final String SEARCH = "SEARCH";
   
@@ -154,7 +154,7 @@ public class VDPanel extends JPanel
           vdVersionTitleLabel.setVisible(false);
       if(vdPublicIdValueLabel.getText().equals(""))
           vdPublicIdTitleLabel.setVisible(false);
-      if(vdDatatypeValueLabel.getText().equals(""))
+      if(vdDatatypeValueLabel.getText() == null || vdDatatypeValueLabel.getText().equals(""))
           vdDatatypeTitleLabel.setVisible(false);
       if(vdContextNameValueLabel.getText().equals(""))
           vdContextNameTitleLabel.setVisible(false);
