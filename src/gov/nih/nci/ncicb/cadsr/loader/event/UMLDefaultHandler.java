@@ -304,6 +304,53 @@ public class UMLDefaultHandler
       
       ValueDomain vd = DomainObjectFactory.newValueDomain();
       vd.setLongName(datatype);
+    
+      ValueDomain existingVd = null;  
+      if(event.getTypeId() != null) {
+        Map<String, Object> queryFields = 
+          new HashMap<String, Object>();
+        queryFields.put(CadsrModule.PUBLIC_ID, event.getTypeId());
+        queryFields.put(CadsrModule.VERSION, event.getTypeVersion());
+
+        List<ValueDomain> result = null;
+
+        try {
+          result =  new ArrayList<ValueDomain>(cadsrModule.findValueDomain(queryFields));
+        } catch (Exception e){
+          logger.error("Could not query cadsr module ", e);
+        } // end of try-catch
+
+        if(result.size() == 0) {
+          ChangeTracker changeTracker = ChangeTracker.getInstance();
+//         ValidationItems.getInstance()
+//           .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", new String[] 
+//             {event.getClassName() + "." + event.getName(),
+//              ConventionUtil.publicIdVersion(de)}), de));
+
+          ValidationItems.getInstance()
+            .addItem(new ValidationError(PropertyAccessor.getProperty("vd.doesnt.exist", event.getClassName() + "." + event.getName(),
+                event.getTypeId() + "v" + event.getTypeVersion()), de));
+
+        
+          vd.setPublicId(null);
+          vd.setVersion(null);
+          changeTracker.put
+          (event.getClassName() + "." + event.getName(), 
+           true);
+      } else {
+        existingVd = result.get(0);
+      vd.setLongName(existingVd.getLongName());
+      vd.setPublicId(existingVd.getPublicId());
+      vd.setVersion(existingVd.getVersion());
+      vd.setContext(existingVd.getContext());
+      vd.setDataType(existingVd.getDataType());
+      }
+      }
+      
+      
+      
+      
+      
       de.setValueDomain(vd);
 
     }
