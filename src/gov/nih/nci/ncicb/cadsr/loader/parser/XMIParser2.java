@@ -493,6 +493,20 @@ public class XMIParser2 implements Parser {
       } // end of try-catch
     }
 
+    tv = att.getTaggedValue(TV_VD_ID);
+    if(tv != null) {
+      event.setTypeId(tv.getValue());
+    }
+
+    tv = att.getTaggedValue(TV_VD_VERSION);
+    if(tv != null) {
+      try {
+        event.setTypeVersion(new Float(tv.getValue()));
+      } catch (NumberFormatException e){
+      } // end of try-catch
+    }
+
+
     setConceptInfo(att, event, TV_TYPE_PROPERTY);
 
     listener.newAttribute(event);
