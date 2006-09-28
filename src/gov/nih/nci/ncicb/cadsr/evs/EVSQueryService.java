@@ -52,7 +52,6 @@ public class EVSQueryService {
   }
 
 
-  /* CL: Redo. No time atm. */
   /**
    * returns by list of concepts by preferredName
    * <br> Usually, it means one concept, not always...
@@ -60,9 +59,23 @@ public class EVSQueryService {
   public List<EVSConcept> findConceptsByPreferredName(
     String searchTerm,
     boolean includeRetiredConcepts) throws Exception {
+
+    return findConceptsByPreferredName(searchTerm, includeRetiredConcepts, NCI_THESAURUS_VOCAB_NAME);
+
+  }
+
+  /* CL: Redo. No time atm. */
+  /**
+   * returns by list of concepts by preferredName
+   * <br> Usually, it means one concept, not always...
+   */
+  public List<EVSConcept> findConceptsByPreferredName(
+    String searchTerm,
+    boolean includeRetiredConcepts,
+    String vocabName) throws Exception {
     
     // CL: this is bad. replace by true query. who guaranties the result is in the 1st 500 rows? 
-    List<EVSConcept> consBySyn = findConceptsBySynonym(searchTerm, includeRetiredConcepts, 500);
+    List<EVSConcept> consBySyn = findConceptsBySynonym(searchTerm, includeRetiredConcepts, 500, vocabName);
     
     List<EVSConcept> results = new ArrayList<EVSConcept>();
     for(EVSConcept con : consBySyn) {
@@ -77,28 +90,47 @@ public class EVSQueryService {
     String searchTerm,
     boolean includeRetiredConcepts,
     int rowCount) throws Exception {
+    
+    return findConceptsBySynonym(searchTerm, includeRetiredConcepts, rowCount, NCI_THESAURUS_VOCAB_NAME);
+
+  }
+
+  public List<EVSConcept> findConceptsBySynonym(
+    String searchTerm,
+    boolean includeRetiredConcepts,
+    int rowCount, 
+    String vocabName) throws Exception {
     if (cacoreServiceURL == null) {
       throw new Exception("Please specify a valid caCORE Service URL");
     }
 
     EVSQuery query = new EVSQueryImpl();
     query.getConceptWithPropertyMatching(
-      NCI_THESAURUS_VOCAB_NAME, SYNONYM_PROPERTY_NAME, searchTerm, rowCount);
+      vocabName, SYNONYM_PROPERTY_NAME, searchTerm, rowCount);
 
     List conceptNames = evsService.evsSearch(query);
 
-    return this.findConceptDetailsByName(conceptNames, includeRetiredConcepts);
+    return this.findConceptDetailsByName(conceptNames, includeRetiredConcepts, vocabName);
 
   }
 
   public List<EVSConcept> findConceptDetailsByName(
     List<String> conceptNames,
     boolean includeRetiredConcepts) throws Exception {
+
+    return findConceptDetailsByName(conceptNames, includeRetiredConcepts, NCI_THESAURUS_VOCAB_NAME);
+
+  }
+
+  public List<EVSConcept> findConceptDetailsByName(
+    List<String> conceptNames,
+    boolean includeRetiredConcepts,
+    String vocabName) throws Exception {
     List<EVSConcept> results = new ArrayList<EVSConcept>();
 
     for (String conceptName : conceptNames) {
       DescLogicConcept concept =
-        this.findDescLogicConceptByName(NCI_THESAURUS_VOCAB_NAME, conceptName);
+        this.findDescLogicConceptByName(vocabName, conceptName);
 
       if (
         (includeRetiredConcepts) ||
@@ -124,17 +156,27 @@ public class EVSQueryService {
     String conceptCode,
     boolean includeRetiredConcepts,
     int rowCount) throws Exception {
+
+    return findConceptsByCode(conceptCode, includeRetiredConcepts, rowCount, NCI_THESAURUS_VOCAB_NAME);
+
+  }
+
+  public List findConceptsByCode(
+    String conceptCode,
+    boolean includeRetiredConcepts,
+    int rowCount, 
+    String vocabName) throws Exception {
     if (cacoreServiceURL == null) {
       throw new Exception("Please specify a valid caCORE Service URL");
     }
 
     List results = new ArrayList();
     EVSQuery query = new EVSQueryImpl();
-    query.getConceptNameByCode(NCI_THESAURUS_VOCAB_NAME, conceptCode);
+    query.getConceptNameByCode(vocabName, conceptCode);
     List conceptNames = evsService.evsSearch(query);
 
     results =
-      this.findConceptDetailsByName(conceptNames, includeRetiredConcepts);
+      this.findConceptDetailsByName(conceptNames, includeRetiredConcepts, vocabName);
 
     return results;
   }
@@ -260,7 +302,11 @@ public class EVSQueryService {
       //testAction.findConceptsBySynonym("gene", 100);
 //       testAction.findConceptsByCode("C41095", true, 100);
 
-      List<EVSConcept> cons = testAction.findConceptsByPreferredName("Clinical Trial Protocol", false);
+      String searchTerm = "Dental Bonding Agent";
+
+      List<EVSConcept> cons = testAction.findConceptsByPreferredName(searchTerm, false, "PRE_NCI_Thesaurus");
+
+      System.out.println("Search for " + searchTerm);
 
       for(EVSConcept con : cons) {
         System.out.println(con.getPreferredName());

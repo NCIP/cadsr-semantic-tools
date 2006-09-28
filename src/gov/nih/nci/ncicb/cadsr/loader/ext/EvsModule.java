@@ -40,15 +40,20 @@ public class EvsModule
 
   private static EVSQueryService evsService = new EVSQueryService(PropertyAccessor.getProperty("dts.url"));
 
-  public EvsModule()
-  {
+  private String vocabName = null;
+
+  public EvsModule(String vocabName) {
+    this.vocabName = vocabName;
+  }
+
+  public EvsModule() {
+    this.vocabName = "NCI_Thesaurus";
   }
   
   public EvsResult findByConceptCode(String code, boolean includeRetired) 
   {
-
     try {
-      List<EVSConcept> evsConcepts = (List<EVSConcept>)evsService.findConceptsByCode(code, includeRetired, 100);
+      List<EVSConcept> evsConcepts = (List<EVSConcept>)evsService.findConceptsByCode(code, includeRetired, 100, vocabName);
       
       for(EVSConcept evsConcept : evsConcepts) {
         return evsConceptToEvsResult(evsConcept);
@@ -56,7 +61,7 @@ public class EvsModule
     } catch (Exception e){
       logger.warn(e.getMessage());
     } // end of try-catch
-
+    
     return null;
   }
   
@@ -65,7 +70,7 @@ public class EvsModule
     Collection<EvsResult> result = new ArrayList<EvsResult>();
 
     try {
-      List<EVSConcept> evsConcepts = evsService.findConceptsByPreferredName(s, includeRetired);
+      List<EVSConcept> evsConcepts = evsService.findConceptsByPreferredName(s, includeRetired, vocabName);
       
       for(EVSConcept evsConcept : evsConcepts) {
         result.add(evsConceptToEvsResult(evsConcept));
@@ -84,7 +89,7 @@ public class EvsModule
     Collection<EvsResult> result = new ArrayList<EvsResult>();
 
     try {
-      List<EVSConcept> evsConcepts = evsService.findConceptsBySynonym(s, includeRetired, 100);
+      List<EVSConcept> evsConcepts = evsService.findConceptsBySynonym(s, includeRetired, 100, vocabName);
       
       for(EVSConcept evsConcept : evsConcepts) {
         result.add(evsConceptToEvsResult(evsConcept));
