@@ -28,7 +28,7 @@ import javax.swing.table.AbstractTableModel;
 public class ValidateConceptsDialog extends JDialog 
   implements ListSelectionListener
 {
-  private EvsModule module = new EvsModule();
+  private EvsModule module = new EvsModule("PRE_NCI_Thesaurus");
   private Map<Concept, Concept> errorList = new HashMap<Concept, Concept>();
   private Map<Concept, Concept> errorNameList = new HashMap<Concept, Concept>();
 

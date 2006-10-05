@@ -402,6 +402,7 @@ public class XMIWriter implements ElementWriter {
         }
 
         Element classElement = elements.get(fullClassName);
+
         String xpath = "//*[local-name()='TaggedValue' and @tag='HUMAN_REVIEWED' and @modelElement='"
           + classElement.getAttributeValue("xmi.id")
           + "']";
@@ -503,11 +504,17 @@ public class XMIWriter implements ElementWriter {
       JDOMXPath stereoPath = new JDOMXPath(stereoStr);
       Collection<Element> stereotypes = (Collection<Element>)stereoPath.selectNodes(modelElement);
 
+
+      String cPName = packageName;
       if(stereotypes.size() > 0) { // yes, this is a VD
-        packageName = "ValueDomains"; 
+        for(Element stElt : stereotypes) {
+          String attValue = stElt.getAttributeValue("name");
+          if(attValue != null && attValue.equals("CADSR Value Domain")) 
+            cPName = "ValueDomains"; 
+        }
       }
 
-      String className = packageName + "." + classElement.getAttributeValue("name");
+      String className = cPName + "." + classElement.getAttributeValue("name");
       
       elements.put(className, classElement);
       

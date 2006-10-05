@@ -38,6 +38,7 @@ public class EVSQueryService {
   private static String SYNONYM_PROPERTY_NAME = "Synonym";
   private static String PREFERRED_NAME_PROP = "PREFERRED_NAME";
   private static String DEFINITION_PROPERTY_NAME = "DEFINITION";
+  private static String ALT_DEFINITION_PROPERTY_NAME = "ALT_DEFINITION";
   private ApplicationService evsService;
   private String cacoreServiceURL;
 
@@ -51,7 +52,6 @@ public class EVSQueryService {
   }
 
 
-  /* CL: Redo. No time atm. */
   /**
    * returns by list of concepts by preferredName
    * <br> Usually, it means one concept, not always...
@@ -59,9 +59,23 @@ public class EVSQueryService {
   public List<EVSConcept> findConceptsByPreferredName(
     String searchTerm,
     boolean includeRetiredConcepts) throws Exception {
+
+    return findConceptsByPreferredName(searchTerm, includeRetiredConcepts, NCI_THESAURUS_VOCAB_NAME);
+
+  }
+
+  /* CL: Redo. No time atm. */
+  /**
+   * returns by list of concepts by preferredName
+   * <br> Usually, it means one concept, not always...
+   */
+  public List<EVSConcept> findConceptsByPreferredName(
+    String searchTerm,
+    boolean includeRetiredConcepts,
+    String vocabName) throws Exception {
     
     // CL: this is bad. replace by true query. who guaranties the result is in the 1st 500 rows? 
-    List<EVSConcept> consBySyn = findConceptsBySynonym(searchTerm, includeRetiredConcepts, 500);
+    List<EVSConcept> consBySyn = findConceptsBySynonym(searchTerm, includeRetiredConcepts, 500, vocabName);
     
     List<EVSConcept> results = new ArrayList<EVSConcept>();
     for(EVSConcept con : consBySyn) {
@@ -76,28 +90,47 @@ public class EVSQueryService {
     String searchTerm,
     boolean includeRetiredConcepts,
     int rowCount) throws Exception {
+    
+    return findConceptsBySynonym(searchTerm, includeRetiredConcepts, rowCount, NCI_THESAURUS_VOCAB_NAME);
+
+  }
+
+  public List<EVSConcept> findConceptsBySynonym(
+    String searchTerm,
+    boolean includeRetiredConcepts,
+    int rowCount, 
+    String vocabName) throws Exception {
     if (cacoreServiceURL == null) {
       throw new Exception("Please specify a valid caCORE Service URL");
     }
 
     EVSQuery query = new EVSQueryImpl();
     query.getConceptWithPropertyMatching(
-      NCI_THESAURUS_VOCAB_NAME, SYNONYM_PROPERTY_NAME, searchTerm, rowCount);
+      vocabName, SYNONYM_PROPERTY_NAME, searchTerm, rowCount);
 
     List conceptNames = evsService.evsSearch(query);
 
-    return this.findConceptDetailsByName(conceptNames, includeRetiredConcepts);
+    return this.findConceptDetailsByName(conceptNames, includeRetiredConcepts, vocabName);
 
   }
 
   public List<EVSConcept> findConceptDetailsByName(
     List<String> conceptNames,
     boolean includeRetiredConcepts) throws Exception {
+
+    return findConceptDetailsByName(conceptNames, includeRetiredConcepts, NCI_THESAURUS_VOCAB_NAME);
+
+  }
+
+  public List<EVSConcept> findConceptDetailsByName(
+    List<String> conceptNames,
+    boolean includeRetiredConcepts,
+    String vocabName) throws Exception {
     List<EVSConcept> results = new ArrayList<EVSConcept>();
 
     for (String conceptName : conceptNames) {
       DescLogicConcept concept =
-        this.findDescLogicConceptByName(NCI_THESAURUS_VOCAB_NAME, conceptName);
+        this.findDescLogicConceptByName(vocabName, conceptName);
 
       if (
         (includeRetiredConcepts) ||
@@ -123,17 +156,27 @@ public class EVSQueryService {
     String conceptCode,
     boolean includeRetiredConcepts,
     int rowCount) throws Exception {
+
+    return findConceptsByCode(conceptCode, includeRetiredConcepts, rowCount, NCI_THESAURUS_VOCAB_NAME);
+
+  }
+
+  public List findConceptsByCode(
+    String conceptCode,
+    boolean includeRetiredConcepts,
+    int rowCount, 
+    String vocabName) throws Exception {
     if (cacoreServiceURL == null) {
       throw new Exception("Please specify a valid caCORE Service URL");
     }
 
     List results = new ArrayList();
     EVSQuery query = new EVSQueryImpl();
-    query.getConceptNameByCode(NCI_THESAURUS_VOCAB_NAME, conceptCode);
+    query.getConceptNameByCode(vocabName, conceptCode);
     List conceptNames = evsService.evsSearch(query);
 
     results =
-      this.findConceptDetailsByName(conceptNames, includeRetiredConcepts);
+      this.findConceptDetailsByName(conceptNames, includeRetiredConcepts, vocabName);
 
     return results;
   }
@@ -190,6 +233,21 @@ public class EVSQueryService {
         definitions.add(def);
       }
     }
+    if(definitions.size() == 0) {
+      for (int x = 0; x < propVect.size(); x++) {
+        Property p = (Property) propVect.get(x);
+        if (p.getName().equalsIgnoreCase(ALT_DEFINITION_PROPERTY_NAME)) {
+          String definition = this.retrieveDefinitionValue(p.getValue());
+          String definitionSource = this.retrieveDefinitionSource(p.getValue());
+          Definition def = new Definition();
+          Source src = new Source();
+          def.setDefinition(definition);
+          src.setAbbreviation(definitionSource);
+          def.setSource(src);
+          definitions.add(def);
+        }
+      }
+    }
 
     return definitions;
   }
@@ -239,29 +297,24 @@ public class EVSQueryService {
    * @param args
    */
   public static void main(String[] args) {
-    EVSQueryService testAction = new EVSQueryService("http://cabio.nci.nih.gov/cacore30/server/HTTPServer");
+    EVSQueryService testAction = new EVSQueryService("http://cabio.nci.nih.gov/cacore31/http/remoteService");
     try {
       //testAction.findConceptsBySynonym("gene", 100);
 //       testAction.findConceptsByCode("C41095", true, 100);
 
-      List<EVSConcept> cons = testAction.findConceptsByPreferredName("name", false);
+      String searchTerm = "Dental Bonding Agent";
+
+      List<EVSConcept> cons = testAction.findConceptsByPreferredName(searchTerm, false, "PRE_NCI_Thesaurus");
+
+      System.out.println("Search for " + searchTerm);
 
       for(EVSConcept con : cons) {
         System.out.println(con.getPreferredName());
+        for(Definition def : (List<Definition>)con.getDefinitions()) {
+          System.out.println("def: " + def.getDefinition());
+          System.out.println("def source: " + def.getSource().getAbbreviation());
+        }
       }
-
-//       ApplicationService evsService = ApplicationService.getRemoteInstance("http://cabio.nci.nih.gov/cacore30/server/HTTPServer");
-
-//       gov.nih.nci.evs.domain.DescLogicConcept concept = new gov.nih.nci.evs.domain.DescLogicConcept();
-//       DetachedCriteria criteria = DetachedCriteria.forClass(gov.nih.nci.evs.domain.DescLogicConcept.class, "concept");
-
-//       criteria.add(Expression.eq("name", "Name"));
-      
-//       List<DescLogicConcept> l = evsService.query(criteria, gov.nih.nci.evs.domain.DescLogicConcept.class.getName());
-
-//       for(DescLogicConcept con : l) {
-//         System.out.println(con.getName());
-//       }
 
     }
     catch (Exception e) {

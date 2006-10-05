@@ -92,6 +92,7 @@ public class BeansAccessor {
       factory = new XmlBeanFactory(new InputStreamResource(Thread.currentThread().getContextClassLoader().getResourceAsStream("beans.xml")));
       return factory;
     } catch (Exception e){
+      e.printStackTrace();
       logger.error(e.getMessage());
     } // end of try-catch
     return null;
