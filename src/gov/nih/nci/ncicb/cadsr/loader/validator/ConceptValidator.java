@@ -23,7 +23,7 @@ public class ConceptValidator implements Validator
 {
   private ValidationItems items = ValidationItems.getInstance();
   
-  private EvsModule module = new EvsModule();
+  private EvsModule module = new EvsModule("PRE_NCI_Thesaurus");
   
   private ProgressListener progressListener;
   

@@ -10,6 +10,8 @@ import gov.nih.nci.ncicb.cadsr.domain.Property;
 import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTrackerType;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.event.NewAssociationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.NewAttributeEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.NewClassEvent;
@@ -36,10 +38,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-public class SemConnEventHandler implements UMLHandler
-{
+public class SemConnEventHandler implements UMLHandler {
+
   private ElementsLists elements;
-  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+  private ReviewTracker reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
 
   private static Logger logger = Logger.getLogger(SemConnEventHandler.class);
 

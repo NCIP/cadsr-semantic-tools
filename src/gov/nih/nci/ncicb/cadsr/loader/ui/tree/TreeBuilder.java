@@ -41,10 +41,18 @@ public class TreeBuilder implements UserPreferencesListener {
     showAssociations = true, showValueDomains = true,
     showInheritedAttributes = false;
   
-  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+  private ReviewTracker reviewTracker;
   private static TreeBuilder instance = new TreeBuilder();
   
-  private TreeBuilder() {}
+  private TreeBuilder() {
+    RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
+    if(runMode.equals(RunMode.Curator)) {
+      reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
+    } else {
+      reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner);
+    }
+  }
+
   public static TreeBuilder getInstance() {
     return instance;
   }
