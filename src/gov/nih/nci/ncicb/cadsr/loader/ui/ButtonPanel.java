@@ -4,6 +4,7 @@ import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEventType;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
@@ -90,8 +91,14 @@ public class ButtonPanel extends JPanel implements ActionListener,
     switchButton = new JButton();
     if(runMode.equals(RunMode.Reviewer))
       reviewButton = new JCheckBox("<html> Model <br> Owner <br> Verified</html");
-    else
+    else if(runMode.equals(RunMode.Curator))
       reviewButton = new JCheckBox("<html>Human<br>Verified</html>");
+    else { //if(runMode.equals(RunMode.UnannotatedXmi)) {
+      reviewButton = new JCheckBox("<html>Not<br>Available</html>");
+      reviewButton.setVisible(false);
+    }
+
+
     previousButton = new JButton("Previous");
     nextButton = new JButton("Next");
     previewButton = new JButton("Preview DE Reuse");
@@ -125,6 +132,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
     this.add(nextButton);
     this.add(previewButton);
     this.add(switchButton);
+
+    previewButton.setVisible(false);
 
   }
   
@@ -211,7 +220,6 @@ public class ButtonPanel extends JPanel implements ActionListener,
       reviewButton.setEnabled(false);
     
     switchButton.setVisible(editable instanceof DEPanel);
-//    switchButton.setVisible(editable instanceof OCPanel);
     
     if(editable instanceof DEPanel && conceptEditorPanel.getVDPanel().isMappedToLocalVD())
       switchButton.setEnabled(false);
@@ -220,34 +228,35 @@ public class ButtonPanel extends JPanel implements ActionListener,
     if(editable instanceof DEPanel) {
       DataElement de = (DataElement)conceptEditorPanel.getNode().getUserObject();
       if(!StringUtil.isEmpty(de.getPublicId())) {
-//         deleteButton.setEnabled(false);
-//         addButton.setEnabled(false);
         addButton.setVisible(false);
         deleteButton.setVisible(false);
         previewButton.setVisible(false);
       } else {
         addButton.setVisible(true);
         deleteButton.setVisible(true);
-        previewButton.setVisible(true);
+
+        // TEMP : Set back to TRUE
+        previewButton.setVisible(false);
         
       }
     } else if(editable instanceof OCPanel) {
       ObjectClass oc = (ObjectClass)conceptEditorPanel.getNode().getUserObject();
       if(!StringUtil.isEmpty(oc.getPublicId())) {
-//         deleteButton.setEnabled(false);
-//         addButton.setEnabled(false);
         addButton.setVisible(false);
         deleteButton.setVisible(false);
         previewButton.setVisible(false);
       } else {
         addButton.setVisible(true);
         deleteButton.setVisible(true);
-        previewButton.setVisible(true);
+
+        // TEMP : Set back to TRUE
+        previewButton.setVisible(false);
       }
     } else if(editable == null) {
       addButton.setVisible(true);
       deleteButton.setVisible(true);
-      previewButton.setVisible(true);
+        // TEMP : Set back to TRUE
+      previewButton.setVisible(false);
     }
     if (!(conceptEditorPanel.getNode() instanceof AttributeNode)) {
         previewButton.setVisible(false);
@@ -335,7 +344,9 @@ public class ButtonPanel extends JPanel implements ActionListener,
         }
         addButton.setVisible(true);
         deleteButton.setVisible(true);
-        previewButton.setVisible(true);
+
+        // TEMP : Set back to true
+        previewButton.setVisible(false);
       } else if(switchButton.getText().equals(SWITCH_TO_OC)) {
          ((UMLElementViewPanel)viewPanel).switchCards(UMLElementViewPanel.OC_PANEL_KEY);
          switchButton.setText(SWITCH_TO_CONCEPT);
@@ -347,6 +358,12 @@ public class ButtonPanel extends JPanel implements ActionListener,
       ReviewEvent event = new ReviewEvent();
       event.setUserObject(conceptEditorPanel.getNode()); 
       event.setReviewed(reviewButton.isSelected());
+
+      if(runMode.equals(RunMode.Reviewer)) {
+        event.setType(ReviewEventType.ModelOwner);
+      } else if (runMode.equals(RunMode.Curator)) {
+        event.setType(ReviewEventType.Curator);
+      } else return;
 
       fireReviewEvent(event);
       

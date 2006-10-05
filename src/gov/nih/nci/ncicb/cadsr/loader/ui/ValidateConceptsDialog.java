@@ -2,6 +2,8 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTrackerType;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
@@ -9,6 +11,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ConceptValidator;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItem;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
@@ -75,7 +78,7 @@ public class ValidateConceptsDialog extends JDialog
   
   private List<SearchListener> searchListeners = new ArrayList();
   
-  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+  private ReviewTracker reviewTracker;
   
   private Map<String,EvsResult> cacheByConceptCode = new HashMap<String,EvsResult>();
   private Map<String,Collection<EvsResult>> cacheByPreferredName = new HashMap<String,Collection<EvsResult>>();
@@ -83,8 +86,15 @@ public class ValidateConceptsDialog extends JDialog
   public ValidateConceptsDialog(JFrame owner)
   {
     super(owner, "Validate Concepts");
-    this.getContentPane().setLayout(new BorderLayout());
 
+    RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
+    if(runMode.equals(RunMode.Curator)) {
+      reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
+    } else {
+      reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner);
+    }
+
+    this.getContentPane().setLayout(new BorderLayout());
 
     SwingWorker worker = new SwingWorker() {
       public Object construct() {    

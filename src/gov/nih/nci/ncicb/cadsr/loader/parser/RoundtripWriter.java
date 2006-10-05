@@ -44,6 +44,8 @@ import org.apache.log4j.Logger;
 /**
  * A writer for XMI files 
  *
+ *
+ * @deprecated no longer maintained as of 3.2
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
 public class RoundtripWriter implements ElementWriter {
@@ -61,7 +63,7 @@ public class RoundtripWriter implements ElementWriter {
 
   private ElementsLists elementsList = null;
 
-  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+  private ReviewTracker reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner);
   private ChangeTracker changeTracker = ChangeTracker.getInstance();
 
   private ProgressListener progressListener = null;

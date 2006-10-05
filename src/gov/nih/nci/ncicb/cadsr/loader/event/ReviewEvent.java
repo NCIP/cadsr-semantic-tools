@@ -30,13 +30,17 @@ public class ReviewEvent {
   private boolean reviewed;
 
   /**
+   * Describe type here.
+   */
+  private ReviewEventType type;
+
+  /**
    * Get the UserObject value.
    * @return the UserObject value.
    */
   public Object getUserObject() {
     return userObject;
   }
-
 
   /**
    * Get the IsReviewed value.
@@ -47,14 +51,30 @@ public class ReviewEvent {
   }
 
   /**
+   * Get the <code>Type</code> value.
+   *
+   * @return a <code>ReviewEventType</code> value
+   */
+  public ReviewEventType getType() {
+    return type;
+  }
+
+  /**
+   * Set the <code>Type</code> value.
+   *
+   * @param newType The new Type value.
+   */
+  public void setType(final ReviewEventType newType) {
+    this.type = newType;
+  }
+
+  /**
    * Set the IsReviewed value.
    * @param newIsReviewed The new IsReviewed value.
    */
   public void setReviewed(boolean reviewed) {
     this.reviewed = reviewed;
   }
-
-  
 
   /**
    * Set the UserObject value.

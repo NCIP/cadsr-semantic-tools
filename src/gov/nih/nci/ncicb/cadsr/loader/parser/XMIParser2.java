@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 
@@ -59,7 +60,8 @@ public class XMIParser2 implements Parser {
   Map<String, NewGeneralizationEvent> childGeneralizationMap = 
     new HashMap<String, NewGeneralizationEvent>();
 
-
+  private String reviewTag = null;
+  
   private ProgressListener progressListener = null;
 
   public final static String VD_STEREOTYPE = "CADSR Value Domain";
@@ -137,7 +139,11 @@ public class XMIParser2 implements Parser {
    */
   public static final String TV_DOCUMENTATION = "documentation";
   public static final String TV_DESCRIPTION = "description";
-  public static final String TV_HUMAN_REVIEWED = "HUMAN_REVIEWED";
+
+  // replaced by type specific review tags
+  //   public static final String TV_HUMAN_REVIEWED = "HUMAN_REVIEWED";
+  public static final String TV_OWNER_REVIEWED = "OWNER_REVIEWED";
+  public static final String TV_CURATOR_REVIEWED = "CURATOR_REVIEWED";
 
   private int totalNumberOfElements = 0, currentElementIndex = 0;
 
@@ -156,6 +162,13 @@ public class XMIParser2 implements Parser {
 
   public void parse(String filename) throws ParserException {
     try {
+
+      RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
+      if(runMode.equals(RunMode.Curator)) {
+        reviewTag = TV_CURATOR_REVIEWED;
+      } else {
+        reviewTag = TV_OWNER_REVIEWED;
+      }
 
       long start = System.currentTimeMillis();
       
@@ -330,7 +343,7 @@ public class XMIParser2 implements Parser {
       event.setDescription(tv.getValue());
     }
 
-    tv = clazz.getTaggedValue(TV_HUMAN_REVIEWED);
+    tv = clazz.getTaggedValue(reviewTag);
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
@@ -398,7 +411,7 @@ public class XMIParser2 implements Parser {
     }
 
 
-    tv = clazz.getTaggedValue(TV_HUMAN_REVIEWED);
+    tv = clazz.getTaggedValue(reviewTag);
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
@@ -479,7 +492,7 @@ public class XMIParser2 implements Parser {
       }
     }
 
-    tv = att.getTaggedValue(TV_HUMAN_REVIEWED);
+    tv = att.getTaggedValue(reviewTag);
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
@@ -527,7 +540,7 @@ public class XMIParser2 implements Parser {
     evt.setStatus(currentElementIndex);
     fireProgressEvent(evt);
 
-    UMLTaggedValue tv = att.getTaggedValue(TV_HUMAN_REVIEWED);
+    UMLTaggedValue tv = att.getTaggedValue(reviewTag);
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }

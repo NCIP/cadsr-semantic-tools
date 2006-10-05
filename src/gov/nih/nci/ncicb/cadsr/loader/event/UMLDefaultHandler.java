@@ -30,6 +30,8 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
 
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTrackerType;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationError;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
 
@@ -48,7 +50,7 @@ public class UMLDefaultHandler
   private Logger logger = Logger.getLogger(UMLDefaultHandler.class.getName());
   private List packageList = new ArrayList();
   
-  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+  private ReviewTracker reviewTracker;
 
   private CadsrModule cadsrModule;
 
@@ -59,6 +61,14 @@ public class UMLDefaultHandler
   
   public UMLDefaultHandler() {
     this.elements = ElementsLists.getInstance();
+
+    RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
+    if(runMode.equals(RunMode.Curator)) {
+      reviewTracker = reviewTracker.getInstance(ReviewTrackerType.Curator);
+    } else {
+      reviewTracker = reviewTracker.getInstance(ReviewTrackerType.Owner);
+    }
+    
   }
 
   public void newPackage(NewPackageEvent event) {

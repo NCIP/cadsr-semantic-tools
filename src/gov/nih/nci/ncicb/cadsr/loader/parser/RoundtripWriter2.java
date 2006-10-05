@@ -51,7 +51,9 @@ public class RoundtripWriter2 implements ElementWriter {
 
   private ElementsLists elementsList = null;
 
-  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+  private ReviewTracker ownerReviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner), 
+    curatorReviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
+
   private ChangeTracker changeTracker = ChangeTracker.getInstance();
 
   private ProgressListener progressListener = null;

@@ -25,6 +25,7 @@ import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.domain.Property;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTrackerType;
 import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import java.io.File;
@@ -36,13 +37,14 @@ import java.util.List;
 /**
  * A writer for CSV files 
  *
+ * @deprecated no longer maintained as of 3.2
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
 public class CSVWriter implements ElementWriter
 {
   private DataFile write;
   private File report;
-  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+  private ReviewTracker reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
  
   public void setOutput(String url) 
   {

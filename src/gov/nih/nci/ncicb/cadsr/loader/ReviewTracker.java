@@ -32,12 +32,24 @@ public class ReviewTracker implements ReviewListener
 {
   private HashMap<String, Boolean> reviewed = new HashMap(); 
 
-  private static ReviewTracker instance = new ReviewTracker();
+  private static ReviewTracker curatorReviewed, modelerReviewed;
+
   private ReviewTracker() {
 
   }
-  public static ReviewTracker getInstance() {
-    return instance;
+
+  public static ReviewTracker getInstance(ReviewTrackerType type) {
+    if(type.equals(ReviewTrackerType.Curator)) {
+      if(curatorReviewed == null)
+        curatorReviewed = new ReviewTracker();
+      return curatorReviewed;
+    } else if(type.equals(ReviewTrackerType.Owner)) {
+      if(modelerReviewed == null)
+        modelerReviewed = new ReviewTracker();
+      return modelerReviewed;
+    }      
+
+    throw new IllegalArgumentException("Wrong type: " + type.toString());
   }
   
   public Boolean get(String key) 

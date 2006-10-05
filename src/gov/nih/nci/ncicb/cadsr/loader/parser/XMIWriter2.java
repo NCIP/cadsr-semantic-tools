@@ -26,6 +26,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.NewConceptEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 
 import gov.nih.nci.ncicb.xmiinout.handler.*;
 import gov.nih.nci.ncicb.xmiinout.domain.*;
@@ -49,7 +50,9 @@ public class XMIWriter2 implements ElementWriter {
 
   private ElementsLists cadsrObjects = null;
 
-  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+  private ReviewTracker ownerReviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner), 
+    curatorReviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
+
   private ChangeTracker changeTracker = ChangeTracker.getInstance();
 
   private ProgressListener progressListener;
@@ -58,38 +61,19 @@ public class XMIWriter2 implements ElementWriter {
   private XmiInOutHandler handler = null;
 
   public XMIWriter2() {
-    try {
-
-//       handler = (XmiInOutHandler)(UserSelections.getInstance().getProperty("XMI_HANDLER"));
-//       handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
-      
-
-    } catch (Exception ex) {
-      throw new RuntimeException("Error initializing model", ex);
-    }
   }
 
   public void write(ElementsLists elements) throws ParserException {
     try {
-//       String input = (String)userSelections.getProperty("FILENAME");
-//       String s = input.replaceAll("\\ ", "%20");
-    
-//       // Some file systems use absolute URIs that do 
-//       // not start with '/'. 
-//       if(!s.startsWith("/"))
-//         s = "/" + s;    
-//       java.net.URI uri = new java.net.URI("file://" + s);
-//       handler.load(uri);
       handler = (XmiInOutHandler)(UserSelections.getInstance().getProperty("XMI_HANDLER"));
 
       model = handler.getModel("EA Model");
-
-//       model = (UMLModel)(UserSelections.getInstance().getProperty("UML_MODEL"));
 
       this.cadsrObjects = elements;
     
       sendProgressEvent(0, 0, "Parsing Model");
       readModel();
+      doReviewTagLogic();
       sendProgressEvent(0, 0, "Marking Human reviewed");
       markHumanReviewed();
       sendProgressEvent(0, 0, "Updating Elements");
@@ -281,40 +265,110 @@ public class XMIWriter2 implements ElementWriter {
         (tvName,
          con.getLongName());
   }
+
+  // applys logic where if an element is modified by a Curator, the Owner's review tag becomes false, if it's modified by the owner, the Curator's tag becomes unchecked.
+  private void doReviewTagLogic() {
+    RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
+    ReviewTracker tracker = null;
+    if(runMode.equals(RunMode.Curator)) {
+      tracker = ownerReviewTracker; 
+    } else {
+      tracker = curatorReviewTracker;
+    }
+
+    List<DataElement> des = cadsrObjects.getElements(DomainObjectFactory.newDataElement());
+    List<ValueDomain> vds = cadsrObjects.getElements(DomainObjectFactory.newValueDomain());
+
+    for(DataElement de : des) {
+      DataElementConcept dec = de.getDataElementConcept();
+      String fullPropName = null;
+      
+      for(AlternateName an : de.getAlternateNames()) {
+        if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
+          fullPropName = an.getName();
+      }
+      
+      boolean changed = changeTracker.get(fullPropName);
+      if(changed) {
+        ReviewEvent event = new ReviewEvent();
+        event.setUserObject(de); 
+        event.setReviewed(false);
+        tracker.reviewChanged(event);
+      }
+    }
+
+  }
   
   private void markHumanReviewed() throws ParserException {
     try{ 
       List<ObjectClass> ocs = (List<ObjectClass>)cadsrObjects.getElements(DomainObjectFactory.newObjectClass().getClass());
       List<DataElementConcept> decs = (List<DataElementConcept>) cadsrObjects.getElements(DomainObjectFactory.newDataElementConcept().getClass());
+      List<ValueDomain> vds = cadsrObjects.getElements(DomainObjectFactory.newValueDomain());
       
-      for(ObjectClass oc : ocs) {
-        String fullClassName = null;
-        for(AlternateName an : oc.getAlternateNames()) {
-          if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
-            fullClassName = an.getName();
-        }
+//       for(ObjectClass oc : ocs) {
+//         String fullClassName = null;
+//         for(AlternateName an : oc.getAlternateNames()) {
+//           if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+//             fullClassName = an.getName();
+//         }
 
-        UMLClass clazz = classMap.get(fullClassName);
+//         UMLClass clazz = classMap.get(fullClassName);
 
-        clazz.removeTaggedValue(XMIParser2.TV_HUMAN_REVIEWED);
-        boolean reviewed = reviewTracker.get(fullClassName);
-        clazz.addTaggedValue(XMIParser2.TV_HUMAN_REVIEWED, reviewed?"1":"0");
-      }
+//         clazz.removeTaggedValue(XMIParser2.TV_HUMAN_REVIEWED);
+//         boolean reviewed = reviewTracker.get(fullClassName);
+//         clazz.addTaggedValue(XMIParser2.TV_HUMAN_REVIEWED, reviewed?"1":"0");
+//       }
 
       for(DataElementConcept dec : decs) {
         String fullPropName = dec.getObjectClass().getLongName() + "." + dec.getProperty().getLongName();
         
-        Boolean reviewed = reviewTracker.get(fullPropName);
+        Boolean reviewed = ownerReviewTracker.get(fullPropName);
         if(reviewed == null) {
           continue;
         }
-        
         UMLAttribute umlAtt = attributeMap.get(fullPropName);
-        umlAtt.removeTaggedValue(XMIParser2.TV_HUMAN_REVIEWED);
-        
-        umlAtt.addTaggedValue(XMIParser2.TV_HUMAN_REVIEWED,
+        umlAtt.removeTaggedValue(XMIParser2.TV_OWNER_REVIEWED);
+        umlAtt.addTaggedValue(XMIParser2.TV_OWNER_REVIEWED,
                               reviewed?"1":"0");
+
+        reviewed = curatorReviewTracker.get(fullPropName);
+        if(reviewed == null) {
+          continue;
+        }
+        umlAtt = attributeMap.get(fullPropName);
+        umlAtt.removeTaggedValue(XMIParser2.TV_CURATOR_REVIEWED);
+        umlAtt.addTaggedValue(XMIParser2.TV_CURATOR_REVIEWED,
+                              reviewed?"1":"0");
+
       }
+
+      for(ValueDomain vd : vds) {
+        for(PermissibleValue pv : vd.getPermissibleValues()) {
+          ValueMeaning vm = pv.getValueMeaning();
+          String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getShortMeaning();
+          UMLAttribute att = attributeMap.get(fullPropName);
+
+          Boolean reviewed = ownerReviewTracker.get(fullPropName);
+          if(reviewed == null) {
+            continue;
+          }
+          UMLAttribute umlAtt = attributeMap.get(fullPropName);
+          umlAtt.removeTaggedValue(XMIParser2.TV_OWNER_REVIEWED);
+          umlAtt.addTaggedValue(XMIParser2.TV_OWNER_REVIEWED,
+                                reviewed?"1":"0");
+          
+          reviewed = curatorReviewTracker.get(fullPropName);
+          if(reviewed == null) {
+            continue;
+          }
+          umlAtt = attributeMap.get(fullPropName);
+          umlAtt.removeTaggedValue(XMIParser2.TV_CURATOR_REVIEWED);
+          umlAtt.addTaggedValue(XMIParser2.TV_CURATOR_REVIEWED,
+                                reviewed?"1":"0");
+          
+        }
+      }
+
     } catch (RuntimeException e) {
       throw new ParserException(e);
     }

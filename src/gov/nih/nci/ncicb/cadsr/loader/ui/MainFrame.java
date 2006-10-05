@@ -113,7 +113,7 @@ public class MainFrame extends JFrame
   private AssociationViewPanel associationViewPanel = null;
   private ValueDomainViewPanel vdViewPanel = null;
 
-  private ReviewTracker reviewTracker = ReviewTracker.getInstance();
+  private ReviewTracker reviewTracker;
 
   private RunMode runMode = null;
 
@@ -131,6 +131,12 @@ public class MainFrame extends JFrame
     UserSelections selections = UserSelections.getInstance();
     
     runMode = (RunMode)(selections.getProperty("MODE"));
+
+    if(runMode.equals(RunMode.Curator))
+      reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
+    else 
+      reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner);
+
     saveFilename = (String)selections.getProperty("FILENAME");
 
     jbInit();
