@@ -28,6 +28,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
 import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
 import gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog;
 import gov.nih.nci.ncicb.cadsr.loader.ui.DEReuseDialog;
+import gov.nih.nci.ncicb.cadsr.loader.ui.WizardController;
 import gov.nih.nci.ncicb.cadsr.loader.validator.Validator;
 import gov.nih.nci.ncicb.cadsr.semconn.SemanticConnector;
 
@@ -64,6 +65,10 @@ public class BeansAccessor {
     return (UMLLoaderGUI)getFactory().getBean("siw");
   }
 
+  public static WizardController getWizardController() {
+    return (WizardController)getFactory().getBean("wizardController");
+  }
+  
   public static UMLLoader getUmlLoader() {
     return (UMLLoader)getFactory().getBean("umlLoader");
   }
