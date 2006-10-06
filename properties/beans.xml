@@ -40,6 +40,9 @@
     <property name="xmiParser">
       <ref bean="xmiParser2"/>
     </property>
+    <property name="validator">
+      <ref bean="mainValidator"/>
+    </property>
   </bean>
 
   <bean name="semanticConnector"
