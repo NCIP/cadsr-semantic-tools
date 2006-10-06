@@ -44,7 +44,7 @@ import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
  * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
  */
 public class UMLDefaultHandler 
-  implements UMLHandler, CadsrModuleListener {
+  implements UMLHandler, CadsrModuleListener, RunModeListener {
 
   private ElementsLists elements;
   private Logger logger = Logger.getLogger(UMLDefaultHandler.class.getName());
@@ -61,14 +61,14 @@ public class UMLDefaultHandler
   
   public UMLDefaultHandler() {
     this.elements = ElementsLists.getInstance();
+  }
 
-    RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
+  public void setRunMode(RunMode runMode) {
     if(runMode.equals(RunMode.Curator)) {
       reviewTracker = reviewTracker.getInstance(ReviewTrackerType.Curator);
     } else {
       reviewTracker = reviewTracker.getInstance(ReviewTrackerType.Owner);
     }
-    
   }
 
   public void newPackage(NewPackageEvent event) {
