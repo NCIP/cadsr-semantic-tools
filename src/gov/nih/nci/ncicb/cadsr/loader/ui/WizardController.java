@@ -67,15 +67,17 @@ public class WizardController implements ActionListener {
   private UserSelections userSelections = UserSelections.getInstance();
 
   private UserPreferences prefs = UserPreferences.getInstance();
-    /**
-     * This constructor accepts a reference to the Wizard component that created it,
-     * which it uses to update the button components and access the WizardModel.
-     * @param w A callback to the Wizard component that created this controller.
-     */    
-    public WizardController(Wizard w) {
-      wizard = w;
 
-    }
+  private java.util.List<RunModeListener> runModeListeners = new ArrayList<RunModeListener>();
+
+  public WizardController() {}
+
+  /**
+   * @param w A callback to the Wizard component that created this controller.
+   */
+  public void setWizard(Wizard w) {
+    wizard = w;
+  }
   
     /**
      * Calling method for the action listener interface. This class listens for actions
@@ -111,6 +113,7 @@ public class WizardController implements ActionListener {
         
         mode = Enum.valueOf(RunMode.class, panel.getSelection());
         
+        fireNewRunMode(mode);
         userSelections.setProperty("MODE", mode);
         
         prefs.setModeSelection(mode.toString());
@@ -477,6 +480,15 @@ public class WizardController implements ActionListener {
             model.setNextButtonText(Wizard.DEFAULT_NEXT_BUTTON_TEXT);
         
     }
+
+  public void setRunModeListeners(java.util.List<RunModeListener> listeners) {
+    this.runModeListeners = listeners;
+  }
+
+  private void fireNewRunMode(RunMode runMode) {
+    for(RunModeListener l : runModeListeners)
+      l.setRunMode(runMode);
+  }
     
   private void putToCenter(Component comp) {
     comp.setLocation((screenSize.width - comp.getSize().width) / 2, (screenSize.height - comp.getSize().height) / 2);

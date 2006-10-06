@@ -8,6 +8,9 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
+
+
 /**
  * This class implements a basic wizard dialog, where the programmer can
  * insert one or more Components to act as panels. These panels can be navigated
@@ -330,7 +333,9 @@ public class Wizard implements PropertyChangeListener {
     private void initComponents() {
 
         wizardModel.addPropertyChangeListener(this);       
-        wizardController = new WizardController(this);       
+        
+        wizardController = BeansAccessor.getWizardController();
+        wizardController.setWizard(this);
 
         wizardDialog.getContentPane().setLayout(new BorderLayout());
                 
