@@ -70,6 +70,10 @@ public class WizardController implements ActionListener {
 
   private java.util.List<RunModeListener> runModeListeners = new ArrayList<RunModeListener>();
 
+  private Parser xmiParser = null;
+  private RoundtripAction roundtripAction = null;
+  private Validator validator = null;
+
   public WizardController() {}
 
   /**
@@ -190,151 +194,117 @@ public class WizardController implements ActionListener {
             .getPanelDescriptor(ProgressFileSelectionPanelDescriptor.IDENTIFIER);
 
 
-          if(mode.equals(RunMode.FixEa)) {
-            SwingWorker worker = new SwingWorker() {
-                public Object construct() {
-                  ProgressEvent evt = new ProgressEvent();
-                  
-                  SemanticConnectorUtil semConn = new SemanticConnectorUtil();
-                  semConn.addProgressListener(progressDesc);
-                  
-                  evt.setMessage("Removing Unnecessary tags from XMI ...");
-                  progressDesc.newProgressEvent(evt);
-                  String outputXmi = semConn.fixXmi(filename);
-
-                  System.out.println("done");
-
-//                  evt.setGoal(100);
-//                  evt.setMessage("Done");
-//                  evt.setStatus(100);
-                  evt.setCompleted(true);
-                  progressDesc.newProgressEvent(evt);
-                  
-                  reportPanel.setOutputText("Fix Ea was run on file:<br>" + filename + "<br><br>Output file can be found here:<br>" + outputXmi);
-                  return null;
-                }
-              };
-            worker.start(); 
-          } else if(mode.equals(RunMode.GenerateReport)) {
-            SwingWorker worker = new SwingWorker() {
-                public Object construct() {
-                  try {
-                    ProgressEvent evt = new ProgressEvent();
-
-                    String filenameNoExt = filename.substring(filename.lastIndexOf("/")+1);
-                    String inputXmi = filename;
-                    
-                    SemanticConnector sem = BeansAccessor.getSemanticConnector();
-                    sem.setProgressListener(progressDesc);
-
-//                    if(!filenameNoExt.startsWith("fixed_")) {
-//                      reportPanel.setOutputText("The name of the XMI file must start with 'fixed_'. It does not. <br> Please ensure you have run the Fix EA task first.");
-//                      return null;
-//                    }
-
-                    evt.setMessage("Creating Semantic Connector Report. This may take a minute ...");
-                    progressDesc.newProgressEvent(evt);
-                    String outputXmi = inputXmi.substring(0, inputXmi.lastIndexOf("/") + 1)
-                        + "FirstPass_" 
-                        + inputXmi.substring(inputXmi.lastIndexOf("/") + 1, inputXmi.lastIndexOf("."))
-                        + ".xmi";
-                    sem.firstPass(inputXmi, outputXmi);
-             
-                    reportPanel.setFiles(inputXmi, outputXmi);
-                    
-                    evt.setCompleted(true);
-                    progressDesc.newProgressEvent(evt);
-                  } catch (ParserException e){
-                    e.printStackTrace();
-                    reportPanel.setFiles(null, "An error occured.");
-                  } catch (Throwable t)  {// end of try-catch
-                    t.printStackTrace();
-                  }
-                  return null;
-                }
-              };
-            worker.start(); 
-          } else if(mode.equals(RunMode.AnnotateXMI)) {
-            SwingWorker worker = new SwingWorker() {
-                public Object construct() {
-                  try {
-                    ProgressEvent evt = new ProgressEvent();
-
-                    String filenameNoExt = filename.substring(filename.lastIndexOf("/")+1);
-                    String inputXmi = filename;
-                    
-                    SemanticConnectorUtil semConn = new SemanticConnectorUtil();
-                    semConn.addProgressListener(progressDesc);
-
-                    if(!filenameNoExt.startsWith("fixed_")) {
-                      reportPanel.setOutputText("The name of the XMI file should start with 'fixed_'. It does not. <br> Please ensure you have run the Fix EA task first.");
-                      return null;
-                    }
-
-                    File csvFile = new File(SemanticConnectorUtil.getCsvFilename(filename));
-                    if(!csvFile.exists()) {
-                      reportPanel.setOutputText("No EVS Report exist. Please create an EVS Report first <br><br> No Processing done.");
-                      return null;
-                    } else {
-                      evt.setMessage("Annotating XMI File ...");
-                      progressDesc.newProgressEvent(evt);
-                      outputFile = semConn.annotateXmi(inputXmi);
-                    }
-
-                    reportPanel.setFiles(inputXmi, outputFile);
-
-                  } catch (SemanticConnectorException e){
-                    e.printStackTrace();
-                    reportPanel.setFiles(null, "An error occured.");
-                  } catch (Throwable t)  {// end of try-catch
-                    t.printStackTrace();
-                  }
-                  return null;
-                }
-              };
-            worker.start(); 
-          }
-//           else if(mode.equals(RunMode.Curator)) {
+//           if(mode.equals(RunMode.FixEa)) {
 //             SwingWorker worker = new SwingWorker() {
 //                 public Object construct() {
-//                   try {
-//                     Parser parser = new CsvParser();
-//                     ElementsLists elements = ElementsLists.getInstance();
-//                     UMLHandler listener = BeansAccessor.getUMLHandler();
-//                     parser.setEventHandler(listener);
-//                     parser.addProgressListener(progressDesc);
-                    
-//                     UMLDefaults defaults = UMLDefaults.getInstance();
-//                     defaults.initParams(filename);
-                    
-//                     parser.parse(filename);
-                    
-//                     Validator validator = BeansAccessor.getValidator();
-//                     validator.validate();
-                    
-//                     TreeBuilder tb = TreeBuilder.getInstance();
-//                     tb.init();
-//                     tb.buildTree(elements);
+//                   ProgressEvent evt = new ProgressEvent();
+                  
+//                   SemanticConnectorUtil semConn = new SemanticConnectorUtil();
+//                   semConn.addProgressListener(progressDesc);
+                  
+//                   evt.setMessage("Removing Unnecessary tags from XMI ...");
+//                   progressDesc.newProgressEvent(evt);
+//                   String outputXmi = semConn.fixXmi(filename);
 
-//                     wizard.close(Wizard.FINISH_RETURN_CODE);
-                    
-//                     return null;
-//                   } catch (Exception e){
-//                     e.printStackTrace();
-//                     logger.error(e);
-//                     return null;
-//                   } // end of try-catch
+//                   System.out.println("done");
+
+// //                  evt.setGoal(100);
+// //                  evt.setMessage("Done");
+// //                  evt.setStatus(100);
+//                   evt.setCompleted(true);
+//                   progressDesc.newProgressEvent(evt);
+                  
+//                   reportPanel.setOutputText("Fix Ea was run on file:<br>" + filename + "<br><br>Output file can be found here:<br>" + outputXmi);
+//                   return null;
 //                 }
 //               };
 //             worker.start(); 
-//           } 
-          else if(mode.equals(RunMode.Roundtrip)) {
+//           } else 
+//           if(mode.equals(RunMode.GenerateReport)) {
+//             SwingWorker worker = new SwingWorker() {
+//                 public Object construct() {
+//                   try {
+//                     ProgressEvent evt = new ProgressEvent();
+
+//                     String filenameNoExt = filename.substring(filename.lastIndexOf("/")+1);
+//                     String inputXmi = filename;
+                    
+//                     SemanticConnector sem = BeansAccessor.getSemanticConnector();
+//                     sem.setProgressListener(progressDesc);
+
+// //                    if(!filenameNoExt.startsWith("fixed_")) {
+// //                      reportPanel.setOutputText("The name of the XMI file must start with 'fixed_'. It does not. <br> Please ensure you have run the Fix EA task first.");
+// //                      return null;
+// //                    }
+
+//                     evt.setMessage("Creating Semantic Connector Report. This may take a minute ...");
+//                     progressDesc.newProgressEvent(evt);
+//                     String outputXmi = inputXmi.substring(0, inputXmi.lastIndexOf("/") + 1)
+//                         + "FirstPass_" 
+//                         + inputXmi.substring(inputXmi.lastIndexOf("/") + 1, inputXmi.lastIndexOf("."))
+//                         + ".xmi";
+//                     sem.firstPass(inputXmi, outputXmi);
+             
+//                     reportPanel.setFiles(inputXmi, outputXmi);
+                    
+//                     evt.setCompleted(true);
+//                     progressDesc.newProgressEvent(evt);
+//                   } catch (ParserException e){
+//                     e.printStackTrace();
+//                     reportPanel.setFiles(null, "An error occured.");
+//                   } catch (Throwable t)  {// end of try-catch
+//                     t.printStackTrace();
+//                   }
+//                   return null;
+//                 }
+//               };
+//             worker.start(); 
+//           } else if(mode.equals(RunMode.AnnotateXMI)) {
+//             SwingWorker worker = new SwingWorker() {
+//                 public Object construct() {
+//                   try {
+//                     ProgressEvent evt = new ProgressEvent();
+
+//                     String filenameNoExt = filename.substring(filename.lastIndexOf("/")+1);
+//                     String inputXmi = filename;
+                    
+//                     SemanticConnectorUtil semConn = new SemanticConnectorUtil();
+//                     semConn.addProgressListener(progressDesc);
+
+//                     if(!filenameNoExt.startsWith("fixed_")) {
+//                       reportPanel.setOutputText("The name of the XMI file should start with 'fixed_'. It does not. <br> Please ensure you have run the Fix EA task first.");
+//                       return null;
+//                     }
+
+//                     File csvFile = new File(SemanticConnectorUtil.getCsvFilename(filename));
+//                     if(!csvFile.exists()) {
+//                       reportPanel.setOutputText("No EVS Report exist. Please create an EVS Report first <br><br> No Processing done.");
+//                       return null;
+//                     } else {
+//                       evt.setMessage("Annotating XMI File ...");
+//                       progressDesc.newProgressEvent(evt);
+//                       outputFile = semConn.annotateXmi(inputXmi);
+//                     }
+
+//                     reportPanel.setFiles(inputXmi, outputFile);
+
+//                   } catch (SemanticConnectorException e){
+//                     e.printStackTrace();
+//                     reportPanel.setFiles(null, "An error occured.");
+//                   } catch (Throwable t)  {// end of try-catch
+//                     t.printStackTrace();
+//                   }
+//                   return null;
+//                 }
+//               };
+//             worker.start(); 
+//           }
+//           else
+          if(mode.equals(RunMode.Roundtrip)) {
             SwingWorker worker = new SwingWorker() {
                 public Object construct() {
+//                   RoundtripAction roundtripAction = BeansAccessor.getRoundtripAction();
                   
-
-                  RoundtripAction roundtripAction = BeansAccessor.getRoundtripAction();
-
                   roundtripAction.addProgressListener(progressDesc);
 
                   String projectName = (String)userSelections.getProperty("PROJECT_NAME");
@@ -360,17 +330,16 @@ public class WizardController implements ActionListener {
                     if(mode.equals(RunMode.UnannotatedXmi))
                       userSelections.setProperty("HIDE_CONCEPT_ERRORS", new Boolean(true));
 
-                    XMIParser2 parser = new XMIParser2();
+//                     XMIParser2 parser = new XMIParser2();
                     ElementsLists elements = ElementsLists.getInstance();
-                    UMLHandler listener = BeansAccessor.getUMLHandler();
-                    parser.setEventHandler(listener);
-                    parser.addProgressListener(progressDesc);
+//                     UMLHandler listener = BeansAccessor.getUMLHandler();
+//                     parser.setEventHandler(listener);
+                    xmiParser.addProgressListener(progressDesc);
                     UMLDefaults defaults = UMLDefaults.getInstance();
                     defaults.initParams(filename);
                     
-                    parser.parse(filename);
+                    xmiParser.parse(filename);
                     
-                    Validator validator = BeansAccessor.getValidator();
                     validator.addProgressListener(progressDesc);
                     validator.validate();
 
@@ -492,6 +461,17 @@ public class WizardController implements ActionListener {
     
   private void putToCenter(Component comp) {
     comp.setLocation((screenSize.width - comp.getSize().width) / 2, (screenSize.height - comp.getSize().height) / 2);
+  }
+
+  public void setRountripAction(RoundtripAction action) {
+    this.roundtripAction = action;
+  }
+  public void setXmiParser(gov.nih.nci.ncicb.cadsr.loader.parser.Parser parser) {
+    this.xmiParser = parser;
+  }
+
+  public void setValidator(Validator validator) {
+    this.validator = validator;
   }
   
 }
