@@ -29,6 +29,16 @@
     <property name="userPreferences"><ref bean="usersPreferences"/></property>
   </bean>
 
+  <bean name="wizardController"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.WizardController"
+    >
+    <property name="runModeListeners">
+      <list>
+        <ref bean="umlEventHandler"/>
+      </list>
+    </property>
+  </bean>
+
   <bean name="semanticConnector"
     class="gov.nih.nci.ncicb.cadsr.semconn.SemanticConnector">
     <property name="parser"><ref bean="xmiSemConnParser"/></property>
