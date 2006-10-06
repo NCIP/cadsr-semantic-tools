@@ -37,6 +37,9 @@
         <ref bean="umlEventHandler"/>
       </list>
     </property>
+    <property name="xmiParser">
+      <ref bean="xmiParser2"/>
+    </property>
   </bean>
 
   <bean name="semanticConnector"
