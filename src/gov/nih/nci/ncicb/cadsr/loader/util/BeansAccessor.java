@@ -73,9 +73,9 @@ public class BeansAccessor {
     return (UMLLoader)getFactory().getBean("umlLoader");
   }
 
-  public static RoundtripAction getRoundtripAction() {
-    return (RoundtripAction)getFactory().getBean("roundtripAction");
-  }
+//   public static RoundtripAction getRoundtripAction() {
+//     return (RoundtripAction)getFactory().getBean("roundtripAction");
+//   }
 
   public static CadsrDialog getCadsrDEDialog() {
     return (CadsrDialog)getFactory().getBean("cadsrDEDialog");
@@ -89,13 +89,13 @@ public class BeansAccessor {
     return (DEReuseDialog)getFactory().getBean("deReuseDialog");
   }
 
-  public static Validator getValidator() {
-    return (Validator)getFactory().getBean("mainValidator");
-  }
+//   public static Validator getValidator() {
+//     return (Validator)getFactory().getBean("mainValidator");
+//   }
 
-  public static UMLHandler getUMLHandler() {
-    return (UMLHandler)getFactory().getBean("umlEventHandler");
-  }
+//   public static UMLHandler getUMLHandler() {
+//     return (UMLHandler)getFactory().getBean("umlEventHandler");
+//   }
 
   private static BeanFactory getFactory() {
     try {
