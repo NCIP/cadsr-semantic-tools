@@ -298,7 +298,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     if(button.getActionCommand().equals(SAVE)) {
       try {
         viewPanel.applyPressed();
-      } catch (ApplyException e){
+
         reviewButton.setEnabled(false);
         saveButton.setEnabled(false);
 
@@ -313,7 +313,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
         } else return;
         
         fireReviewEvent(event);
-
+      } catch (ApplyException e){
       } // end of try-catch
     } else if(button.getActionCommand().equals(ADD)) {
         conceptEditorPanel.addPressed();
