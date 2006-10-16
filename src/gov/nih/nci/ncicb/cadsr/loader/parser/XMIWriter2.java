@@ -305,19 +305,29 @@ public class XMIWriter2 implements ElementWriter {
       List<DataElementConcept> decs = (List<DataElementConcept>) cadsrObjects.getElements(DomainObjectFactory.newDataElementConcept().getClass());
       List<ValueDomain> vds = cadsrObjects.getElements(DomainObjectFactory.newValueDomain());
       
-//       for(ObjectClass oc : ocs) {
-//         String fullClassName = null;
-//         for(AlternateName an : oc.getAlternateNames()) {
-//           if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
-//             fullClassName = an.getName();
-//         }
+      for(ObjectClass oc : ocs) {
+        String fullClassName = null;
+        for(AlternateName an : oc.getAlternateNames()) {
+          if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+            fullClassName = an.getName();
+        }
 
-//         UMLClass clazz = classMap.get(fullClassName);
+        UMLClass clazz = classMap.get(fullClassName);
 
-//         clazz.removeTaggedValue(XMIParser2.TV_HUMAN_REVIEWED);
-//         boolean reviewed = reviewTracker.get(fullClassName);
-//         clazz.addTaggedValue(XMIParser2.TV_HUMAN_REVIEWED, reviewed?"1":"0");
-//       }
+        Boolean reviewed = ownerReviewTracker.get(fullClassName);
+        if(reviewed != null) {
+          clazz.removeTaggedValue(XMIParser2.TV_OWNER_REVIEWED);
+          clazz.addTaggedValue(XMIParser2.TV_OWNER_REVIEWED,
+                                reviewed?"1":"0");
+        }
+
+        reviewed = curatorReviewTracker.get(fullClassName);
+        if(reviewed != null) {
+          clazz.removeTaggedValue(XMIParser2.TV_CURATOR_REVIEWED);
+          clazz.addTaggedValue(XMIParser2.TV_CURATOR_REVIEWED,
+                                reviewed?"1":"0");
+        }
+      }
 
       for(DataElementConcept dec : decs) {
         String fullPropName = dec.getObjectClass().getLongName() + "." + dec.getProperty().getLongName();
