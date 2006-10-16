@@ -65,6 +65,8 @@ public class UMLLoaderGUI
   private MainFrame mainFrame;
 
   private Appender appender;
+
+  private List<RunModeListener> runModeListeners = new ArrayList<RunModeListener>();
   
   public UMLLoaderGUI()
   {
@@ -131,7 +133,7 @@ public class UMLLoaderGUI
     }
       
     RunMode mode = (RunMode)userSelections.getProperty("MODE");
-    //if(mode.equals(RunMode.GenerateReport))
+
     if(!(mode.equals(RunMode.Reviewer) || mode.equals(RunMode.Curator) || mode.equals(RunMode.UnannotatedXmi))) 
       System.exit(0);
 
@@ -183,8 +185,7 @@ public class UMLLoaderGUI
   public void setUserPreferences(UserPreferences preferences) {
 
   }
-
-
+  
   private void putToCenter(Component comp) {
     comp.setLocation((screenSize.width - comp.getSize().width) / 2, (screenSize.height - comp.getSize().height) / 2);
   }
