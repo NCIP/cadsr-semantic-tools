@@ -8,19 +8,13 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
-import gov.nih.nci.ncicb.cadsr.loader.*;
-
-import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
-import java.awt.event.ItemEvent;
 import java.util.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.*;
 
 public class UMLElementViewPanel extends JPanel
   implements NavigationListener, Editable {
@@ -190,9 +184,12 @@ public class UMLElementViewPanel extends JPanel
     {
      ((Editable)displayedPanel).applyPressed();
     }
-    
   }
-  
+    
+  public ConceptEditorPanel getConceptEditorPanel() {
+    return conceptEditorPanel;
+  }
+
 }
 
       

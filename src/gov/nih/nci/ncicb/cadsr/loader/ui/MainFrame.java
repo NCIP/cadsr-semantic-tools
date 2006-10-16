@@ -20,8 +20,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.ncicb.cadsr.loader.*;
-import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
 import gov.nih.nci.ncicb.cadsr.loader.parser.ParserException;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
@@ -35,10 +33,8 @@ import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import java.beans.PropertyChangeListener;
@@ -50,7 +46,6 @@ import javax.swing.*;
 import java.util.*;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
 import java.lang.reflect.Method;
@@ -81,6 +76,7 @@ public class MainFrame extends JFrame
   private JMenu elementMenu = new JMenu("Element");
   private JMenuItem applyMenuItem = new JMenuItem("Apply");
   private JMenuItem applyToAllMenuItem = new JMenuItem("Apply to All");
+  private JMenuItem previewReuseMenuItem = new JMenuItem("Preview DE Reuse");
 
 
   private JMenu runMenu = new JMenu("Run");
@@ -93,14 +89,12 @@ public class MainFrame extends JFrame
   private JMenuItem aboutMenuItem = new JMenuItem("About");
   private JMenuItem indexMenuItem = new JMenuItem("SIW on GForge");
 
-  private JMenuItem semanticConnectorMenuItem = new JMenuItem("Semantic Connector");
-
   private JSplitPane jSplitPane1 = new JSplitPane();
   private JSplitPane jSplitPane2 = new JSplitPane();
   private JTabbedPane jTabbedPane1 = new JTabbedPane();
   private CloseableTabbedPane viewTabbedPane = new CloseableTabbedPane();
-  private JPanel jPanel1 = new JPanel();
 
+  private DEReuseDialog reuseDialog;
   private NavigationPanel navigationPanel;
   private ErrorPanel errorPanel = null;
   private JPanel logPanel;
@@ -138,6 +132,8 @@ public class MainFrame extends JFrame
 
     saveFilename = (String)selections.getProperty("FILENAME");
 
+    this.reuseDialog = BeansAccessor.getDEReuseDialog();
+    
     jbInit();
   }
 
@@ -173,8 +169,7 @@ public class MainFrame extends JFrame
       infoLabel.setText("Export Errors Complete");
     } else if(evt.getPropertyName().equals("EXPORT_ERRORS_FAILED")) {
       infoLabel.setText("Export Errors Failed !");
-    }
-    
+    } 
   }
 
   private void jbInit() {
@@ -211,8 +206,10 @@ public class MainFrame extends JFrame
 
     applyMenuItem.setEnabled(false);
     applyToAllMenuItem.setEnabled(false);
+    previewReuseMenuItem.setEnabled(false);
     elementMenu.add(applyMenuItem);
     elementMenu.add(applyToAllMenuItem);
+    elementMenu.add(previewReuseMenuItem);
     mainMenuBar.add(elementMenu);
 
 //     runMenu.add(validateMenuItem);
@@ -435,6 +432,22 @@ public class MainFrame extends JFrame
         }
       });
 
+    previewReuseMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+            UMLElementViewPanel viewPanel =
+                (UMLElementViewPanel)viewTabbedPane
+                .getSelectedComponent();
+
+            // update dialog with current node
+            reuseDialog.init(viewPanel.getConceptEditorPanel().getNode());
+            UIUtil.putToCenter(reuseDialog);
+            reuseDialog.setVisible(true);
+        }
+      });
+
+    previewReuseMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,    
+      Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    
     aboutMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
           new AboutPanel();
@@ -476,6 +489,9 @@ public class MainFrame extends JFrame
   }
 
   public void viewChanged(ViewChangeEvent event) {
+      
+    previewReuseMenuItem.setEnabled(false);
+
     if(event.getType() == ViewChangeEvent.VIEW_CONCEPTS
         || event.getType() == ViewChangeEvent.VIEW_VALUE_MEANING) {
       UMLNode node = (UMLNode)event.getViewObject();
@@ -487,12 +503,18 @@ public class MainFrame extends JFrame
         return;
       }
 
-
+      if (node instanceof AttributeNode) {
+          DataElement de = (DataElement)node.getUserObject();
+          if (StringUtil.isEmpty(de.getPublicId())) {
+              previewReuseMenuItem.setEnabled(true);
+          }
+      }
+      
       if((event.getInNewTab() == true) || (viewPanels.size() == 0)
           || viewTabbedPane.getSelectedComponent() instanceof AssociationViewPanel
           || viewTabbedPane.getSelectedComponent() instanceof ValueDomainViewPanel) {
         UMLElementViewPanel viewPanel = new UMLElementViewPanel(node);
-        
+
         viewPanel.addPropertyChangeListener(this);
         viewPanel.addReviewListener(navigationPanel);
         viewPanel.addReviewListener(ownerTracker);
@@ -517,7 +539,7 @@ public class MainFrame extends JFrame
           viewTabbedPane.getSelectedComponent();
         viewPanels.remove(viewPanel.getName());
              
-        String tabTitle = node.getDisplay();;
+        String tabTitle = node.getDisplay();
         if(node instanceof AttributeNode) 
           tabTitle = node.getParent().getDisplay() 
             + "." + tabTitle;
@@ -525,6 +547,7 @@ public class MainFrame extends JFrame
 
         viewPanel.setName(node.getFullPath());
         viewPanel.updateNode(node);
+        
         viewPanels.put(viewPanel.getName(), viewPanel);
         infoLabel.setText(tabTitle);
       }
