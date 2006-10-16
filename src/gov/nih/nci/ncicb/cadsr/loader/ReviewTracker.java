@@ -19,6 +19,7 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEventType;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AbstractUMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
@@ -32,20 +33,23 @@ public class ReviewTracker implements ReviewListener
 {
   private HashMap<String, Boolean> reviewed = new HashMap(); 
 
-  private static ReviewTracker curatorReviewed, modelerReviewed;
+  private static ReviewTracker curatorReviewed, modelerReviewed; 
+  private ReviewTrackerType trackerType;
 
-  private ReviewTracker() {
-
+  private ReviewTracker(ReviewTrackerType type) {
+    this.trackerType = type;
   }
 
   public static ReviewTracker getInstance(ReviewTrackerType type) {
     if(type.equals(ReviewTrackerType.Curator)) {
       if(curatorReviewed == null)
-        curatorReviewed = new ReviewTracker();
+        curatorReviewed = new ReviewTracker(type);
       return curatorReviewed;
+
+
     } else if(type.equals(ReviewTrackerType.Owner)) {
       if(modelerReviewed == null)
-        modelerReviewed = new ReviewTracker();
+        modelerReviewed = new ReviewTracker(type);
       return modelerReviewed;
     }      
 
@@ -62,16 +66,20 @@ public class ReviewTracker implements ReviewListener
     reviewed.put(key, value);
   }
   
-  public void reviewChanged(ReviewEvent event) 
-  {
-    AbstractUMLNode absNode = (AbstractUMLNode) event.getUserObject();
-    if(reviewed.get(absNode.getFullPath()) != null) 
-    {
-      reviewed.remove(absNode.getFullPath());
-      this.put(absNode.getFullPath(), event.isReviewed());
+  public void reviewChanged(ReviewEvent event) {
+    if((event.getType().equals(ReviewEventType.Owner) && trackerType.equals(ReviewTrackerType.Owner))
+       ||
+       (event.getType().equals(ReviewEventType.Curator) && trackerType.equals(ReviewTrackerType.Curator)
+        )) {
+      AbstractUMLNode absNode = (AbstractUMLNode) event.getUserObject();
+      if(reviewed.get(absNode.getFullPath()) != null) 
+        {
+          reviewed.remove(absNode.getFullPath());
+          this.put(absNode.getFullPath(), event.isReviewed());
+        }
+      else
+        this.put(absNode.getFullPath(), event.isReviewed());
     }
-    else
-      this.put(absNode.getFullPath(), event.isReviewed());
   }
-
+  
 }
