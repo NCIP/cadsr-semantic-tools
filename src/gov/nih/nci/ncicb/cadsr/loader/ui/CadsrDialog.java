@@ -341,7 +341,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     this.getContentPane().add(browsePanel, BorderLayout.SOUTH);
     this.setSize(600,525);
 
-    suggestButton.setVisible(false);
+    suggestButton.setVisible(true);
     
   }
   
