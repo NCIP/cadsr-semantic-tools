@@ -235,8 +235,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
         addButton.setVisible(true);
         deleteButton.setVisible(true);
 
-        // TEMP : Set back to TRUE
-        previewButton.setVisible(false);
+        previewButton.setVisible(true);
         
       }
     } else if(editable instanceof OCPanel) {
@@ -249,14 +248,12 @@ public class ButtonPanel extends JPanel implements ActionListener,
         addButton.setVisible(true);
         deleteButton.setVisible(true);
 
-        // TEMP : Set back to TRUE
-        previewButton.setVisible(false);
+        previewButton.setVisible(true);
       }
     } else if(editable == null) {
       addButton.setVisible(true);
       deleteButton.setVisible(true);
-        // TEMP : Set back to TRUE
-      previewButton.setVisible(false);
+      previewButton.setVisible(true);
     }
     if (!(conceptEditorPanel.getNode() instanceof AttributeNode)) {
         previewButton.setVisible(false);
@@ -264,6 +261,10 @@ public class ButtonPanel extends JPanel implements ActionListener,
     
   }
   
+  private void setPreviewReuseButtonState(boolean b) {
+    PropertyChangeEvent evt = new PropertyChangeEvent(this, SAVE, null, b);
+    firePropertyChangeEvent(evt);
+  }
   
   private void setSaveButtonState(boolean b) {
     saveButton.setEnabled(b);
@@ -358,8 +359,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
         addButton.setVisible(true);
         deleteButton.setVisible(true);
 
-        // TEMP : Set back to true
-        previewButton.setVisible(false);
+        previewButton.setVisible(true);
       } else if(switchButton.getText().equals(SWITCH_TO_OC)) {
          ((UMLElementViewPanel)viewPanel).switchCards(UMLElementViewPanel.OC_PANEL_KEY);
          switchButton.setText(SWITCH_TO_CONCEPT);
