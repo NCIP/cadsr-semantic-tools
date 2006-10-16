@@ -113,7 +113,7 @@ public class MainFrame extends JFrame
   private AssociationViewPanel associationViewPanel = null;
   private ValueDomainViewPanel vdViewPanel = null;
 
-  private ReviewTracker reviewTracker;
+  private ReviewTracker ownerTracker, curatorTracker;
 
   private RunMode runMode = null;
 
@@ -132,10 +132,9 @@ public class MainFrame extends JFrame
     
     runMode = (RunMode)(selections.getProperty("MODE"));
 
-    if(runMode.equals(RunMode.Curator))
-      reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
-    else 
-      reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner);
+//     if(runMode.equals(RunMode.Curator))
+    curatorTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
+    ownerTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner);
 
     saveFilename = (String)selections.getProperty("FILENAME");
 
@@ -496,7 +495,8 @@ public class MainFrame extends JFrame
         
         viewPanel.addPropertyChangeListener(this);
         viewPanel.addReviewListener(navigationPanel);
-        viewPanel.addReviewListener(reviewTracker);
+        viewPanel.addReviewListener(ownerTracker);
+        viewPanel.addReviewListener(curatorTracker);
         viewPanel.addElementChangeListener(ChangeTracker.getInstance());
         viewPanel.addNavigationListener(navigationPanel);
         navigationPanel.addNavigationListener(viewPanel);

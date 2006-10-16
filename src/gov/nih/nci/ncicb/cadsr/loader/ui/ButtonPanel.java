@@ -301,6 +301,19 @@ public class ButtonPanel extends JPanel implements ActionListener,
       } catch (ApplyException e){
         reviewButton.setEnabled(false);
         saveButton.setEnabled(false);
+
+        ReviewEvent event = new ReviewEvent();
+        event.setUserObject(conceptEditorPanel.getNode()); 
+        event.setReviewed(reviewButton.isSelected());
+        
+        if(runMode.equals(RunMode.Reviewer)) {
+          event.setType(ReviewEventType.Owner);
+        } else if (runMode.equals(RunMode.Curator)) {
+          event.setType(ReviewEventType.Curator);
+        } else return;
+        
+        fireReviewEvent(event);
+
       } // end of try-catch
     } else if(button.getActionCommand().equals(ADD)) {
         conceptEditorPanel.addPressed();
@@ -360,7 +373,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
       event.setReviewed(reviewButton.isSelected());
 
       if(runMode.equals(RunMode.Reviewer)) {
-        event.setType(ReviewEventType.ModelOwner);
+        event.setType(ReviewEventType.Owner);
       } else if (runMode.equals(RunMode.Curator)) {
         event.setType(ReviewEventType.Curator);
       } else return;
