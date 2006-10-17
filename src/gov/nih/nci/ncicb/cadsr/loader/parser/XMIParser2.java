@@ -132,7 +132,21 @@ public class XMIParser2 implements Parser {
    */
   public static final String TV_TYPE_VM = "ValueMeaning";
 
+  /**
+   * Association Role Tagged Value prepender. 
+   */
+  public static final String TV_TYPE_ASSOC_ROLE = "AssociationRole";
 
+  /**
+   * Association Source Tagged Value prepender. 
+   */
+  public static final String TV_TYPE_ASSOC_SOURCE = "AssociationSource";
+
+  /**
+   * Association Target Tagged Value prepender. 
+   */
+  public static final String TV_TYPE_ASSOC_TARGET = "AssociationTarget";
+  
 
   /**
    * Tagged Value name for Documentation
