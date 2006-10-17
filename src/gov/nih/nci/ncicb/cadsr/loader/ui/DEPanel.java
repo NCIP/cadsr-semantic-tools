@@ -292,8 +292,11 @@ public class DEPanel extends JPanel
         }
      }
 
-    firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
-
+    if(tempDE.getDataElementConcept() != null)
+      firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
+    else
+      firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, true));
+      
     firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false));
     
 
