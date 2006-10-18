@@ -355,6 +355,11 @@ public class XMIParser2 implements Parser {
     UMLTaggedValue tv = clazz.getTaggedValue(TV_DOCUMENTATION);
     if(tv != null) {
       event.setDescription(tv.getValue());
+    } else {
+      tv = att.getTaggedValue(TV_DESCRIPTION);
+      if(tv != null) {
+        event.setDescription(tv.getValue());
+      }
     }
 
     tv = clazz.getTaggedValue(reviewTag);
