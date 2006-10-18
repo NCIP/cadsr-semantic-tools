@@ -40,9 +40,9 @@ public class ValueMeaningNode
 
 
     public ValueMeaningNode(ValueMeaning vm, String vdName) {
-    display = vm.getShortMeaning();
+    display = vm.getLongName();
 
-    fullPath = "ValueDomains." + vdName + "." + vm.getShortMeaning();
+    fullPath = "ValueDomains." + vdName + "." + vm.getLongName();
 
     userObject = vm;
     

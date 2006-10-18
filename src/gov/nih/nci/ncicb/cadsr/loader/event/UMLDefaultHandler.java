@@ -111,12 +111,23 @@ public class UMLDefaultHandler
     
     List<Concept> concepts = createConcepts(event);
 
+//     // is the NO_CONCEPT in there? if so, forget concepts for this.
+//     boolean noConcept = false;
+//     for(Concept con : concepts) {
+//       if(con.getPreferredName().equals(NO_CONCEPT_CODE))
+//         noConcept = true;
+//     }
+
     ValueDomain vd = LookupUtil.lookupValueDomain(event.getValueDomainName());
 
     ValueMeaning vm = DomainObjectFactory.newValueMeaning();
-    vm.setShortMeaning(event.getName());
+    vm.setLongName(event.getName());
     
-    vm.setConceptDerivationRule(createConceptDerivationRule(concepts));
+//     if(noConcept) {
+//       vm.setConceptDerivationRule(createConceptDerivationRule(new ArrayList<Concepts>()));
+//     } else {
+      vm.setConceptDerivationRule(createConceptDerivationRule(concepts));
+//     }
 
     PermissibleValue pv = DomainObjectFactory.newPermissibleValue();
     pv.setValueMeaning(vm);

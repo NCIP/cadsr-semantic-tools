@@ -445,7 +445,7 @@ public class MainFrame extends JFrame
         }
       });
 
-    previewReuseMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,    
+    previewReuseMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,    
       Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     
     aboutMenuItem.addActionListener(new ActionListener() {

@@ -196,7 +196,7 @@ public class XMIWriter2 implements ElementWriter {
 
       for(PermissibleValue pv : vd.getPermissibleValues()) {
         ValueMeaning vm = pv.getValueMeaning();
-        String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getShortMeaning();
+        String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getLongName();
         UMLAttribute att = attributeMap.get(fullPropName);
           
         boolean changed = changeTracker.get(fullPropName);
@@ -353,7 +353,7 @@ public class XMIWriter2 implements ElementWriter {
       for(ValueDomain vd : vds) {
         for(PermissibleValue pv : vd.getPermissibleValues()) {
           ValueMeaning vm = pv.getValueMeaning();
-          String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getShortMeaning();
+          String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getLongName();
           UMLAttribute att = attributeMap.get(fullPropName);
 
           Boolean reviewed = ownerReviewTracker.get(fullPropName);

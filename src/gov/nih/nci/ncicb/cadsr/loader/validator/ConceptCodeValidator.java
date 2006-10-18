@@ -82,7 +82,7 @@ public class ConceptCodeValidator implements Validator {
           items.addItem
             (new ValidationError
              (PropertyAccessor.getProperty
-              ("vm.missing.concept", vm.getShortMeaning()), vm));
+              ("vm.missing.concept", vm.getLongName()), vm));
         else {
           checkConcepts(vm);
         }

@@ -324,7 +324,7 @@ public class XMIWriter implements ElementWriter {
 
         for(PermissibleValue pv : vd.getPermissibleValues()) {
           ValueMeaning vm = pv.getValueMeaning();
-          String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getShortMeaning();
+          String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getLongName();
           Element attributeElement = elements.get(fullPropName);
           
           boolean changed = changeTracker.get(fullPropName);
