@@ -25,6 +25,7 @@ public class SearchEvent
   boolean searchFromBottom;
   boolean searchByLongName;
   boolean searchFromBeginning;
+  boolean exactMatch = false;
   
   public SearchEvent(String find, boolean searchFromBottom, boolean searchByLongName,
     boolean searchFromBeginning)
@@ -54,4 +55,15 @@ public class SearchEvent
   {
     return searchFromBeginning;
   }
+  
+  public boolean getExactMatch() 
+  {
+    return exactMatch;
+  }
+  
+  public void setExactMatch(boolean match) 
+  {
+    exactMatch = match;
+  }
+  
 }
