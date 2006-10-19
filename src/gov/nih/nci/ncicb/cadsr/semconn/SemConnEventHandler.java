@@ -2,11 +2,18 @@ package gov.nih.nci.ncicb.cadsr.semconn;
 
 import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
 import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
+import gov.nih.nci.ncicb.cadsr.domain.ComponentConcept;
+import gov.nih.nci.ncicb.cadsr.domain.Concept;
+import gov.nih.nci.ncicb.cadsr.domain.ConceptDerivationRule;
+import gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.DataElementConcept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
+import gov.nih.nci.ncicb.cadsr.domain.PermissibleValue;
 import gov.nih.nci.ncicb.cadsr.domain.Property;
+import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
+import gov.nih.nci.ncicb.cadsr.domain.ValueMeaning;
 import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
@@ -15,6 +22,8 @@ import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.event.NewAssociationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.NewAttributeEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.NewClassEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewConceptEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.NewConceptualEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.NewDataTypeEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.NewGeneralizationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.NewInterfaceEvent;
@@ -27,7 +36,8 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.event.UMLHandler;
 
-import java.util.List;
+import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -89,8 +99,52 @@ public class SemConnEventHandler implements UMLHandler {
     elements.addElement(oc);
   }
   
-  public void newValueDomain(NewValueDomainEvent event) {}
-  public void newValueMeaning(NewValueMeaningEvent event) {}
+  public void newValueDomain(NewValueDomainEvent event) 
+  {
+    //List<Concept> concepts = createConcepts(event);
+
+    ValueDomain vd = DomainObjectFactory.newValueDomain();
+
+    vd.setLongName(event.getName());
+    vd.setPreferredDefinition(event.getDescription());
+    vd.setVdType(event.getType());
+    vd.setDataType(event.getDatatype());
+
+    //ConceptualDomain cd = DomainObjectFactory.newConceptualDomain();
+    //cd.setPublicId(event.getCdId());
+    //cd.setVersion(event.getCdVersion());
+
+    //vd.setConceptualDomain(cd);
+    
+    //     if(concepts.size() > 0)
+    //vd.setConceptDerivationRule(createConceptDerivationRule(concepts));
+
+    elements.addElement(vd);
+    reviewTracker.put(event.getName(), event.isReviewed());
+  }
+  public void newValueMeaning(NewValueMeaningEvent event) 
+  {
+     String vmName = event.getName();
+     
+     ValueDomain vd = LookupUtil.lookupValueDomain(event.getValueDomainName());
+     
+     ValueMeaning vm = DomainObjectFactory.newValueMeaning();
+     vm.setLongName(event.getName());
+     
+     //vm.setConceptDerivationRule(createConceptDerivationRule(concepts));
+     
+     PermissibleValue pv = DomainObjectFactory.newPermissibleValue();
+     pv.setValueMeaning(vm);
+     pv.setValue(event.getName());
+     
+     vd.addPermissibleValue(pv);
+     
+     elements.addElement(vm);
+     reviewTracker.put("ValueDomains." + event.getValueDomainName() + "." + event.getName(), event.isReviewed());
+     
+     Future<String> preferredName = termToPreferredName(vmName);
+     futures.add(new FutureName(vm, preferredName));     
+  }
   
   public void newAttribute(NewAttributeEvent event)
   {
@@ -130,6 +184,8 @@ public class SemConnEventHandler implements UMLHandler {
     
     dec.setObjectClass(oc);
     de.setDataElementConcept(dec);
+    
+    de.setValueDomain(DomainObjectFactory.newValueDomain());
     
     // Store alt Name for DE:
     // packageName.ClassName.PropertyName
@@ -190,6 +246,7 @@ public class SemConnEventHandler implements UMLHandler {
     }
   }
   
+
   /**
    * Returns a future preferred name for the specified term.
    */
