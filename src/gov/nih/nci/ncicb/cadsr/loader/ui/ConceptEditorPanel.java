@@ -272,8 +272,8 @@ public class ConceptEditorPanel extends JPanel
       new PropertyChangeEvent(this, ButtonPanel.ADD, null, true));
     firePropertyChangeEvent(
       new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, true));
-    firePropertyChangeEvent(
-      new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
+//    firePropertyChangeEvent(
+//      new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
 
     fireElementChangeEvent(new ElementChangeEvent(node));
   }
