@@ -614,15 +614,26 @@ public class NavigationPanel extends JPanel
           }
         else {
           //if there is a match then select that node in the tree
-          if((n.getDisplay().toLowerCase()).contains(event.getSearchString().toLowerCase())) 
-            {
-              path = new TreePath(selected.getPath());
-              tree.setSelectionPath(path);
-              tree.scrollPathToVisible(path);
-              newViewEvent(path);
-              break;        
-            }
-        }
+          if(event.getExactMatch()) {
+            if((n.getDisplay().toLowerCase()).equals(event.getSearchString().toLowerCase()))
+              {
+                path = new TreePath(selected.getPath());
+                tree.setSelectionPath(path);
+                tree.scrollPathToVisible(path);
+                newViewEvent(path);
+                break;        
+              }
+          }
+          else 
+            if((n.getDisplay().toLowerCase()).contains(event.getSearchString().toLowerCase())) 
+              {
+                path = new TreePath(selected.getPath());
+                tree.setSelectionPath(path);
+                tree.scrollPathToVisible(path);
+                newViewEvent(path);
+                break;        
+              }
+          }
         if(selected != null)
           selected = selected.getNextNode();
       }
