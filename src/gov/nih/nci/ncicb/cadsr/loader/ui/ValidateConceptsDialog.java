@@ -301,13 +301,16 @@ public class ValidateConceptsDialog extends JDialog
         if(split.length > 1) {
           className = split[0];
           SearchEvent searchEvent = new SearchEvent(className, false,false,true);
+          searchEvent.setExactMatch(true);
           fireSearchEvent(searchEvent);
           className = split[1];
           SearchEvent searchEvent2 = new SearchEvent(className, false,false,false);
+          searchEvent2.setExactMatch(true);
           fireSearchEvent(searchEvent2);
         }  
         else {
           SearchEvent searchEvent = new SearchEvent(className, false,false,true);
+          searchEvent.setExactMatch(true);
           fireSearchEvent(searchEvent);
         }
       }
