@@ -220,46 +220,42 @@ public class WizardController implements ActionListener {
 //               };
 //             worker.start(); 
 //           } else 
-//           if(mode.equals(RunMode.GenerateReport)) {
-//             SwingWorker worker = new SwingWorker() {
-//                 public Object construct() {
-//                   try {
-//                     ProgressEvent evt = new ProgressEvent();
+           if(mode.equals(RunMode.GenerateReport)) {
+             SwingWorker worker = new SwingWorker() {
+                 public Object construct() {
+                   try {
+                     ProgressEvent evt = new ProgressEvent();
 
-//                     String filenameNoExt = filename.substring(filename.lastIndexOf("/")+1);
-//                     String inputXmi = filename;
+                     String filenameNoExt = filename.substring(filename.lastIndexOf("/")+1);
+                     String inputXmi = filename;
                     
-//                     SemanticConnector sem = BeansAccessor.getSemanticConnector();
-//                     sem.setProgressListener(progressDesc);
+                     SemanticConnector sem = BeansAccessor.getSemanticConnector();
+                     sem.setProgressListener(progressDesc);
 
-// //                    if(!filenameNoExt.startsWith("fixed_")) {
-// //                      reportPanel.setOutputText("The name of the XMI file must start with 'fixed_'. It does not. <br> Please ensure you have run the Fix EA task first.");
-// //                      return null;
-// //                    }
-
-//                     evt.setMessage("Creating Semantic Connector Report. This may take a minute ...");
-//                     progressDesc.newProgressEvent(evt);
-//                     String outputXmi = inputXmi.substring(0, inputXmi.lastIndexOf("/") + 1)
-//                         + "FirstPass_" 
-//                         + inputXmi.substring(inputXmi.lastIndexOf("/") + 1, inputXmi.lastIndexOf("."))
-//                         + ".xmi";
-//                     sem.firstPass(inputXmi, outputXmi);
+                     evt.setMessage("Creating Semantic Connector Report. This may take a minute ...");
+                     progressDesc.newProgressEvent(evt);
+                     String outputXmi = inputXmi.substring(0, inputXmi.lastIndexOf("/") + 1)
+                         + "FirstPass_" 
+                         + inputXmi.substring(inputXmi.lastIndexOf("/") + 1, inputXmi.lastIndexOf("."))
+                         + ".xmi";
+                     sem.firstPass(inputXmi, outputXmi);
              
-//                     reportPanel.setFiles(inputXmi, outputXmi);
+                     reportPanel.setFiles(inputXmi, outputXmi);
                     
-//                     evt.setCompleted(true);
-//                     progressDesc.newProgressEvent(evt);
-//                   } catch (ParserException e){
-//                     e.printStackTrace();
-//                     reportPanel.setFiles(null, "An error occured.");
-//                   } catch (Throwable t)  {// end of try-catch
-//                     t.printStackTrace();
-//                   }
-//                   return null;
-//                 }
-//               };
-//             worker.start(); 
-//           } else if(mode.equals(RunMode.AnnotateXMI)) {
+                     evt.setCompleted(true);
+                     progressDesc.newProgressEvent(evt);
+                   } catch (ParserException e){
+                     e.printStackTrace();
+                     reportPanel.setFiles(null, "An error occured.");
+                   } catch (Throwable t)  {// end of try-catch
+                     t.printStackTrace();
+                   }
+                   return null;
+                 }
+               };
+             worker.start(); 
+           } else
+//           if(mode.equals(RunMode.AnnotateXMI)) {
 //             SwingWorker worker = new SwingWorker() {
 //                 public Object construct() {
 //                   try {
