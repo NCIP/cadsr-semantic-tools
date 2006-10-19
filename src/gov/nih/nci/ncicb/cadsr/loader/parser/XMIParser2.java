@@ -352,17 +352,17 @@ public class XMIParser2 implements Parser {
       return;
     }
 
-    UMLTaggedValue tv = clazz.getTaggedValue(TV_DOCUMENTATION);
-    if(tv != null) {
-      event.setDescription(tv.getValue());
+    String description = getDocumentation(clazz, TV_DOCUMENTATION);
+    if(description != null) {
+      event.setDescription(description);
     } else {
-      tv = att.getTaggedValue(TV_DESCRIPTION);
-      if(tv != null) {
-        event.setDescription(tv.getValue());
+      description = getDocumentation(clazz, TV_DESCRIPTION);
+      if(description != null) {
+        event.setDescription(description);
       }
     }
 
-    tv = clazz.getTaggedValue(reviewTag);
+    UMLTaggedValue tv = clazz.getTaggedValue(reviewTag);
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
@@ -501,13 +501,13 @@ public class XMIParser2 implements Parser {
       event.setType(att.getDatatype().getName());
     }
 
-    tv = att.getTaggedValue(TV_DESCRIPTION);
-    if(tv != null) {
-      event.setDescription(tv.getValue());
+    String description = getDocumentation(att, TV_DESCRIPTION);
+    if(description != null) {
+      event.setDescription(description);
     } else {
-      tv = att.getTaggedValue(TV_DOCUMENTATION);
-      if(tv != null) {
-        event.setDescription(tv.getValue());
+      description = getDocumentation(att, TV_DOCUMENTATION);
+      if(description != null) {
+        event.setDescription(description);
       }
     }
 
@@ -826,5 +826,23 @@ public class XMIParser2 implements Parser {
       listener.addProgressListener(progressListener);
     }
   }
-  
+
+  private String getDocumentation(UMLTaggableElement elt, String tag) {
+    UMLTaggedValue tv = elt.getTaggedValue(tag);
+    
+    StringBuilder sb = new StringBuilder();
+    if(tv == null)
+      return null;
+    else {
+      sb.append(tv.getValue());
+      for(int i = 2;true; i++) {
+        tv = elt.getTaggedValue(tag + i);
+        if(tv == null)
+          return sb.toString();
+        else {
+          sb.append(tv.getValue());
+        }
+      }
+    }
+  }
 }
