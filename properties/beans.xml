@@ -83,11 +83,12 @@
     <property name="eventHandler"><ref bean="umlEventHandler"/></property>
   </bean>
 
+  <!--
   <bean name="scXmiParser"
     class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser">
     <property name="eventHandler"><ref bean="scEventHandler"/></property>
   </bean>
-
+-->
   
 
   <bean name="mainPersister"
