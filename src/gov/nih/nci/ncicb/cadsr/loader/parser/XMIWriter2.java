@@ -336,7 +336,16 @@ public class XMIWriter2 implements ElementWriter {
     tvName = type + pre + XMIParser2.TV_CONCEPT_PREFERRED_NAME + ((n>0)?""+n:"");
 
     if(con.getLongName() != null)
-      elt.addTaggedValue(tvName, con.getLongName());
+      elt.addTaggedValue
+        (tvName,
+         con.getLongName());
+    
+    tvName = type + pre + XMIParser2.TV_TYPE_VM + ((n>0)?""+n:"");
+    
+    if(con.getLongName() != null)
+      elt.addTaggedValue
+        (tvName,
+         con.getLongName());
   }
 
   // applys logic where if an element is modified by a Curator, the Owner's review tag becomes false, if it's modified by the owner, the Curator's tag becomes unchecked.
