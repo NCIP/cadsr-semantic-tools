@@ -3,10 +3,8 @@ package gov.nih.nci.ncicb.cadsr.semconn;
 import gov.nih.nci.common.net.*;
 import gov.nih.nci.evs.domain.*;
 import gov.nih.nci.evs.query.*;
-//import gov.nih.nci.semantic.util.Configuration;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.system.applicationservice.*;
-import gov.nih.nci.system.dao.EVSDAOFactory;
 import gov.nih.nci.system.delegator.*;
 
 import org.apache.log4j.*;
