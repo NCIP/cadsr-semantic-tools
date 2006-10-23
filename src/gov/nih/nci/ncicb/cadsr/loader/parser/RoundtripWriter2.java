@@ -157,9 +157,9 @@ public class RoundtripWriter2 implements ElementWriter {
 
       if(!StringUtil.isEmpty(de.getPublicId())) {
 
-        att.addTaggedValue(XMIParser.TV_DE_ID,
+        att.addTaggedValue(XMIParser2.TV_DE_ID,
                            de.getPublicId());
-        att.addTaggedValue(XMIParser.TV_DE_VERSION,
+        att.addTaggedValue(XMIParser2.TV_DE_VERSION,
                            de.getVersion().toString());
       }
 

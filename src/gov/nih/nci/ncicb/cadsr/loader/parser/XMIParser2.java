@@ -52,7 +52,7 @@ public class XMIParser2 implements Parser {
 
   private String packageName = "";
   private String className = "";
-  private Logger logger = Logger.getLogger(XMIParser.class.getName());
+  private Logger logger = Logger.getLogger(XMIParser2.class.getName());
 
   private List<NewAssociationEvent> associationEvents = new ArrayList<NewAssociationEvent>();
   
