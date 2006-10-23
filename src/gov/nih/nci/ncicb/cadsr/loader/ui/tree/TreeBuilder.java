@@ -70,7 +70,7 @@ public class TreeBuilder implements UserPreferencesListener {
     // only show association node in Review Mode
     showAssociations = selections.getProperty("MODE").equals(RunMode.Reviewer);
 
-    showValueDomains = !selections.getProperty("MODE").equals(RunMode.Curator);
+    //showValueDomains = !selections.getProperty("MODE").equals(RunMode.Curator);
     
     showInheritedAttributes = prefs.getShowInheritedAttributes();
   }
