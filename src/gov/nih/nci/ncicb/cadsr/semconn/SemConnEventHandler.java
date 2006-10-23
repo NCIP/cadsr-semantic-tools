@@ -141,6 +141,7 @@ public class SemConnEventHandler implements UMLHandler {
      
      elements.addElement(vm);
      reviewTracker.put("ValueDomains." + event.getValueDomainName() + "." + event.getName(), event.isReviewed());
+     ChangeTracker.getInstance().put("ValueDomains." + event.getValueDomainName() + "." + event.getName(), true);
      
      Future<String> preferredName = termToPreferredName(vmName);
      futures.add(new FutureName(vm, preferredName));     
@@ -246,6 +247,26 @@ public class SemConnEventHandler implements UMLHandler {
     }
   }
   
+  private ConceptDerivationRule createConceptDerivationRule(List<Concept> concepts) {
+
+    ConceptDerivationRule condr = DomainObjectFactory.newConceptDerivationRule();
+    List<ComponentConcept> compCons = new ArrayList<ComponentConcept>();
+ 
+    int c = 0;
+    for(Concept con : concepts) {
+      ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
+      compCon.setConcept(con);
+      compCon.setOrder(concepts.size() - 1 - c);
+      compCon.setConceptDerivationRule(condr);
+      compCons.add(compCon);
+      c++;
+    }
+
+    condr.setComponentConcepts(compCons);
+    return condr;
+    
+
+  }
 
   /**
    * Returns a future preferred name for the specified term.
@@ -292,7 +313,26 @@ public class SemConnEventHandler implements UMLHandler {
             try  {
                 FutureName fname = futures.poll(1, TimeUnit.SECONDS);
                 if (fname != null) {
-                    fname.getComponent().setPreferredName(fname.getName().get());
+                    
+                    AdminComponent ac = fname.getComponent();
+                    if(ac instanceof ValueMeaning) 
+                    {
+                      String codes = fname.getName().get();
+                      String temp[] = codes.split(":");
+                      List<Concept> listOfConcepts = new ArrayList();
+                      for(int i=0; i < temp.length; i++) 
+                      {
+                        Concept con = DomainObjectFactory.newConcept();
+                        con.setPreferredName(temp[i]);
+                        listOfConcepts.add(con);
+                        
+                      }
+                      ValueMeaning vm = (ValueMeaning)ac;
+                      vm.setConceptDerivationRule(createConceptDerivationRule(listOfConcepts));  
+                      
+                    } else {
+                      ac.setPreferredName(fname.getName().get());
+                    }
                     
                     numConsumed++; 
                     ProgressEvent evt = new ProgressEvent();
