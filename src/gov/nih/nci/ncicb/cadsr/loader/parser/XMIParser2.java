@@ -588,95 +588,59 @@ public class XMIParser2 implements Parser {
     NewAssociationEvent event = new NewAssociationEvent();
     event.setRoleName(assoc.getRoleName());
 
-    String navig = "";
-
     List<UMLAssociationEnd> ends = assoc.getAssociationEnds();
     if(ends.size() != 2)
       return;
     
-    UMLAssociationEnd end = ends.get(0);
-      //         logger.debug("end A is navigable: " + end.isNavigable());
-    if (end.isNavigable()) {
-      navig += 'A';
-    }
-    
-    UMLClass endClass = (UMLClass)(end.getUMLElement());
-    String pName = getPackageName(endClass.getPackage());
-    
-    if(StringUtil.isEmpty(pName) || !isInPackageFilter(pName)) {
-      logger.info(PropertyAccessor.getProperty("skip.association", endClass.getName() + " " + end.getRoleName()));
-      logger.debug("assoc end role name: " + end.getRoleName());
-      return;
-    }
-    
-    
-    int low = end.getLowMultiplicity();
-    int high = end.getHighMultiplicity();
-    event.setALowCardinality(low);
-    event.setAHighCardinality(high);
-    
-    event.setAClassName(getPackageName(endClass.getPackage()) + "." + endClass.getName());
-    event.setARole(end.getRoleName());
-    if(event.getAClassName() == null) {
-      logger.debug("AClassName: NULL");
-      return;
-    } else {
-      logger.debug("AClassName: " + event.getAClassName());
-    }
+    final UMLAssociationEnd aEnd = ends.get(0);
+    final UMLAssociationEnd bEnd = ends.get(1);
 
-    end = ends.get(1);
-//         logger.debug("end B is navigable: " + end.isNavigable());
+    String navig = "";
+    if (aEnd.isNavigable()) navig += 'A';
+    if (bEnd.isNavigable()) navig += 'B';
+    event.setDirection(navig);
     
-    if (end.isNavigable()) {
-      navig += 'B';
+    // direction B?
+    String atype = TV_TYPE_ASSOC_TARGET;
+    String btype = TV_TYPE_ASSOC_SOURCE;
+    if (navig.equals("B")) {
+        atype = TV_TYPE_ASSOC_SOURCE;
+        btype = TV_TYPE_ASSOC_TARGET;
     }
     
-
-    endClass = (UMLClass)(end.getUMLElement());
-    pName = getPackageName(endClass.getPackage());
+    // set tagged values and create subevents
+    NewAssociationEndEvent aEvent = doAssociationEnd(aEnd, atype);
+    if (aEvent == null) return;
+    NewAssociationEndEvent bEvent = doAssociationEnd(bEnd, btype);
+    if (bEvent == null) return;
     
-    if(StringUtil.isEmpty(pName) || !isInPackageFilter(pName)) {
-      logger.info(PropertyAccessor.getProperty("skip.association", endClass.getName() + " " + end.getRoleName()));
-      logger.debug("assoc end role name: " + end.getRoleName());
-      return;
+    event.setAEvent(aEvent);
+    event.setBEvent(bEvent);
+    
+    UMLTaggedValue tv = assoc.getTaggedValue(reviewTag);
+    if(tv != null) {
+      event.setReviewed(tv.getValue().equals("1"));
     }
+    setConceptInfo(assoc, event, TV_TYPE_ASSOC_ROLE);
     
-    
-    low = end.getLowMultiplicity();
-    high = end.getHighMultiplicity();
-    event.setBLowCardinality(low);
-    event.setBHighCardinality(high);
-    
-    event.setBClassName(getPackageName(endClass.getPackage()) + "." + endClass.getName());
-    event.setBRole(end.getRoleName());
-    if(event.getBClassName() == null) {
-      logger.debug("BClassName: NULL");
-      return;
-    } else {
-      logger.debug("BClassName: " + event.getBClassName());
-    }
-
-//     logger.debug("A END -- " + event.getAClassName() + " " + event.getALowCardinality());
-//     logger.debug("B END -- " + event.getBClassName() + " " + event.getBLowCardinality());
-
-    // netbeans seems to read self pointing associations wrong. Such that an end is navigable but has no target role, even though it does in the model.
-    if(event.getAClassName().equals(event.getBClassName())) {
-      if(navig.equals("B") && StringUtil.isEmpty(event.getBRole())) {
-        event.setBRole(event.getARole());
-        event.setBLowCardinality(event.getALowCardinality());
-        event.setBHighCardinality(event.getAHighCardinality());
-      } else if (navig.equals("A") && StringUtil.isEmpty(event.getARole())) {
-        event.setARole(event.getBRole());
-        event.setALowCardinality(event.getBLowCardinality());
-        event.setAHighCardinality(event.getBHighCardinality());
+    // netbeans seems to read self pointing associations wrong. 
+    // Such that an end is navigable but has no target role, 
+    // even though it does in the model.
+    if(aEvent.getClassName().equals(bEvent.getClassName())) {
+      if(navig.equals("B") && StringUtil.isEmpty(bEvent.getRoleName())) {
+          bEvent.setRoleName(aEvent.getRoleName());
+        bEvent.setLowCardinality(aEvent.getLowCardinality());
+        bEvent.setHighCardinality(aEvent.getHighCardinality());
+      } else if (navig.equals("A") && StringUtil.isEmpty(aEvent.getRoleName())) {
+          aEvent.setRoleName(bEvent.getRoleName());
+          aEvent.setLowCardinality(bEvent.getLowCardinality());
+          aEvent.setHighCardinality(bEvent.getHighCardinality());
       }
     }
 
-    event.setDirection(navig);
-
-    logger.debug("Adding association. AClassName: " + event.getAClassName());
+    logger.debug("Adding association. AClassName: " + aEvent.getClassName());
+    
     associationEvents.add(event);
-
   }
 
 //   private void doComponent(Component comp) {
@@ -704,6 +668,44 @@ public class XMIParser2 implements Parser {
 //     return "";
 //   }
 
+  
+
+  private NewAssociationEndEvent doAssociationEnd(UMLAssociationEnd end, 
+          String type) {
+      
+      NewAssociationEndEvent event = new NewAssociationEndEvent();
+      
+      UMLClass endClass = (UMLClass)(end.getUMLElement());
+      String pName = getPackageName(endClass.getPackage());
+      
+      if(StringUtil.isEmpty(pName) || !isInPackageFilter(pName)) {
+        logger.info(PropertyAccessor.getProperty("skip.association", endClass.getName() + " " + end.getRoleName()));
+        logger.debug("assoc end role name: " + end.getRoleName());
+        return null;
+      }
+      
+      event.setLowCardinality(end.getLowMultiplicity());
+      event.setHighCardinality(end.getHighMultiplicity());
+      event.setClassName(getPackageName(endClass.getPackage()) + "." + endClass.getName());
+      event.setRoleName(end.getRoleName());
+      
+      if(event.getClassName() == null) {
+        logger.debug("AClassName: NULL");
+        return null;
+      } else {
+        logger.debug("AClassName: " + event.getClassName());
+      }
+
+      UMLTaggedValue tv = end.getTaggedValue(reviewTag);
+      if(tv != null) {
+        event.setReviewed(tv.getValue().equals("1"));
+      }
+
+      setConceptInfo(end, event, type);
+      
+      return event;
+  }
+  
   private void fireLastEvents() {
     for (Iterator<NewAssociationEvent> it = associationEvents.iterator(); it.hasNext();) {
       listener.newAssociation(it.next());
@@ -757,13 +759,13 @@ public class XMIParser2 implements Parser {
   }
 
   private boolean setConceptInfo(UMLTaggableElement elt, NewConceptEvent event, String type, String pre, int n) {
-
+  
     UMLTaggedValue tv = elt.getTaggedValue(type + pre + TV_CONCEPT_CODE + ((n>0)?""+n:""));
     if (tv != null) {
       event.setConceptCode(tv.getValue().trim());
     } else 
       return false;
-
+    
     tv = elt.getTaggedValue(type + pre + TV_CONCEPT_DEFINITION + ((n>0)?""+n:""));
     if (tv != null) {
       event.setConceptDefinition(tv.getValue().trim());

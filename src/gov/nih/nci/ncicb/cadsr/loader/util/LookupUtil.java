@@ -27,7 +27,8 @@ import java.util.*;
 public class LookupUtil {
 
   public static Concept lookupConcept(String conceptCode) {
-    List<Concept> concepts = ElementsLists.getInstance().getElements(DomainObjectFactory.newConcept());
+    List<Concept> concepts = 
+        ElementsLists.getInstance().getElements(DomainObjectFactory.newConcept());
     
     for (Concept con : concepts) {
       if(con.getPreferredName() != null)
@@ -39,7 +40,8 @@ public class LookupUtil {
   }
   
   public static List<ObjectClassRelationship> lookupOcrs(ObjectClass oc) {
-    List ocrs = (List)ElementsLists.getInstance().getElements(DomainObjectFactory.newObjectClassRelationship().getClass());
+    List<ObjectClassRelationship> ocrs = 
+        ElementsLists.getInstance().getElements(DomainObjectFactory.newObjectClassRelationship());
 
     List<ObjectClassRelationship> result = new ArrayList<ObjectClassRelationship>();
 

@@ -43,6 +43,7 @@ public class AssociationEndNode extends AbstractUMLNode<AssociationNode>
     String shortRoleName = nameBuilder.buildDisplayRoleName(ocr);
     
     fullPath = roleName;
+    fullPath += (type==TYPE_SOURCE)?" Source":" Target";
     display = shortRoleName;
     
     userObject = ocr;

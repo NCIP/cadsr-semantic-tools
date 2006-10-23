@@ -18,10 +18,16 @@
  * 5. THIS SOFTWARE IS PROVIDED "AS IS," AND ANY EXPRESSED OR IMPLIED WARRANTIES, (INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE) ARE DISCLAIMED. IN NO EVENT SHALL THE NATIONAL CANCER INSTITUTE, ORACLE, OR THEIR AFFILIATES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui.tree;
-import gov.nih.nci.ncicb.cadsr.domain.*;
-import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
-import java.util.List;
+import gov.nih.nci.ncicb.cadsr.domain.Concept;
+import gov.nih.nci.ncicb.cadsr.domain.ConceptDerivationRule;
+import gov.nih.nci.ncicb.cadsr.domain.DataElement;
+import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
+import gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship;
+import gov.nih.nci.ncicb.cadsr.domain.Property;
+import gov.nih.nci.ncicb.cadsr.domain.ValueMeaning;
+import gov.nih.nci.ncicb.cadsr.loader.util.ConceptUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 
 public class NodeUtil 
 {
@@ -49,20 +55,24 @@ public class NodeUtil
     return conceptCodesToConcepts(conceptCodes);
   }
 
+  public static Concept[] getAssociationConcepts(AssociationNode node) {
+    ObjectClassRelationship ocr = (ObjectClassRelationship)node.getUserObject();
+    return getRuleConcepts(ocr.getConceptDerivationRule());
+  }
+  
   public static Concept[] getAssociationSourceConcepts(AssociationNode node) {
     ObjectClassRelationship ocr = (ObjectClassRelationship)node.getUserObject();
-    return getAssociationConcepts(ocr.getSourceRoleConceptDerivationRule());
+    return getRuleConcepts(ocr.getSourceRoleConceptDerivationRule());
   }
 
   public static Concept[] getAssociationTargetConcepts(AssociationNode node) {
     ObjectClassRelationship ocr = (ObjectClassRelationship)node.getUserObject();
-    return getAssociationConcepts(ocr.getTargetRoleConceptDerivationRule());
+    return getRuleConcepts(ocr.getTargetRoleConceptDerivationRule());
   }
 
-  private static Concept[] getAssociationConcepts(ConceptDerivationRule conDR) {
-    String[] conceptCodes = ConceptUtil.getConceptCodes(conDR);
-    
-    return conceptCodesToConcepts(conceptCodes);
+  private static Concept[] getRuleConcepts(ConceptDerivationRule conDR) {
+    if (conDR == null) return new Concept[0];
+    return conceptCodesToConcepts(ConceptUtil.getConceptCodes(conDR));
   }
  
   private static Concept[] conceptCodesToConcepts(String[] conceptCodes) {
@@ -82,6 +92,4 @@ public class NodeUtil
     return concepts;
     
   }
-  
-
 }

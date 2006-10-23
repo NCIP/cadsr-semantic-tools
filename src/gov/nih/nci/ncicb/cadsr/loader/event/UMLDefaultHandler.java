@@ -26,6 +26,8 @@ import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 import org.apache.log4j.Logger;
 
 import java.util.*;
+
+import gov.nih.nci.ncicb.cadsr.loader.persister.OCRRoleNameBuilder;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
@@ -103,7 +105,6 @@ public class UMLDefaultHandler
 
     elements.addElement(vd);
     reviewTracker.put(event.getName(), event.isReviewed());
-
   }
 
   public void newValueMeaning(NewValueMeaningEvent event) {
@@ -368,10 +369,6 @@ public class UMLDefaultHandler
       }
       }
       
-      
-      
-      
-      
       de.setValueDomain(vd);
 
     }
@@ -435,8 +432,12 @@ public class UMLDefaultHandler
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     
+    NewAssociationEndEvent aEvent = event.getAEvent();
+    NewAssociationEndEvent bEvent = event.getBEvent();
+    NewAssociationEndEvent sEvent = null;
+    NewAssociationEndEvent tEvent = null; 
+    
     List<ObjectClass> ocs = elements.getElements(oc);
-    logger.debug("direction: " + event.getDirection());
 
     boolean aDone = false, 
       bDone = false;
@@ -447,32 +448,40 @@ public class UMLDefaultHandler
         if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
           classFullName = an.getName();
       }
+      if (classFullName == null) {
+          System.err.println("No full class name found for "+o.getLongName());
+          continue;
+      }
 
-      if (!aDone && (classFullName.equals(event.getAClassName()))) {
+      if (!aDone && (classFullName.equals(aEvent.getClassName()))) {
         if (event.getDirection().equals("B")) {
+          sEvent = aEvent;
           ocr.setSource(o);
-          ocr.setSourceRole(event.getARole());
-          ocr.setSourceLowCardinality(event.getALowCardinality());
-          ocr.setSourceHighCardinality(event.getAHighCardinality());
+          ocr.setSourceRole(aEvent.getRoleName());
+          ocr.setSourceLowCardinality(aEvent.getLowCardinality());
+          ocr.setSourceHighCardinality(aEvent.getHighCardinality());
         } else {
+          tEvent = aEvent;
           ocr.setTarget(o);
-          ocr.setTargetRole(event.getARole());
-          ocr.setTargetLowCardinality(event.getALowCardinality());
-          ocr.setTargetHighCardinality(event.getAHighCardinality());
+          ocr.setTargetRole(aEvent.getRoleName());
+          ocr.setTargetLowCardinality(aEvent.getLowCardinality());
+          ocr.setTargetHighCardinality(aEvent.getHighCardinality());
         }
         aDone = true;
       }
-      if (!bDone && (classFullName.equals(event.getBClassName()))) {
+      if (!bDone && (classFullName.equals(bEvent.getClassName()))) {
         if (event.getDirection().equals("B")) {
+          tEvent = bEvent;
           ocr.setTarget(o);
-          ocr.setTargetRole(event.getBRole());
-          ocr.setTargetLowCardinality(event.getBLowCardinality());
-          ocr.setTargetHighCardinality(event.getBHighCardinality());
+          ocr.setTargetRole(bEvent.getRoleName());
+          ocr.setTargetLowCardinality(bEvent.getLowCardinality());
+          ocr.setTargetHighCardinality(bEvent.getHighCardinality());
         } else {
+          sEvent = bEvent;
           ocr.setSource(o);
-          ocr.setSourceRole(event.getBRole());
-          ocr.setSourceLowCardinality(event.getBLowCardinality());
-          ocr.setSourceHighCardinality(event.getBHighCardinality());
+          ocr.setSourceRole(bEvent.getRoleName());
+          ocr.setSourceLowCardinality(bEvent.getLowCardinality());
+          ocr.setSourceHighCardinality(bEvent.getHighCardinality());
         }
         bDone = true;
       }
@@ -487,31 +496,28 @@ public class UMLDefaultHandler
     ocr.setLongName(event.getRoleName());
     ocr.setType(ObjectClassRelationship.TYPE_HAS);
 
-//     logger.debug("New Association :");
-//     logger.debug("event.A: " + event.getAClassName());
-//     logger.debug("event.B: " + event.getBClassName());
-//     logger.debug("Source: " + ocr.getSource().getLongName());
-//     logger.debug("Target: " + ocr.getTarget().getLongName());
+    ocr.setConceptDerivationRule(
+            createConceptDerivationRule(createConcepts(event)));
 
-    ConceptDerivationRule srcConDR = DomainObjectFactory.newConceptDerivationRule(), 
-      tgtConDR = DomainObjectFactory.newConceptDerivationRule();
+    ocr.setSourceRoleConceptDerivationRule(
+            createConceptDerivationRule(createConcepts(sEvent)));
+
+    ocr.setTargetRoleConceptDerivationRule(
+            createConceptDerivationRule(createConcepts(tEvent)));
     
-    // TODO Following has to be implemented
-    {
-      ocr.setSourceRoleConceptDerivationRule(srcConDR);
-      ocr.setTargetRoleConceptDerivationRule(tgtConDR);
-      srcConDR.setComponentConcepts(new ArrayList<ComponentConcept>());
-      tgtConDR.setComponentConcepts(new ArrayList<ComponentConcept>());
-    }
-
     if(!aDone)
-      logger.debug("!aDone: " + event.getAClassName() + " -- " + event.getBClassName());
+      logger.debug("!aDone: " + aEvent.getClassName() + " -- " + bEvent.getClassName());
 
     if(!bDone) 
-      logger.debug("!bDone: " + event.getAClassName() + " -- " + event.getBClassName());
+      logger.debug("!bDone: " + aEvent.getClassName() + " -- " + bEvent.getClassName());
 
     elements.addElement(ocr);
 
+    OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
+    String fullName = nameBuilder.buildRoleName(ocr);
+    reviewTracker.put(fullName, event.isReviewed());
+    reviewTracker.put(fullName+" Source", sEvent.isReviewed());
+    reviewTracker.put(fullName+" Target", tEvent.isReviewed());
   }
 
   public void newGeneralization(NewGeneralizationEvent event) {

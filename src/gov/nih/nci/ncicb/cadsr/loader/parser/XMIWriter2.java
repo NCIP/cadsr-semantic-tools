@@ -21,17 +21,14 @@ package gov.nih.nci.ncicb.cadsr.loader.parser;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.*;
+import gov.nih.nci.ncicb.cadsr.loader.persister.OCRRoleNameBuilder;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 
-import gov.nih.nci.ncicb.cadsr.loader.event.NewConceptEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
-
 import gov.nih.nci.ncicb.xmiinout.handler.*;
 import gov.nih.nci.ncicb.xmiinout.domain.*;
 
-import java.io.*;
 import java.util.*;
 
 /**
@@ -43,10 +40,10 @@ public class XMIWriter2 implements ElementWriter {
 
   private String output = null;
 
-  private UserSelections userSelections = UserSelections.getInstance();
-
   private HashMap<String, UMLClass> classMap = new HashMap<String, UMLClass>();
   private HashMap<String, UMLAttribute> attributeMap = new HashMap<String, UMLAttribute>();
+  private HashMap<String, UMLAssociation> assocMap = new HashMap<String, UMLAssociation>();
+  private HashMap<String, UMLAssociationEnd> assocEndMap = new HashMap<String, UMLAssociationEnd>();
 
   private ElementsLists cadsrObjects = null;
 
@@ -95,19 +92,35 @@ public class XMIWriter2 implements ElementWriter {
     progressListener = listener;
   }
 
-
-  
   private void readModel() {
     for(UMLPackage pkg : model.getPackages())
       doPackage(pkg);
+    for(UMLAssociation assoc : model.getAssociations()) {
+        List<UMLAssociationEnd> ends = assoc.getAssociationEnds();
+        UMLAssociationEnd aEnd = ends.get(0);
+        UMLAssociationEnd bEnd = ends.get(1);
+        
+        UMLAssociationEnd source = bEnd, target = aEnd;
+        // direction B?
+        if (bEnd.isNavigable() && !aEnd.isNavigable()) {
+            source = aEnd;
+            target = bEnd;
+        }
+        
+        String key = assoc.getRoleName()+"~"+source.getRoleName()+"~"+target.getRoleName();
+        assocMap.put(key,assoc);
+        assocEndMap.put(key+"~source",source);
+        assocEndMap.put(key+"~target",target);
+    }
   }
 
   private void updateChangedElements()  {
     List<ObjectClass> ocs = cadsrObjects.getElements(DomainObjectFactory.newObjectClass());
     List<DataElement> des = cadsrObjects.getElements(DomainObjectFactory.newDataElement());
     List<ValueDomain> vds = cadsrObjects.getElements(DomainObjectFactory.newValueDomain());
+    List<ObjectClassRelationship> ocrs = cadsrObjects.getElements(DomainObjectFactory.newObjectClassRelationship());
     
-    int goal = ocs.size() + des.size() + vds.size();
+    int goal = ocs.size() + des.size() + vds.size() + ocrs.size();
     int status = 0;
     sendProgressEvent(status, goal, "");
     
@@ -215,7 +228,74 @@ public class XMIWriter2 implements ElementWriter {
       }
     }
 
+    for(ObjectClassRelationship ocr : ocrs) {
+      
+      ConceptDerivationRule rule = ocr.getConceptDerivationRule();
+      ConceptDerivationRule srule = ocr.getSourceRoleConceptDerivationRule();
+      ConceptDerivationRule trule = ocr.getTargetRoleConceptDerivationRule();
+      
+      OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
+      String fullName = nameBuilder.buildRoleName(ocr);
+      
+      sendProgressEvent(status++, goal, "Relationship: " + fullName);
+
+      String key = ocr.getLongName()+"~"+ocr.getSourceRole()+"~"+ocr.getTargetRole();
+      UMLAssociation assoc = assocMap.get(key);
+      UMLAssociationEnd source = assocEndMap.get(key+"~source");
+      UMLAssociationEnd target = assocEndMap.get(key+"~target");
+
+      boolean changed = changeTracker.get(fullName);
+      boolean changedSource = changeTracker.get(fullName+" Source");
+      boolean changedTarget = changeTracker.get(fullName+" Target");
+
+      if(changed) {
+        dropCurrentAssocTvs(assoc);
+        List<ComponentConcept> rConcepts = rule.getComponentConcepts();
+        String[] rcodes = new String[rConcepts.size()];
+        int i = 0;
+        for (ComponentConcept con: rConcepts) {
+            rcodes[i++] = con.getConcept().getPreferredName();
+        }
+        addConceptTvs(assoc, rcodes, XMIParser2.TV_TYPE_ASSOC_ROLE);
+      }
+
+      if(changedSource) {
+        dropCurrentAssocTvs(source);
+        List<ComponentConcept> sConcepts = srule.getComponentConcepts();
+        String[] scodes = new String[sConcepts.size()];
+        int i = 0;
+        for (ComponentConcept con: sConcepts) {
+            scodes[i++] = con.getConcept().getPreferredName();
+        }
+        addConceptTvs(source, scodes, XMIParser2.TV_TYPE_ASSOC_SOURCE);
+      }
+
+      if(changedTarget) {
+        dropCurrentAssocTvs(target);
+        List<ComponentConcept> tConcepts = trule.getComponentConcepts();
+        String[] tcodes = new String[tConcepts.size()];
+        int i = 0;
+        for (ComponentConcept con: tConcepts) {
+            tcodes[i++] = con.getConcept().getPreferredName();
+        }
+        addConceptTvs(target, tcodes, XMIParser2.TV_TYPE_ASSOC_TARGET);
+      }
+      
+    }
+    
     changeTracker.clear();
+  }
+  
+  private void dropCurrentAssocTvs(UMLTaggableElement elt) {
+      Collection<UMLTaggedValue> allTvs = elt.getTaggedValues();
+      for(UMLTaggedValue tv : allTvs) {
+        String name = tv.getName();
+        if(name.startsWith(XMIParser2.TV_TYPE_ASSOC_ROLE) ||
+                name.startsWith(XMIParser2.TV_TYPE_ASSOC_SOURCE)||
+                name.startsWith(XMIParser2.TV_TYPE_ASSOC_TARGET)) {
+            elt.removeTaggedValue(name);
+        }
+      }
   }
 
   private void addConceptTvs(UMLTaggableElement elt, String[] conceptCodes, String type) {
@@ -241,29 +321,22 @@ public class XMIWriter2 implements ElementWriter {
     String tvName = type + pre + XMIParser2.TV_CONCEPT_CODE + ((n>0)?""+n:"");
 
     if(con.getPreferredName() != null)
-      elt.addTaggedValue(tvName,
-                         con.getPreferredName());
+      elt.addTaggedValue(tvName,con.getPreferredName());
     
     tvName = type + pre + XMIParser2.TV_CONCEPT_DEFINITION + ((n>0)?""+n:"");
 
     if(con.getPreferredDefinition() != null)
-      elt.addTaggedValue
-        (tvName,
-         con.getPreferredDefinition());
+      elt.addTaggedValue(tvName,con.getPreferredDefinition());
     
     tvName = type + pre + XMIParser2.TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:"");
 
     if(con.getDefinitionSource() != null)
-      elt.addTaggedValue
-        (tvName,
-         con.getDefinitionSource());
+      elt.addTaggedValue(tvName,con.getDefinitionSource());
     
     tvName = type + pre + XMIParser2.TV_CONCEPT_PREFERRED_NAME + ((n>0)?""+n:"");
 
     if(con.getLongName() != null)
-      elt.addTaggedValue
-        (tvName,
-         con.getLongName());
+      elt.addTaggedValue(tvName, con.getLongName());
   }
 
   // applys logic where if an element is modified by a Curator, the Owner's review tag becomes false, if it's modified by the owner, the Curator's tag becomes unchecked.
@@ -301,9 +374,10 @@ public class XMIWriter2 implements ElementWriter {
   
   private void markHumanReviewed() throws ParserException {
     try{ 
-      List<ObjectClass> ocs = (List<ObjectClass>)cadsrObjects.getElements(DomainObjectFactory.newObjectClass().getClass());
-      List<DataElementConcept> decs = (List<DataElementConcept>) cadsrObjects.getElements(DomainObjectFactory.newDataElementConcept().getClass());
+      List<ObjectClass> ocs = cadsrObjects.getElements(DomainObjectFactory.newObjectClass());
+      List<DataElementConcept> decs = cadsrObjects.getElements(DomainObjectFactory.newDataElementConcept());
       List<ValueDomain> vds = cadsrObjects.getElements(DomainObjectFactory.newValueDomain());
+      List<ObjectClassRelationship> ocrs = cadsrObjects.getElements(DomainObjectFactory.newObjectClassRelationship());
       
       for(ObjectClass oc : ocs) {
         String fullClassName = null;
@@ -354,7 +428,6 @@ public class XMIWriter2 implements ElementWriter {
         for(PermissibleValue pv : vd.getPermissibleValues()) {
           ValueMeaning vm = pv.getValueMeaning();
           String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getLongName();
-          UMLAttribute att = attributeMap.get(fullPropName);
 
           Boolean reviewed = ownerReviewTracker.get(fullPropName);
           if(reviewed == null) {
@@ -376,10 +449,53 @@ public class XMIWriter2 implements ElementWriter {
           
         }
       }
+      
+      for(ObjectClassRelationship ocr : ocrs) {
+
+          final OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
+          final String fullPropName = nameBuilder.buildRoleName(ocr);
+          final String tPropName = fullPropName + " Target";
+          final String sPropName = fullPropName + " Source";
+          
+          final String key = ocr.getLongName()+"~"+ocr.getSourceRole()+"~"+ocr.getTargetRole();
+          final UMLAssociation assoc = assocMap.get(key);
+          final UMLAssociationEnd target = assocEndMap.get(key+"~target");
+          final UMLAssociationEnd source = assocEndMap.get(key+"~source");
+          
+          // ROLE
+          Boolean reviewed = ownerReviewTracker.get(fullPropName);
+          if(reviewed != null) refreshOwnerTag(assoc, reviewed);
+          reviewed = curatorReviewTracker.get(fullPropName);
+          if(reviewed != null) refreshCuratorTag(assoc, reviewed);
+
+          // SOURCE
+          reviewed = ownerReviewTracker.get(sPropName);
+          if(reviewed != null) refreshOwnerTag(source, reviewed);
+          reviewed = curatorReviewTracker.get(sPropName);
+          if(reviewed != null) refreshCuratorTag(source, reviewed);
+          
+          // TARGET
+          reviewed = ownerReviewTracker.get(tPropName);
+          if(reviewed != null) refreshOwnerTag(target, reviewed);
+          reviewed = curatorReviewTracker.get(tPropName);
+          if(reviewed != null) refreshCuratorTag(target, reviewed);
+        }
 
     } catch (RuntimeException e) {
       throw new ParserException(e);
     }
+  }
+
+  private void refreshCuratorTag(UMLTaggableElement umlElement, boolean reviewed) {
+      umlElement.removeTaggedValue(XMIParser2.TV_CURATOR_REVIEWED);
+      umlElement.addTaggedValue(XMIParser2.TV_CURATOR_REVIEWED,
+                            reviewed?"1":"0");
+  }
+  
+  private void refreshOwnerTag(UMLTaggableElement umlElement, boolean reviewed) {
+      umlElement.removeTaggedValue(XMIParser2.TV_OWNER_REVIEWED);
+      umlElement.addTaggedValue(XMIParser2.TV_OWNER_REVIEWED,
+                            reviewed?"1":"0");
   }
   
   private void doPackage(UMLPackage pkg) {
@@ -389,7 +505,7 @@ public class XMIWriter2 implements ElementWriter {
         className = "ValueDomains." + clazz.getName();
       } else {
         className = getPackageName(pkg) + "." + clazz.getName();
-      }        
+      }
       classMap.put(className, clazz);
       for(UMLAttribute att : clazz.getAttributes()) {
         attributeMap.put(className + "." + att.getName(), att);

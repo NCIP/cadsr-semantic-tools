@@ -302,13 +302,16 @@ public class TreeBuilder implements UserPreferencesListener {
     UMLNode assocNode = new PackageNode("Associations", "Associations");
 
     ObjectClassRelationship o = DomainObjectFactory.newObjectClassRelationship();
-    List<ObjectClassRelationship> ocrs = 
-      (List<ObjectClassRelationship>) 
-      elements.getElements(o.getClass());
+    List<ObjectClassRelationship> ocrs = elements.getElements(o);
 
     for(ObjectClassRelationship ocr : ocrs) {
-      UMLNode node = new AssociationNode(ocr);
+      AssociationNode node = new AssociationNode(ocr);
 
+      Boolean reviewed = reviewTracker.get(node.getFullPath());
+      if (reviewed != null) {
+          node.setReviewed(reviewed.booleanValue());
+      }
+      
       List<ValidationItem> items = findValidationItems(ocr);
       for(ValidationItem item : items) {
         ValidationNode vNode = null;
@@ -333,10 +336,12 @@ public class TreeBuilder implements UserPreferencesListener {
   private void doAssociationEnd(UMLNode parentNode, int type) {
     
     ObjectClassRelationship ocr = (ObjectClassRelationship)parentNode.getUserObject();
-
-
-    UMLNode node = new AssociationEndNode(ocr, type);
-        
+    AssociationEndNode node = new AssociationEndNode(ocr, type);
+    Boolean reviewed = reviewTracker.get(node.getFullPath());
+    if (reviewed != null) {
+        node.setReviewed(reviewed.booleanValue());
+    }
+    
 //     List<ValidationItem> items = findValidationItems(ocr);
 //     for(ValidationItem item : items) {
 //       ValidationNode vNode = null;
@@ -356,9 +361,7 @@ public class TreeBuilder implements UserPreferencesListener {
       UMLNode assocNode = new PackageNode("Associations", "Associations");
 
     ObjectClassRelationship o = DomainObjectFactory.newObjectClassRelationship();
-    List<ObjectClassRelationship> ocrs = 
-      (List<ObjectClassRelationship>) 
-      elements.getElements(o.getClass());
+    List<ObjectClassRelationship> ocrs = elements.getElements(o);
 
     for(ObjectClassRelationship ocr : ocrs) {
       if(ocr.getSource().getLongName().equals(oc.getLongName()) 

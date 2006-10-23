@@ -19,29 +19,34 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
-
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship;
-import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
+import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeListener;
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AssociationEndNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 
 import java.beans.PropertyChangeListener;
+import java.util.Set;
+
+import javax.swing.JTabbedPane;
 
 /**
  * The Association viewer
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class AssociationViewPanel extends JTabbedPane {
-  
+public class AssociationViewPanel extends JTabbedPane
+  implements NavigationListener {
+    
   private ObjectClassRelationship ocr;
   private UMLNode node;
 
   private AssociationDetailViewPanel detailViewPanel;
-  private AssociationConceptPanel sourceConceptPanel, targetConceptPanel;
+  private AssociationConceptPanel roleConceptPanel;
+  private AssociationConceptPanel sourceConceptPanel;
+  private AssociationConceptPanel targetConceptPanel;
 
 
   public AssociationViewPanel(UMLNode node) {
@@ -49,6 +54,7 @@ public class AssociationViewPanel extends JTabbedPane {
     this.ocr = (ObjectClassRelationship)node.getUserObject();
 
     initUI();
+    update(node);
   }
 
   public void update(UMLNode node) {
@@ -58,7 +64,7 @@ public class AssociationViewPanel extends JTabbedPane {
     detailViewPanel.update(ocr);
 
     AssociationEndNode sourceEndNode = null, targetEndNode = null;
-    java.util.Set<UMLNode> endNodes = node.getChildren();
+    Set<UMLNode> endNodes = node.getChildren();
     for(UMLNode n : endNodes) {
       AssociationEndNode endNode = (AssociationEndNode)n;
       if(endNode.getType() == AssociationEndNode.TYPE_SOURCE)
@@ -67,14 +73,9 @@ public class AssociationViewPanel extends JTabbedPane {
         targetEndNode = endNode;
     }
 
-
+    roleConceptPanel.updateNode(node);
     sourceConceptPanel.updateNode(sourceEndNode);
     targetConceptPanel.updateNode(targetEndNode);
-  }
-
-  public void addCustomPropertyChangeListener(PropertyChangeListener l) {
-    sourceConceptPanel.addPropertyChangeListener(l);
-    targetConceptPanel.addPropertyChangeListener(l);
   }
 
   private void initUI() {
@@ -85,7 +86,7 @@ public class AssociationViewPanel extends JTabbedPane {
     
     AssociationEndNode sourceEndNode = null, targetEndNode = null;
 
-    java.util.Set<UMLNode> endNodes = node.getChildren();
+    Set<UMLNode> endNodes = node.getChildren();
     for(UMLNode n : endNodes) {
       AssociationEndNode endNode = (AssociationEndNode)n;
       if(endNode.getType() == AssociationEndNode.TYPE_SOURCE)
@@ -94,22 +95,44 @@ public class AssociationViewPanel extends JTabbedPane {
         targetEndNode = endNode;
     }
 
+    roleConceptPanel = new AssociationConceptPanel(node);
+    addTab("Role", roleConceptPanel);
+     
     sourceConceptPanel = new AssociationConceptPanel(sourceEndNode);
-//     addTab("Source", sourceConceptPanel);
+    addTab("Source", sourceConceptPanel);
 
     targetConceptPanel = new AssociationConceptPanel(targetEndNode);
-//     addTab("Target", targetConceptPanel);
-
-
+    addTab("Target", targetConceptPanel);
   }
 
-
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+  public void addCustomPropertyChangeListener(PropertyChangeListener l) {
+    roleConceptPanel.addPropertyChangeListener(l);
+    sourceConceptPanel.addPropertyChangeListener(l);
+    targetConceptPanel.addPropertyChangeListener(l);
   }
 
+  public void navigate(NavigationEvent evt) {
+      roleConceptPanel.navigate(evt);
+      sourceConceptPanel.navigate(evt);
+      targetConceptPanel.navigate(evt);
+  }
+
+  public void addReviewListener(ReviewListener listener) {
+      roleConceptPanel.addReviewListener(listener);
+      sourceConceptPanel.addReviewListener(listener);
+      targetConceptPanel.addReviewListener(listener);
+  }
+
+  public void addNavigationListener(NavigationListener listener) {
+      roleConceptPanel.addNavigationListener(listener);
+      sourceConceptPanel.addNavigationListener(listener);
+      targetConceptPanel.addNavigationListener(listener);
+  }
+  
+  public void addElementChangeListener(ElementChangeListener listener) {
+      roleConceptPanel.addElementChangeListener(listener);
+      sourceConceptPanel.addElementChangeListener(listener);
+      targetConceptPanel.addElementChangeListener(listener);
+  }
 }
 

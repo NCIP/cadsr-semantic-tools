@@ -201,6 +201,7 @@ public class ValidateConceptsDialog extends JDialog
           }
         }
         
+        // TODO: add ObjectClassRelationship? 
         
         event = new ProgressEvent();
         event.setMessage("Done ");
@@ -504,5 +505,4 @@ class MyCellRenderer extends JLabel implements ListCellRenderer {
 }
 
 }
-
 

@@ -1,6 +1,5 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.*;
-import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeEvent;
@@ -150,16 +149,19 @@ public class ConceptEditorPanel extends JPanel
   
   private void initConcepts() 
   {
-    if(node instanceof AssociationEndNode) {
+    if(node instanceof AssociationNode) {
+        concepts = NodeUtil.getAssociationConcepts((AssociationNode)node);
+    }
+    else if(node instanceof AssociationEndNode) {
       AssociationEndNode assocNode = (AssociationEndNode)node;
-
       if(assocNode.getType() == AssociationEndNode.TYPE_SOURCE)
         concepts = NodeUtil.getAssociationSourceConcepts(assocNode.getParent());
       else
         concepts = NodeUtil.getAssociationTargetConcepts(assocNode.getParent());
-        
-    } else
+    } 
+    else {
       concepts = NodeUtil.getConceptsFromNode(node);
+    }
   }
 
   Concept[] getConcepts() 
@@ -252,14 +254,19 @@ public class ConceptEditorPanel extends JPanel
         ObjectUpdater.update(vm, concepts, newConcepts);
       } else if(o instanceof ObjectClassRelationship) {
         ObjectClassRelationship ocr = (ObjectClassRelationship)o;
-        AssociationEndNode endNode = (AssociationEndNode)node;
-        if(endNode.getType() == AssociationEndNode.TYPE_SOURCE)
-          ObjectUpdater.updateAssociationSource(ocr, concepts, newConcepts);
-        else
-          ObjectUpdater.updateAssociationTarget(ocr, concepts, newConcepts);
+        if (node instanceof AssociationNode) {
+            ObjectUpdater.updateAssociation(ocr, concepts, newConcepts);
+        }
+        else {
+            AssociationEndNode endNode = (AssociationEndNode)node;
+            if(endNode.getType() == AssociationEndNode.TYPE_SOURCE)
+              ObjectUpdater.updateAssociationSource(ocr, concepts, newConcepts);
+            else
+              ObjectUpdater.updateAssociationTarget(ocr, concepts, newConcepts);
+        }
       }
-        else
-          ObjectUpdater.update((AdminComponent)node.getUserObject(), concepts, newConcepts);
+      else
+        ObjectUpdater.update((AdminComponent)node.getUserObject(), concepts, newConcepts);
       
       concepts = newConcepts;
     } 

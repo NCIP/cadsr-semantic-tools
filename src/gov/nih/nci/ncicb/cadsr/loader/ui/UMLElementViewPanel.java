@@ -19,11 +19,6 @@ import java.awt.*;
 public class UMLElementViewPanel extends JPanel
   implements NavigationListener, Editable {
 
-  private UMLElementViewPanel _this = this;
-
-  private java.util.List<NavigationListener> navigationListeners 
-    = new ArrayList<NavigationListener>();
-
   private ConceptEditorPanel conceptEditorPanel;
   private DEPanel dePanel;
   private OCPanel ocPanel;

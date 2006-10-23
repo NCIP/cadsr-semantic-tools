@@ -20,39 +20,44 @@
 package gov.nih.nci.ncicb.cadsr.loader.event;
 
 /**
- * Event indicating a new Association was found by the parser.
- * 
- * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
+ * Event indicating a new Association End was found by the parser.
  */
-public class NewAssociationEvent extends NewConceptualEvent {
+public class NewAssociationEndEvent extends NewConceptualEvent {
 
+  private String className;
   private String roleName;
-  private String direction;
-  private NewAssociationEndEvent aEvent;
-  private NewAssociationEndEvent bEvent;
+  private int highCardinality;
+  private int lowCardinality;
+  private boolean reviewed = false;
   
-  public String getDirection() {
-    return direction;
+  public String getClassName() {
+    return className;
   }
-  public void setDirection(String direction) {
-    this.direction = direction;
+  public void setClassName(String className) {
+    this.className = className;
+  }
+  public int getHighCardinality() {
+    return highCardinality;
+  }
+  public void setHighCardinality(int highCardinality) {
+    this.highCardinality = highCardinality;
+  }
+  public int getLowCardinality() {
+    return lowCardinality;
+  }
+  public void setLowCardinality(int lowCardinality) {
+    this.lowCardinality = lowCardinality;
+  }
+  public boolean isReviewed() {
+    return reviewed;
+  }
+  public void setReviewed(boolean reviewed) {
+    this.reviewed = reviewed;
   }
   public String getRoleName() {
     return roleName;
   }
   public void setRoleName(String roleName) {
     this.roleName = roleName;
-  }
-  public NewAssociationEndEvent getAEvent() {
-    return aEvent;
-  }
-  public void setAEvent(NewAssociationEndEvent aEvent) {
-    this.aEvent = aEvent;
-  }
-  public NewAssociationEndEvent getBEvent() {
-    return bEvent;
-  }
-  public void setBEvent(NewAssociationEndEvent bEvent) {
-    this.bEvent = bEvent;
   }
 }

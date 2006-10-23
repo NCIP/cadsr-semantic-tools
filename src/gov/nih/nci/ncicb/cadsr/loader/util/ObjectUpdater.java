@@ -71,25 +71,27 @@ public class ObjectUpdater {
     return condr;
   }
 
-  public static void updateAssociationSource(ObjectClassRelationship ocr, Concept[] oldConcepts, Concept[] newConcepts) {
+  public static void updateAssociation(ObjectClassRelationship ocr, 
+          Concept[] oldConcepts, Concept[] newConcepts) {
+    ocr.setConceptDerivationRule(newConDR(newConcepts));
+    addNewConcepts(newConcepts);
+    removeStaleConcepts(oldConcepts);
+  }
+  
+  public static void updateAssociationSource(ObjectClassRelationship ocr, 
+          Concept[] oldConcepts, Concept[] newConcepts) {
 
-    ConceptDerivationRule condr = newConDR(newConcepts);
-
-    ocr.setSourceRoleConceptDerivationRule(condr);
-    
+    ocr.setSourceRoleConceptDerivationRule(newConDR(newConcepts));
     addNewConcepts(newConcepts);
     removeStaleConcepts(oldConcepts);
   }
 
-  public static void updateAssociationTarget(ObjectClassRelationship ocr, Concept[] oldConcepts, Concept[] newConcepts) {
-
-    ConceptDerivationRule condr = newConDR(newConcepts);
-
-    ocr.setTargetRoleConceptDerivationRule(condr);
-    
+  public static void updateAssociationTarget(ObjectClassRelationship ocr, 
+          Concept[] oldConcepts, Concept[] newConcepts) {
+      
+    ocr.setTargetRoleConceptDerivationRule(newConDR(newConcepts));
     addNewConcepts(newConcepts);
     removeStaleConcepts(oldConcepts);
-
   }
   
   public static void update(AdminComponent ac, Concept[] oldConcepts, Concept[] newConcepts) {
@@ -136,6 +138,7 @@ public class ObjectUpdater {
     List<Property> props = elements.getElements(DomainObjectFactory.newProperty());
     List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
     List<ValueMeaning> vms = elements.getElements(DomainObjectFactory.newValueMeaning());
+    List<ObjectClassRelationship> ocrs = elements.getElements(DomainObjectFactory.newObjectClassRelationship());
 
     a:
     for(Concept concept : concepts) {
@@ -176,6 +179,26 @@ public class ObjectUpdater {
           }
         }
       }
+      for(ObjectClassRelationship ocr : ocrs) {
+        for(ComponentConcept compCon : ocr.getConceptDerivationRule().getComponentConcepts()) {
+          if(concept.getPreferredName().equals(compCon.getConcept().getPreferredName())) {
+            found = true;
+            continue a;
+          }
+        }
+        for(ComponentConcept compCon : ocr.getSourceRoleConceptDerivationRule().getComponentConcepts()) {
+          if(concept.getPreferredName().equals(compCon.getConcept().getPreferredName())) {
+            found = true;
+            continue a;
+          }
+        }
+        for(ComponentConcept compCon : ocr.getTargetRoleConceptDerivationRule().getComponentConcepts()) {
+          if(concept.getPreferredName().equals(compCon.getConcept().getPreferredName())) {
+            found = true;
+            continue a;
+          }
+        }        
+      }
       if(!found) {
         removeFromConcepts(concept);
       }
@@ -184,7 +207,7 @@ public class ObjectUpdater {
 
   private static void addNewConcepts(Concept[] newConcepts) {
     ElementsLists elements = ElementsLists.getInstance();
-    List<Concept> concepts = (List<Concept>)elements.getElements(DomainObjectFactory.newConcept().getClass());
+    List<Concept> concepts = elements.getElements(DomainObjectFactory.newConcept());
     
     for(Concept concept : newConcepts) {
       boolean found = false;
@@ -204,7 +227,7 @@ public class ObjectUpdater {
 
   private static void removeFromConcepts(Concept concept) {
     ElementsLists elements = ElementsLists.getInstance();
-    List<Concept> concepts = (List<Concept>)elements.getElements(DomainObjectFactory.newConcept().getClass());
+    List<Concept> concepts = elements.getElements(DomainObjectFactory.newConcept());
     
     for(int i = 0, n = concepts.size(); i<n; i++) {
       if(concepts.get(i).getPreferredName().equals(concept.getPreferredName())) {

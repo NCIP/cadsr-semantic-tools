@@ -557,6 +557,15 @@ public class MainFrame extends JFrame
 
       if(associationViewPanel == null) {
         associationViewPanel = new AssociationViewPanel(node);
+
+        associationViewPanel.addPropertyChangeListener(this);
+        associationViewPanel.addReviewListener(navigationPanel);
+        associationViewPanel.addReviewListener(ownerTracker);
+        associationViewPanel.addReviewListener(curatorTracker);
+        associationViewPanel.addElementChangeListener(ChangeTracker.getInstance());
+        associationViewPanel.addNavigationListener(navigationPanel);
+        navigationPanel.addNavigationListener(associationViewPanel);
+        
         viewTabbedPane.addTab("Association", associationViewPanel);
         associationViewPanel.setName("Association");
         infoLabel.setText("Association");
