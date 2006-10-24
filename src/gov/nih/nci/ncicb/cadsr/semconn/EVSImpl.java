@@ -5,7 +5,6 @@ import gov.nih.nci.evs.domain.*;
 import gov.nih.nci.evs.query.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.system.applicationservice.*;
-import gov.nih.nci.system.delegator.*;
 
 import org.apache.log4j.*;
 
