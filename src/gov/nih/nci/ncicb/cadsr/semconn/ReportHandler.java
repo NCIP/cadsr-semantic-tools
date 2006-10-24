@@ -18,12 +18,10 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import org.omg.uml.modelmanagement.Model;
-
-
 /**
  * @author MashettS
  *
+ * @deprecated
  */
 public final class ReportHandler extends SubjectClass{
   private static Logger log = Logger.getLogger(ReportHandler.class.getName());
