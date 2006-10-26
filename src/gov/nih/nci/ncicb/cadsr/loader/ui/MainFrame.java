@@ -294,7 +294,7 @@ public class MainFrame extends JFrame
           xmiWriter.write(ElementsLists.getInstance());
           
           infoLabel.setText("File Saved");
-        } catch (ParserException e){
+        } catch (Throwable e){
           JOptionPane.showMessageDialog(_this, "There was an error saving your File. Please contact support.", "Error Saving File", JOptionPane.ERROR_MESSAGE);
           infoLabel.setText("Save Failed!!");
           logger.error(e);
@@ -351,7 +351,7 @@ public class MainFrame extends JFrame
             try {
               xmiWriter.write(ElementsLists.getInstance());
               infoLabel.setText("File Saved");
-            } catch (ParserException e){
+            } catch (Throwable e){
               JOptionPane.showMessageDialog(_this, "There was an error saving your File. Please contact support.", "Error Saving File", JOptionPane.ERROR_MESSAGE);
               infoLabel.setText("Save Failed!!");
             } // end of try-catch
