@@ -274,8 +274,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
       try {
         viewPanel.applyPressed();
 
-        reviewButton.setEnabled(false);
-        saveButton.setEnabled(false);
+        //reviewButton.setEnabled(false);
+        //saveButton.setEnabled(false);
 
         ReviewEvent event = new ReviewEvent();
         event.setUserObject(conceptEditorPanel.getNode()); 
