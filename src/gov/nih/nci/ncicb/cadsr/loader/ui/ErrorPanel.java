@@ -21,6 +21,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 import java.io.File;
 import java.io.FileWriter;
@@ -72,6 +73,10 @@ public class ErrorPanel extends JPanel implements MouseListener {
 
   public ErrorPanel(UMLNode rootNode) {
     node = rootNode;
+    if(userSelections.getProperty("MODE").equals(RunMode.UnannotatedXmi)) {
+      hideConceptError = true;
+      conceptCb.setSelected(true);
+    }
     initUI(rootNode);
   }
   
@@ -233,8 +238,9 @@ public class ErrorPanel extends JPanel implements MouseListener {
 
   private DefaultMutableTreeNode buildTree(UMLNode rootNode) {
     DefaultMutableTreeNode node = new DefaultMutableTreeNode(rootNode);
-
+    
     return doNode(node);
+    
   }
 
   private Element writeXML(String filePath) {
