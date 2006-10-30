@@ -220,15 +220,18 @@ public class ButtonPanel extends JPanel implements ActionListener,
       if(!StringUtil.isEmpty(de.getPublicId())) {
         addButton.setVisible(false);
         deleteButton.setVisible(false);
+        reviewButton.setEnabled(true);
       } else {
         addButton.setVisible(true);
         deleteButton.setVisible(true);
+        
       }
     } else if(editable instanceof OCPanel) {
       ObjectClass oc = (ObjectClass)conceptEditorPanel.getNode().getUserObject();
       if(!StringUtil.isEmpty(oc.getPublicId())) {
         addButton.setVisible(false);
         deleteButton.setVisible(false);
+        reviewButton.setEnabled(true);
       } else {
         addButton.setVisible(true);
         deleteButton.setVisible(true);
