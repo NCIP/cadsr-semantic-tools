@@ -413,7 +413,12 @@ public class XMIWriter2 implements ElementWriter {
       }
 
       for(DataElementConcept dec : decs) {
-        String fullPropName = dec.getObjectClass().getLongName() + "." + dec.getProperty().getLongName();
+        String fullClassName = null;
+        for(AlternateName an : dec.getObjectClass().getAlternateNames()) {
+          if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+            fullClassName = an.getName();
+        }
+        String fullPropName = fullClassName + "." + dec.getProperty().getLongName();
         
         Boolean reviewed = ownerReviewTracker.get(fullPropName);
         if(reviewed != null) {
