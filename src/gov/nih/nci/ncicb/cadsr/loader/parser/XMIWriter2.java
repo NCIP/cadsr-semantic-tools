@@ -340,46 +340,13 @@ public class XMIWriter2 implements ElementWriter {
         (tvName,
          con.getLongName());
     
-    tvName = type + pre + XMIParser2.TV_TYPE_VM + ((n>0)?""+n:"");
-    
-    if(con.getLongName() != null)
-      elt.addTaggedValue
-        (tvName,
-         con.getLongName());
+//    tvName = type + pre + XMIParser2.TV_TYPE_VM + ((n>0)?""+n:"");
+//    
+//    if(con.getLongName() != null)
+//      elt.addTaggedValue
+//        (tvName,
+//         con.getLongName());
   }
-
-  // applys logic where if an element is modified by a Curator, the Owner's review tag becomes false, if it's modified by the owner, the Curator's tag becomes unchecked.
-//   private void doReviewTagLogic() {
-//     RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
-//     ReviewTracker tracker = null;
-//     if(runMode.equals(RunMode.Curator)) {
-//       tracker = ownerReviewTracker; 
-//     } else {
-//       tracker = curatorReviewTracker;
-//     }
-
-//     List<DataElement> des = cadsrObjects.getElements(DomainObjectFactory.newDataElement());
-//     List<ValueDomain> vds = cadsrObjects.getElements(DomainObjectFactory.newValueDomain());
-
-//     for(DataElement de : des) {
-//       DataElementConcept dec = de.getDataElementConcept();
-//       String fullPropName = null;
-      
-//       for(AlternateName an : de.getAlternateNames()) {
-//         if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
-//           fullPropName = an.getName();
-//       }
-      
-//       boolean changed = changeTracker.get(fullPropName);
-//       if(changed) {
-//         ReviewEvent event = new ReviewEvent();
-//         event.setUserObject(de); 
-//         event.setReviewed(false);
-//         tracker.reviewChanged(event);
-//       }
-//     }
-
-//   }
   
   private void markHumanReviewed() throws ParserException {
     try{ 
