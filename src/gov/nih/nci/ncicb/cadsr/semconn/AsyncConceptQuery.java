@@ -64,7 +64,7 @@ public class AsyncConceptQuery implements Callable<String> {
         if (found.isEmpty()) {
             for (final String s : words) {
                 final List<Concept> result2 = (List<Concept>) searchEvs(s);
-                if (!result2.isEmpty() && found.isEmpty()) {
+                if (!result2.isEmpty()) {
                     found.addAll(result2);
                 }
             }
@@ -75,6 +75,7 @@ public class AsyncConceptQuery implements Callable<String> {
         }
 
         final String name = ConceptUtil.preferredNameFromConcepts(found);
+        //System.out.println("Concept Preferred Name:" + name);
         //System.err.println(tid + " async call (" + term + ") returned: " + name);
         return name;
     }
@@ -108,6 +109,8 @@ public class AsyncConceptQuery implements Callable<String> {
             }
         }
         cache.put(word.toLowerCase(), result);
+        //for(Concept c : result)
+        //  System.out.println("Concept found: "  + c.getLongName());
         return result;
     }
 }
