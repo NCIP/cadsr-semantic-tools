@@ -40,7 +40,11 @@ public class PreferenceDialog extends JDialog implements ActionListener
     privateApiSearchBox = new JCheckBox(PropertyAccessor.getProperty("preference.private.api")),
     orderOfConceptsBox = new JCheckBox(PropertyAccessor.getProperty("preference.concept.order")),
     showInheritedAttributesBox = new JCheckBox(PropertyAccessor.getProperty("preference.inherited.attributes")),
-    sortElementsBox = new JCheckBox(PropertyAccessor.getProperty("preference.sort.elements"));
+    sortElementsBox = new JCheckBox(PropertyAccessor.getProperty("preference.sort.elements")),
+    preTBox = new JCheckBox(PropertyAccessor.getProperty("concept.validator.preT"));
+
+  
+
   
   private JButton apply = new JButton("Apply");
   private JButton cancel = new JButton("Cancel");
@@ -65,6 +69,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     centerPanel.add(orderOfConceptsBox);
     centerPanel.add(showInheritedAttributesBox);
     centerPanel.add(sortElementsBox);
+    centerPanel.add(preTBox);
 
     this.getContentPane().setLayout(new BorderLayout());
     this.getContentPane().add(centerPanel);
@@ -82,8 +87,10 @@ public class PreferenceDialog extends JDialog implements ActionListener
     UserSelections selections = UserSelections.getInstance();
     RunMode runMode = (RunMode)(selections.getProperty("MODE"));
     
-    if(runMode.equals(RunMode.Curator)) 
+    if(runMode.equals(RunMode.Curator)) {
       associationBox.setVisible(false);
+      preTBox.setVisible(false);
+    }
       
   }
 
@@ -103,6 +110,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
     showInheritedAttributesBox.setSelected(prefs.getShowInheritedAttributes());
     
     sortElementsBox.setSelected(prefs.getSortElements());
+
+    preTBox.setSelected(prefs.getPreTBox());
 
   }
   
@@ -134,6 +143,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
       prefs.setShowInheritedAttributes(showInheritedAttributesBox.isSelected());
 
       prefs.setSortElements(sortElementsBox.isSelected());
+      
+      prefs.setPreTBox(preTBox.isSelected());
       
       if(button.getActionCommand().equals(OK))
         this.dispose();
