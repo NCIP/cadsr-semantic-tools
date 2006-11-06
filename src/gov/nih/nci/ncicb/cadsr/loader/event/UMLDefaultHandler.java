@@ -101,7 +101,7 @@ public class UMLDefaultHandler
     vd.setConceptualDomain(cd);
     
 //     if(concepts.size() > 0)
-      vd.setConceptDerivationRule(createConceptDerivationRule(concepts));
+      vd.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, true));
 
     elements.addElement(vd);
     reviewTracker.put(event.getName(), event.isReviewed());
@@ -127,7 +127,7 @@ public class UMLDefaultHandler
 //     if(noConcept) {
 //       vm.setConceptDerivationRule(createConceptDerivationRule(new ArrayList<Concepts>()));
 //     } else {
-      vm.setConceptDerivationRule(createConceptDerivationRule(concepts));
+      vm.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, true));
 //     }
 
     PermissibleValue pv = DomainObjectFactory.newPermissibleValue();
@@ -161,9 +161,9 @@ public class UMLDefaultHandler
     reviewTracker.put(event.getName(), event.isReviewed());
     
     ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
-    String csiName = null;
+
     String pName = event.getPackageName();
-//     csi.setComments(pName);
+
     csi.setName(pName);
     
     if (!packageList.contains(pName)) {
@@ -497,13 +497,13 @@ public class UMLDefaultHandler
     ocr.setType(ObjectClassRelationship.TYPE_HAS);
 
     ocr.setConceptDerivationRule(
-            createConceptDerivationRule(createConcepts(event)));
+            ConceptUtil.createConceptDerivationRule(createConcepts(event), true));
 
     ocr.setSourceRoleConceptDerivationRule(
-            createConceptDerivationRule(createConcepts(sEvent)));
+            ConceptUtil.createConceptDerivationRule(createConcepts(sEvent), true));
 
     ocr.setTargetRoleConceptDerivationRule(
-            createConceptDerivationRule(createConcepts(tEvent)));
+            ConceptUtil.createConceptDerivationRule(createConcepts(tEvent), true));
     
     if(!aDone)
       logger.debug("!aDone: " + aEvent.getClassName() + " -- " + bEvent.getClassName());
@@ -659,26 +659,6 @@ public class UMLDefaultHandler
     return concepts;
   }
 
-  private ConceptDerivationRule createConceptDerivationRule(List<Concept> concepts) {
-
-    ConceptDerivationRule condr = DomainObjectFactory.newConceptDerivationRule();
-    List<ComponentConcept> compCons = new ArrayList<ComponentConcept>();
- 
-    int c = 0;
-    for(Concept con : concepts) {
-      ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
-      compCon.setConcept(con);
-      compCon.setOrder(concepts.size() - 1 - c);
-      compCon.setConceptDerivationRule(condr);
-      compCons.add(compCon);
-      c++;
-    }
-
-    condr.setComponentConcepts(compCons);
-    return condr;
-    
-
-  }
 
   private void verifyConcepts(AdminComponent cause, List concepts) {
     for(Iterator it = concepts.iterator(); it.hasNext(); ) {
