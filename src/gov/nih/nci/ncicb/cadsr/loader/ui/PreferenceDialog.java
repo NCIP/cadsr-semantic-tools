@@ -41,7 +41,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     orderOfConceptsBox = new JCheckBox(PropertyAccessor.getProperty("preference.concept.order")),
     showInheritedAttributesBox = new JCheckBox(PropertyAccessor.getProperty("preference.inherited.attributes")),
     sortElementsBox = new JCheckBox(PropertyAccessor.getProperty("preference.sort.elements")),
-    preTBox = new JCheckBox(PropertyAccessor.getProperty("concept.validator.preT"));
+    preTBox = new JCheckBox(PropertyAccessor.getProperty("preference.concept.validator.preT"));
 
   
 
@@ -74,7 +74,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     this.getContentPane().setLayout(new BorderLayout());
     this.getContentPane().add(centerPanel);
     this.getContentPane().add(southPanel,BorderLayout.SOUTH);
-    this.setSize(300,225);
+    this.setSize(300,325);
     
     apply.setActionCommand(APPLY);
     cancel.setActionCommand(CANCEL);
@@ -89,6 +89,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     
     if(runMode.equals(RunMode.Curator)) {
       associationBox.setVisible(false);
+    } else {
       preTBox.setVisible(false);
     }
       
