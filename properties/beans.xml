@@ -27,6 +27,7 @@
     <property name="parser"><ref bean="xmiParser2"/></property>
     <property name="persister"><ref bean="mainPersister"/></property>
     <property name="userPreferences"><ref bean="usersPreferences"/></property>
+    <property name="dataSource"><ref bean="dataSource"/></property>
   </bean>
 
   <bean name="wizardController"
