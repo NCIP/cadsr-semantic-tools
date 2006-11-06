@@ -8,6 +8,8 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +25,7 @@ public class ConceptValidator implements Validator
 {
   private ValidationItems items = ValidationItems.getInstance();
   
-  private EvsModule module = new EvsModule("PRE_NCI_Thesaurus");
+  private EvsModule module;
   
   private ProgressListener progressListener;
   
@@ -36,6 +38,8 @@ public class ConceptValidator implements Validator
   }
   
   public ValidationItems validate() {
+
+    module = new EvsModule(UserPreferences.getInstance().getPreTBox()?"PRE_NCI_Thesaurus":"NCI_Thesaurus");
 
     List<Concept> concepts = ElementsLists.getInstance().
             getElements(DomainObjectFactory.newConcept());
