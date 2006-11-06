@@ -104,7 +104,6 @@ public class UMLLoader {
     } else 
       UserSelections.getInstance().setProperty("ignore-vd", new Boolean(false));
 
-
     loader.run(args[0], args[1], projectVersion);
 
   }
@@ -126,8 +125,7 @@ public class UMLLoader {
     RunMode mode = RunMode.Loader;
     userSelections.setProperty("MODE", mode);
     userSelections.setProperty("SKIP_VD_VALIDATION", true);
-
-
+    
     String[] filenames = new File(fileDir).list(new FilenameFilter() {
 	public boolean accept(File dir, String name) {
 	  return name.endsWith(".xmi");
@@ -217,6 +215,8 @@ public class UMLLoader {
 
     persister.persist();
 
+    logger.info("refreshing database views");
+    
     // Refresh the views
     Connection conn = null;
     CallableStatement cs = null;
@@ -233,9 +233,10 @@ public class UMLLoader {
             conn.close();
         }
     }
+
+    logger.info("refreshed databased views");
     
     progressFrame.dispose();
-
   }
 
   public void setValidator(Validator validator) {
