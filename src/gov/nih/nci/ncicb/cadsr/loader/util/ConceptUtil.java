@@ -89,4 +89,29 @@ public class ConceptUtil {
     return conceptCodes;
   }
 
+  /**
+   * transforms list of concepts into concept derivation rule.
+   * @param reverseOrder set to true to reverse the order of concepts.
+   */
+  public static ConceptDerivationRule createConceptDerivationRule(List<Concept> concepts, boolean reverseOrder) {
+
+    ConceptDerivationRule condr = DomainObjectFactory.newConceptDerivationRule();
+    List<ComponentConcept> compCons = new ArrayList<ComponentConcept>();
+ 
+    int c = 0;
+    for(Concept con : concepts) {
+      ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
+      compCon.setConcept(con);
+      compCon.setOrder(concepts.size() - 1 - c);
+      compCon.setConceptDerivationRule(condr);
+      compCons.add(compCon);
+      c++;
+    }
+
+    condr.setComponentConcepts(compCons);
+    return condr;
+    
+
+  }
+
 }

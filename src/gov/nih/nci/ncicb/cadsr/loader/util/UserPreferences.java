@@ -168,6 +168,17 @@ public class UserPreferences {
     fireUserPreferencesEvent(event);
   }
 
+
+  public boolean getPreTBox() 
+  {
+    return prefs.getBoolean("conceptValidatePreT", false);
+  }
+  
+  public void setPreTBox(boolean b) 
+  {
+    prefs.putBoolean("conceptValidatePreT", b);
+  }
+
   public boolean getSortElements() 
   {
     return prefs.getBoolean("sortElements", false);
