@@ -12,8 +12,10 @@ import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -48,9 +50,16 @@ public class ConceptValidator implements Validator
     final BlockingQueue<Future> futures = new LinkedBlockingQueue<Future>();
     final Map<Future,Concept> futureConceptMap = new HashMap<Future,Concept>();
     
+    Set<String> seenConcepts = new HashSet<String>();
+    
     for(final Concept concept : concepts) 
     {
-      Future<ValidatedConcept> future = executor.submit(new Callable<ValidatedConcept>() {
+        if (seenConcepts.contains(concept.getPreferredName())) {
+            continue;
+        }
+        seenConcepts.add(concept.getPreferredName());
+        
+        Future<ValidatedConcept> future = executor.submit(new Callable<ValidatedConcept>() {
           public ValidatedConcept call() throws Exception {
             EvsResult result = module.findByConceptCode(concept.getPreferredName(), false);
             Collection<EvsResult> nameResult = 
@@ -76,15 +85,17 @@ public class ConceptValidator implements Validator
         progressListener.newProgressEvent(event);
       }
 
-      ValidatedConcept vc = null;
+      EvsResult result = null;
+      Collection<EvsResult> nameResult = null;
       try {
         // block until the future is ready
-        vc = future.get();
+        ValidatedConcept vc = future.get();
+        result = vc.getResult();
+        nameResult = vc.getNameResult();
       }
       catch (Exception e) {
         e.printStackTrace();
       }
-      EvsResult result = vc.getResult();
       if(result != null) {
         if(con.getLongName() == null || 
                 !con.getLongName().equals(result.getConcept().getLongName())) {
@@ -106,7 +117,6 @@ public class ConceptValidator implements Validator
         }
       }
 
-      Collection<EvsResult> nameResult = vc.getNameResult();
       if(nameResult != null && nameResult.size() == 1) 
       {
         for(EvsResult name : nameResult) { 

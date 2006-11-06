@@ -8,6 +8,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
+import gov.nih.nci.ncicb.cadsr.loader.persister.OCRRoleNameBuilder;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
@@ -21,7 +22,6 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -106,8 +106,6 @@ public class ValidateConceptsDialog extends JDialog
         event.setMessage("Validating Concepts");
         progressPanel.newProgressEvent(event);
         
-        int pStatus = 0;
-        
         ValidationItems.getInstance().clear();
         
         ConceptValidator conValidator = new ConceptValidator();
@@ -147,14 +145,16 @@ public class ValidateConceptsDialog extends JDialog
         
         List<DataElement> des = ElementsLists.getInstance().
             getElements(DomainObjectFactory.newDataElement());
-     
+
+        List<ObjectClassRelationship> ocrs = ElementsLists.getInstance().
+            getElements(DomainObjectFactory.newObjectClassRelationship());
 
         for(ObjectClass oc : ocs)
           for(Concept concept : errorList.keySet()) {
             String temp = oc.getPreferredName();
             String split[] = temp.split(":");
             for(int i = 0; i < split.length; i++)
-              if(split[i].equals(concept.getPreferredName()))
+              if(split[i].equals(concept.getPreferredName())) 
                 wrapperList.add(new AcListElementWrapper(oc, concept));
           }
         
@@ -176,11 +176,11 @@ public class ValidateConceptsDialog extends JDialog
           }
           }
         }
-        
+
         for(ObjectClass oc : ocs)
           for(Concept concept : errorNameList.keySet()) {
             String temp = oc.getLongName();
-              if(temp.equals(concept.getLongName()))
+              if(temp.equals(concept.getLongName())) 
                 wrapperList.add(new AcListElementWrapper(oc, concept));
           }
         
@@ -200,8 +200,37 @@ public class ValidateConceptsDialog extends JDialog
           }
           }
         }
-        
-        // TODO: add ObjectClassRelationship? 
+
+        for(ObjectClassRelationship ocr : ocrs) {
+            
+          ConceptDerivationRule cdr = ocr.getConceptDerivationRule();
+          for(ComponentConcept cc : cdr.getComponentConcepts()) {
+              for(Concept concept : errorList.keySet()) {
+                  if (cc.getConcept().getPreferredName().equals(
+                          concept.getPreferredName())) {
+                      wrapperList.add(new AcListElementWrapper(ocr, concept));
+                  }
+              }
+          }
+          cdr = ocr.getSourceRoleConceptDerivationRule();
+          for(ComponentConcept cc : cdr.getComponentConcepts()) {
+              for(Concept concept : errorList.keySet()) {
+                  if (cc.getConcept().getPreferredName().equals(
+                          concept.getPreferredName())) {
+                      wrapperList.add(new AcListElementWrapper(ocr, "Source", concept));
+                  }
+              }
+          }
+          cdr = ocr.getTargetRoleConceptDerivationRule();
+          for(ComponentConcept cc : cdr.getComponentConcepts()) {
+              for(Concept concept : errorList.keySet()) {
+                  if (cc.getConcept().getPreferredName().equals(
+                          concept.getPreferredName())) {
+                      wrapperList.add(new AcListElementWrapper(ocr, "Target", concept));
+                  }
+              }
+          }
+        }
         
         event = new ProgressEvent();
         event.setMessage("Done ");
@@ -296,8 +325,22 @@ public class ValidateConceptsDialog extends JDialog
         evsByNamePane.setText(getHighlightConceptHtmlByName(errorNameList.get(value.getConcept())));
         evsByNamePane.setCaretPosition(0);
                 
-        int ind = value.getAc().getLongName().lastIndexOf(".");
-        String className = value.getAc().getLongName().substring(ind + 1);
+
+        AdminComponent ac = value.getAc();
+        
+        // TODO: this is slightly ugly, is there a better name way?
+        if (ac instanceof ObjectClassRelationship) {
+            ObjectClassRelationship ocr = (ObjectClassRelationship)ac;
+            OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
+            String displayName = nameBuilder.buildDisplayRoleName(ocr);
+            SearchEvent searchEvent = new SearchEvent(displayName, false,false,true);
+            searchEvent.setExactMatch(true);
+            fireSearchEvent(searchEvent);
+            return;
+        }
+        
+        int ind = ac.getLongName().lastIndexOf(".");
+        String className = ac.getLongName().substring(ind + 1);
         String split[] = className.split(":");
         if(split.length > 1) {
           className = split[0];
@@ -422,15 +465,27 @@ public class ValidateConceptsDialog extends JDialog
 {
   private T ac;
   private Concept con;
-  
+  private String subComponent;
+
   AcListElementWrapper(T ac, Concept con) 
   {
     this.ac = ac;
     this.con = con;
+    this.subComponent = null;
+  }
+  AcListElementWrapper(T ac, String subComponent, Concept con) 
+  {
+    this.ac = ac;
+    this.con = con;
+    this.subComponent = subComponent;
   }
   T getAc() 
   {
     return ac;
+  }
+  
+  public String getSubComponent() {
+    return subComponent;
   }
   
   Concept getConcept() 
@@ -486,10 +541,28 @@ class MyCellRenderer extends JLabel implements ListCellRenderer {
      {
   
         AcListElementWrapper acW = (AcListElementWrapper)value;
+        AdminComponent ac = acW.getAc();
         
-        int ind = acW.getAc().getLongName().lastIndexOf(".");
-        String className = acW.getAc().getLongName().substring(ind + 1);
-        setText(className);
+        // TODO: this is slightly ugly, is there a better name way?
+        if (ac instanceof ObjectClassRelationship) {
+            ObjectClassRelationship ocr = (ObjectClassRelationship)ac;
+            OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
+            String displayName = nameBuilder.buildDisplayRoleName(ocr);
+            String subComponent = acW.getSubComponent();
+            if (subComponent != null) {
+                setText(displayName+" "+subComponent);
+            }
+            else {
+                setText(displayName);
+            }
+            
+        }
+        else {
+            int ind = ac.getLongName().lastIndexOf(".");
+            String className = ac.getLongName().substring(ind + 1);
+            setText(className);
+        }
+        
         if (isSelected) {
              setBackground(list.getSelectionBackground());
                setForeground(list.getSelectionForeground());
