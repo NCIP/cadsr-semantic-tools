@@ -44,7 +44,7 @@ public class OcRecPersister extends UMLPersister {
 
   public void persist() throws PersisterException {
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
-    List ocrs = (List) elements.getElements(ocr.getClass());
+    List ocrs = elements.getElements(ocr);
 
     if (ocrs != null) {
       for (ListIterator it = ocrs.listIterator(); it.hasNext();) {
@@ -118,6 +118,11 @@ tocr:
 	ocr2.setSourceRole(ocr.getSourceRole());
 	ocr2.setTarget(ocr.getTarget());
 	ocr2.setTargetRole(ocr.getTargetRole());
+    ocr2.setDirection(ocr.getDirection());
+    ocr2.setSourceLowCardinality(ocr.getSourceLowCardinality());
+    ocr2.setSourceHighCardinality(ocr.getSourceHighCardinality());
+    ocr2.setTargetLowCardinality(ocr.getTargetLowCardinality());
+    ocr2.setTargetHighCardinality(ocr.getTargetHighCardinality());
 
 	List eager = new ArrayList();
 	eager.add(EagerConstants.AC_CS_CSI);
