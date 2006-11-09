@@ -83,7 +83,7 @@ public class ProgressFrame extends JFrame
 
 //     msgLabel = new JLabel();
 
-    this.setSize(600, 100);
+    this.setSize(600, 200);
     
     progressPanel = new ProgressPanel(maximum);
 
