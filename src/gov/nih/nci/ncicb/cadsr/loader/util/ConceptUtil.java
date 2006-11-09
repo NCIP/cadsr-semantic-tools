@@ -72,12 +72,13 @@ public class ConceptUtil {
   }
 
   public static String[] getConceptCodes(ValueMeaning vm) {
-    List<ComponentConcept> compCons = vm.getConceptDerivationRule().getComponentConcepts();
-    String[] conceptCodes = new String[compCons.size()];
-    for(int i = 0; i < compCons.size(); i++) 
-      conceptCodes[compCons.size()-i-1] = compCons.get(i).getConcept().getPreferredName();
+    return getConceptCodes(vm.getConceptDerivationRule());
+//     List<ComponentConcept> compCons = vm.getConceptDerivationRule().getComponentConcepts();
+//     String[] conceptCodes = new String[compCons.size()];
+//     for(int i = 0; i < compCons.size(); i++) 
+//       conceptCodes[compCons.size()-i-1] = compCons.get(i).getConcept().getPreferredName();
     
-    return conceptCodes;
+//     return conceptCodes;
   }
 
   public static String[] getConceptCodes(ConceptDerivationRule conDR) {
@@ -104,7 +105,7 @@ public class ConceptUtil {
       compCon.setConcept(con);
       compCon.setOrder(concepts.size() - 1 - c);
       compCon.setConceptDerivationRule(condr);
-      compCons.add(compCon);
+      compCons.add(0, compCon);
       c++;
     }
 
