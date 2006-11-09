@@ -513,7 +513,7 @@ public class MainFrame extends JFrame
           }
       }
       
-      if((event.getInNewTab() == true) || (viewPanels.size() == 0)
+      if(event.getInNewTab() == true || viewPanels.size() == 0 
           || viewTabbedPane.getSelectedComponent() instanceof AssociationViewPanel
           || viewTabbedPane.getSelectedComponent() instanceof ValueDomainViewPanel) {
         UMLElementViewPanel viewPanel = new UMLElementViewPanel(node);
