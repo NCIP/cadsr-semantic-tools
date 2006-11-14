@@ -178,7 +178,7 @@ public class XMIParser2 implements Parser {
     try {
 
       RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
-      if(runMode.equals(RunMode.Curator)) {
+      if(runMode.equals(RunMode.Curator) || (runMode.equals(RunMode.GenerateReport))) {
         reviewTag = TV_CURATOR_REVIEWED;
       } else {
         reviewTag = TV_OWNER_REVIEWED;
