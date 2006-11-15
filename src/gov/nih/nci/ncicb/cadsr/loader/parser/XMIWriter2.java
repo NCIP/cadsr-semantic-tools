@@ -170,8 +170,8 @@ public class XMIWriter2 implements ElementWriter {
         Collection<UMLTaggedValue> allTvs = att.getTaggedValues();
         for(UMLTaggedValue tv : allTvs) {
           if(tv.getName().startsWith("Property") ||
-             tv.getName().startsWith("PropertyQualifier"));
-          att.removeTaggedValue(tv.getName());
+             tv.getName().startsWith("PropertyQualifier"))
+            att.removeTaggedValue(tv.getName());
         }
 
         // Map to Existing DE
