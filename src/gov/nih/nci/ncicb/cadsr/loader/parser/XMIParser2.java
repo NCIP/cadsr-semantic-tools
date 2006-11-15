@@ -64,7 +64,7 @@ public class XMIParser2 implements Parser {
   
   private ProgressListener progressListener = null;
 
-  public final static String VD_STEREOTYPE = "CADSR Value Domain";
+//   public final static String VD_STEREOTYPE = "CADSR Value Domain";
 
   public static final String TV_PROP_ID = "CADSR_PROP_ID";
   public static final String TV_PROP_VERSION = "CADSR_PROP_VERSION";
@@ -166,6 +166,8 @@ public class XMIParser2 implements Parser {
   {
     bannedClassNames = PropertyAccessor.getProperty("banned.classNames").split(",");
   }
+  public static final String[] validVdStereotypes = 
+    PropertyAccessor.getProperty("vd.valid.stereotypes").split(",");
 
   public void setEventHandler(LoaderHandler handler) {
     this.listener = (UMLHandler) handler;
@@ -317,12 +319,17 @@ public class XMIParser2 implements Parser {
     className = clazz.getName();
 
     String st = clazz.getStereotype();
-    if(st != null)
-      if(st.equals(VD_STEREOTYPE)) {
+    if(st != null) {
+      boolean foundVd = false;
+      for(int i=0; i<validVdStereotypes.length; i++) {
+        if(st.equalsIgnoreCase(validVdStereotypes[i])) foundVd = true;
+      }
+      if(foundVd) {
         doValueDomain(clazz);
         return;
       }
-    
+    }
+      
     if (pName != null) {
       className = pName + "." + className;
     }
