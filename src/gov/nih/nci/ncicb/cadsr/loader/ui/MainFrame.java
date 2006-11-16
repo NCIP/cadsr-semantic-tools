@@ -315,13 +315,7 @@ public class MainFrame extends JFrame
         JFileChooser chooser = new JFileChooser(saveDir);
         javax.swing.filechooser.FileFilter filter = 
             new javax.swing.filechooser.FileFilter() {
-              String fileExtension = null;
-              {
-                if(runMode.equals(RunMode.Curator)) 
-                  fileExtension = "csv";
-                else if(runMode.equals(RunMode.Reviewer)) 
-                  fileExtension = "xmi";
-              }
+              String fileExtension = "xmi";
 
               public boolean accept(File f) {
                 if (f.isDirectory()) {
@@ -338,12 +332,7 @@ public class MainFrame extends JFrame
         int returnVal = chooser.showSaveDialog(null);
           if(returnVal == JFileChooser.APPROVE_OPTION) {
             String filePath = chooser.getSelectedFile().getAbsolutePath();
-	    String fileExtension = "xmi";
-
-	    if(runMode.equals(RunMode.Curator)) 
-	      fileExtension = "csv";
-            else if(runMode.equals(RunMode.Reviewer)) 
-	      fileExtension = "xmi";
+        String fileExtension = "xmi";
 
 	    if(!filePath.endsWith(fileExtension))
 	      filePath = filePath + "." + fileExtension;
