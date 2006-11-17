@@ -78,9 +78,13 @@ public class ValueDomainViewPanel extends JPanel
     vdPrefDefValueTextField.setText(vd.getPreferredDefinition());
     vdDatatypeValueLabel.setText(vd.getDataType());
     vdTypeValueLabel.setText(vd.getVdType());
-    vdCdIdValueLabel.setText(vd.getConceptualDomain().getPublicId());
-    vdCdLongNameValueLabel.setText(vd.getConceptualDomain().getLongName());
-    
+    vdCdIdValueLabel.setText(vd.getConceptualDomain().getPublicId() +
+      " / " + vd.getConceptualDomain().getVersion());
+    if(vd.getConceptualDomain().getLongName() != null
+        && !vd.getConceptualDomain().getLongName().equals(""))
+      vdCdLongNameValueLabel.setText(vd.getConceptualDomain().getLongName());
+    else
+      vdCdLongNameValueLabel.setText("Unable to lookup CD Long Name");
   }
   
   private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
