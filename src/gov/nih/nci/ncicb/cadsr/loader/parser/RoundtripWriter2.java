@@ -171,7 +171,14 @@ public class RoundtripWriter2 implements ElementWriter {
  
     for(UMLClass clazz : pkg.getClasses()) {
       String className = null;
-      if(clazz.getStereotype() != null && clazz.getStereotype().equals(XMIParser2.VD_STEREOTYPE)) {
+
+      String st = clazz.getStereotype();
+      boolean foundVd = false;
+      if(st != null)
+        for(int i=0; i < XMIParser2.validVdStereotypes.length; i++) {
+          if(st.equalsIgnoreCase(XMIParser2.validVdStereotypes[i])) foundVd = true;
+        }
+      if(foundVd) {
         className = "ValueDomains." + clazz.getName();
       } else {
         className = getPackageName(pkg) + "." + clazz.getName();
