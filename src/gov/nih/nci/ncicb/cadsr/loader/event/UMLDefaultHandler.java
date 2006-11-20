@@ -29,6 +29,7 @@ import java.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.persister.OCRRoleNameBuilder;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.*;
 import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
 
@@ -123,7 +124,10 @@ public class UMLDefaultHandler
 
     ValueMeaning vm = DomainObjectFactory.newValueMeaning();
     vm.setLongName(event.getName());
-    
+
+    vm.setLifecycle(UMLDefaults.getInstance().getLifecycle());
+    vm.setPreferredDefinition(event.getDescription());
+
 //     if(noConcept) {
 //       vm.setConceptDerivationRule(createConceptDerivationRule(new ArrayList<Concepts>()));
 //     } else {

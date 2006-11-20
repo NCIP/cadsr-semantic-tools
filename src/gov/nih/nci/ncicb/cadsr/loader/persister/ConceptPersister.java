@@ -67,6 +67,7 @@ public class ConceptPersister extends UMLPersister {
           c.setOrigin(defaults.getOrigin());
           c.setEvsSource(PropertyAccessor.getProperty("default.evsSource"));
           c.setId(conceptDAO.create(c));
+          c.setLifecycle(defaults.getLifecycle());
           logger.info(PropertyAccessor.getProperty("created.concept"));
           LogUtil.logAc(c, logger);
         } else { // concept exist: See if we need to add alternate def.

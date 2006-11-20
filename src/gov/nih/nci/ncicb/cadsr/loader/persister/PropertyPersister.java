@@ -98,6 +98,7 @@ public class PropertyPersister extends UMLPersister {
 	  prop.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
 	  prop.setAudit(defaults.getAudit());
           prop.setOrigin(defaults.getOrigin());
+          prop.setLifecycle(defaults.getLifecycle());
 
           logger.debug("property: " + prop.getLongName());
 

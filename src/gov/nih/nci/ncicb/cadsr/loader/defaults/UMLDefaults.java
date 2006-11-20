@@ -50,6 +50,7 @@ public class UMLDefaults {
 
   // default Audit holds username
   private Audit audit;
+  private Lifecycle lifecycle;
   private Map packageCsCsis = new HashMap();
 
   private Map params = new HashMap();
@@ -102,6 +103,8 @@ public class UMLDefaults {
   private void initParams() throws PersisterException {
 
     audit = DomainObjectFactory.newAudit();
+    lifecycle = DomainObjectFactory.newLifecycle();
+    lifecycle.setBeginDate(new java.util.Date(System.currentTimeMillis()));
 
     origin = PropertyAccessor.getProperty("default.origin");
 
@@ -295,6 +298,12 @@ public class UMLDefaults {
   public Audit getAudit() {
     return audit;
   }
+
+  public Lifecycle getLifecycle() {
+    return lifecycle;
+  }
+
+
   /**
    * @return package cs_csi
    */
@@ -355,5 +364,6 @@ public class UMLDefaults {
     } catch (PersisterException e){
     } // end of try-catch
   }
+
 
 }
