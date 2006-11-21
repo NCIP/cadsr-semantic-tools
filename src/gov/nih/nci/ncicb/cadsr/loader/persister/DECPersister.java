@@ -149,6 +149,7 @@ public class DECPersister extends UMLPersister {
 // 	  }
 
 	  dec.setAudit(defaults.getAudit());
+          dec.setLifecycle(defaults.getAudit());
 
 //           List altDefs = new ArrayList(dec.getDefinitions());
 //           List altNames = new ArrayList(dec.getAlternateNames());

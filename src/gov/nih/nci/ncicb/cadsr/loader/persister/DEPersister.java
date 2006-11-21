@@ -101,6 +101,7 @@ public class DEPersister extends UMLPersister {
                                         );
               
               de.setAudit(defaults.getAudit());
+              de.setLifecycle(defaults.getLifecycle());
               logger.debug("Creating DE: " + de.getLongName());
               List<AlternateName> altNames = new ArrayList(de.getAlternateNames());
               List<Definition> altDefs = new ArrayList(de.getDefinitions());

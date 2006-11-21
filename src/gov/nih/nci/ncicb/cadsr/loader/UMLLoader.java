@@ -34,13 +34,14 @@ import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationWarning;
 import gov.nih.nci.ncicb.cadsr.loader.validator.Validator;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.*;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
@@ -73,6 +74,8 @@ public class UMLLoader {
   private UserPreferences prefs;
   
   private DataSource dataSource;
+
+  private java.util.List<RunModeListener> runModeListeners = new ArrayList<RunModeListener>();
   
   /**
    *
@@ -173,6 +176,9 @@ public class UMLLoader {
         } catch (Exception e){
         } // end of try-catch
     }
+
+
+    fireNewRunMode(mode);
     
     for(int i=0; i<filenames.length; i++) {
       logger.info(PropertyAccessor.getProperty("startingFile", filenames[i]));
@@ -237,6 +243,8 @@ public class UMLLoader {
     logger.info("refreshed databased views");
     
     progressFrame.dispose();
+
+    System.exit(0);
   }
 
   public void setValidator(Validator validator) {
@@ -257,6 +265,14 @@ public class UMLLoader {
 
   public void setDataSource(DataSource dataSource) {
     this.dataSource = dataSource;
+  }
+  public void setRunModeListeners(java.util.List<RunModeListener> listeners) {
+    this.runModeListeners = listeners;
+  }
+
+  private void fireNewRunMode(RunMode runMode) {
+    for(RunModeListener l : runModeListeners)
+      l.setRunMode(runMode);
   }
 
 }
