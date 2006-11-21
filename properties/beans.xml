@@ -28,6 +28,11 @@
     <property name="persister"><ref bean="mainPersister"/></property>
     <property name="userPreferences"><ref bean="usersPreferences"/></property>
     <property name="dataSource"><ref bean="dataSource"/></property>
+    <property name="runModeListeners">
+      <list>
+        <ref bean="umlEventHandler"/>
+      </list>
+    </property>
   </bean>
 
   <bean name="wizardController"
