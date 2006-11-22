@@ -218,7 +218,7 @@ public class ConceptEditorPanel extends JPanel
          "Duplicate Mapping with " + LookupUtil.lookupFullName((DataElement)ac),
          "Same Concept List",
          JOptionPane.ERROR_MESSAGE);
-      throw new ApplyException("Same Concept List");
+      //throw new ApplyException("Same Concept List");
     }
     
     
