@@ -38,8 +38,19 @@ public class FreestyleModule {
   }
 
 
-  public void setDatasource(DataSource ds) {
-    search.setDataDescription(ds);
+//   public void setDatasource(DataSource ds) {
+//     search.setDataDescription(ds);
+//   }
+  
+  public void setDatasourceLocation(String location) 
+  {
+    search.setDataDescription(location);
   }
+  public void setPublicApi(String publicApi) 
+  {
+    search.setCoreApiUrl(publicApi);
+  }
+
+  
 
 }
