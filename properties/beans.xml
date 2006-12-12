@@ -158,8 +158,11 @@
   <bean name="freestyleModule"
     class="gov.nih.nci.ncicb.cadsr.loader.ext.FreestyleModule" 
     singleton="true">
-    <property name="datasource">
-      <ref bean="dataSource"/>
+    <property name="datasourceLocation">
+      <value>--Freestyle URL Here--</value>
+    </property>
+    <property name="publicApi">
+      <value>--Public API URL Here--</value>
     </property>
   </bean>
 
