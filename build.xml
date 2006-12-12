@@ -115,6 +115,7 @@
     <replace file="${class.dir}/beans.xml" 
       propertyFile="deploy.properties">
       <replacefilter token="--Public API URL Here--" property="publicAPI.${target.env}"/>
+      <replacefilter token="--Freestyle URL Here--" property="freestyle.${target.env}"/>
     </replace>
 
   </target>
