@@ -119,6 +119,11 @@
       <replacefilter token="--DatatypeMapping URL Here--" property="datatypeMapping.${target.env}"/>
     </replace>
 
+    <replace file="${class.dir}/resources.properties" 
+      propertyFile="deploy.properties">
+      <replacefilter token="--Public API URL Here--" property="publicAPI.${target.env}"/>
+    </replace>
+
   </target>
 
   <target name="dist" depends="prepare">
