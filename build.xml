@@ -98,7 +98,7 @@
         <include name="beans.xml"/>
         <!--        <include name="spring-datasources.xml"/> -->
         <include name="ehcache.xml"/>
-        <include name="datatype-mapping.xml"/>
+        <!--        <include name="datatype-mapping.xml"/> -->
         <include name="about.html"/>
       </fileset>
       <fileset dir="${images.dir}">
@@ -116,6 +116,7 @@
       propertyFile="deploy.properties">
       <replacefilter token="--Public API URL Here--" property="publicAPI.${target.env}"/>
       <replacefilter token="--Freestyle URL Here--" property="freestyle.${target.env}"/>
+      <replacefilter token="--DatatypeMapping URL Here--" property="datatypeMapping.${target.env}"/>
     </replace>
 
   </target>
@@ -140,6 +141,9 @@
       <fileset dir="${lib.dir}/cacore">
         <include name="cacore32-client.jar"/>
       </fileset>
+    </copy>
+    <copy file="${config.dir}/datatype-mapping.xml"
+      tofile="${dist.dir}/datatype-mapping.xml">
     </copy>
     <copy todir="${dist.dir}/lib">
       <fileset dir="${lib.dir}">
