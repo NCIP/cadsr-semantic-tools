@@ -70,39 +70,48 @@ public class DatatypeMapping {
 
   private static String userFilename = "user-datatype-mapping.xml";
 
-  static {
+  private DatatypeMapping() 
+  {}
+
+  public static DatatypeMapping createInstance() 
+  {
+    return new DatatypeMapping();
+  }
+
+  public void setMappingURL(String mappingURL) 
+  {
     // create url from xml file
-     String systemFilename = "datatype-mapping.xml";
-     
-     URL url = null;     
-     
-     try {
-       url = Thread.currentThread().getContextClassLoader().getResource(systemFilename);
-       systemMapping = DatatypeMappingXMLUtil.readMapping(url);
-       vdMapping.putAll(systemMapping);
-       
-       UserSelections selections = UserSelections.getInstance();
-       String name = (String) selections.getProperty("FILENAME");
-       
-       if (name != null) {
-	 File userFile = new File(name);
-	 userFile = new File(userFile.getParent()+ "/" + userFilename);
-	 
-	 if(userFile.exists()) {
-	   url = new URL("file:///" + userFile.toString());
-	   userMapping = DatatypeMappingXMLUtil.readMapping(url);
-	 } else 
-	   userMapping = new HashMap();
-	 
-	 updateVdMapping();
-       } 
-	 
-     } catch (Exception e){
-       logger.fatal("Resource Properties could not be loaded (" + systemFilename + "). Exiting now.");
-       logger.fatal(e.getMessage());
-       System.exit(1);
-     } // end of try-catch
-     
+    String systemFilename = mappingURL;
+    
+    URL url = null;     
+    
+    try {
+      //        url = Thread.currentThread().getContextClassLoader().getResource(systemFilename);
+      
+      url = new URL(systemFilename);
+      systemMapping = DatatypeMappingXMLUtil.readMapping(url);
+      vdMapping.putAll(systemMapping);
+      
+      UserSelections selections = UserSelections.getInstance();
+      String name = (String) selections.getProperty("FILENAME");
+      
+      if (name != null) {
+        File userFile = new File(name);
+        userFile = new File(userFile.getParent()+ "/" + userFilename);
+	
+        if(userFile.exists()) {
+          url = new URL("file:///" + userFile.toString());
+          userMapping = DatatypeMappingXMLUtil.readMapping(url);
+        } else 
+          userMapping = new HashMap();
+        
+        updateVdMapping();
+      } 
+    } catch (Exception e){
+      logger.fatal("Resource Properties could not be loaded (" + systemFilename + "). Exiting now.");
+      logger.fatal(e.getMessage());
+      System.exit(1);
+    } // end of try-catch
   }
   
   public static void writeUserMapping(Map datatypes) 
