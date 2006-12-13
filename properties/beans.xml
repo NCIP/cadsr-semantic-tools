@@ -77,6 +77,12 @@
     class="gov.nih.nci.ncicb.cadsr.loader.event.UMLDefaultHandler">
   </bean>
 
+  <bean name="datatypeMapping"
+    class="gov.nih.nci.ncicb.cadsr.loader.util.DatatypeMapping"
+    factory-method="createInstance">
+    <property name="mappingURL"><value>--DatatypeMapping URL Here--</value></property>
+  </bean>
+
   <!--
   <bean name="xmiParser"
     class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser">
