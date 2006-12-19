@@ -459,7 +459,7 @@ public class WizardController implements ActionListener {
     comp.setLocation((screenSize.width - comp.getSize().width) / 2, (screenSize.height - comp.getSize().height) / 2);
   }
 
-  public void setRountripAction(RoundtripAction action) {
+  public void setRoundtripAction(RoundtripAction action) {
     this.roundtripAction = action;
   }
   public void setXmiParser(gov.nih.nci.ncicb.cadsr.loader.parser.Parser parser) {
