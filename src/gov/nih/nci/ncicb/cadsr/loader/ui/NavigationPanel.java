@@ -49,6 +49,9 @@ import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesEvent;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesListener;
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.*;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -109,6 +112,8 @@ public class NavigationPanel extends JPanel
   private JCheckBoxMenuItem inheritedAttItem, assocItem, sortItem;
 
   private TreePath selectedPath;
+
+  private ReviewTracker reviewTracker;
   
   public NavigationPanel()
   {
@@ -118,6 +123,14 @@ public class NavigationPanel extends JPanel
         TreeBuilder.getInstance().addTreeListener(this);
         UserPreferences prefs = UserPreferences.getInstance();
         prefs.addUserPreferencesListener(this);
+
+	RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
+	if(runMode.equals(RunMode.Curator)) {
+	  reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
+	} else {
+	  reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner);
+	}
+      
       }
     catch(Exception e)
       {
@@ -421,6 +434,14 @@ public class NavigationPanel extends JPanel
       if((o instanceof ClassNode)
          || (o instanceof AttributeNode)
          ) {
+	//don't display inherited attributes details
+	if(o instanceof AttributeNode) {
+	  AttributeNode attNode = (AttributeNode)o;
+	    UMLNode node = (UMLNode)attNode;
+	  Boolean reviewed = reviewTracker.get(node.getFullPath());
+	  if(reviewed == null) 
+	    return;
+	}
         ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
         evt.setViewObject(dmtn.getUserObject());
         evt.setInNewTab(false);
