@@ -214,16 +214,14 @@ public class MainFrame extends JFrame
 
 //     runMenu.add(validateMenuItem);
     if(runMode.equals(RunMode.Reviewer)) {
-      //runMenu.add(uploadMenuItem); 
-      //uploadMenuItem.setEnabled(false);
-      //runMenu.addSeparator();
       runMenu.add(defaultsMenuItem);
       mainMenuBar.add(runMenu);
     }
 
-    if(runMode.equals(RunMode.Curator))
+    if(runMode.equals(RunMode.Curator)) {
       runMenu.add(validateConceptsMenuItem);
-      
+      mainMenuBar.add(runMenu);
+    }
 
     helpMenu.add(indexMenuItem);
     helpMenu.addSeparator();

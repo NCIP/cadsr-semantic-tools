@@ -55,6 +55,8 @@
 
   <target name="clean">
     <delete dir="${class.dir}" failonerror="true" />
+    <delete dir="${dist.dir}/lib"/>
+    <delete dir="${dist.dir}/siw.jnlp"/>
   </target>
 
   <available file="${lib.dir}/cadsr-api.jar" property="available.cadsr"/>

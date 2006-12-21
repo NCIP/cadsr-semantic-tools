@@ -49,6 +49,9 @@
     <property name="validator">
       <ref bean="mainValidator"/>
     </property>
+    <property name="roundtripAction">
+      <ref bean="roundtripAction"/>
+    </property>
   </bean>
 
   <bean name="semanticConnector"
