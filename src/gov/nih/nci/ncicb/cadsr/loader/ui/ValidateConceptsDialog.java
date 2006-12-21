@@ -204,6 +204,7 @@ public class ValidateConceptsDialog extends JDialog
         for(ObjectClassRelationship ocr : ocrs) {
             
           ConceptDerivationRule cdr = ocr.getConceptDerivationRule();
+          if(cdr != null)
           for(ComponentConcept cc : cdr.getComponentConcepts()) {
               for(Concept concept : errorList.keySet()) {
                   if (cc.getConcept().getPreferredName().equals(
@@ -213,6 +214,7 @@ public class ValidateConceptsDialog extends JDialog
               }
           }
           cdr = ocr.getSourceRoleConceptDerivationRule();
+          if(cdr != null)
           for(ComponentConcept cc : cdr.getComponentConcepts()) {
               for(Concept concept : errorList.keySet()) {
                   if (cc.getConcept().getPreferredName().equals(
@@ -222,6 +224,7 @@ public class ValidateConceptsDialog extends JDialog
               }
           }
           cdr = ocr.getTargetRoleConceptDerivationRule();
+          if(cdr != null)
           for(ComponentConcept cc : cdr.getComponentConcepts()) {
               for(Concept concept : errorList.keySet()) {
                   if (cc.getConcept().getPreferredName().equals(
