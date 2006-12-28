@@ -31,6 +31,16 @@ public class FreestyleModule {
   
   public List<SearchResults> findSearchResults(String searchString) 
   {
+    return findSearchResults(searchString, false);
+  }
+
+  public List<SearchResults> findSearchResults(String searchString, boolean excludeRetired) 
+  {
+    if(excludeRetired) {
+      System.out.println("exluding WF REtired");
+      search.restrictResultsByWorkflowNotRetired();
+    }
+
     search.restrictResultsByType(SearchAC.DE);
     Vector<SearchResults> srResult = search.findReturningSearchResults(searchString);
     

@@ -408,8 +408,8 @@ public class ConceptEditorPanel extends JPanel
           downButton.setVisible(false);
       }
 
-      if(concepts.length <= 1)
-        deleteButton.setVisible(false);
+//       if(concepts.length <= 1)
+//         deleteButton.setVisible(false);
       
       deleteButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {

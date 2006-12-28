@@ -15,6 +15,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -28,6 +29,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -77,6 +81,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     closeButton = new JButton("Close");
   
   private JLabel indexLabel = new JLabel("");
+  private JLabel searchPrefLabel = new JLabel("Search Preferences");
 
   private CadsrModule cadsrModule;
   private FreestyleModule freestyleModule;
@@ -314,6 +319,20 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     browsePanel.add(closeButton);
     browsePanel.add(numberOfResultsLabel);
     browsePanel.add(numberOfResultsCombo);
+    browsePanel.add(searchPrefLabel);
+        
+    searchPrefLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+              SearchPreferencesDialog spd = new SearchPreferencesDialog();
+              spd.setVisible(true);
+            }
+            public void mouseEntered(MouseEvent evt) {
+               searchPrefLabel.setForeground(Color.BLUE);
+            }
+            public void mouseExited(MouseEvent evt) {
+                searchPrefLabel.setForeground(Color.BLACK);
+            }            
+        });
     
     numberOfResultsCombo.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
@@ -399,9 +418,29 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
             resultSet.add(new SearchResultWrapper(p));
           break;
         case MODE_DE:
-          for(SearchResults sr : freestyleModule.findSearchResults(text)) {
+          UserSelections selections = UserSelections.getInstance();
+          Boolean er = (Boolean)selections.getProperty("exclude.retired.workflow.status");
+          boolean excludeRetired = false;
+          if(er != null)
+            excludeRetired = er;
+          for(SearchResults sr : freestyleModule.findSearchResults(text, excludeRetired)) {
+            Object[] list = 
+              (Object[]) selections.getProperty("exclude.registration.statuses");
+            
+            Set<String> setOfExcluded = new HashSet<String>();
+            String[] defaultStatuses = PropertyAccessor.getProperty("default.excluded.registration.statuses").split(",");
+            if(list != null) {
+              for(Object s : list)
+                setOfExcluded.add(s.toString());
+            }
+            else {
+              for(String s : defaultStatuses)
+                setOfExcluded.add(s);
+            }
+            
             if(sr != null)
-              resultSet.add(new SearchResultWrapper(sr));
+              if(!setOfExcluded.contains(sr.getRegistrationStatus()))
+                resultSet.add(new SearchResultWrapper(sr));
           }
           break;
         case MODE_VD:
