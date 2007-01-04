@@ -323,8 +323,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
         
     searchPrefLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
-              SearchPreferencesDialog spd = new SearchPreferencesDialog();
-              spd.setVisible(true);
+              //SearchPreferencesDialog spd = new SearchPreferencesDialog();
+              //spd.setVisible(true);
             }
             public void mouseEntered(MouseEvent evt) {
                searchPrefLabel.setForeground(Color.BLUE);
