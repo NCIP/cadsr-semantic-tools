@@ -1,4 +1,5 @@
 package gov.nih.nci.ncicb.cadsr.loader.ext;
+import gov.nih.nci.cadsr.domain.AdministeredComponentClassSchemeItem;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import java.util.*;
@@ -257,7 +258,22 @@ public class CadsrTransformer {
     return outVDs;
 
   }
-  
+
+  public static gov.nih.nci.ncicb.cadsr.domain.AdminComponentClassSchemeClassSchemeItem acCsCsiPublicToPrivate(gov.nih.nci.cadsr.domain.AdministeredComponentClassSchemeItem inAcCsCsi) {
+
+    gov.nih.nci.ncicb.cadsr.domain.AdminComponentClassSchemeClassSchemeItem outAcCsCsi = DomainObjectFactory.newAdminComponentClassSchemeClassSchemeItem();
+
+    outAcCsCsi.setId(inAcCsCsi.getId());
+
+    outAcCsCsi.setCsCsi(csCsiPublicToPrivate(inAcCsCsi.getClassSchemeClassSchemeItem()));
+    
+    // TODO: can't convert AcId because the public API does not expose it
+    //outAcCsCsi.setAcId()
+    
+    return outAcCsCsi;
+
+  }
+
     
   private static gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem csCsiPublicToPrivate(gov.nih.nci.cadsr.domain.ClassSchemeClassSchemeItem inCsCsi) {
 
