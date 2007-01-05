@@ -111,7 +111,7 @@
     </copy>
 
     <copy file="${config.dir}/spring-datasources-${target.env}.xml"
-      tofile="${class.dir}/spring-datasources.xml"
+      tofile="${class.dir}/spring-datasources.xml" overwrite="true"
       >
     </copy>
     <replace file="${class.dir}/beans.xml" 
