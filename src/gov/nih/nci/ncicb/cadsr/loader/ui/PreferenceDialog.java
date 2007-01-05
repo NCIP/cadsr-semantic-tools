@@ -89,8 +89,6 @@ public class PreferenceDialog extends JDialog implements ActionListener
     
     if(runMode.equals(RunMode.Curator)) {
       associationBox.setVisible(false);
-    } else {
-      preTBox.setVisible(false);
     }
       
   }
