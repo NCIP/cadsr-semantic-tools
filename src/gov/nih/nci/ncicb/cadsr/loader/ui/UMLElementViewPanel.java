@@ -84,6 +84,11 @@ public class UMLElementViewPanel extends JPanel
     this.add(newPanel, BorderLayout.SOUTH);
   }
   
+  public void setEnabled(boolean enabled) {
+      buttonPanel.setEnabled(enabled);
+      conceptEditorPanel.setEnabled(enabled);
+  }
+  
   public void switchCards(String key) 
   {
     CardLayout layout = (CardLayout)cardPanel.getLayout();

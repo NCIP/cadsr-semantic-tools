@@ -20,7 +20,13 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
+import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
+import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
+import gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
+import gov.nih.nci.ncicb.cadsr.loader.ReviewTrackerType;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
@@ -36,22 +42,22 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AssociationEndNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AssociationNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.InheritedAttributeNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.NodeUtil;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.RootNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.PackageNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValidationNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueDomainNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueMeaningNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesEvent;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesListener;
-import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
-import gov.nih.nci.ncicb.cadsr.loader.util.*;
-import gov.nih.nci.ncicb.cadsr.loader.*;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -431,22 +437,34 @@ public class NavigationPanel extends JPanel
       DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
   	  
       Object o = dmtn.getUserObject();
-      if((o instanceof ClassNode)
-         || (o instanceof AttributeNode)
-         ) {
-	//don't display inherited attributes details
-	if(o instanceof AttributeNode) {
-	  AttributeNode attNode = (AttributeNode)o;
-	    UMLNode node = (UMLNode)attNode;
-	  Boolean reviewed = reviewTracker.get(node.getFullPath());
-	  if(reviewed == null) 
-	    return;
-	}
-        ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
-        evt.setViewObject(dmtn.getUserObject());
-        evt.setInNewTab(false);
+      if((o instanceof ClassNode) || (o instanceof AttributeNode)) 
+      {
+    	if(o instanceof InheritedAttributeNode) {
+          // inherited attribute
+          InheritedAttributeNode attNode = (InheritedAttributeNode)o;
+          
+          String fpath = attNode.getFullPath();
+          int sd = fpath.lastIndexOf(".");
+          String sourceClassName = fpath.substring(0, sd);
+          String attributeName = fpath.substring(sd+1);
+          
+          AttributeNode anode = findSuper(sourceClassName,attributeName);
+          
+          if (anode != null) {
+              ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_INHERITED);
+              evt.setViewObject(anode);
+              evt.setInNewTab(false);
+              fireViewChangeEvent(evt);
+          }
+    	}
+        else {
+            // normal attribute
+            ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
+            evt.setViewObject(dmtn.getUserObject());
+            evt.setInNewTab(false);
 
-        fireViewChangeEvent(evt);
+            fireViewChangeEvent(evt);
+        }
       } else if(o instanceof AssociationNode) {
         ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_ASSOCIATION);
         evt.setViewObject(dmtn.getUserObject());
@@ -471,6 +489,83 @@ public class NavigationPanel extends JPanel
     }
   }
 
+  /**
+   * Find the given attribute in the given class's inheritance hierarchy. 
+   * Returns the first non-inherited AttributeNode.
+   * @param className fully qualified class name
+   * @param attributeName attribute name
+   * @return
+   */
+  private AttributeNode findSuper(String className, String attributeName) {
+
+      //System.out.println("findSuper("+className+","+attributeName+")");
+      
+      // find the superclass by searching the OCR's for a generalization 
+      
+      List<ObjectClassRelationship> ocrs = 
+          elements.getElements(DomainObjectFactory.newObjectClassRelationship());
+      
+      String superClassName = null;
+      for(ObjectClassRelationship ocr : ocrs) {
+          if (ocr.getType() == ObjectClassRelationship.TYPE_IS && 
+                  ocr.getSource().getLongName().equals(className)) {
+              superClassName = ocr.getTarget().getLongName();
+              break;
+          }
+      }
+      
+      if (superClassName == null) {
+          System.err.println("Superclass not found for "+className);
+          return null;
+      }
+          
+      // find the super class in the tree
+      
+      int div = superClassName.lastIndexOf(".");
+      String sPackage = superClassName.substring(0, div);
+      String sName = superClassName.substring(div+1);
+      //System.err.println("LOOKING FOR: "+sPackage+" <> "+sName);
+      
+      for(Object pchild : rootNode.getChildren()) {
+          PackageNode pnode = (PackageNode)pchild;
+          //System.err.println("PACKAGE: "+pnode.getFullPath());
+          if (pnode.getFullPath().equals(sPackage)) {
+              for(Object cchild : pnode.getChildren()) {
+                  ClassNode cnode = (ClassNode)cchild;
+                  //System.err.println("   CLASS: "+cnode.getDisplay());
+                  if (cnode.getDisplay().equals(sName)) {
+                      PackageNode inherited = null;
+                      for(Object achild : cnode.getChildren()) {
+                          if (achild instanceof PackageNode) {
+                              inherited = (PackageNode)achild;
+                          }
+                          else {
+                              AttributeNode anode = (AttributeNode)achild;
+                              //System.err.println("       ATTR: "+anode.getDisplay());
+                              if (anode.getDisplay().equals(attributeName)) {
+                                  //System.err.println("       FOUND");
+                                  return anode;
+                              }
+                          }
+                      }
+                      if (inherited != null) {
+                          // check inheritance subtree, may need to recurse
+                          for(Object achild : inherited.getChildren()) {
+                              AttributeNode anode = (AttributeNode)achild;
+                              //System.err.println("       INHERITED: "+anode.getDisplay());
+                              if (anode.getDisplay().equals(attributeName)) {
+                                  return findSuper(cnode.getFullPath(), attributeName);
+                              }
+                          }
+                          
+                      }
+                  }
+              } 
+          }
+      }
+      
+      return null;
+  }
 
   private void buildPopupMenu() {
     JMenuItem newTabItem = new JMenuItem("Open in New Tab");

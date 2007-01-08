@@ -190,6 +190,19 @@ public class ButtonPanel extends JPanel implements ActionListener,
     switchButton.setText(text);
   }
   
+  public void setEnabled(boolean enabled) {
+      if (enabled) {
+          // enabling does not necessarily enable every single button
+          initButtonPanel();
+          return;
+      }
+      addButton.setEnabled(enabled);
+      deleteButton.setEnabled(enabled);
+      saveButton.setEnabled(enabled);
+      switchButton.setEnabled(enabled);
+      reviewButton.setEnabled(enabled);
+  }
+  
   private void initButtonPanel() {  
     Concept[] concepts = conceptEditorPanel.getConcepts();
     if(concepts.length < 2)

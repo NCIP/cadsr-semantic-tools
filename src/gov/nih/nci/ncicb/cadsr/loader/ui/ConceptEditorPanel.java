@@ -199,6 +199,13 @@ public class ConceptEditorPanel extends JPanel
     this.updateUI();
   }
   
+  public void setEnabled(boolean enabled) {
+      for(int i = 0; i<concepts.length; i++) {
+        conceptUIs[i].setEnabled(enabled);
+      }
+      vdPanel.setEnabled(enabled);
+  }
+  
   public void apply(boolean toAll) throws ApplyException {
     boolean update = remove;
     remove = false;
@@ -342,37 +349,12 @@ public class ConceptEditorPanel extends JPanel
       insertInBag(mainPanel, conceptUIs[i].defScrollPane, 1, 2, 2, 1);
       insertInBag(mainPanel, conceptUIs[i].defSource, 1, 3,1, 1);
 
-      JButton evsButton = new JButton("Evs Link");
+      JButton evsButton = conceptUIs[i].getEvsButton();
       insertInBag(mainPanel, evsButton, 2, 3);
       
-      JButton deleteButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("delete-x.gif")));
-      //insertInBag(mainPanel, deleteButton, 2, 0);
-      
-      JButton upButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("up-arrow.gif")));
-      JButton downButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("down-arrow.gif")));
-      
-      upButton.setBorder(null);
-      upButton.setContentAreaFilled(false);
-      upButton.setOpaque(true);
-
-      downButton.setBorder(null);
-      downButton.setContentAreaFilled(false);
-      downButton.setOpaque(true);
-
-      deleteButton.setBorder(null);
-      deleteButton.setContentAreaFilled(false);
-      deleteButton.setOpaque(true);
-
-
-      upButton.setToolTipText("Move this Concept up");
-      downButton.setToolTipText("Move this Concept down");
-      deleteButton.setToolTipText("Delete this Concept");
-      
-      upButton.setPreferredSize(new Dimension(31, 32));
-      deleteButton.setPreferredSize(new Dimension(28,29));
-      downButton.setPreferredSize(new Dimension(31, 32));
-
-      //deleteButton.
+      JButton upButton = conceptUIs[i].getUpButton();
+      JButton deleteButton = conceptUIs[i].getDeleteButton();
+      JButton downButton = conceptUIs[i].getDownButton();
 
       JPanel arrowPanel = new JPanel(new GridBagLayout());
       insertInBag(arrowPanel, upButton, 0, 0);
@@ -728,7 +710,8 @@ public class ConceptEditorPanel extends JPanel
   JTextField defSource = new JTextField(10);
 
   JScrollPane defScrollPane;
-
+  JButton evsButton, deleteButton, upButton, downButton;
+  
   public ConceptUI(Concept concept) {
     initUI(concept);
   }
@@ -748,13 +731,58 @@ public class ConceptEditorPanel extends JPanel
     def.setText(concept.getPreferredDefinition());
     defSource.setText(concept.getDefinitionSource());
 
-//     if(!editable) {
-//       code.setEnabled(false);
-//       name.setEnabled(false);
-//       def.setEnabled(false);
-//       defSource.setEnabled(false);
-//     }
+    this.evsButton = new JButton("Evs Link");
+    this.deleteButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("delete-x.gif")));
+    this.upButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("up-arrow.gif")));
+    this.downButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("down-arrow.gif")));
     
+    upButton.setBorder(null);
+    upButton.setContentAreaFilled(false);
+    upButton.setOpaque(true);
+
+    downButton.setBorder(null);
+    downButton.setContentAreaFilled(false);
+    downButton.setOpaque(true);
+
+    deleteButton.setBorder(null);
+    deleteButton.setContentAreaFilled(false);
+    deleteButton.setOpaque(true);
+
+    upButton.setToolTipText("Move this Concept up");
+    downButton.setToolTipText("Move this Concept down");
+    deleteButton.setToolTipText("Delete this Concept");
+    
+    upButton.setPreferredSize(new Dimension(31, 32));
+    deleteButton.setPreferredSize(new Dimension(28,29));
+    downButton.setPreferredSize(new Dimension(31, 32));
+    
+  }
+  
+  public JButton getEvsButton() {
+    return evsButton;
+  }
+  
+  public JButton getDeleteButton() {
+    return deleteButton;
+  }
+
+  public JButton getDownButton() {
+    return downButton;
+  }
+
+  public JButton getUpButton() {
+    return upButton;
+  } 
+
+  public void setEnabled(boolean enabled) {
+    code.setEnabled(enabled);
+    name.setEnabled(enabled);
+    def.setEnabled(enabled);
+    defSource.setEnabled(enabled);
+    evsButton.setEnabled(enabled);
+    deleteButton.setEnabled(enabled);
+    downButton.setEnabled(enabled);
+    upButton.setEnabled(enabled);
   }
   
 }

@@ -108,6 +108,10 @@ public class VDPanel extends JPanel
     apply();
   }
   
+  public void setEnabled(boolean enabled) {
+      searchVdButton.setEnabled(enabled);
+  }
+  
   public void apply() 
   {
     if(tempVD != null) {

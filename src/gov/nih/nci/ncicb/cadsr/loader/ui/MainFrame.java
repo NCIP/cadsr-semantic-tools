@@ -484,13 +484,15 @@ public class MainFrame extends JFrame
     previewReuseMenuItem.setEnabled(false);
 
     if(event.getType() == ViewChangeEvent.VIEW_CONCEPTS
-        || event.getType() == ViewChangeEvent.VIEW_VALUE_MEANING) {
+        || event.getType() == ViewChangeEvent.VIEW_VALUE_MEANING
+        || event.getType() == ViewChangeEvent.VIEW_INHERITED) {
       UMLNode node = (UMLNode)event.getViewObject();
 
       // If concept is already showing, just bring it up front
       if(viewPanels.containsKey(node.getFullPath())) {
         UMLElementViewPanel pa = viewPanels.get(node.getFullPath());
         viewTabbedPane.setSelectedComponent(pa);
+        pa.setEnabled(event.getType() != ViewChangeEvent.VIEW_INHERITED);
         return;
       }
 
@@ -514,7 +516,7 @@ public class MainFrame extends JFrame
         viewPanel.addNavigationListener(navigationPanel);
         navigationPanel.addNavigationListener(viewPanel);
 
-        String tabTitle = node.getDisplay();;
+        String tabTitle = node.getDisplay();
         if(node instanceof AttributeNode) 
           tabTitle = node.getParent().getDisplay() 
             + "." + tabTitle;
@@ -525,6 +527,9 @@ public class MainFrame extends JFrame
         viewPanel.setName(node.getFullPath());
         viewPanels.put(viewPanel.getName(), viewPanel);
         infoLabel.setText(tabTitle);
+
+        viewPanel.setEnabled(event.getType() != ViewChangeEvent.VIEW_INHERITED);
+        
       } else {
         UMLElementViewPanel viewPanel = (UMLElementViewPanel)
           viewTabbedPane.getSelectedComponent();
@@ -541,6 +546,8 @@ public class MainFrame extends JFrame
         
         viewPanels.put(viewPanel.getName(), viewPanel);
         infoLabel.setText(tabTitle);
+
+        viewPanel.setEnabled(event.getType() != ViewChangeEvent.VIEW_INHERITED);
       }
 
     } else if(event.getType() == ViewChangeEvent.VIEW_ASSOCIATION) {
@@ -580,7 +587,7 @@ public class MainFrame extends JFrame
         vdViewPanel.update((ValueDomain)node.getUserObject());
         
       viewTabbedPane.setSelectedComponent(vdViewPanel);
-  }
+      }
   }
 
   public boolean closeTab(int index) {
