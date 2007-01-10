@@ -93,7 +93,7 @@
 
   <target name="prepare"
     depends="compile">
-    <copy todir="${class.dir}">
+    <copy todir="${class.dir}" overwrite="true">
       <fileset dir="${config.dir}">
         <include name="*.properties"/>
         <include name="jaas.config"/>
@@ -121,6 +121,11 @@
       <replacefilter token="--DatatypeMapping URL Here--" property="datatypeMapping.${target.env}"/>
     </replace>
 
+    <replace file="${class.dir}/semantic.properties" 
+      propertyFile="deploy.properties">
+      <replacefilter token="--Public API URL Here--" property="publicAPI.${target.env}"/>
+    </replace>
+  	
     <replace file="${class.dir}/resources.properties" 
       propertyFile="deploy.properties">
       <replacefilter token="--Public API URL Here--" property="publicAPI.${target.env}"/>
