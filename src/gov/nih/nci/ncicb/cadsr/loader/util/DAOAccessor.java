@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 public class DAOAccessor implements Runnable {
 
   private static AdminComponentDAO adminComponentDAO;
+  private static AlternateNameDAO alternateNameDAO;
   private static DataElementDAO dataElementDAO;
   private static DataElementConceptDAO dataElementConceptDAO;
   private static ValueDomainDAO valueDomainDAO;
@@ -55,6 +56,10 @@ public class DAOAccessor implements Runnable {
     dataElementDAO = (DataElementDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("dataElementDAO");
 
+    logger.debug("Loading AlternateNameDAO bean");
+    alternateNameDAO = (AlternateNameDAO) ApplicationContextFactory.getApplicationContext()
+      .getBean("alternateNameDAO");
+    
     logger.debug("Loading AdminComponentDAO bean");
     adminComponentDAO = (AdminComponentDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("adminComponentDAO");
@@ -110,6 +115,10 @@ public class DAOAccessor implements Runnable {
 
   }
 
+  public synchronized static AlternateNameDAO getAlternateNameDAO() {
+    return alternateNameDAO;
+  }
+  
   public synchronized static AdminComponentDAO getAdminComponentDAO() {
     return adminComponentDAO;
   }
