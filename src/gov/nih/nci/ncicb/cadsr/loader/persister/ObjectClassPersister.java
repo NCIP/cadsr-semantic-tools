@@ -19,160 +19,181 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.persister;
 
-import gov.nih.nci.ncicb.cadsr.dao.*;
-import gov.nih.nci.ncicb.cadsr.domain.*;
-import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.dao.DAOCreateException;
+import gov.nih.nci.ncicb.cadsr.dao.EagerConstants;
+import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
+import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
+import gov.nih.nci.ncicb.cadsr.domain.Concept;
+import gov.nih.nci.ncicb.cadsr.domain.Definition;
+import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
+import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
+import gov.nih.nci.ncicb.cadsr.loader.util.ConceptUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.ConventionUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 
-import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
-import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+
 import org.apache.log4j.Logger;
 
-import java.util.*;
-
-
 /**
- *
+ * 
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class ObjectClassPersister extends UMLPersister {
+public class ObjectClassPersister extends UMLPersister
+{
+  private static Logger logger = Logger.getLogger(ObjectClassPersister.class);
 
-  private static Logger logger = Logger.getLogger(ObjectClassPersister.class.getName());
-
-  public ObjectClassPersister() {
-  }
-
-  public void persist() throws PersisterException {
+  public void persist() throws PersisterException
+  {
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     List<ObjectClass> ocs = elements.getElements(oc);
 
-    int count = 0;
-    sendProgressEvent(count++, ocs.size(), "Object Class");
+    if (ocs != null)
+    {
+      int count = 0;
+      sendProgressEvent(count++, ocs.size(), "Object Class");
 
-
-    String packageName = null;
-
-    if (ocs != null) {
-      for (ListIterator<ObjectClass> it = ocs.listIterator(); it.hasNext();) {
+      for (ListIterator<ObjectClass> it = ocs.listIterator(); it.hasNext();)
+      {
         ObjectClass newOc = null;
 
-	oc = it.next();
+        oc = it.next();
         logger.debug(oc.getLongName());
 
         sendProgressEvent(count++, ocs.size(), "OC : " + oc.getLongName());
 
-	oc.setContext(defaults.getMainContext());
+        oc.setContext(defaults.getMainContext());
 
-	String className = LookupUtil.lookupFullName(oc);
-	int ind = className.lastIndexOf(".");
-	packageName = className.substring(0, ind);
-	className = className.substring(ind + 1);
+        String className = LookupUtil.lookupFullName(oc);
+        int ind = className.lastIndexOf(".");
+        String packageName = className.substring(0, ind);
+        className = className.substring(ind + 1);
         String newDef = oc.getPreferredDefinition();
-        String newName = className;
 
-        List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc.getAlternateNames());
+        List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc
+                .getAlternateNames());
         oc.removeAlternateNames();
         oc.removeDefinitions();
 
-
         // Use case for existing Element
-        if(!StringUtil.isEmpty(oc.getPublicId()) && oc.getVersion() != null) {
+        if (!StringUtil.isEmpty(oc.getPublicId()) && oc.getVersion() != null)
+        {
           newOc = existingMapping(oc, packageName);
           it.set(newOc);
           addPackageClassification(newOc, packageName);
 
-          for(AlternateName an : parsedAltNames) {
+          for (AlternateName an : parsedAltNames)
+          {
             oc.addAlternateName(an);
             newOc.addAlternateName(an);
-            addAlternateName(newOc, an.getName(), an.getType() ,packageName);
+            addAlternateName(newOc, an.getName(), an.getType(), packageName);
           }
-          
 
-	  logger.info(PropertyAccessor.getProperty("mapped.to.existing.oc"));
+          logger.info(PropertyAccessor.getProperty("mapped.to.existing.oc"));
           continue;
         } // otherwise search by concepts
 
-	// does this oc exist?
-	List eager = new ArrayList();
-	eager.add(EagerConstants.AC_CS_CSI);
+        // does this oc exist?
+        List<String> eager = new ArrayList<String>();
+        eager.add(EagerConstants.AC_CS_CSI);
 
         String[] conceptCodes = oc.getPreferredName().split(":");
         Concept[] concepts = new Concept[conceptCodes.length];
-        for(int i=0; i<concepts.length; 
-            concepts[i] = LookupUtil.lookupConcept(conceptCodes[i++])
-            );
-        
-        List<ObjectClass> l = objectClassDAO.findByConceptCodes(conceptCodes, oc.getContext(), eager);
+        for (int i = 0; i < concepts.length; concepts[i] = LookupUtil
+                .lookupConcept(conceptCodes[i++]));
+
+        List<ObjectClass> l = objectClassDAO.findByConceptCodes(conceptCodes,
+                oc.getContext(), eager);
 
         Concept primaryConcept = concepts[concepts.length - 1];
 
-	boolean packageFound = false;
-
-	if (l.size() == 0) {
+        if (l.size() == 0)
+        {
           oc.setLongName(ConceptUtil.longNameFromConcepts(concepts));
-	  oc.setPreferredDefinition(ConceptUtil.preferredDefinitionFromConcepts(concepts));
+          oc.setPreferredDefinition(ConceptUtil
+                  .preferredDefinitionFromConcepts(concepts));
           oc.setDefinitionSource(primaryConcept.getDefinitionSource());
 
-	  oc.setVersion(1.0f);
-	  oc.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
-	  oc.setAudit(defaults.getAudit());
+          oc.setVersion(1.0f);
+          oc.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
+          oc.setAudit(defaults.getAudit());
           oc.setOrigin(defaults.getOrigin());
           oc.setLifecycle(defaults.getLifecycle());
 
           List acCsCsis = oc.getAcCsCsis();
-          try {
-//             List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc.getAlternateNames());
-//             oc.removeAlternateNames();
-//             oc.removeDefinitions();
+          try
+          {
+            // List<AlternateName> parsedAltNames = new
+            // ArrayList<AlternateName>(oc.getAlternateNames());
+            // oc.removeAlternateNames();
+            // oc.removeDefinitions();
 
             newOc = objectClassDAO.create(oc, conceptCodes);
             logger.info(PropertyAccessor.getProperty("created.oc"));
 
-//             for(AlternateName ann : parsedAltNames) {
-//               oc.addAlternateName(ann);
-//             }
-          } catch (DAOCreateException e){
-            logger.error(PropertyAccessor.getProperty("created.oc.failed", e.getMessage()));
+            // for(AlternateName ann : parsedAltNames) {
+            // oc.addAlternateName(ann);
+            // }
+          }
+          catch (DAOCreateException e)
+          {
+            logger.error(PropertyAccessor.getProperty("created.oc.failed", e
+                    .getMessage()));
           } // end of try-catch
           // restore this since we use for package
           oc.setAcCsCsis(acCsCsis);
 
-	} else {
+        }
+        else
+        {
           String newDefSource = primaryConcept.getDefinitionSource();
           String newConceptDef = primaryConcept.getPreferredDefinition();
-	  newOc = l.get(0);
-          
-          for(AlternateName an : parsedAltNames) {
+          newOc = l.get(0);
+
+          for (AlternateName an : parsedAltNames)
+          {
             newOc.addAlternateName(an);
           }
 
-	  logger.info(PropertyAccessor.getProperty("existed.oc"));
+          logger.info(PropertyAccessor.getProperty("existed.oc"));
 
           // is concept source the same?
           // if not, then add alternate Def
-          if(!newDefSource.equals(newOc.getDefinitionSource())) {
-            addAlternateDefinition(newOc, newConceptDef, newDefSource, packageName);
+          if (!newDefSource.equals(newOc.getDefinitionSource()))
+          {
+            addAlternateDefinition(newOc, newConceptDef, newDefSource,
+                    packageName);
           }
 
-	}
+        }
 
-	LogUtil.logAc(newOc, logger);
+        LogUtil.logAc(newOc, logger);
         logger.info("public ID: " + newOc.getPublicId());
 
         // is definition the same?
         // if not, then add alternate Def
-        if(!isSameDefinition(newDef, concepts)) {
-//         if((newDef.length() > 0) && !newDef.equals(newOc.getPreferredDefinition())) {
-          addAlternateDefinition(newOc, newDef, Definition.TYPE_UML_CLASS, packageName);
+        if (!isSameDefinition(newDef, concepts))
+        {
+          // if((newDef.length() > 0) &&
+          // !newDef.equals(newOc.getPreferredDefinition())) {
+          addAlternateDefinition(newOc, newDef, Definition.TYPE_UML_CLASS,
+                  packageName);
         }
 
-//           addAlternateName(newOc, newName, AlternateName.TYPE_UML_CLASS ,packageName);
-        
-        for(AlternateName an : parsedAltNames) {
+        // addAlternateName(newOc, newName, AlternateName.TYPE_UML_CLASS
+        // ,packageName);
+
+        for (AlternateName an : parsedAltNames)
+        {
           oc.addAlternateName(an);
-          addAlternateName(newOc, an.getName(), an.getType() ,packageName);
+          addAlternateName(newOc, an.getName(), an.getType(), packageName);
         }
 
-	it.set(newOc);
+        it.set(newOc);
         oc.setLongName(newOc.getLongName());
         oc.setPreferredName(newOc.getPreferredName());
         addPackageClassification(newOc, packageName);
@@ -182,30 +203,34 @@ public class ObjectClassPersister extends UMLPersister {
 
   }
 
-  private ObjectClass existingMapping(ObjectClass oc, String packageName) throws PersisterException {
+  private ObjectClass existingMapping(ObjectClass oc, String packageName)
+          throws PersisterException
+  {
 
     List<String> eager = new ArrayList<String>();
     eager.add(EagerConstants.AC_CS_CSI);
-    
+
     String newDef = oc.getPreferredDefinition();
 
-    List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc.getAlternateNames());
+    List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc
+            .getAlternateNames());
     List<ObjectClass> l = objectClassDAO.find(oc, eager);
 
-    if(l.size() == 0)
-      throw new PersisterException(PropertyAccessor.getProperty("oc.existing.error", ConventionUtil.publicIdVersion(oc)));
-    
+    if (l.size() == 0)
+      throw new PersisterException(PropertyAccessor.getProperty(
+              "oc.existing.error", ConventionUtil.publicIdVersion(oc)));
+
     ObjectClass existingOc = l.get(0);
 
-    for(AlternateName an : parsedAltNames) {
-      addAlternateName(existingOc, an.getName(), an.getType() ,packageName);
+    for (AlternateName an : parsedAltNames)
+    {
+      addAlternateName(existingOc, an.getName(), an.getType(), packageName);
       existingOc.addAlternateName(an);
     }
 
-    if(!StringUtil.isEmpty(newDef))
-      addAlternateDefinition(existingOc, newDef, Definition.TYPE_UML_CLASS, packageName);
-
-
+    if (!StringUtil.isEmpty(newDef))
+      addAlternateDefinition(existingOc, newDef, Definition.TYPE_UML_CLASS,
+              packageName);
 
     return existingOc;
 
