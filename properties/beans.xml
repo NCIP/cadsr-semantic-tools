@@ -35,6 +35,12 @@
     </property>
   </bean>
 
+  <bean name="unclassifier"
+    class="gov.nih.nci.ncicb.cadsr.loader.Unclassifier"
+    >
+    <property name="dataSource"><ref bean="dataSource"/></property>
+  </bean>
+  
   <bean name="wizardController"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.WizardController"
     >

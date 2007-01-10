@@ -19,17 +19,15 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.util;
 
-import gov.nih.nci.ncicb.cadsr.loader.RoundtripAction;
 import gov.nih.nci.ncicb.cadsr.loader.UMLLoader;
 import gov.nih.nci.ncicb.cadsr.loader.UMLLoaderGUI;
+import gov.nih.nci.ncicb.cadsr.loader.Unclassifier;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
-import gov.nih.nci.ncicb.cadsr.loader.event.UMLHandler;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
 import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
 import gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog;
 import gov.nih.nci.ncicb.cadsr.loader.ui.DEReuseDialog;
 import gov.nih.nci.ncicb.cadsr.loader.ui.WizardController;
-import gov.nih.nci.ncicb.cadsr.loader.validator.Validator;
 import gov.nih.nci.ncicb.cadsr.semconn.SemanticConnector;
 
 import org.apache.log4j.Logger;
@@ -71,6 +69,10 @@ public class BeansAccessor {
   
   public static UMLLoader getUmlLoader() {
     return (UMLLoader)getFactory().getBean("umlLoader");
+  }
+  
+  public static Unclassifier getUnclassifier() {
+    return (Unclassifier)getFactory().getBean("unclassifier");
   }
 
 //   public static RoundtripAction getRoundtripAction() {
