@@ -1,17 +1,12 @@
 package gov.nih.nci.ncicb.cadsr.loader.ext;
 
-import gov.nih.nci.cadsr.freestylesearch.util.*;
+import gov.nih.nci.cadsr.freestylesearch.util.Search;
+import gov.nih.nci.cadsr.freestylesearch.util.SearchAC;
+import gov.nih.nci.cadsr.freestylesearch.util.SearchResults;
 
-import javax.sql.DataSource;
-import java.util.*;
-
-// import gov.nih.nci.ncicb.cadsr.domain.*;
-
-// import org.springframework.beans.factory.BeanFactory;
-// import org.springframework.beans.factory.xml.XmlBeanFactory;
-// import org.springframework.core.io.InputStreamResource;
-
-import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 
 public class FreestyleModule {
@@ -37,8 +32,11 @@ public class FreestyleModule {
   public List<SearchResults> findSearchResults(String searchString, boolean excludeRetired) 
   {
     if(excludeRetired) {
-      System.out.println("exluding WF REtired");
+      System.out.println("excluding WF Retired");
       search.restrictResultsByWorkflowNotRetired();
+    }
+    else {
+      search.resetResultsByWorkflowNotRetired();
     }
 
     search.restrictResultsByType(SearchAC.DE);
@@ -56,11 +54,10 @@ public class FreestyleModule {
   {
     search.setDataDescription(location);
   }
+  
   public void setPublicApi(String publicApi) 
   {
     search.setCoreApiUrl(publicApi);
   }
-
-  
 
 }
