@@ -17,25 +17,37 @@ import javax.sql.DataSource;
 public class Unclassifier {
 
   private static final String DEL_DEFINITIONS_SQL = 
-      "delete from definitions where defin_idseq in (" +
-      "  select defin_idseq from definitions ATT " + 
-      "   join AC_ATT_CSCSI_EXT att_csi on att.defin_idseq = att_csi.att_idseq " + 
-      "   join CS_CSI csCsi on att_csi.cs_csi_idseq = csCsi.cs_csi_idseq " + 
-      "   join classification_schemes cs on cs.cs_idseq = csCsi.cs_idseq " + 
-      "  where cs.preferred_name = ? and cs.Version = ? " + 
-      "  and 2 = (select count(*) from AC_ATT_CSCSI_EXT ACC " +
-      "           where ACC.ATT_IDSEQ = ATT.defin_idseq)" +
+      "delete from definitions where defin_idseq in (\n" + 
+      "  select defin_idseq from definitions ATT \n" + 
+      "   join AC_ATT_CSCSI_EXT att_csi on att.defin_idseq = att_csi.att_idseq\n" + 
+      "   join CS_CSI csCsi on att_csi.cs_csi_idseq = csCsi.cs_csi_idseq\n" + 
+      "   join classification_schemes cs on cs.cs_idseq = csCsi.cs_idseq\n" + 
+      "  where cs.preferred_name = ? and cs.Version = ?\n" + 
+      "  and 1 = \n" + 
+      "  (\n" + 
+      "    select count(distinct p_cs.CS_IDSEQ) \n" + 
+      "    from AC_ATT_CSCSI_EXT p_att_csi\n" + 
+      "    join CS_CSI p_csCsi on p_att_csi.cs_csi_idseq = p_csCsi.cs_csi_idseq\n" + 
+      "    join classification_schemes p_cs on p_cs.cs_idseq = p_csCsi.cs_idseq\n" + 
+      "    where p_att_csi.ATT_IDSEQ = ATT.defin_idseq\n" + 
+      "  )\n" + 
       ")";
   
   private static final String DEL_ALTNAMES_SQL = 
-      "delete from designations where desig_idseq in (" + 
-      "  select desig_idseq from designations ATT " + 
-      "   join AC_ATT_CSCSI_EXT att_csi on att.desig_idseq = att_csi.att_idseq " + 
-      "   join CS_CSI csCsi on att_csi.cs_csi_idseq = csCsi.cs_csi_idseq " + 
-      "   join classification_schemes cs on cs.cs_idseq = csCsi.cs_idseq " + 
-      "  where cs.preferred_name = ? and cs.Version = ? " + 
-      "  and 2 = (select count(*) from AC_ATT_CSCSI_EXT ACC " +
-      "           where ACC.ATT_IDSEQ = ATT.desig_idseq) " + 
+      "delete from designations where desig_idseq in (\n" + 
+      "  select desig_idseq from designations ATT \n" + 
+      "   join AC_ATT_CSCSI_EXT att_csi on att.desig_idseq = att_csi.att_idseq\n" + 
+      "   join CS_CSI csCsi on att_csi.cs_csi_idseq = csCsi.cs_csi_idseq\n" + 
+      "   join classification_schemes cs on cs.cs_idseq = csCsi.cs_idseq\n" + 
+      "  where cs.preferred_name = ? and cs.Version = ?\n" + 
+      "  and 1 = \n" + 
+      "  (\n" + 
+      "    select count(distinct p_cs.CS_IDSEQ) \n" + 
+      "    from AC_ATT_CSCSI_EXT p_att_csi\n" + 
+      "    join CS_CSI p_csCsi on p_att_csi.cs_csi_idseq = p_csCsi.cs_csi_idseq\n" + 
+      "    join classification_schemes p_cs on p_cs.cs_idseq = p_csCsi.cs_idseq\n" + 
+      "    where p_att_csi.ATT_IDSEQ = ATT.desig_idseq\n" + 
+      "  )\n" + 
       ")";
 
   private static final String DEL_ATTRS_SQL = 
