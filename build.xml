@@ -272,7 +272,8 @@
     </java>    
   </target>
 
-  <target name="unclassify" depends="prepare">
+  <target name="unclassify" depends="prepare" 
+          description="Remove the given CS classification from all AC's, and remove CS-specific alt names and definitions">
     <java classname="gov.nih.nci.ncicb.cadsr.loader.Unclassifier" classpathref="proj.class.path" 
       fork="yes" 
       maxmemory="512m"
