@@ -22,7 +22,7 @@ public class Unclassifier {
       "   join AC_ATT_CSCSI_EXT att_csi on att.defin_idseq = att_csi.att_idseq " + 
       "   join CS_CSI csCsi on att_csi.cs_csi_idseq = csCsi.cs_csi_idseq " + 
       "   join classification_schemes cs on cs.cs_idseq = csCsi.cs_idseq " + 
-      "  where (cs.preferred_name = ? or cs.long_name = ?) and cs.Version = ? " + 
+      "  where cs.preferred_name = ? and cs.Version = ? " + 
       "  and 2 = (select count(*) from AC_ATT_CSCSI_EXT ACC " +
       "           where ACC.ATT_IDSEQ = ATT.defin_idseq)" +
       ")";
@@ -33,7 +33,7 @@ public class Unclassifier {
       "   join AC_ATT_CSCSI_EXT att_csi on att.desig_idseq = att_csi.att_idseq " + 
       "   join CS_CSI csCsi on att_csi.cs_csi_idseq = csCsi.cs_csi_idseq " + 
       "   join classification_schemes cs on cs.cs_idseq = csCsi.cs_idseq " + 
-      "  where (cs.preferred_name = ? or cs.long_name = ?) and cs.Version = ? " + 
+      "  where cs.preferred_name = ? and cs.Version = ? " + 
       "  and 2 = (select count(*) from AC_ATT_CSCSI_EXT ACC " +
       "           where ACC.ATT_IDSEQ = ATT.desig_idseq) " + 
       ")";
@@ -42,7 +42,7 @@ public class Unclassifier {
       "delete from AC_ATT_CSCSI_EXT where CS_CSI_IDSEQ in ( " + 
       "  select CS_CSI_IDSEQ from CS_CSI where CS_IDSEQ in ( " + 
       "   select CS_IDSEQ from Classification_schemes " +
-      "   where (preferred_name = ? or long_name = ?) and Version = ? " + 
+      "   where preferred_name = ? and Version = ? " + 
       "  ) " + 
       ")";
   
@@ -50,7 +50,7 @@ public class Unclassifier {
       "delete from AC_CSI where CS_CSI_IDSEQ in ( " + 
       "  select CS_CSI_IDSEQ from CS_CSI where CS_IDSEQ in ( " + 
       "   select CS_IDSEQ from Classification_schemes " +
-      "   where (preferred_name = ? or long_name = ?) and Version = ? " + 
+      "   where preferred_name = ? and Version = ? " + 
       "  ) " + 
       ")";
 
@@ -94,32 +94,28 @@ public class Unclassifier {
         System.out.println("Deleting definitions");
         stmt = conn.prepareStatement(DEL_DEFINITIONS_SQL);
         stmt.setString(1, csName);
-        stmt.setString(2, csName);
-        stmt.setFloat(3, csVersion);
+        stmt.setFloat(2, csVersion);
         int definitionsDeleted = stmt.executeUpdate();
         System.out.println("  "+definitionsDeleted+" deleted");
 
         System.out.println("Deleting alt names");
         stmt = conn.prepareStatement(DEL_ALTNAMES_SQL);
         stmt.setString(1, csName);
-        stmt.setString(2, csName);
-        stmt.setFloat(3, csVersion);
+        stmt.setFloat(2, csVersion);
         int altNamesDeleted = stmt.executeUpdate();
         System.out.println("  "+altNamesDeleted+" deleted");
         
         System.out.println("Deleting attribute classifications");
         stmt = conn.prepareStatement(DEL_ATTRS_SQL);
         stmt.setString(1, csName);
-        stmt.setString(2, csName);
-        stmt.setFloat(3, csVersion);
+        stmt.setFloat(2, csVersion);
         int attrDeleted = stmt.executeUpdate();
         System.out.println("  "+attrDeleted+" deleted");
 
         System.out.println("Deleting AC classifications");
         stmt = conn.prepareStatement(DEL_ACS_SQL);
         stmt.setString(1, csName);
-        stmt.setString(2, csName);
-        stmt.setFloat(3, csVersion);
+        stmt.setFloat(2, csVersion);
         int acDeleted = stmt.executeUpdate();
         System.out.println("  "+acDeleted+" deleted");
         
