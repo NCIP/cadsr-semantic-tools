@@ -98,7 +98,7 @@ public class SearchPreferencesDialog extends JDialog
     
     insertInBag(centerPanel, new JLabel("Exclude Registration Status(es)"), 0,0);
     insertInBag(centerPanel, listScrollPane, 0, 1, 2, 1);
-    insertInBag(centerPanel, new JLabel("Exclude Retired Workflow Status"), 0, 2);
+    insertInBag(centerPanel, new JLabel("<html>Exclude Retired Workflow Status<font size=1><br>CMTE Approved<br>CMTE SUBMTD<br>CMTE SUBMTD USED<br>RETIRED ARCHIVED<br>RETIRED PHASED OUT<br>RETIRED WITHDRAWN</font></html>"), 0, 2);
     insertInBag(centerPanel, workflowStatusCheckBox, 1, 2);
     
     okButton.setActionCommand(OK);
@@ -143,6 +143,12 @@ public class SearchPreferencesDialog extends JDialog
     p.add(comp);
 
     bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+  }
+
+  public static void main(String[] args) 
+  { 
+    SearchPreferencesDialog spd = new SearchPreferencesDialog();
+    spd.setVisible(true);
   }
   
 }
