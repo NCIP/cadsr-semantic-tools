@@ -498,8 +498,6 @@ public class NavigationPanel extends JPanel
    */
   private AttributeNode findSuper(String className, String attributeName) {
 
-      //System.out.println("findSuper("+className+","+attributeName+")");
-      
       // find the superclass by searching the OCR's for a generalization 
       
       List<ObjectClassRelationship> ocrs = 
@@ -524,35 +522,31 @@ public class NavigationPanel extends JPanel
       int div = superClassName.lastIndexOf(".");
       String sPackage = superClassName.substring(0, div);
       String sName = superClassName.substring(div+1);
-      //System.err.println("LOOKING FOR: "+sPackage+" <> "+sName);
       
       for(Object pchild : rootNode.getChildren()) {
           PackageNode pnode = (PackageNode)pchild;
-          //System.err.println("PACKAGE: "+pnode.getFullPath());
           if (pnode.getFullPath().equals(sPackage)) {
               for(Object cchild : pnode.getChildren()) {
                   ClassNode cnode = (ClassNode)cchild;
-                  //System.err.println("   CLASS: "+cnode.getDisplay());
                   if (cnode.getDisplay().equals(sName)) {
                       PackageNode inherited = null;
                       for(Object achild : cnode.getChildren()) {
-                          if (achild instanceof PackageNode) {
+                          if ("Inherited Attributes".equals(
+                                  ((UMLNode)achild).getDisplay())) {
+                              // remember the inheritance subtree for later
                               inherited = (PackageNode)achild;
                           }
-                          else {
+                          else if (achild instanceof AttributeNode) {
                               AttributeNode anode = (AttributeNode)achild;
-                              //System.err.println("       ATTR: "+anode.getDisplay());
                               if (anode.getDisplay().equals(attributeName)) {
-                                  //System.err.println("       FOUND");
                                   return anode;
                               }
                           }
                       }
+                      // attribute wasn't found, check inheritance subtree
                       if (inherited != null) {
-                          // check inheritance subtree, may need to recurse
                           for(Object achild : inherited.getChildren()) {
                               AttributeNode anode = (AttributeNode)achild;
-                              //System.err.println("       INHERITED: "+anode.getDisplay());
                               if (anode.getDisplay().equals(attributeName)) {
                                   return findSuper(cnode.getFullPath(), attributeName);
                               }
@@ -837,7 +831,8 @@ public class NavigationPanel extends JPanel
           // reselect the node which was selected
           List pathList = Arrays.asList(selectedPath.getPath());
           List newPath = translatePath(pathList, rootTreeNode);
-          tree.setSelectionPath(new TreePath(newPath.toArray()));
+          if (newPath != null)
+            tree.setSelectionPath(new TreePath(newPath.toArray()));
       }
     }
   }
