@@ -32,11 +32,11 @@
 
 <alias-list name="java.lang.Long">
   <alias name ="long"/>
-  </alias-list>
-
+</alias-list>
+  
 <alias-list name="java.lang.String">
     <alias name ="string"/>
-    </alias-list>
+</alias-list>
 
 <alias-list name="java.util.Date">
   <alias name="date"/>
@@ -51,5 +51,82 @@
   <alias name="collection"/>
 </alias-list>
 
+
+
+<alias-list name="double One Dimensional Array">
+  <alias name="double[]"/>
+  <alias name="Double[]"/>
+  <alias name="java.lang.Double[]"/>
+</alias-list>
+
+<alias-list name="long One Dimensional Array">
+  <alias name="long[]"/>
+  <alias name="Long[]"/>
+  <alias name="java.lang.Long[]"/>
+</alias-list>
+
+<alias-list name="byte One Dimensional Array">
+  <alias name="byte[]"/>
+  <alias name="Byte[]"/>
+  <alias name="java.lang.Byte[]"/>
+
+<alias-list name="anyClass Three Dimensional Array">
+  <alias name="object[][][]"/>
+  <alias name="Object[][][]"/>
+  <alias name="java.lang.Object[][][]"/>
+</alias-list>
+
+</alias-list>
+<alias-list name="java.lang.IntegerArray">
+  <alias name="int[]"/>
+  <alias name="Integer[]"/>
+  <alias name="java.lang.Integer[]"/>
+</alias-list>
+
+<alias-list name="java.lang.Object">
+  <alias name="Object"/>
+</alias-list>
+
+<alias-list name="java.lang.StringArrayArray">
+  <alias name="String[][]"/>
+  <alias name="java.lang.String[][]"/>
+</alias-list>
+
+<alias-list name="java.lang.Void">
+  <alias name="void"/>
+  <alias name="Void"/>
+</alias-list>
+
+<alias-list name="java.sql.Blob">
+  <alias name="Blob"/>
+</alias-list>
+
+<alias-list name="java.sql.Clob">
+  <alias name="Clob"/>
+</alias-list>
+
+<alias-list name="java.sql.Timestamp">
+  <alias name="Timestamp"/>
+</alias-list>
+
+<alias-list name="java.util.ArrayList">
+  <alias name="ArrayList"/>
+</alias-list>
+
+<alias-list name="java.util.HashSet">
+  <alias name="HashSet"/>
+</alias-list>
+
+<alias-list name="java.util.Hashtable">
+  <alias name="Hashtable"/>
+</alias-list>
+
+<alias-list name="java.util.Set">
+  <alias name="Set"/>
+</alias-list>
+
+<alias-list name="java.util.Vector">
+  <alias name="Vector"/>
+</alias-list>
 
 </Datatype-mapping>

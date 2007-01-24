@@ -95,7 +95,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   private java.util.List<SearchResultWrapper> resultSet = new ArrayList<SearchResultWrapper>();
 
   private String[] columnNames = {
-    "LongName", "Preferred Name", "Public Id", "Version", 
+    "LongName", "Workflow Status", "Public Id", "Version", 
     "Preferred Definition", "Context Name", "Registration Status"
   };
 
@@ -176,7 +176,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
             s = res.getLongName();
             break;
           case 1:
-            s = res.getPreferredName();
+            s = res.getWorkflowStatus();
             break;
           case 2:
             s = res.getPublicId();
@@ -644,6 +644,14 @@ class SearchResultWrapper {
       return "";
     else
       return sr.getRegistrationStatus();
+  }
+
+  public String getWorkflowStatus() 
+  {
+    if(ac != null)
+      return ac.getWorkflowStatus();
+    else
+      return sr.getWorkflowStatus();
   }
 
 }
