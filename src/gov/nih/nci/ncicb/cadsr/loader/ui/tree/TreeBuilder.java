@@ -382,6 +382,8 @@ public class TreeBuilder implements UserPreferencesListener {
 
         assocNode.addChild(node);
 
+        doAssociationEnd(node, AssociationEndNode.TYPE_SOURCE);
+        doAssociationEnd(node, AssociationEndNode.TYPE_TARGET);
       }
     }
 
