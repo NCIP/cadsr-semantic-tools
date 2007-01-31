@@ -4,6 +4,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
@@ -16,6 +17,11 @@ import javax.sql.DataSource;
  */
 public class Unclassifier {
 
+  private static final String CS_CHECK = 
+      "  select count(*) from" +
+      "    classification_schemes cs\n" + 
+      "  where cs.preferred_name = ? and cs.Version = ?\n";
+  
   private static final String DEL_DEFINITIONS_SQL = 
       "delete from definitions where defin_idseq in (\n" + 
       "  select defin_idseq from definitions ATT \n" + 
@@ -103,6 +109,14 @@ public class Unclassifier {
         conn = dataSource.getConnection();
         conn.setAutoCommit(false);
 
+        System.out.println("Checking for CS");
+        stmt = conn.prepareStatement(CS_CHECK);
+        stmt.setString(1, csName);
+        stmt.setFloat(2, csVersion);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+        System.out.println("  "+rs.getInt(1)+" CS found");
+        
         System.out.println("Deleting definitions");
         stmt = conn.prepareStatement(DEL_DEFINITIONS_SQL);
         stmt.setString(1, csName);
