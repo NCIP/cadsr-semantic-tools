@@ -21,7 +21,6 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
-import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
@@ -44,15 +43,16 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.InheritedAttributeNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.NodeUtil;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.PackageNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.RootNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.PackageNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValidationNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueDomainNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueMeaningNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
@@ -507,7 +507,7 @@ public class NavigationPanel extends JPanel
       for(ObjectClassRelationship ocr : ocrs) {
           if (ocr.getType() == ObjectClassRelationship.TYPE_IS && 
                   ocr.getSource().getLongName().equals(className)) {
-              superClassName = ocr.getTarget().getLongName();
+              superClassName = LookupUtil.lookupFullName(ocr.getTarget());
               break;
           }
       }
@@ -516,7 +516,7 @@ public class NavigationPanel extends JPanel
           System.err.println("Superclass not found for "+className);
           return null;
       }
-          
+      
       // find the super class in the tree
       
       int div = superClassName.lastIndexOf(".");
