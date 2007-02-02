@@ -6,8 +6,8 @@
   <bean id="dataSource" class="oracle.jdbc.pool.OracleConnectionPoolDataSource">
     <property name="driverType"><value>oracle.jdbc.driver.OracleDriver</value></property>
     <property name="URL"><value>jdbc:oracle:thin:@cbiodb30.nci.nih.gov:1521:CBTEST</value></property>
-    <property name="user"><value>sbrext</value></property>
-    <property name="password"><value>i1sn0w</value></property>
+    <property name="user"><value>THE_SIW</value></property>
+    <property name="password"><value>THE_SIW</value></property>
   </bean>
 
 </beans>
