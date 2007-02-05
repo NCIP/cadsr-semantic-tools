@@ -266,14 +266,23 @@ public class DEPanel extends JPanel
 //     de.getDataElementConcept().getObjectClass().setVersion(version);
 
      if(tempDE.getDataElementConcept() != null) {
-     de.getDataElementConcept().getObjectClass().setPublicId
-       (tempDE.getDataElementConcept().getObjectClass().getPublicId());
-     de.getDataElementConcept().getObjectClass().setVersion
-       (tempDE.getDataElementConcept().getObjectClass().getVersion());
-     de.getDataElementConcept().getObjectClass().setLongName
-       (tempDE.getDataElementConcept().getObjectClass().getLongName());
-     } else 
-     {
+       if(de.getDataElementConcept().getObjectClass().getPublicId() == null
+          || de.getDataElementConcept().getObjectClass().getPublicId().length() == 0
+        ) {
+         JOptionPane.showMessageDialog(
+           null,
+           PropertyAccessor.getProperty("oc.mapping.warning"),
+           "Please note", JOptionPane.INFORMATION_MESSAGE
+         );
+       }
+         
+       de.getDataElementConcept().getObjectClass().setPublicId
+         (tempDE.getDataElementConcept().getObjectClass().getPublicId());
+       de.getDataElementConcept().getObjectClass().setVersion
+         (tempDE.getDataElementConcept().getObjectClass().getVersion());
+       de.getDataElementConcept().getObjectClass().setLongName
+         (tempDE.getDataElementConcept().getObjectClass().getLongName());
+     } else {
       boolean found = false;
        List<DataElement> des = ElementsLists.getInstance()
           .getElements(DomainObjectFactory.newDataElement());
