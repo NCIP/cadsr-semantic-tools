@@ -506,9 +506,9 @@ public class NavigationPanel extends JPanel
       String superClassName = null;
       for(ObjectClassRelationship ocr : ocrs) {
           if (ocr.getType() == ObjectClassRelationship.TYPE_IS && 
-                  ocr.getSource().getLongName().equals(className)) {
-              superClassName = LookupUtil.lookupFullName(ocr.getTarget());
-              break;
+              LookupUtil.lookupFullName(ocr.getSource()).equals(className)) {
+            superClassName = LookupUtil.lookupFullName(ocr.getTarget());
+            break;
           }
       }
       
