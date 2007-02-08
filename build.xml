@@ -190,6 +190,17 @@
     </copy>
   </target>
 
+  <target name="dist_lib" depends="prepare">
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${dist.dir}/lib"/>
+    <jar destfile="${dist.dir}/uml-loader-classes.jar"
+      manifest="MANIFEST.MF">
+      <fileset dir="${class.dir}">
+        <include name="**/*.class"/>
+      </fileset>
+    </jar>
+  </target>
+
   <target name="doc">
     <mkdir dir="${docs.dir}"/>
     <mkdir dir="${docs.dir}/api"/>
