@@ -39,6 +39,12 @@ public class ReportConfirmPanelDescriptor
     backPanelDescriptor = FileSelectionPanelDescriptor.IDENTIFIER;
   }
 
+  public void aboutToDisplayPanel() 
+  {
+    getWizardModel().setBackButtonEnabled(false);
+    getWizardModel().setCancelButtonEnabled(false);
+  }
+
   public Object getNextPanelDescriptor() {
     return FINISH;
   }
