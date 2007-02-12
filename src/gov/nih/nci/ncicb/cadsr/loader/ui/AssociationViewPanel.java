@@ -48,6 +48,7 @@ public class AssociationViewPanel extends JTabbedPane
   private AssociationConceptPanel sourceConceptPanel;
   private AssociationConceptPanel targetConceptPanel;
 
+  private boolean showingConceptTabs = false;
 
   public AssociationViewPanel(UMLNode node) {
     this.node = node;
@@ -76,6 +77,19 @@ public class AssociationViewPanel extends JTabbedPane
     roleConceptPanel.updateNode(node);
     sourceConceptPanel.updateNode(sourceEndNode);
     targetConceptPanel.updateNode(targetEndNode);
+
+    if(ocr.getType().equals(ObjectClassRelationship.TYPE_HAS) && !showingConceptTabs) {
+      addTab("Role", roleConceptPanel);
+      addTab("Source", sourceConceptPanel);
+      addTab("Target", targetConceptPanel);
+      showingConceptTabs = true;
+    } else 
+    if(ocr.getType().equals(ObjectClassRelationship.TYPE_IS) && showingConceptTabs) {
+      remove(roleConceptPanel);
+      remove(sourceConceptPanel);
+      remove(targetConceptPanel);
+      showingConceptTabs = false;
+    }
   }
 
   private void initUI() {
@@ -95,14 +109,17 @@ public class AssociationViewPanel extends JTabbedPane
         targetEndNode = endNode;
     }
 
-    roleConceptPanel = new AssociationConceptPanel(node);
-    addTab("Role", roleConceptPanel);
-     
-    sourceConceptPanel = new AssociationConceptPanel(sourceEndNode);
-    addTab("Source", sourceConceptPanel);
 
+    roleConceptPanel = new AssociationConceptPanel(node);
+    sourceConceptPanel = new AssociationConceptPanel(sourceEndNode);
     targetConceptPanel = new AssociationConceptPanel(targetEndNode);
-    addTab("Target", targetConceptPanel);
+    
+    if(ocr.getType().equals(ObjectClassRelationship.TYPE_HAS)) {
+      addTab("Role", roleConceptPanel);
+      addTab("Source", sourceConceptPanel);
+      addTab("Target", targetConceptPanel);
+      showingConceptTabs = true;
+    }
   }
 
   public void addCustomPropertyChangeListener(PropertyChangeListener l) {
