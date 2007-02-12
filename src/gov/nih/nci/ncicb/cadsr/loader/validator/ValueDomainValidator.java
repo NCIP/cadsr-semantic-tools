@@ -150,7 +150,7 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
                  (PropertyAccessor.getProperty
                   ("vd.cd.match.incorrect", vd.getLongName()), vd));
             } else {
-
+              vd.setConceptualDomain(cds.iterator().next());
             }
           } catch (NumberFormatException e) {
             items.addItem
