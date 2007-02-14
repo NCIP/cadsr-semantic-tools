@@ -63,11 +63,13 @@ public class ClassNode extends AbstractUMLNode<PackageNode>
       // if all children are reviewed then review the class
       for(UMLNode l : getChildren())
       {
-        AttributeNode next = (AttributeNode) l;
-        if(!next.isReviewed()) 
-        {
-          changeIcon = false;
-          break;
+        if (l instanceof AttributeNode) {
+          AttributeNode next = (AttributeNode) l;
+          if(!next.isReviewed()) 
+          {
+            changeIcon = false;
+            break;
+          }
         }
       }
       
