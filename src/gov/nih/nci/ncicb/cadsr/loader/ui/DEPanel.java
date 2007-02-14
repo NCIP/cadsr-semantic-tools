@@ -217,6 +217,11 @@ public class DEPanel extends JPanel
     
   }
 
+  public void setEnabled(boolean enabled) {
+    searchDeButton.setEnabled(enabled);
+    clearButton.setEnabled(enabled);
+  }
+  
   private void updateFields() {
     deLongNameValueLabel.setText(tempDE.getLongName());
     deIdValueLabel.setText(ConventionUtil.publicIdVersion(tempDE));

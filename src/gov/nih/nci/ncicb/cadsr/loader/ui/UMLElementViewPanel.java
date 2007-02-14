@@ -87,6 +87,7 @@ public class UMLElementViewPanel extends JPanel
   public void setEnabled(boolean enabled) {
       buttonPanel.setEnabled(enabled);
       conceptEditorPanel.setEnabled(enabled);
+      dePanel.setEnabled(enabled);
   }
   
   public void switchCards(String key) 
