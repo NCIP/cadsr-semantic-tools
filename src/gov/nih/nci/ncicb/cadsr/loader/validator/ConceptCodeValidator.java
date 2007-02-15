@@ -94,12 +94,12 @@ public class ConceptCodeValidator implements Validator {
     String[] conStr = ac.getPreferredName().split(":");
     for(String s : conStr) {
       Concept con = LookupUtil.lookupConcept(s);
-      if(con.getLongName() == null)
+      if(StringUtil.isEmpty(con.getLongName()))
         items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.longName", con.getPreferredName()), ac));
-      if(con.getPreferredDefinition() == null) {
+      if(StringUtil.isEmpty(con.getPreferredDefinition())) {
         items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.definition", con.getPreferredName()), ac));
       }
-      if(con.getDefinitionSource() == null)
+      if(StringUtil.isEmpty(con.getDefinitionSource()))
         items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.source", con.getPreferredName()), ac));
     }
   }
@@ -107,12 +107,12 @@ public class ConceptCodeValidator implements Validator {
   private void checkConcepts(ValueMeaning vm) {
     for(ComponentConcept compCon : vm.getConceptDerivationRule().getComponentConcepts()) {
       Concept con = compCon.getConcept();
-      if(con.getLongName() == null)
+      if(StringUtil.isEmpty(con.getLongName()))
         items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.longName", con.getPreferredName()), vm));
-      if(con.getPreferredDefinition() == null) {
+      if(StringUtil.isEmpty(con.getPreferredDefinition())) {
         items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.definition", con.getPreferredName()), vm));
       }
-      if(con.getDefinitionSource() == null)
+      if(StringUtil.isEmpty(con.getDefinitionSource()))
         items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.source", con.getPreferredName()), vm));
     }
   }
