@@ -229,6 +229,10 @@ public class ErrorPanel extends JPanel implements MouseListener {
   }
 
   private void navTree(UMLNode node) {
+    if(node instanceof PackageNode)
+      if(node.getDisplay().equals("Inherited Attributes"))
+        return;
+
     UMLNode pNode = node.getParent();
     if (pNode != null) {
       navTree(pNode);
