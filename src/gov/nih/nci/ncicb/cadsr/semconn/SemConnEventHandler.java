@@ -156,7 +156,12 @@ public class SemConnEventHandler implements UMLHandler {
       
     DataElement de = DomainObjectFactory.newDataElement();
     de.setLongName(propName);
-    
+
+    if(event.getPersistenceId() != null) {
+      de.setPublicId(event.getPersistenceId());
+      de.setVersion(event.getPersistenceVersion());
+    }
+
     String s = event.getClassName();
     int ind = s.lastIndexOf(".");
     String className = s.substring(ind + 1);
@@ -185,8 +190,15 @@ public class SemConnEventHandler implements UMLHandler {
     
     dec.setObjectClass(oc);
     de.setDataElementConcept(dec);
+
+    ValueDomain vd = DomainObjectFactory.newValueDomain();
+
+    if(event.getTypeId() != null) {
+      vd.setPublicId(event.getTypeId());
+      vd.setVersion(event.getTypeVersion());
+    }
     
-    de.setValueDomain(DomainObjectFactory.newValueDomain());
+    de.setValueDomain(vd);
     
     // Store alt Name for DE:
     // packageName.ClassName.PropertyName
