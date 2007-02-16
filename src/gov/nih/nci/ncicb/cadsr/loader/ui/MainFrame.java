@@ -209,7 +209,9 @@ public class MainFrame extends JFrame
     previewReuseMenuItem.setEnabled(false);
     elementMenu.add(applyMenuItem);
     elementMenu.add(applyToAllMenuItem);
-    elementMenu.add(previewReuseMenuItem);
+
+    // not in this release. re-add to get feature
+//     elementMenu.add(previewReuseMenuItem);
     mainMenuBar.add(elementMenu);
 
 //     runMenu.add(validateMenuItem);
