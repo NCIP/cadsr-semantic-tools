@@ -358,7 +358,7 @@ public class TreeBuilder implements UserPreferencesListener {
   }
   
    private void doAssociations(UMLNode parentNode, ObjectClass oc) {
-      UMLNode assocNode = new PackageNode("Associations", "Associations");
+     UMLNode assocNode = new PackageNode("Associations for " + oc.getLongName(), "Associations");
 
     ObjectClassRelationship o = DomainObjectFactory.newObjectClassRelationship();
     List<ObjectClassRelationship> ocrs = elements.getElements(o);
