@@ -126,7 +126,40 @@ public class UMLDefaultHandler
     vm.setLongName(event.getName());
 
     vm.setLifecycle(UMLDefaults.getInstance().getLifecycle());
-    vm.setPreferredDefinition(event.getDescription());
+//     vm.setPreferredDefinition(event.getDescription());
+
+    Concept[] vmConcepts = new Concept[concepts.size()];
+    concepts.toArray(vmConcepts);
+
+    Definition vmAltDef = DomainObjectFactory.newDefinition();
+    vmAltDef.setType(Definition.TYPE_UML_VM);
+     
+    if(!StringUtil.isEmpty(event.getDescription())) {
+      vmAltDef.setDefinition(event.getDescription());
+    } else {
+//       vmAltDef.setDefinition(ValueMeaning.DEFAULT_DEFINITION);
+    }
+
+    // if this VM has concepts, then use evs definition 
+    // if VM has no concept, then use user defined definition
+    if(concepts != null && concepts.size() > 0) {
+      vm.setPreferredDefinition(ConceptUtil
+                                .preferredDefinitionFromConcepts(vmConcepts));
+      
+      if(!StringUtil.isEmpty(event.getDescription())) 
+        vm.addDefinition(vmAltDef);
+
+    } else {
+      if(!StringUtil.isEmpty(event.getDescription())) {
+        vm.setPreferredDefinition(event.getDescription());
+      } else 
+        vm.setPreferredDefinition(ValueMeaning.DEFAULT_DEFINITION);
+
+      if(!StringUtil.isEmpty(event.getDescription())) 
+        vm.addDefinition(vmAltDef);
+
+    }
+
 
 //     if(noConcept) {
 //       vm.setConceptDerivationRule(createConceptDerivationRule(new ArrayList<Concepts>()));
