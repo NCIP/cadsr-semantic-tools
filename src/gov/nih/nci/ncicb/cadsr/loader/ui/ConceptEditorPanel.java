@@ -514,6 +514,8 @@ public class ConceptEditorPanel extends JPanel
     Object o = node.getUserObject();
     if(node instanceof AttributeNode) {
       s = "UML Attribute Description";
+    } else if(node instanceof ValueMeaningNode) {
+      s = "UML ValueMeaning Description";
     }
     
     umlPanel.setBorder
@@ -533,7 +535,12 @@ public class ConceptEditorPanel extends JPanel
         descriptionArea.setText(def.getDefinition());
         break;
       }
-
+    } else if(node instanceof ValueMeaningNode) {
+      ValueMeaning vm = (ValueMeaning)node.getUserObject();
+      for(Definition def :  vm.getDefinitions()) {
+        descriptionArea.setText(def.getDefinition());
+        break;
+      }
     }
 
     descriptionArea.setLineWrap(true);
