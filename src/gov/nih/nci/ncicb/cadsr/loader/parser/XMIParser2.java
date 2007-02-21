@@ -571,6 +571,16 @@ public class XMIParser2 implements Parser {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
 
+    String description = getDocumentation(att, TV_DESCRIPTION);
+    if(description != null) {
+      event.setDescription(description);
+    } else {
+      description = getDocumentation(att, TV_DOCUMENTATION);
+      if(description != null) {
+        event.setDescription(description);
+      }
+    }
+
     setConceptInfo(att, event, TV_TYPE_VM);
 
     listener.newValueMeaning(event);
