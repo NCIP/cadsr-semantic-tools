@@ -80,7 +80,7 @@ public class ConceptCodeValidator implements Validator {
       for(ValueMeaning vm : vms) {
         if(vm.getConceptDerivationRule().getComponentConcepts().size() == 0)
           items.addItem
-            (new ValidationConceptError
+            (new ValidationConceptWarning
              (PropertyAccessor.getProperty
               ("vm.missing.concept", vm.getLongName()), vm));
         else {

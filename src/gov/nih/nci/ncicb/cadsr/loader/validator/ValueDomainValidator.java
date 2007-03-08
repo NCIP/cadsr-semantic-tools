@@ -176,10 +176,23 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
             ignoreVD = false;
 
           if(result.size() > 0) {
-            if(ignoreVD)
-              items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
-            else
-              items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
+            // Check if VD in caDSR is the same by comparing it's permissible values
+            
+            ValueDomain cadsrVD = result.iterator().next();
+            List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(cadsrVD);
+            List<PermissibleValue> localPVs = vd.getPermissibleValues();
+            
+            if(!comparePVLists(cadsrPVs, localPVs)) {
+              if(ignoreVD)
+                items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
+              else
+                items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
+            } else {
+              // same VD, update field in the localVD
+//               vd.setPermissibleValues(cadsrPVs);
+              vd.setPublicId(cadsrVD.getPublicId());
+              vd.setVersion(cadsrVD.getVersion());
+            }
           }
         } catch (Exception e){
           logger.error(e);
@@ -234,5 +247,39 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
   public void setCadsrModule(CadsrModule module) {
     this.cadsrModule = module;
   }
+
+  private boolean comparePVLists(List<PermissibleValue> pvList1, List<PermissibleValue> pvList2) 
+  {
+    if(pvList1 == null || pvList2 == null)
+      return false;
+
+    if(pvList1.size() != pvList2.size()) 
+      return false;
+
+    if(pvList1.size() == 0 && pvList2.size() == 0)
+      return true;
+
+    boolean found = true;
+    Iterator<PermissibleValue> it1 = pvList1.iterator();
+    //    while(it1.hasNext() && found == true) {
+    while(it1.hasNext() && found) {
+      found = false;
+      PermissibleValue pv1 = it1.next();
+      Iterator<PermissibleValue> it2 = pvList2.iterator();
+      while(found == false && it2.hasNext()) {
+        PermissibleValue pv2 = it2.next();
+        if(pv2.getValue().equalsIgnoreCase(pv1.getValue())) {
+          found = true;
+        }
+      }
+      if(!found)
+        return false;
+    }
+    // return true if we found the last match 
+    return (found == true && !it1.hasNext());
+  
+}  
+
+
 
 }
