@@ -506,9 +506,8 @@ public class ConceptEditorPanel extends JPanel
     nameLabel.setText(s);
   }
   
-    private JPanel createDescriptionPanel() {
+  private JPanel createDescriptionPanel() {
     JPanel umlPanel = new JPanel();
-
 
     String s = "UML Class Documentation";
     Object o = node.getUserObject();
