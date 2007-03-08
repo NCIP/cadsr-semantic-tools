@@ -99,7 +99,45 @@ public class UMLDefaultHandler
     cd.setPublicId(event.getCdId());
     cd.setVersion(event.getCdVersion());
 
+    // un comment the following to lookup CD. 
+//     Map<String, Object> queryFields = 
+//         new HashMap<String, Object>();
+//     queryFields.put(CadsrModule.PUBLIC_ID, event.getPersistenceId());
+//     queryFields.put(CadsrModule.VERSION, event.getPersistenceVersion());
+//     List<ConceptualDomain> result = null;
+    
+//     try {
+//       result =  new ArrayList<ConceptualDomain>(cadsrModule.findConceptualDomain(queryFields));
+//     } catch (Exception e){
+//       logger.error("Could not query cadsr module ", e);
+//     } // end of try-catch
+    
+//     if(result.size() > 0) {
+//       cd = result.get(0);
+//     }
+      
+
+
     vd.setConceptualDomain(cd);
+
+
+    // create CSI for package (since 3.2)
+    ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
+    String pName = event.getPackageName();
+    csi.setName(pName);
+    if (!packageList.contains(pName)) {
+      elements.addElement(csi);
+      packageList.add(pName);
+    }
+
+    AdminComponentClassSchemeClassSchemeItem acCsCsi = DomainObjectFactory.newAdminComponentClassSchemeClassSchemeItem();
+    ClassSchemeClassSchemeItem csCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
+    csCsi.setCsi(csi);
+    acCsCsi.setCsCsi(csCsi);
+    List l = new ArrayList();
+    l.add(acCsCsi);
+    vd.setAcCsCsis(l);
+
     
 //     if(concepts.size() > 0)
       vd.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, true));
@@ -126,19 +164,19 @@ public class UMLDefaultHandler
     vm.setLongName(event.getName());
 
     vm.setLifecycle(UMLDefaults.getInstance().getLifecycle());
-//     vm.setPreferredDefinition(event.getDescription());
 
     Concept[] vmConcepts = new Concept[concepts.size()];
     concepts.toArray(vmConcepts);
 
-    Definition vmAltDef = DomainObjectFactory.newDefinition();
-    vmAltDef.setType(Definition.TYPE_UML_VM);
+//     Definition vmAltDef = DomainObjectFactory.newDefinition();
+//     vmAltDef.setType(Definition.TYPE_UML_VM);
      
-    if(!StringUtil.isEmpty(event.getDescription())) {
-      vmAltDef.setDefinition(event.getDescription());
-    } else {
-//       vmAltDef.setDefinition(ValueMeaning.DEFAULT_DEFINITION);
-    }
+//     if(!StringUtil.isEmpty(event.getDescription())) {
+//       vmAltDef.setDefinition(event.getDescription());
+//     } else {
+// //       vmAltDef.setDefinition(ValueMeaning.DEFAULT_DEFINITION);
+//     }
+
 
     // if this VM has concepts, then use evs definition 
     // if VM has no concept, then use user defined definition
@@ -146,8 +184,8 @@ public class UMLDefaultHandler
       vm.setPreferredDefinition(ConceptUtil
                                 .preferredDefinitionFromConcepts(vmConcepts));
       
-      if(!StringUtil.isEmpty(event.getDescription())) 
-        vm.addDefinition(vmAltDef);
+//       if(!StringUtil.isEmpty(event.getDescription())) 
+//         vm.addDefinition(vmAltDef);
 
     } else {
       if(!StringUtil.isEmpty(event.getDescription())) {
@@ -155,16 +193,15 @@ public class UMLDefaultHandler
       } else 
         vm.setPreferredDefinition(ValueMeaning.DEFAULT_DEFINITION);
 
-      if(!StringUtil.isEmpty(event.getDescription())) 
-        vm.addDefinition(vmAltDef);
+//       if(!StringUtil.isEmpty(event.getDescription())) 
+//         vm.addDefinition(vmAltDef);
 
     }
-
-
+    
 //     if(noConcept) {
 //       vm.setConceptDerivationRule(createConceptDerivationRule(new ArrayList<Concepts>()));
 //     } else {
-      vm.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, true));
+    vm.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, true));
 //     }
 
     PermissibleValue pv = DomainObjectFactory.newPermissibleValue();
@@ -172,6 +209,18 @@ public class UMLDefaultHandler
     pv.setValue(event.getName());
     
     vd.addPermissibleValue(pv);
+
+    AlternateName vmAltName = DomainObjectFactory.newAlternateName();
+    vmAltName.setType(AlternateName.TYPE_UML_VM);
+    vmAltName.setName(event.getName());
+    vm.addAlternateName(vmAltName);
+
+    if(!StringUtil.isEmpty(event.getDescription())) {
+      Definition vmAltDef = DomainObjectFactory.newDefinition();
+      vmAltDef.setType(Definition.TYPE_UML_VM);
+      vmAltDef.setDefinition(event.getDescription());
+      vm.addDefinition(vmAltDef);
+    }
 
     elements.addElement(vm);
     reviewTracker.put("ValueDomains." + event.getValueDomainName() + "." + event.getName(), event.isReviewed());
@@ -666,13 +715,6 @@ public class UMLDefaultHandler
 
       
   }
-
-//   private void doInheritanceAncestors(ObjectClass parentClass) {
-//     List<ObjectClassRelationship> ocrs = ElementsLists.getElements(DomainObjectFactory.newObjectClassRelationship());
-
-    
-
-//   }
 
   private Concept newConcept(NewConceptEvent event) {
     Concept concept = DomainObjectFactory.newConcept();
