@@ -26,6 +26,9 @@ import org.apache.log4j.Logger;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
+import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
+import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
+
 import java.util.*;
 
 
@@ -36,6 +39,8 @@ import java.util.*;
 public class ConceptPersister extends UMLPersister {
 
   private static Logger logger = Logger.getLogger(ConceptPersister.class.getName());
+
+  private EvsModule evsModule = new EvsModule("PRE_NCI_Thesaurus");
 
   public ConceptPersister() {
   }
@@ -73,12 +78,36 @@ public class ConceptPersister extends UMLPersister {
         } else { // concept exist: See if we need to add alternate def.
           logger.info(PropertyAccessor.getProperty("existed.concept", c.getPreferredName()));
 
+
+
           String newSource = c.getDefinitionSource();
           String newDef = c.getPreferredDefinition();
+          String newName = c.getLongName();
           c = (Concept)l.get(0);
-          
-//           Concept c2 = (Concept)l.get(0);
-//           c.setId(c2.getId());
+
+          EvsResult evsResult = null;
+          // verify that name in input and name in caDSR are the same
+          if(!newName.equalsIgnoreCase(c.getLongName())) {
+            // the names are not the same. 
+            // lookup EVS to see if what's in input is in sync with EVS
+            evsResult = evsModule.findByConceptCode(c.getPreferredName(), false);
+            
+            if(evsResult != null) {
+              Concept conRes = evsResult.getConcept();
+              if(conRes.getLongName().equals(newName)) {
+                // evs return came same as input, so update caDSR
+                conceptDAO.updateName(c, newName);
+                logger.info("Updated Concept name for concept:  " + c.getPreferredName());
+                
+                addAlternateName(c, c.getLongName(), AlternateName.PRIOR_PREFERRED_NAME);
+              }
+            } else { // this concept is not in EVS, the names are not the same. Stop the load.
+              logger.error(PropertyAccessor.getProperty("cant.validate.concept", 
+                                                        new String[]{c.getPreferredName(), "preferred name"}));
+            }
+
+          }
+
           if(!newSource.equalsIgnoreCase(c.getDefinitionSource())) { // Add alt def.
 
             logger.debug("Concept " + c.getPreferredName() + " had different definition source. ");
@@ -97,5 +126,35 @@ public class ConceptPersister extends UMLPersister {
     }
   }
 
+  private void addAlternateName(Concept con, String newName, String type) 
+  {
+    List<String> eager = new ArrayList<String>();
+
+    List<AlternateName> altNames = adminComponentDAO.getAlternateNames(con, eager);
+    boolean found = false;
+    for(AlternateName an : altNames) {
+      if(an.getType().equals(type) && an.getName().equals(newName)) {
+        found = true;
+        logger.info(PropertyAccessor.getProperty(
+                      "existed.altName", newName));
+      }
+    }
+    
+    if(!found) {
+      AlternateName altName = DomainObjectFactory.newAlternateName();
+      altName.setContext(defaults.getContext());
+      altName.setAudit(defaults.getAudit());
+      altName.setName(newName);
+      altName.setType(type);
+      altName.setId(adminComponentDAO.addAlternateName(con, altName));
+      logger.info(PropertyAccessor.getProperty(
+                    "added.altName", 
+                    new String[] {
+                      altName.getName(),
+                      con.getLongName()
+                    }));
+      
+    } 
+  }
 
 }
