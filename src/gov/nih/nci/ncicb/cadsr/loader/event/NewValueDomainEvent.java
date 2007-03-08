@@ -31,6 +31,7 @@ public class NewValueDomainEvent extends NewConceptualEvent {
   private String type;
   private String cdId;
   private Float cdVersion;
+  private String packageName;
 
   public NewValueDomainEvent(String name) {
     this.name = name;
@@ -48,6 +49,23 @@ public class NewValueDomainEvent extends NewConceptualEvent {
   public String getDatatype() {
     return datatype;
   }
+
+  /**
+   * Get the PackageName value.
+   * @return the PackageName value.
+   */
+  public String getPackageName() {
+    return packageName;
+  }
+
+  /**
+   * Set the PackageName value.
+   * @param newPackageName The new PackageName value.
+   */
+  public void setPackageName(String newPackageName) {
+    this.packageName = newPackageName;
+  }
+
 
   /**
    * Set the Datatype value.
