@@ -54,15 +54,15 @@ public class ValueDomainPersister extends UMLPersister {
         logger.debug(vd.getLongName());
 	vd.setContext(defaults.getContext());
 
-        vd.setVersion(1.0f);
+        List<PermissibleValue> thesePvs = vd.getPermissibleValues();
+
+        if(vd.getVersion() == null)
+          vd.setVersion(1.0f);
         vd.setWorkflowStatus(defaults.getWorkflowStatus());
         vd.setAudit(defaults.getAudit());
 
-
         Boolean ignoreVD = (Boolean)UserSelections.getInstance().getProperty("ignore-vd");
-        if(ignoreVD){
-          System.out.println("ignore VD");
-
+        if(ignoreVD || vd.getPublicId() != null){
           ValueDomain searchVD = DomainObjectFactory.newValueDomain();
           searchVD.setLongName(vd.getLongName());
           searchVD.setContext(vd.getContext());
@@ -77,10 +77,14 @@ public class ValueDomainPersister extends UMLPersister {
 
         if(newVd == null) {
           try {
+            List<AdminComponentClassSchemeClassSchemeItem> acCsCsis = vd.getAcCsCsis();
+
             vd.setLifecycle(defaults.getLifecycle());
             newVd = valueDomainDAO.create(vd);
             logger.info(PropertyAccessor.getProperty("created.vd"));
             valueDomains.put(newVd.getLongName(), vd);
+            
+            vd.setAcCsCsis(acCsCsis);
           } catch (DAOCreateException e){
             logger.error(PropertyAccessor.getProperty("created.vd.failed", e.getMessage()));
           } // end of try-catch
@@ -89,10 +93,42 @@ public class ValueDomainPersister extends UMLPersister {
 	LogUtil.logAc(newVd, logger);
         
 	it.set(newVd);
+
+        List<PermissibleValue> allPvs = valueDomainDAO.getPermissibleValues(newVd.getId());
+
+        // add CS_CSI to each VM
+        // cs_csi of the package this VD was in. 
+        for(AdminComponentClassSchemeClassSchemeItem acCsCsi : vd.getAcCsCsis()) {
+          for(PermissibleValue pv : allPvs) {
+            // This pv may not have been included in the XMI
+            // check
+            PermissibleValue originalPv = isPvIncluded(pv, thesePvs);
+            if(originalPv != null) {
+              String packName = acCsCsi.getCsCsi().getCsi().getName();
+              addPackageClassification(pv.getValueMeaning(), packName);
+              for(AlternateName altName : originalPv.getValueMeaning().getAlternateNames())
+                addAlternateName(pv.getValueMeaning(), altName.getName(), altName.getType(), packName);
+              
+              for(Definition altDef : originalPv.getValueMeaning().getDefinitions())
+                addAlternateDefinition(pv.getValueMeaning(), altDef.getDefinition(), altDef.getType(), packName);
+
+            }            
+          }
+        }
+
+        
+
       }
     }
-
   }
 
-
+  private PermissibleValue isPvIncluded(PermissibleValue pv, List<PermissibleValue> pvs) 
+  { 
+    for(PermissibleValue thisPv : pvs) {
+      if(pv.getValueMeaning().getLongName().trim().equalsIgnoreCase(pv.getValueMeaning().getLongName().trim()))
+        return thisPv;
+    }
+    return null;
+  }
+  
 }
