@@ -256,6 +256,12 @@ public class CadsrPublicApiModule implements CadsrModule {
           service.query(criteria, gov.nih.nci.cadsr.domain.DataElement.class.getName());
       return CadsrTransformer.deListPublicToPrivate(results);
   }
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.PermissibleValue> getPermissibleValues(gov.nih.nci.ncicb.cadsr.domain.ValueDomain vd)
+    throws Exception 
+  {
+    throw new RuntimeException("not implemented");
+  }
   
   public void setServiceURL(String url) {
     this.serviceURL = url;
@@ -341,5 +347,6 @@ public class CadsrPublicApiModule implements CadsrModule {
     }
 
   }
+
 
 }

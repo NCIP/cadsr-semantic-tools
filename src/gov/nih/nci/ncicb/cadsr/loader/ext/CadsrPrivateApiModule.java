@@ -116,6 +116,14 @@ public class CadsrPrivateApiModule implements CadsrModule
               className, attrName);
   }
   
+  public List<gov.nih.nci.ncicb.cadsr.domain.PermissibleValue> getPermissibleValues(gov.nih.nci.ncicb.cadsr.domain.ValueDomain vd)
+    throws Exception 
+  {
+    return DAOAccessor.getValueDomainDAO().getPermissibleValues(
+      vd.getId());
+  }
+
+  
   public void setServiceURL(String url){ 
   }
 

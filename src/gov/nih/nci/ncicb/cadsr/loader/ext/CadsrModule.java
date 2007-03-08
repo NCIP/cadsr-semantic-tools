@@ -50,6 +50,9 @@ public interface CadsrModule
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
     suggestDataElement(String className, String attrName) throws Exception;
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.PermissibleValue> getPermissibleValues(gov.nih.nci.ncicb.cadsr.domain.ValueDomain vd)
+    throws Exception;
   
   public void setServiceURL(String url);
 
