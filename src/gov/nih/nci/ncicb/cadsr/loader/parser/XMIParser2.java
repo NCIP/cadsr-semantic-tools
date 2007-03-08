@@ -395,6 +395,7 @@ public class XMIParser2 implements Parser {
 
     className = clazz.getName();
 
+
     currentElementIndex++;
     ProgressEvent evt = new ProgressEvent();
     evt.setMessage("Parsing " + className);
@@ -402,6 +403,10 @@ public class XMIParser2 implements Parser {
     fireProgressEvent(evt);
 
     NewValueDomainEvent event = new NewValueDomainEvent(className.trim());
+
+    String pName = getPackageName(clazz.getPackage());
+    if(pName != null)
+      event.setPackageName(pName);
 
     setConceptInfo(clazz, event, TV_TYPE_VD);
 
