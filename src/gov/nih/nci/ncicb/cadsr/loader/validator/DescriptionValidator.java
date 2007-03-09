@@ -25,7 +25,7 @@ public class DescriptionValidator implements Validator
     if(ocs != null) {   
       for(ObjectClass oc : ocs) {  
         if(StringUtil.isEmpty(oc.getPreferredDefinition()))
-          items.addItem(new ValidationWarning
+          items.addItem(new ValidationError
                         (PropertyAccessor.getProperty
                          ("class.no.description", oc.getLongName()), oc));
       }
@@ -35,7 +35,7 @@ public class DescriptionValidator implements Validator
     if(des != null) {  
       for(DataElement de : des) {  
         if(de.getDefinitions() == null || de.getDefinitions().size() == 0)
-          items.addItem(new ValidationWarning
+          items.addItem(new ValidationError
                         (PropertyAccessor.getProperty
                          ("attribute.no.description",
                           de.getDataElementConcept().getLongName()), de));
