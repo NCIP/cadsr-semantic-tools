@@ -61,6 +61,8 @@ public class UMLDefaultHandler
   // key = oc Id / version
   // Value = the DE that set oc id / version
   private Map<String, DataElement> ocMapping = new HashMap<String, DataElement>();
+
+  private InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
   
   public UMLDefaultHandler() {
     this.elements = ElementsLists.getInstance();
@@ -693,6 +695,9 @@ public class UMLDefaultHandler
 //           newElts.add(newProp);
           newElts.add(newDe);
           newElts.add(newDec);
+
+          inheritedAttributes.add(newDe);
+
         }
       }
     
