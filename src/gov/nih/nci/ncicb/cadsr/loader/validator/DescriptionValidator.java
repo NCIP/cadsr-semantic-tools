@@ -8,6 +8,8 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 public class DescriptionValidator implements Validator
 {
   private ElementsLists elements = ElementsLists.getInstance();
+
+  private InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
   
   private ValidationItems items = ValidationItems.getInstance();
   
@@ -34,11 +36,12 @@ public class DescriptionValidator implements Validator
     List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());
     if(des != null) {  
       for(DataElement de : des) {  
-        if(de.getDefinitions() == null || de.getDefinitions().size() == 0)
-          items.addItem(new ValidationError
-                        (PropertyAccessor.getProperty
-                         ("attribute.no.description",
-                          de.getDataElementConcept().getLongName()), de));
+        if(!inheritedAttributes.isInherited(de))
+          if(de.getDefinitions() == null || de.getDefinitions().size() == 0)
+            items.addItem(new ValidationError
+                          (PropertyAccessor.getProperty
+                           ("attribute.no.description",
+                            de.getDataElementConcept().getLongName()), de));
       }
     }
     
