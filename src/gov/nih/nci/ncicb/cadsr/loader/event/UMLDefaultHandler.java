@@ -584,14 +584,17 @@ public class UMLDefaultHandler
     ocr.setLongName(event.getRoleName());
     ocr.setType(ObjectClassRelationship.TYPE_HAS);
 
-    ocr.setConceptDerivationRule(
-            ConceptUtil.createConceptDerivationRule(createConcepts(event), true));
+    if(event.getConcepts() != null && event.getConcepts().size() > 0)
+      ocr.setConceptDerivationRule(
+        ConceptUtil.createConceptDerivationRule(createConcepts(event), true));
 
-    ocr.setSourceRoleConceptDerivationRule(
-            ConceptUtil.createConceptDerivationRule(createConcepts(sEvent), true));
+    if(sEvent.getConcepts() != null && sEvent.getConcepts().size() > 0)
+      ocr.setSourceRoleConceptDerivationRule(
+        ConceptUtil.createConceptDerivationRule(createConcepts(sEvent), true));
 
-    ocr.setTargetRoleConceptDerivationRule(
-            ConceptUtil.createConceptDerivationRule(createConcepts(tEvent), true));
+    if(tEvent.getConcepts() != null && tEvent.getConcepts().size() > 0)
+      ocr.setTargetRoleConceptDerivationRule(
+        ConceptUtil.createConceptDerivationRule(createConcepts(tEvent), true));
     
     if(!aDone)
       logger.debug("!aDone: " + aEvent.getClassName() + " -- " + bEvent.getClassName());
