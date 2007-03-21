@@ -62,7 +62,7 @@ public class ValueDomainPersister extends UMLPersister {
         vd.setAudit(defaults.getAudit());
 
         Boolean ignoreVD = (Boolean)UserSelections.getInstance().getProperty("ignore-vd");
-        if(ignoreVD || vd.getPublicId() != null){
+        if(ignoreVD ){
           ValueDomain searchVD = DomainObjectFactory.newValueDomain();
           searchVD.setLongName(vd.getLongName());
           searchVD.setContext(vd.getContext());
@@ -73,6 +73,24 @@ public class ValueDomainPersister extends UMLPersister {
           if(result.size() != 0) {
             newVd = result.get(0);
           }
+        }
+        
+        if(vd.getPublicId() != null) {
+          ValueDomain searchVD = DomainObjectFactory.newValueDomain();
+          searchVD.setPublicId(vd.getPublicId());
+          searchVD.setVersion(vd.getVersion());
+          List<ValueDomain> result = valueDomainDAO.find(searchVD);
+          
+          if(result.size() != 0) {
+            newVd = result.get(0);
+          }
+          
+        }
+
+        if(newVd == null && ignoreVD == true) {
+          // we have a problem here, we want to ignore the VD but it doesn't exist.
+          logger.error("ignoring a VD that doesn't exist : " + vd.getLongName());
+          continue;
         }
 
         if(newVd == null) {
