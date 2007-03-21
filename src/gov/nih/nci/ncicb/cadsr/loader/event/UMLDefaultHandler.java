@@ -664,10 +664,17 @@ public class UMLDefaultHandler
           newDe.setValueDomain(de.getValueDomain());
           newDe.setLongName(newDec.getLongName() + " " + de.getValueDomain().getLongName());
 
+
+          for(Definition def : de.getDefinitions()) {
+            if(def.getType().equals(Definition.TYPE_UML_DE)) {
+              Definition newDef = DomainObjectFactory.newDefinition();
+              newDef.setType(Definition.TYPE_UML_DE);
+              newDef.setDefinition(childOc.getPreferredDefinition() + " " + def.getDefinition());
+              newDe.addDefinition(newDef);
+            }
+          }
           
-//           for(Definition def : de.getDefinitions()) {
-//             newDe.addDefinition(def);
-//           }
+          
 
           AlternateName fullName = DomainObjectFactory.newAlternateName();
           fullName.setType(AlternateName.TYPE_FULL_NAME);
