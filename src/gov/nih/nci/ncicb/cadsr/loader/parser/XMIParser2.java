@@ -859,7 +859,7 @@ public class XMIParser2 implements Parser {
       return null;
     else {
       sb.append(tv.getValue());
-      for(int i = 2;true; i++) {
+      for(int i = 2;i<9; i++) {
         tv = elt.getTaggedValue(tag + i);
         if(tv == null)
           return sb.toString();
@@ -868,5 +868,6 @@ public class XMIParser2 implements Parser {
         }
       }
     }
+    return sb.toString();
   }
 }
