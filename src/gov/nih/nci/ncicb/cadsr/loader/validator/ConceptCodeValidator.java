@@ -87,7 +87,17 @@ public class ConceptCodeValidator implements Validator {
           checkConcepts(vm);
         }
       }
+
+    List<ObjectClassRelationship> ocrs = elements.getElements(DomainObjectFactory.newObjectClassRelationship());
+    if(ocrs != null)
+      for(ObjectClassRelationship ocr : ocrs) {
+        checkConcepts(ocr, ocr.getConceptDerivationRule());
+        checkConcepts(ocr, ocr.getSourceRoleConceptDerivationRule());
+        checkConcepts(ocr, ocr.getTargetRoleConceptDerivationRule());
+      }
+
     return items;
+
   }
 
   private void checkConcepts(AdminComponent ac) {
@@ -105,15 +115,24 @@ public class ConceptCodeValidator implements Validator {
   }
 
   private void checkConcepts(ValueMeaning vm) {
-    for(ComponentConcept compCon : vm.getConceptDerivationRule().getComponentConcepts()) {
+    checkConcepts(vm, vm.getConceptDerivationRule());
+  }
+
+  private void checkConcepts(AdminComponent ac, ConceptDerivationRule condr) {
+    if(condr == null)
+      return;
+    if(condr.getComponentConcepts() == null)
+      return;
+                                                
+    for(ComponentConcept compCon : condr.getComponentConcepts()) {
       Concept con = compCon.getConcept();
       if(StringUtil.isEmpty(con.getLongName()))
-        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.longName", con.getPreferredName()), vm));
+        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.longName", con.getPreferredName()), ac));
       if(StringUtil.isEmpty(con.getPreferredDefinition())) {
-        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.definition", con.getPreferredName()), vm));
+        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.definition", con.getPreferredName()), ac));
       }
       if(StringUtil.isEmpty(con.getDefinitionSource()))
-        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.source", con.getPreferredName()), vm));
+        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.source", con.getPreferredName()), ac));
     }
   }
 
