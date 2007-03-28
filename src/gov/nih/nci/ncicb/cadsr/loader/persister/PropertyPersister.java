@@ -154,7 +154,7 @@ public class PropertyPersister extends UMLPersister {
     
     Property existingProp = l.get(0);
 
-    addAlternateName(existingProp, newName, AlternateName.TYPE_UML_CLASS ,packageName);
+    addAlternateName(existingProp, newName, AlternateName.TYPE_UML_ATTRIBUTE ,packageName);
 
     return existingProp;
 
