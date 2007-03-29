@@ -238,6 +238,14 @@ public class UMLDefaults {
       projectCs.setAudit(audit);
       projectCs.setId(classificationSchemeDAO.create(projectCs));
 
+      cs = DomainObjectFactory.newClassificationScheme();
+      cs.setLongName(projectCs.getLongName());
+      List newResult = classificationSchemeDAO.find(cs);
+      if(newResult.size() > 0) {
+        logger.error(PropertyAccessor.getProperty("cs.longName.already.exists"));
+        System.exit(1);
+      }
+
       logger.info(PropertyAccessor.getProperty("created.project.cs"));
       LogUtil.logAc(projectCs, logger);
       logger.info(PropertyAccessor.getProperty("type", projectCs.getType()));
@@ -245,8 +253,15 @@ public class UMLDefaults {
     } 
     else { 
       logger.info(PropertyAccessor.getProperty("existed.project.cs"));
+
+      String csLongName = projectCs.getLongName();
       projectCs = (ClassificationScheme) result.get(0);
 
+      if(!csLongName.equals(projectCs.getLongName())) {
+        logger.error(PropertyAccessor.getProperty("cs.longName.already.exists"));
+        System.exit(1);
+      }
+      
     }
 
   }
