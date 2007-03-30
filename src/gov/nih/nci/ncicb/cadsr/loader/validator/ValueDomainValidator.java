@@ -212,7 +212,7 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
           }
         }
         if(!match)
-          items.addItem(new ValidationError
+          items.addItem(new ValidationWarning
                         (PropertyAccessor.getProperty
                           ("vd.not.used", vd.getLongName()), vd));
       }
