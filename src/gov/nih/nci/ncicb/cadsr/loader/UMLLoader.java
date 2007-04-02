@@ -209,7 +209,7 @@ public class UMLLoader {
         logger.warn(warning.getMessage());
       }
       String answ = JOptionPane.showInputDialog(PropertyAccessor.getProperty("validation.continue"));
-      if(!answ.equals("y")) {
+      if(answ == null || !answ.equals("y")) {
         System.exit(1);
       }
     }
