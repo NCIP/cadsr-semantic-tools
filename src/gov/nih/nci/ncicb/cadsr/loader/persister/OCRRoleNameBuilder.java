@@ -21,6 +21,8 @@ package gov.nih.nci.ncicb.cadsr.loader.persister;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
+
 /**
  * utility to build role name for OCRs that are missing one
  *
@@ -42,7 +44,7 @@ public class OCRRoleNameBuilder  {
   private String buildRoleName(ObjectClassRelationship ocr, boolean longName) {
 
     if(ocr.getType().equals(ocr.TYPE_IS)) {
-      return ocr.getSource().getLongName() + "-->" + ocr.getTarget().getLongName();
+      return LookupUtil.lookupFullName(ocr.getSource()) + "-->" + LookupUtil.lookupFullName(ocr.getTarget());
     }
 
     StringBuffer roleName = new StringBuffer();
