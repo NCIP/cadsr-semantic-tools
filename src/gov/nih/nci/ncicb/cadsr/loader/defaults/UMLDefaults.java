@@ -234,9 +234,7 @@ public class UMLDefaults {
     List result = classificationSchemeDAO.find(cs, eager);
 
     if (result.size() == 0) { // need to add projectName CS
-      projectCs.setContext(context);
-      projectCs.setAudit(audit);
-      projectCs.setId(classificationSchemeDAO.create(projectCs));
+      logger.info("Can't find CS by preferredName: " + cs.getPreferredName() + " in context " + context.getName());
 
       cs = DomainObjectFactory.newClassificationScheme();
       cs.setLongName(projectCs.getLongName());
@@ -245,6 +243,10 @@ public class UMLDefaults {
         logger.error(PropertyAccessor.getProperty("cs.longName.already.exists"));
         System.exit(1);
       }
+
+      projectCs.setContext(context);
+      projectCs.setAudit(audit);
+      projectCs.setId(classificationSchemeDAO.create(projectCs));
 
       logger.info(PropertyAccessor.getProperty("created.project.cs"));
       LogUtil.logAc(projectCs, logger);
