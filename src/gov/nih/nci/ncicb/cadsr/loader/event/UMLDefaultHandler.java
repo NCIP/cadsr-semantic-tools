@@ -209,6 +209,7 @@ public class UMLDefaultHandler
     PermissibleValue pv = DomainObjectFactory.newPermissibleValue();
     pv.setValueMeaning(vm);
     pv.setValue(event.getName());
+    pv.setLifecycle(UMLDefaults.getInstance().getLifecycle());
     
     vd.addPermissibleValue(pv);
 
