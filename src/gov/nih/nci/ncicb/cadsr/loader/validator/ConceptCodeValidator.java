@@ -105,12 +105,12 @@ public class ConceptCodeValidator implements Validator {
     for(String s : conStr) {
       Concept con = LookupUtil.lookupConcept(s);
       if(StringUtil.isEmpty(con.getLongName()))
-        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.longName", con.getPreferredName()), ac));
+        items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("validation.concept.missing.longName", con.getPreferredName()), ac));
       if(StringUtil.isEmpty(con.getPreferredDefinition())) {
-        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.definition", con.getPreferredName()), ac));
+        items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("validation.concept.missing.definition", con.getPreferredName()), ac));
       }
       if(StringUtil.isEmpty(con.getDefinitionSource()))
-        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.source", con.getPreferredName()), ac));
+        items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("validation.concept.missing.source", con.getPreferredName()), ac));
     }
   }
 
@@ -127,12 +127,12 @@ public class ConceptCodeValidator implements Validator {
     for(ComponentConcept compCon : condr.getComponentConcepts()) {
       Concept con = compCon.getConcept();
       if(StringUtil.isEmpty(con.getLongName()))
-        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.longName", con.getPreferredName()), ac));
+        items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("validation.concept.missing.longName", con.getPreferredName()), ac));
       if(StringUtil.isEmpty(con.getPreferredDefinition())) {
-        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.definition", con.getPreferredName()), ac));
+        items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("validation.concept.missing.definition", con.getPreferredName()), ac));
       }
       if(StringUtil.isEmpty(con.getDefinitionSource()))
-        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.missing.source", con.getPreferredName()), ac));
+        items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("validation.concept.missing.source", con.getPreferredName()), ac));
     }
   }
 
