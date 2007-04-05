@@ -53,7 +53,7 @@ public class DatatypeValidator implements Validator
   {
     UserSelections userSelections = UserSelections.getInstance();
     RunMode mode = (RunMode)(userSelections.getProperty("MODE"));
-    if(!mode.equals(RunMode.Reviewer))
+    if(!mode.equals(RunMode.Reviewer) && !mode.equals(RunMode.UnannotatedXmi))
       return items;
 
     //DataElement o = DomainObjectFactory.newDataElement();
