@@ -81,20 +81,20 @@ public class ModeSelectionPanel extends JPanel {
     
     group = new ButtonGroup();
 
-    unannotatedXmiOption = new JRadioButton("Review un-annotated XMI File");
+    unannotatedXmiOption = new JRadioButton("1. Review un-annotated XMI File");
     unannotatedXmiOption.setActionCommand(RunMode.UnannotatedXmi.toString());
 
-    roundtripOption = new JRadioButton("Perform XMI Roundtrip");
+    roundtripOption = new JRadioButton("2. Perform XMI Roundtrip");
     roundtripOption.setActionCommand(RunMode.Roundtrip.toString());
     
-    annotateOption = new JRadioButton("Run Semantic Connector");
+    annotateOption = new JRadioButton("3. Run Semantic Connector");
     annotateOption.setActionCommand(RunMode.GenerateReport.toString());
         
-    reviewOption = new JRadioButton("Review Annotated Model");
-    reviewOption.setActionCommand(RunMode.Reviewer.toString());
-
-    curateOption = new JRadioButton("Curate XMI File");
+    curateOption = new JRadioButton("4. Curate XMI File");
     curateOption.setActionCommand(RunMode.Curator.toString());
+
+    reviewOption = new JRadioButton("5. Review Annotated Model");
+    reviewOption.setActionCommand(RunMode.Reviewer.toString());
 
     if(prefs.getModeSelection() == null) 
       unannotatedXmiOption.setSelected(true);
