@@ -86,7 +86,7 @@ public class UMLLoaderGUI
     Frame f = new Frame();
     Wizard wizard = new Wizard(f);
 
-    wizard.getDialog().setTitle("Semantic Integration Workbench");
+    wizard.getDialog().setTitle(PropertyAccessor.getProperty("siw.title"));
     
     WizardPanelDescriptor modeSelDesc = new ModeSelectionPanelDescriptor();
     wizard.registerWizardPanel(ModeSelectionPanelDescriptor.IDENTIFIER, modeSelDesc);
@@ -147,6 +147,8 @@ public class UMLLoaderGUI
           mainFrame.exit();
         }
       });
+
+    mainFrame.setTitle(PropertyAccessor.getProperty("siw.title") + " -- " + mode.getTitleName());
 
     mainFrame.setVisible(true);
 
