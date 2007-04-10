@@ -119,7 +119,9 @@ public class WizardController implements ActionListener {
         
         fireNewRunMode(mode);
         userSelections.setProperty("MODE", mode);
-        
+
+        wizard.setTitle(PropertyAccessor.getProperty("siw.title") + " -- " + mode.getTitleName());
+                
         prefs.setModeSelection(mode.toString());
         
         // right here, we decide which module to use
