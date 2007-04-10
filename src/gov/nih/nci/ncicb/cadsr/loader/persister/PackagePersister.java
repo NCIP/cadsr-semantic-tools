@@ -43,24 +43,24 @@ public class PackagePersister extends UMLPersister {
   public void persist() {
     ClassificationSchemeItem pkg = DomainObjectFactory.newClassificationSchemeItem();
 
-    ClassificationSchemeItem subProject = DomainObjectFactory.newClassificationSchemeItem();
-
-    List packages = (List) elements.getElements(pkg.getClass());
+    List<ClassificationSchemeItem> packages = elements.getElements(pkg);
 
     Map packageCsCsis = defaults.getPackageCsCsis();
 
     if (packages != null) {
-      for (ListIterator it = packages.listIterator(); it.hasNext();) {
-	pkg = (ClassificationSchemeItem) it.next();
+      for (ListIterator<ClassificationSchemeItem> it = packages.listIterator(); it.hasNext();) {
+	pkg = it.next();
+        
 	pkg.setAudit(defaults.getAudit());
 	pkg.setType(ClassificationSchemeItem.TYPE_UML_PACKAGE);
 
+        ClassificationSchemeItem subProject = DomainObjectFactory.newClassificationSchemeItem();
         subProject.setName(defaults.getPackageDisplay(pkg.getName()));
         // Verify is there is a sub project
         if(!subProject.getName().equals(pkg.getName())) {
           subProject.setAudit(defaults.getAudit());
-          subProject.setType(ClassificationSchemeItem.TYPE_UML_PROJECT
-);
+          subProject.setType(ClassificationSchemeItem.TYPE_UML_PROJECT);
+
           // See if it already exist in DB
           List l = classificationSchemeItemDAO.find(subProject);
           
