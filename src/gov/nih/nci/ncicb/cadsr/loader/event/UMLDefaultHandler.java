@@ -142,7 +142,7 @@ public class UMLDefaultHandler
 
     
 //     if(concepts.size() > 0)
-      vd.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, true));
+      vd.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, false));
 
     elements.addElement(vd);
     reviewTracker.put(event.getName(), event.isReviewed());
