@@ -142,7 +142,7 @@ public class UMLDefaultHandler
 
     
 //     if(concepts.size() > 0)
-      vd.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, true));
+      vd.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, false));
 
     elements.addElement(vd);
     reviewTracker.put(event.getName(), event.isReviewed());
@@ -630,6 +630,11 @@ public class UMLDefaultHandler
     // Find all DECs:
     ObjectClass parentOc = ocr.getTarget(),
       childOc = ocr.getSource();
+
+    if(childOc == null || parentOc == null) {
+      logger.warn("Skipping generalization because parent or child can't be found. Did you filter out some classes?");
+      return;
+    }
 
     List newElts = new ArrayList();
     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
