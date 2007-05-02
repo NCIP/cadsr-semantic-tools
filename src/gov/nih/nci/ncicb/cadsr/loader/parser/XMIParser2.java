@@ -783,9 +783,15 @@ public class XMIParser2 implements Parser {
     } else 
       return false;
     
-    tv = elt.getTaggedValue(type + pre + TV_CONCEPT_DEFINITION + ((n>0)?""+n:""));
-    if (tv != null) {
-      event.setConceptDefinition(tv.getValue().trim());
+
+    String tvValue = getSplitTaggedValue(elt, type + pre + TV_CONCEPT_DEFINITION + ((n>0)?""+n:""), "_");
+//     tv = elt.getTaggedValue(type + pre + TV_CONCEPT_DEFINITION + ((n>0)?""+n:""));
+//     if (tv != null) {
+//       event.setConceptDefinition(tv.getValue().trim());
+//     }
+
+    if (tvValue != null) {
+      event.setConceptDefinition(tvValue.trim());
     }
 
     tv = elt.getTaggedValue(type + pre + TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:""));
@@ -847,6 +853,11 @@ public class XMIParser2 implements Parser {
   }
 
   private String getDocumentation(UMLTaggableElement elt, String tag) {
+    return getSplitTaggedValue(elt, tag, "");
+  }
+
+  private String getSplitTaggedValue(UMLTaggableElement elt, String tag, String separator) 
+  {
     UMLTaggedValue tv = elt.getTaggedValue(tag);
     
     StringBuilder sb = new StringBuilder();
@@ -855,7 +866,7 @@ public class XMIParser2 implements Parser {
     else {
       sb.append(tv.getValue());
       for(int i = 2;true; i++) {
-        tv = elt.getTaggedValue(tag + i);
+        tv = elt.getTaggedValue(tag + separator + i);
         if(tv == null)
           return sb.toString();
         else {
@@ -863,5 +874,9 @@ public class XMIParser2 implements Parser {
         }
       }
     }
+
+
   }
+
+
 }
