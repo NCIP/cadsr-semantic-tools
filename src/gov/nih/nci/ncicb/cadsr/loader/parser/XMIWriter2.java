@@ -29,6 +29,8 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.xmiinout.handler.*;
 import gov.nih.nci.ncicb.xmiinout.domain.*;
 
+import org.apache.log4j.Logger;
+
 import java.util.*;
 
 /**
@@ -56,6 +58,8 @@ public class XMIWriter2 implements ElementWriter {
   
   private UMLModel model = null;
   private XmiInOutHandler handler = null;
+
+  private Logger logger = Logger.getLogger(XMIWriter2.class.getName());
 
   public XMIWriter2() {
   }
@@ -326,7 +330,8 @@ public class XMIWriter2 implements ElementWriter {
     tvName = type + pre + XMIParser2.TV_CONCEPT_DEFINITION + ((n>0)?""+n:"");
 
     if(con.getPreferredDefinition() != null)
-      elt.addTaggedValue(tvName,con.getPreferredDefinition());
+      addSplitTaggedValue(elt, tvName, con.getPreferredDefinition(), "_");
+//       elt.addTaggedValue(tvName,con.getPreferredDefinition());
     
     tvName = type + pre + XMIParser2.TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:"");
 
@@ -536,5 +541,30 @@ public class XMIWriter2 implements ElementWriter {
     return pack.toString();
   }
  
+
+  private void addSplitTaggedValue(UMLTaggableElement elt, String tag, String value, String separator) 
+  {  
+
+    final int MAX_TV_SIZE = 255;
+
+    if(value.length() > MAX_TV_SIZE) {
+      int nbOfTags = (int)(Math.floor(value.length() / MAX_TV_SIZE) + 1);
+
+      for(int i = 0; i < nbOfTags; i++) {
+        String thisTag = (i==0)?tag:tag + separator + (i+1);
+
+        int index = i*MAX_TV_SIZE;
+        
+        String thisValue = (index + MAX_TV_SIZE > value.length())?value.substring(index):value.substring(index, index + MAX_TV_SIZE);
+        
+        elt.addTaggedValue(thisTag, thisValue);
+      }
+      
+
+
+    } else {
+      elt.addTaggedValue(tag, value);
+    }
+  }
 
 }
