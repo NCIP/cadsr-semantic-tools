@@ -873,16 +873,16 @@ public class XMIParser2 implements Parser {
       for(int i = 2;i<9; i++) {
         tv = elt.getTaggedValue(tag + separator + i);
         if(tv == null) {
-          if(sb.length() > 1999)
-            return sb.substring(0, 1999);
+          if(sb.length() > 2000)
+            return sb.substring(0, 2000);
           return sb.toString();
         } else {
           sb.append(tv.getValue());
         }
       }
     }
-    if(sb.length() > 1999)
-      return sb.substring(0, 1999);
+    if(sb.length() > 2000)
+      return sb.substring(0, 2000);
 
     return sb.toString();
   }
