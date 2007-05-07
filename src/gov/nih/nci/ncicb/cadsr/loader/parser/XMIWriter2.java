@@ -548,8 +548,7 @@ public class XMIWriter2 implements ElementWriter {
     final int MAX_TV_SIZE = 255;
 
     if(value.length() > MAX_TV_SIZE) {
-      int nbOfTags = (int)(Math.floor(value.length() / MAX_TV_SIZE) + 1);
-
+      int nbOfTags = (int)(Math.ceil((double)value.length() / (double)MAX_TV_SIZE));
       for(int i = 0; i < nbOfTags; i++) {
         String thisTag = (i==0)?tag:tag + separator + (i+1);
 
