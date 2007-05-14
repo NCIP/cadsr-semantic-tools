@@ -94,6 +94,10 @@ public class UMLLoaderGUI
     WizardPanelDescriptor packageDesc = new PackageFilterSelectionPanelDescriptor();
     wizard.registerWizardPanel(PackageFilterSelectionPanelDescriptor.IDENTIFIER, packageDesc);
 
+    WizardPanelDescriptor packageClassFilterDesc = new PackageClassFilterPanelDescriptor();
+    wizard.registerWizardPanel(PackageClassFilterPanelDescriptor.IDENTIFIER, packageClassFilterDesc);
+
+
     WizardPanelDescriptor descriptor2 = new FileSelectionPanelDescriptor();
     wizard.registerWizardPanel(FileSelectionPanelDescriptor.IDENTIFIER, descriptor2);
 
