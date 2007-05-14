@@ -31,10 +31,13 @@ import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import gov.nih.nci.ncicb.xmiinout.handler.*;
 import gov.nih.nci.ncicb.xmiinout.domain.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterClass;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterPackage;
 
 import java.io.*;
 
@@ -160,7 +163,7 @@ public class XMIParser2 implements Parser {
   public static final String TV_CURATOR_REVIEWED = "CURATOR_REVIEWED";
 
   private int totalNumberOfElements = 0, currentElementIndex = 0;
-
+  private boolean filterClassAndPackages = false;
 
   private String[] bannedClassNames = null;
   {
@@ -168,6 +171,9 @@ public class XMIParser2 implements Parser {
   }
   public static final String[] validVdStereotypes = 
     PropertyAccessor.getProperty("vd.valid.stereotypes").split(",");
+
+  private List<FilterClass> filterClasses = new ArrayList<FilterClass>();
+  private List<FilterPackage> filterPackages = new ArrayList<FilterPackage>();
 
   public void setEventHandler(LoaderHandler handler) {
     this.listener = (UMLHandler) handler;
@@ -186,6 +192,16 @@ public class XMIParser2 implements Parser {
         reviewTag = TV_OWNER_REVIEWED;
       }
 
+      FilterPackage p = new FilterPackage("");
+      filterPackages = ElementsLists.getInstance().getElements(p);
+
+      FilterClass c = new FilterClass("", "");
+      filterClasses = ElementsLists.getInstance().getElements(c);
+      try {
+        filterClassAndPackages = (Boolean)UserSelections.getInstance().getProperty("FILTER_CLASS_AND_PACKAGES");
+      } catch (NullPointerException e) {
+      }
+
       long start = System.currentTimeMillis();
       
       listener.beginParsing();
@@ -193,22 +209,26 @@ public class XMIParser2 implements Parser {
       ProgressEvent evt = new ProgressEvent();
       evt.setMessage("Parsing ...");
       fireProgressEvent(evt);
-      
-      XmiInOutHandler handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
 
-      String s = filename.replaceAll("\\ ", "%20");
+      XmiInOutHandler handler = (XmiInOutHandler)UserSelections.getInstance().getProperty("XMI_HANDLER");
 
-      // Some file systems use absolute URIs that do 
-      // not start with '/'. 
-      if(!s.startsWith("/"))
-        s = "/" + s;    
-      java.net.URI uri = new java.net.URI("file://" + s);
-      handler.load(uri);
+      if(handler == null) {
+        handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
+        
+        String s = filename.replaceAll("\\ ", "%20");
+        
+        // Some file systems use absolute URIs that do 
+        // not start with '/'. 
+        if(!s.startsWith("/"))
+          s = "/" + s;    
+        java.net.URI uri = new java.net.URI("file://" + s);
+        handler.load(uri);
+        
+        // save in memory for fast-save
+        UserSelections.getInstance().setProperty("XMI_HANDLER", handler);
+      }
 
       UMLModel model = handler.getModel("EA Model");
-
-      // save in memory for fast-save
-      UserSelections.getInstance().setProperty("XMI_HANDLER", handler);
 
       totalNumberOfElements = countNumberOfElements(model);
       
@@ -332,6 +352,17 @@ public class XMIParser2 implements Parser {
       
     if (pName != null) {
       className = pName + "." + className;
+    }
+
+    if(filterClassAndPackages) {
+      boolean found = false;
+      for(FilterPackage pack : filterPackages) {
+        if(pack.getName().equals(pName)) {
+          found = pack.isReviewed();
+        }
+      }
+      if(found == false)
+        return;
     }
 
     currentElementIndex++;
@@ -809,6 +840,18 @@ public class XMIParser2 implements Parser {
   }
 
   private boolean isInPackageFilter(String pName) {
+//     if(filterClassAndPackages) {
+//       boolean found = false;
+//       for(FilterPackage pack : filterPackages) {
+//         if(pack.getName().equals(pName)) {
+//           found = pack.isReviewed();
+//         }
+//       }
+//       if(found == false)
+//         return false;
+//     }
+      
+
     Map packageFilter = UMLDefaults.getInstance().getPackageFilter();
     return (packageFilter.size() == 0) || (packageFilter.containsKey(pName) || (UMLDefaults.getInstance().getDefaultPackageAlias() != null));
   }
