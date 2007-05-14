@@ -52,6 +52,9 @@
     <property name="xmiParser">
       <ref bean="xmiParser2"/>
     </property>
+    <property name="preParser">
+      <ref bean="preParser"/>
+    </property>
     <property name="validator">
       <ref bean="mainValidator"/>
     </property>
@@ -81,6 +84,10 @@
     class="gov.nih.nci.ncicb.cadsr.loader.event.UMLDefaultHandler">
   </bean>
 
+  <bean name="preHandler"
+    class="gov.nih.nci.ncicb.cadsr.loader.event.PackageFilterHandler">
+  </bean>
+
   <!-- change IMPL -->
   <bean name="scEventHandler"
     class="gov.nih.nci.ncicb.cadsr.loader.event.UMLDefaultHandler">
@@ -102,6 +109,11 @@
   <bean name="xmiParser2"
     class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser2">
     <property name="eventHandler"><ref bean="umlEventHandler"/></property>
+  </bean>
+
+  <bean name="preParser"
+    class="gov.nih.nci.ncicb.cadsr.loader.parser.PreParser">
+    <property name="eventHandler"><ref bean="preHandler"/></property>
   </bean>
 
   <!--
