@@ -2,7 +2,21 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-  
+
+  <!--  
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName"><value>oracle.jdbc.driver.OracleDriver</value></property>
+    <property name="url"><value>jdbc:oracle:thin:@cbiodb30.nci.nih.gov:1521:CBTEST</value></property>
+    <property name="username"><value>THE_SIW</value></property>
+    <property name="password"><value>THE_SIW</value></property>
+  </bean>
+-->
+
+  <!--
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="classpath:customer.properties"/>
+  </bean>
+-->
   <bean id="dataSource" class="oracle.jdbc.pool.OracleConnectionPoolDataSource">
     <property name="driverType"><value>oracle.jdbc.driver.OracleDriver</value></property>
     <property name="URL"><value>jdbc:oracle:thin:@cbiodb30.nci.nih.gov:1521:CBTEST</value></property>
