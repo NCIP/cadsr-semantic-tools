@@ -366,7 +366,7 @@ public class WizardController implements ActionListener {
                       cause = cause.getCause();
                     }
 
-                    msg  = msg + "\nPlease ensure you have used the correct options when exporting to XMI.\nThe application will now close.";
+                    msg  = msg + "\nThe application will now close.";
 
                     JOptionPane.showMessageDialog((Frame)null,  msg, "Fatal Parsing Error", JOptionPane.ERROR_MESSAGE);
                     wizard.close(Wizard.ERROR_RETURN_CODE);
