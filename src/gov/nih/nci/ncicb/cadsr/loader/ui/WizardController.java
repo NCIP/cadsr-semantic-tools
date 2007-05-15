@@ -70,7 +70,7 @@ public class WizardController implements ActionListener {
 
   private java.util.List<RunModeListener> runModeListeners = new ArrayList<RunModeListener>();
 
-  private Parser xmiParser = null;
+  private Parser xmiParser = null, preParser = null;
   private RoundtripAction roundtripAction = null;
   private Validator validator = null;
 
@@ -175,14 +175,52 @@ public class WizardController implements ActionListener {
       }
 
       if(descriptor.getPanelDescriptorIdentifier().equals(FileSelectionPanelDescriptor.IDENTIFIER)) {
+        FileSelectionPanel panel = 
+            (FileSelectionPanel)descriptor.getPanelComponent();
+        filename = panel.getSelection();
+        userSelections.setProperty("SKIP_VD_VALIDATION", panel.getSkipVdValidation());
+        
+        prefs.addRecentFile(filename);
+        
+        userSelections.setProperty("FILENAME", filename);
+        
+        try {
+          if(panel.getChoosePackage()) {
+            userSelections.setProperty("FILTER_CLASS_AND_PACKAGES", new Boolean(true));
+            
+//             wizard.getModel().setNextButtonEnabled(false);
+            wizard.getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            preParser.parse(filename);
+            wizard.getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+//             wizard.getModel().setNextButtonEnabled(true);
+
+            wizard.setCurrentPanel(nextPanelDescriptor);
+            PackageClassFilterPanelDescriptor filterDesc =
+              (PackageClassFilterPanelDescriptor)model
+              .getPanelDescriptor(PackageClassFilterPanelDescriptor.IDENTIFIER);
+            filterDesc.init();
+            return;
+          }
+
+
+        } catch (ParserException e) {
+          logger.error("Could not pre-parse file: " + e.getMessage());
+        }
+        
+      }
+
+      if(descriptor.getPanelDescriptorIdentifier().equals(FileSelectionPanelDescriptor.IDENTIFIER) || descriptor.getPanelDescriptorIdentifier().equals(PackageClassFilterPanelDescriptor.IDENTIFIER)) {
+
+        if(descriptor.getPanelDescriptorIdentifier().equals(FileSelectionPanelDescriptor.IDENTIFIER)) {
           FileSelectionPanel panel = 
             (FileSelectionPanel)descriptor.getPanelComponent();
           filename = panel.getSelection();
           userSelections.setProperty("SKIP_VD_VALIDATION", panel.getSkipVdValidation());
-
+          
           prefs.addRecentFile(filename);
-
+          
           userSelections.setProperty("FILENAME", filename);
+        }
 
           ReportConfirmPanelDescriptor reportDesc =
             (ReportConfirmPanelDescriptor)model
@@ -196,32 +234,6 @@ public class WizardController implements ActionListener {
             .getPanelDescriptor(ProgressFileSelectionPanelDescriptor.IDENTIFIER);
 
 
-//           if(mode.equals(RunMode.FixEa)) {
-//             SwingWorker worker = new SwingWorker() {
-//                 public Object construct() {
-//                   ProgressEvent evt = new ProgressEvent();
-                  
-//                   SemanticConnectorUtil semConn = new SemanticConnectorUtil();
-//                   semConn.addProgressListener(progressDesc);
-                  
-//                   evt.setMessage("Removing Unnecessary tags from XMI ...");
-//                   progressDesc.newProgressEvent(evt);
-//                   String outputXmi = semConn.fixXmi(filename);
-
-//                   System.out.println("done");
-
-// //                  evt.setGoal(100);
-// //                  evt.setMessage("Done");
-// //                  evt.setStatus(100);
-//                   evt.setCompleted(true);
-//                   progressDesc.newProgressEvent(evt);
-                  
-//                   reportPanel.setOutputText("Fix Ea was run on file:<br>" + filename + "<br><br>Output file can be found here:<br>" + outputXmi);
-//                   return null;
-//                 }
-//               };
-//             worker.start(); 
-//           } else 
            if(mode.equals(RunMode.GenerateReport)) {
              SwingWorker worker = new SwingWorker() {
                  public Object construct() {
@@ -257,47 +269,6 @@ public class WizardController implements ActionListener {
                };
              worker.start(); 
            } else
-//           if(mode.equals(RunMode.AnnotateXMI)) {
-//             SwingWorker worker = new SwingWorker() {
-//                 public Object construct() {
-//                   try {
-//                     ProgressEvent evt = new ProgressEvent();
-
-//                     String filenameNoExt = filename.substring(filename.lastIndexOf("/")+1);
-//                     String inputXmi = filename;
-                    
-//                     SemanticConnectorUtil semConn = new SemanticConnectorUtil();
-//                     semConn.addProgressListener(progressDesc);
-
-//                     if(!filenameNoExt.startsWith("fixed_")) {
-//                       reportPanel.setOutputText("The name of the XMI file should start with 'fixed_'. It does not. <br> Please ensure you have run the Fix EA task first.");
-//                       return null;
-//                     }
-
-//                     File csvFile = new File(SemanticConnectorUtil.getCsvFilename(filename));
-//                     if(!csvFile.exists()) {
-//                       reportPanel.setOutputText("No EVS Report exist. Please create an EVS Report first <br><br> No Processing done.");
-//                       return null;
-//                     } else {
-//                       evt.setMessage("Annotating XMI File ...");
-//                       progressDesc.newProgressEvent(evt);
-//                       outputFile = semConn.annotateXmi(inputXmi);
-//                     }
-
-//                     reportPanel.setFiles(inputXmi, outputFile);
-
-//                   } catch (SemanticConnectorException e){
-//                     e.printStackTrace();
-//                     reportPanel.setFiles(null, "An error occured.");
-//                   } catch (Throwable t)  {// end of try-catch
-//                     t.printStackTrace();
-//                   }
-//                   return null;
-//                 }
-//               };
-//             worker.start(); 
-//           }
-//           else
           if(mode.equals(RunMode.Roundtrip)) {
             SwingWorker worker = new SwingWorker() {
                 public Object construct() {
@@ -466,6 +437,10 @@ public class WizardController implements ActionListener {
   }
   public void setXmiParser(gov.nih.nci.ncicb.cadsr.loader.parser.Parser parser) {
     this.xmiParser = parser;
+  }
+
+  public void setPreParser(gov.nih.nci.ncicb.cadsr.loader.parser.Parser parser) {
+    this.preParser = parser;
   }
 
   public void setValidator(Validator validator) {
