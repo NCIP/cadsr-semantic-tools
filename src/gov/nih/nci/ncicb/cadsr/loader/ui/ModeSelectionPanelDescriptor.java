@@ -21,6 +21,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import java.awt.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 
 public class ModeSelectionPanelDescriptor 
   extends WizardPanelDescriptor 
@@ -41,18 +42,18 @@ public class ModeSelectionPanelDescriptor
       nextPanelDescriptor = FileSelectionPanelDescriptor.IDENTIFIER;
     backPanelDescriptor = ModeSelectionPanelDescriptor.IDENTIFIER;
 
+
   }
   
   public void actionPerformed(ActionEvent evt) {
     if(evt.getActionCommand().equals(RunMode.Roundtrip.toString())) {
       setNextPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
     } else if(evt.getActionCommand().equals(RunMode.GenerateReport.toString())) {
-        setNextPanelDescriptor(PackageFilterSelectionPanelDescriptor.IDENTIFIER);
+      setNextPanelDescriptor(PackageFilterSelectionPanelDescriptor.IDENTIFIER);
     }
     else {
       setNextPanelDescriptor(FileSelectionPanelDescriptor.IDENTIFIER);
     }
-    
   }
     
 }
