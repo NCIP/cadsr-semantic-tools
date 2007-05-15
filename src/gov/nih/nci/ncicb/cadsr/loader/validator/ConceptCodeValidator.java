@@ -108,6 +108,9 @@ public class ConceptCodeValidator implements Validator {
         items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("validation.concept.missing.longName", con.getPreferredName()), ac));
       if(StringUtil.isEmpty(con.getPreferredDefinition())) {
         items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("validation.concept.missing.definition", con.getPreferredName()), ac));
+      } else if (con.getPreferredDefinition().length() > 2000){
+        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.definition.too.long", con.getPreferredName()), ac));
+        con.setPreferredDefinition(con.getPreferredDefinition().substring(0, 2000));
       }
       if(StringUtil.isEmpty(con.getDefinitionSource()))
         items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("validation.concept.missing.source", con.getPreferredName()), ac));
@@ -130,6 +133,9 @@ public class ConceptCodeValidator implements Validator {
         items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("validation.concept.missing.longName", con.getPreferredName()), ac));
       if(StringUtil.isEmpty(con.getPreferredDefinition())) {
         items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("validation.concept.missing.definition", con.getPreferredName()), ac));
+      } else if (con.getPreferredDefinition().length() > 2000){
+        items.addItem(new ValidationError(PropertyAccessor.getProperty("validation.concept.definition.too.long", con.getPreferredName()), ac));
+        con.setPreferredDefinition(con.getPreferredDefinition().substring(0, 2000));
       }
       if(StringUtil.isEmpty(con.getDefinitionSource()))
         items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("validation.concept.missing.source", con.getPreferredName()), ac));
