@@ -50,6 +50,7 @@ public class ProgressFileSelectionPanelDescriptor extends WizardPanelDescriptor
 
   public void aboutToDisplayPanel() {
     getWizardModel().setNextButtonEnabled(Boolean.FALSE);
+    getWizardModel().setBackButtonEnabled(Boolean.FALSE);
   }
   
   public Object getBackPanelDescriptor() {
