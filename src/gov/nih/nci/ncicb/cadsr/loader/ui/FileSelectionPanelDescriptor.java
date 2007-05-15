@@ -24,6 +24,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 import java.awt.event.*;
 import java.io.*;
+import javax.swing.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 
 /**
@@ -69,6 +70,7 @@ public class FileSelectionPanelDescriptor
   
   public void actionPerformed(ActionEvent evt) {      
     setNextButtonAccordingToSelection();
+    setNextActionAccordingToSelection();
   }
     
   private void setNextButtonAccordingToSelection() 
@@ -78,4 +80,26 @@ public class FileSelectionPanelDescriptor
     getWizardModel().setNextButtonEnabled(new Boolean(f.exists()));
  
   }
+
+  private void setNextActionAccordingToSelection() 
+  {
+    if(panel.getChoosePackage()) {
+      setNextPanelDescriptor(PackageClassFilterPanelDescriptor.IDENTIFIER);
+    }
+    else 
+      setNextPanelDescriptor(ProgressFileSelectionPanelDescriptor.IDENTIFIER);
+      
+//       JDialog chooseDialog = new JDialog((JFrame)null, true);
+//       chooseDialog.setVisible(true);
+  }
+  
+
+//   public void aboutToHidePanel() 
+//   {
+//     if(panel.getChoosePackage()) {
+//       JDialog chooseDialog = new JDialog((JFrame)null, true);
+// //       chooseFrame.setModal(true);
+//       chooseDialog.setVisible(true);
+//     }
+//   }
 }

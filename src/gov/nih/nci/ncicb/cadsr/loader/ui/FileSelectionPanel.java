@@ -69,7 +69,9 @@ implements ProgressListener {
   private String fileExtension = "xmi";
 
   private JCheckBox skipVdValidationCheckBox = 
-    new JCheckBox("Skip Value Domain Validation");
+    new JCheckBox("Skip Value Domain Validation"),
+    chooseClassesCheckBox =  
+    new JCheckBox("Choose Classes and Packages");   
   
   private List<ActionListener> actionListeners = new ArrayList();
 
@@ -82,14 +84,16 @@ implements ProgressListener {
     UserSelections selections = UserSelections.getInstance();
     
     runMode = (RunMode)(selections.getProperty("MODE"));
-    if(runMode.equals(RunMode.Curator)) 
-      fileExtension = "xmi";
-    else if(runMode.equals(RunMode.Reviewer)) 
-      fileExtension = "xmi";
-    else if(runMode.equals(RunMode.GenerateReport)) 
-      fileExtension = "xmi";
-    else if(runMode.equals(RunMode.AnnotateXMI))
-      fileExtension = "xmi";
+//     if(runMode.equals(RunMode.Curator)) 
+//       fileExtension = "xmi";
+//     else if(runMode.equals(RunMode.Reviewer)) 
+//       fileExtension = "xmi";
+//     else if(runMode.equals(RunMode.GenerateReport)) 
+//       fileExtension = "xmi";
+//     else if(runMode.equals(RunMode.AnnotateXMI))
+
+    fileExtension = "xmi";
+
     initUI();
   }
 
@@ -113,8 +117,15 @@ implements ProgressListener {
     return skipVdValidationCheckBox.isSelected();
   }
 
+  public boolean getChoosePackage() 
+  {
+    return chooseClassesCheckBox.isSelected();
+  }
+
+
   public void addFileActionListener(ActionListener l) {
     browseButton.addActionListener(l);
+    chooseClassesCheckBox.addActionListener(l);
   }
 
   private void initUI() {
@@ -205,6 +216,15 @@ implements ProgressListener {
 //     }
 
 
+    insertInBag(browsePanel, chooseClassesCheckBox, 0, y, 2, 1);
+
+    chooseClassesCheckBox.addItemListener(new ItemListener() {
+        public void itemStateChanged(ItemEvent evt) 
+        {       
+          fireActionEvent(null);
+        }
+      });
+
     browsePanel.setPreferredSize(new Dimension(400, 250));
 
     this.add(browsePanel, BorderLayout.CENTER);
@@ -243,6 +263,7 @@ implements ProgressListener {
       progressPanel.setVisible(true);
       browseButton.setEnabled(false);
       filePathField.setEnabled(false);
+      chooseClassesCheckBox.setVisible(false);
     } else {
       progressPanel.setVisible(false);
     }
