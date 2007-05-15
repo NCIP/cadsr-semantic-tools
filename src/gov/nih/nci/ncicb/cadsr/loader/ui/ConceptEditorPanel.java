@@ -21,6 +21,9 @@ import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.*;
+import javax.swing.text.PlainDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
@@ -723,6 +726,9 @@ public class ConceptEditorPanel extends JPanel
   }
 
   private void initUI(Concept concept) {
+    TextFieldLimiter tf = new TextFieldLimiter(2000);
+    def.setDocument(tf);
+
     def.setFont(new Font("Serif", Font.ITALIC, 16));
     def.setLineWrap(true);
     def.setWrapStyleWord(true);
@@ -780,15 +786,30 @@ public class ConceptEditorPanel extends JPanel
     return upButton;
   } 
 
-  public void setEnabled(boolean enabled) {
-    code.setEnabled(enabled);
-    name.setEnabled(enabled);
-    def.setEnabled(enabled);
-    defSource.setEnabled(enabled);
-    evsButton.setEnabled(enabled);
-    deleteButton.setEnabled(enabled);
-    downButton.setEnabled(enabled);
-    upButton.setEnabled(enabled);
-  }
-  
+    public void setEnabled(boolean enabled) {
+      code.setEnabled(enabled);
+      name.setEnabled(enabled);
+      def.setEnabled(enabled);
+      defSource.setEnabled(enabled);
+      evsButton.setEnabled(enabled);
+      deleteButton.setEnabled(enabled);
+      downButton.setEnabled(enabled);
+      upButton.setEnabled(enabled);
+    }
+ 
+    class TextFieldLimiter extends PlainDocument
+    {
+      int maxChar = -1;
+      public TextFieldLimiter(int len){maxChar = len;}
+      public void insertString(int offs, String str, AttributeSet a) throws BadLocationException
+      {
+        if (str != null && maxChar > 0 && this.getLength() + str.length() > maxChar)
+          {
+            java.awt.Toolkit.getDefaultToolkit().beep();
+            return;
+          }
+        super.insertString(offs, str, a);
+      }
+    }
+ 
 }
