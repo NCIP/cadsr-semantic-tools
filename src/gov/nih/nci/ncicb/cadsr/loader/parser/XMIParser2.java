@@ -35,6 +35,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import gov.nih.nci.ncicb.xmiinout.handler.*;
 import gov.nih.nci.ncicb.xmiinout.domain.*;
+import gov.nih.nci.ncicb.xmiinout.util.ModelUtil;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterClass;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterPackage;
@@ -301,7 +302,7 @@ public class XMIParser2 implements Parser {
     return count;
   }
 
-  private void doPackage(UMLPackage pack) {
+  private void doPackage(UMLPackage pack) throws ParserException {
     UMLDefaults defaults = UMLDefaults.getInstance();
 
     if (packageName.length() == 0) {
@@ -332,7 +333,7 @@ public class XMIParser2 implements Parser {
     packageName = "";
   }
 
-  private void doClass(UMLClass clazz) {
+  private void doClass(UMLClass clazz) throws ParserException {
     UMLDefaults defaults = UMLDefaults.getInstance();
     String pName = getPackageName(clazz.getPackage());
 
@@ -421,7 +422,7 @@ public class XMIParser2 implements Parser {
 
   }
 
-  private void doValueDomain(UMLClass clazz) {
+  private void doValueDomain(UMLClass clazz) throws ParserException {
     UMLDefaults defaults = UMLDefaults.getInstance();
 
     className = clazz.getName();
@@ -514,7 +515,7 @@ public class XMIParser2 implements Parser {
 //     className = "";
 //   }
 
-  private void doAttribute(UMLAttribute att) {
+  private void doAttribute(UMLAttribute att) throws ParserException {
     NewAttributeEvent event = new NewAttributeEvent(att.getName().trim());
     event.setClassName(className);
 
@@ -592,7 +593,7 @@ public class XMIParser2 implements Parser {
     listener.newAttribute(event);
   }
 
-  private void doValueMeaning(UMLAttribute att) {
+  private void doValueMeaning(UMLAttribute att) throws ParserException {
     NewValueMeaningEvent event = new NewValueMeaningEvent(att.getName().trim());
     event.setValueDomainName(className);
 
@@ -637,7 +638,7 @@ public class XMIParser2 implements Parser {
 //     logger.debug("--- Stereotype " + st.getName());
 //   }
 
-  private void doAssociation(UMLAssociation assoc) {
+  private void doAssociation(UMLAssociation assoc) throws ParserException {
     NewAssociationEvent event = new NewAssociationEvent();
     event.setRoleName(assoc.getRoleName());
 
@@ -724,7 +725,7 @@ public class XMIParser2 implements Parser {
   
 
   private NewAssociationEndEvent doAssociationEnd(UMLAssociationEnd end, 
-          String type) {
+          String type) throws ParserException {
       
       NewAssociationEndEvent event = new NewAssociationEndEvent();
       
@@ -793,7 +794,7 @@ public class XMIParser2 implements Parser {
 
   }
 
-  private void setConceptInfo(UMLTaggableElement elt, NewConceptualEvent event, String type) {
+  private void setConceptInfo(UMLTaggableElement elt, NewConceptualEvent event, String type) throws ParserException {
     NewConceptEvent concept = new NewConceptEvent();
     setConceptInfo(elt, concept, type, "", 0);
 
@@ -811,7 +812,7 @@ public class XMIParser2 implements Parser {
 
   }
 
-  private boolean setConceptInfo(UMLTaggableElement elt, NewConceptEvent event, String type, String pre, int n) {
+  private boolean setConceptInfo(UMLTaggableElement elt, NewConceptEvent event, String type, String pre, int n) throws ParserException {
   
     UMLTaggedValue tv = elt.getTaggedValue(type + pre + TV_CONCEPT_CODE + ((n>0)?""+n:""));
     if (tv != null) {
@@ -819,9 +820,15 @@ public class XMIParser2 implements Parser {
     } else 
       return false;
     
-    tv = elt.getTaggedValue(type + pre + TV_CONCEPT_DEFINITION + ((n>0)?""+n:""));
-    if (tv != null) {
-      event.setConceptDefinition(tv.getValue().trim());
+
+    String tvValue = getSplitTaggedValue(elt, type + pre + TV_CONCEPT_DEFINITION + ((n>0)?""+n:""), "_");
+//     tv = elt.getTaggedValue(type + pre + TV_CONCEPT_DEFINITION + ((n>0)?""+n:""));
+//     if (tv != null) {
+//       event.setConceptDefinition(tv.getValue().trim());
+//     }
+
+    if (tvValue != null) {
+      event.setConceptDefinition(tvValue.trim());
     }
 
     tv = elt.getTaggedValue(type + pre + TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:""));
@@ -894,7 +901,14 @@ public class XMIParser2 implements Parser {
     }
   }
 
-  private String getDocumentation(UMLTaggableElement elt, String tag) {
+  private String getDocumentation(UMLTaggableElement elt, String tag) throws ParserException {
+    return getSplitTaggedValue(elt, tag, "");
+  }
+
+  private String getSplitTaggedValue(UMLTaggableElement elt, String tag, String separator) throws ParserException {
+
+    checkTaggedValues(elt, tag, separator);
+
     UMLTaggedValue tv = elt.getTaggedValue(tag);
     
     StringBuilder sb = new StringBuilder();
@@ -903,20 +917,60 @@ public class XMIParser2 implements Parser {
     else {
       sb.append(tv.getValue());
       for(int i = 2;i<9; i++) {
-        tv = elt.getTaggedValue(tag + i);
+        tv = elt.getTaggedValue(tag + separator + i);
         if(tv == null) {
-          if(sb.length() > 1999)
-            return sb.substring(0, 1999);
+ //          if(sb.length() > 2000)
+//             return sb.substring(0, 2000);
           return sb.toString();
         } else {
           sb.append(tv.getValue());
         }
       }
     }
- 
-    if(sb.length() > 1999)
-      return sb.substring(0, 1999);
+//     if(sb.length() > 2000)
+//       return sb.substring(0, 2000);
 
     return sb.toString();
   }
+
+  private void checkTaggedValues(UMLTaggableElement elt, String tag, String separator) throws ParserException {
+
+    String eltName = "--unknown--";
+    if(elt instanceof UMLClass)
+      eltName = "Class: " + ModelUtil.getFullName((UMLClass)elt);
+    else if(elt instanceof UMLAttribute)
+      eltName = "Attribute: " + ((UMLAttribute)elt).getName();
+    else if(elt instanceof UMLAssociation) {
+      eltName = "Association: ";
+      for(UMLAssociationEnd end : ((UMLAssociation)elt).getAssociationEnds()) {
+        if(!StringUtil.isEmpty(end.getRoleName()))
+          eltName = eltName + end.getRoleName() + "  ";
+      }
+    }
+    
+
+    // first check tag sequence.
+    UMLTaggedValue tv = elt.getTaggedValue(tag);
+    boolean oktocontinue = true;
+    if(tv != null) {
+      for(int i = 2;i<9; i++) {
+        tv = elt.getTaggedValue(tag + separator + i);
+        if(tv != null && !oktocontinue)
+          throw new ParserException(PropertyAccessor.getProperty("error.out.of.sequence.tag", tag, eltName, "" + i));
+        else if(tv == null)
+          oktocontinue = false;
+      }
+    }
+
+    // now check that we don't have a misused tagged value.
+    // tag + 
+    Collection<UMLTaggedValue> taggedValues = elt.getTaggedValues();
+    for(UMLTaggedValue _tv : taggedValues) {
+      if(_tv.getName().startsWith(tag + separator))
+        if(!_tv.getName().matches(tag + separator + "[2345678]?"))
+          throw new ParserException(PropertyAccessor.getProperty("invalid.tagged.value", _tv.getName()));
+    }
+
+  }
+
 }
