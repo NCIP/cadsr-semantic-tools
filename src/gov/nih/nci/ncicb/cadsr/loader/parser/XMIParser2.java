@@ -31,10 +31,11 @@ import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import gov.nih.nci.ncicb.xmiinout.handler.*;
 import gov.nih.nci.ncicb.xmiinout.domain.*;
-
+import gov.nih.nci.ncicb.xmiinout.util.ModelUtil;
 
 import java.io.*;
 
@@ -160,7 +161,7 @@ public class XMIParser2 implements Parser {
   public static final String TV_CURATOR_REVIEWED = "CURATOR_REVIEWED";
 
   private int totalNumberOfElements = 0, currentElementIndex = 0;
-
+  private boolean filterClassAndPackages = false;
 
   private String[] bannedClassNames = null;
   {
@@ -168,6 +169,7 @@ public class XMIParser2 implements Parser {
   }
   public static final String[] validVdStereotypes = 
     PropertyAccessor.getProperty("vd.valid.stereotypes").split(",");
+
 
   public void setEventHandler(LoaderHandler handler) {
     this.listener = (UMLHandler) handler;
@@ -193,22 +195,26 @@ public class XMIParser2 implements Parser {
       ProgressEvent evt = new ProgressEvent();
       evt.setMessage("Parsing ...");
       fireProgressEvent(evt);
-      
-      XmiInOutHandler handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
 
-      String s = filename.replaceAll("\\ ", "%20");
+      XmiInOutHandler handler = (XmiInOutHandler)UserSelections.getInstance().getProperty("XMI_HANDLER");
 
-      // Some file systems use absolute URIs that do 
-      // not start with '/'. 
-      if(!s.startsWith("/"))
-        s = "/" + s;    
-      java.net.URI uri = new java.net.URI("file://" + s);
-      handler.load(uri);
+      if(handler == null) {
+        handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
+        
+        String s = filename.replaceAll("\\ ", "%20");
+        
+        // Some file systems use absolute URIs that do 
+        // not start with '/'. 
+        if(!s.startsWith("/"))
+          s = "/" + s;    
+        java.net.URI uri = new java.net.URI("file://" + s);
+        handler.load(uri);
+        
+        // save in memory for fast-save
+        UserSelections.getInstance().setProperty("XMI_HANDLER", handler);
+      }
 
       UMLModel model = handler.getModel("EA Model");
-
-      // save in memory for fast-save
-      UserSelections.getInstance().setProperty("XMI_HANDLER", handler);
 
       totalNumberOfElements = countNumberOfElements(model);
       
@@ -281,7 +287,7 @@ public class XMIParser2 implements Parser {
     return count;
   }
 
-  private void doPackage(UMLPackage pack) {
+  private void doPackage(UMLPackage pack) throws ParserException {
     UMLDefaults defaults = UMLDefaults.getInstance();
 
     if (packageName.length() == 0) {
@@ -312,7 +318,7 @@ public class XMIParser2 implements Parser {
     packageName = "";
   }
 
-  private void doClass(UMLClass clazz) {
+  private void doClass(UMLClass clazz) throws ParserException {
     UMLDefaults defaults = UMLDefaults.getInstance();
     String pName = getPackageName(clazz.getPackage());
 
@@ -390,10 +396,11 @@ public class XMIParser2 implements Parser {
 
   }
 
-  private void doValueDomain(UMLClass clazz) {
+  private void doValueDomain(UMLClass clazz) throws ParserException {
     UMLDefaults defaults = UMLDefaults.getInstance();
 
     className = clazz.getName();
+
 
     currentElementIndex++;
     ProgressEvent evt = new ProgressEvent();
@@ -402,6 +409,8 @@ public class XMIParser2 implements Parser {
     fireProgressEvent(evt);
 
     NewValueDomainEvent event = new NewValueDomainEvent(className.trim());
+
+    String pName = getPackageName(clazz.getPackage());
 
     setConceptInfo(clazz, event, TV_TYPE_VD);
 
@@ -478,7 +487,7 @@ public class XMIParser2 implements Parser {
 //     className = "";
 //   }
 
-  private void doAttribute(UMLAttribute att) {
+  private void doAttribute(UMLAttribute att) throws ParserException {
     NewAttributeEvent event = new NewAttributeEvent(att.getName().trim());
     event.setClassName(className);
 
@@ -556,7 +565,7 @@ public class XMIParser2 implements Parser {
     listener.newAttribute(event);
   }
 
-  private void doValueMeaning(UMLAttribute att) {
+  private void doValueMeaning(UMLAttribute att) throws ParserException {
     NewValueMeaningEvent event = new NewValueMeaningEvent(att.getName().trim());
     event.setValueDomainName(className);
 
@@ -601,7 +610,7 @@ public class XMIParser2 implements Parser {
 //     logger.debug("--- Stereotype " + st.getName());
 //   }
 
-  private void doAssociation(UMLAssociation assoc) {
+  private void doAssociation(UMLAssociation assoc) throws ParserException {
     NewAssociationEvent event = new NewAssociationEvent();
     event.setRoleName(assoc.getRoleName());
 
@@ -688,7 +697,7 @@ public class XMIParser2 implements Parser {
   
 
   private NewAssociationEndEvent doAssociationEnd(UMLAssociationEnd end, 
-          String type) {
+          String type) throws ParserException {
       
       NewAssociationEndEvent event = new NewAssociationEndEvent();
       
@@ -757,7 +766,7 @@ public class XMIParser2 implements Parser {
 
   }
 
-  private void setConceptInfo(UMLTaggableElement elt, NewConceptualEvent event, String type) {
+  private void setConceptInfo(UMLTaggableElement elt, NewConceptualEvent event, String type) throws ParserException {
     NewConceptEvent concept = new NewConceptEvent();
     setConceptInfo(elt, concept, type, "", 0);
 
@@ -775,7 +784,7 @@ public class XMIParser2 implements Parser {
 
   }
 
-  private boolean setConceptInfo(UMLTaggableElement elt, NewConceptEvent event, String type, String pre, int n) {
+  private boolean setConceptInfo(UMLTaggableElement elt, NewConceptEvent event, String type, String pre, int n) throws ParserException {
   
     UMLTaggedValue tv = elt.getTaggedValue(type + pre + TV_CONCEPT_CODE + ((n>0)?""+n:""));
     if (tv != null) {
@@ -810,6 +819,18 @@ public class XMIParser2 implements Parser {
   }
 
   private boolean isInPackageFilter(String pName) {
+//     if(filterClassAndPackages) {
+//       boolean found = false;
+//       for(FilterPackage pack : filterPackages) {
+//         if(pack.getName().equals(pName)) {
+//           found = pack.isReviewed();
+//         }
+//       }
+//       if(found == false)
+//         return false;
+//     }
+      
+
     Map packageFilter = UMLDefaults.getInstance().getPackageFilter();
     return (packageFilter.size() == 0) || (packageFilter.containsKey(pName) || (UMLDefaults.getInstance().getDefaultPackageAlias() != null));
   }
@@ -852,12 +873,14 @@ public class XMIParser2 implements Parser {
     }
   }
 
-  private String getDocumentation(UMLTaggableElement elt, String tag) {
+  private String getDocumentation(UMLTaggableElement elt, String tag) throws ParserException {
     return getSplitTaggedValue(elt, tag, "");
   }
 
-  private String getSplitTaggedValue(UMLTaggableElement elt, String tag, String separator) 
-  {
+  private String getSplitTaggedValue(UMLTaggableElement elt, String tag, String separator) throws ParserException {
+
+    checkTaggedValues(elt, tag, separator);
+
     UMLTaggedValue tv = elt.getTaggedValue(tag);
     
     StringBuilder sb = new StringBuilder();
@@ -865,18 +888,61 @@ public class XMIParser2 implements Parser {
       return null;
     else {
       sb.append(tv.getValue());
-      for(int i = 2;true; i++) {
+      for(int i = 2;i<9; i++) {
         tv = elt.getTaggedValue(tag + separator + i);
-        if(tv == null)
+        if(tv == null) {
+ //          if(sb.length() > 2000)
+//             return sb.substring(0, 2000);
           return sb.toString();
-        else {
+        } else {
           sb.append(tv.getValue());
         }
       }
     }
+//     if(sb.length() > 2000)
+//       return sb.substring(0, 2000);
 
-
+    return sb.toString();
   }
 
+  private void checkTaggedValues(UMLTaggableElement elt, String tag, String separator) throws ParserException {
+
+    String eltName = "--unknown--";
+    if(elt instanceof UMLClass)
+      eltName = "Class: " + ModelUtil.getFullName((UMLClass)elt);
+    else if(elt instanceof UMLAttribute)
+      eltName = "Attribute: " + ((UMLAttribute)elt).getName();
+    else if(elt instanceof UMLAssociation) {
+      eltName = "Association: ";
+      for(UMLAssociationEnd end : ((UMLAssociation)elt).getAssociationEnds()) {
+        if(!StringUtil.isEmpty(end.getRoleName()))
+          eltName = eltName + end.getRoleName() + "  ";
+      }
+    }
+    
+
+    // first check tag sequence.
+    UMLTaggedValue tv = elt.getTaggedValue(tag);
+    boolean oktocontinue = true;
+    if(tv != null) {
+      for(int i = 2;i<9; i++) {
+        tv = elt.getTaggedValue(tag + separator + i);
+        if(tv != null && !oktocontinue)
+          throw new ParserException(PropertyAccessor.getProperty("error.out.of.sequence.tag", tag, eltName, "" + i));
+        else if(tv == null)
+          oktocontinue = false;
+      }
+    }
+
+    // now check that we don't have a misused tagged value.
+    // tag + 
+    Collection<UMLTaggedValue> taggedValues = elt.getTaggedValues();
+    for(UMLTaggedValue _tv : taggedValues) {
+      if(_tv.getName().startsWith(tag + separator))
+        if(!_tv.getName().matches(tag + separator + "[2345678]?"))
+          throw new ParserException(PropertyAccessor.getProperty("invalid.tagged.value", _tv.getName()));
+    }
+
+  }
 
 }
