@@ -56,13 +56,18 @@ public class DatatypeValidator implements Validator
     if(!mode.equals(RunMode.Reviewer) && !mode.equals(RunMode.UnannotatedXmi))
       return items;
 
-    //DataElement o = DomainObjectFactory.newDataElement();
-    List<DataElement> des = (List<DataElement>) elements.getElements(DomainObjectFactory.newDataElement().getClass());
+    List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
     if(des != null)
       for(DataElement de : des) 
       {
         // dont validate if mapped to existing DE.
         if(de.getPublicId() != null && de.getVersion() != null)
+          continue;
+
+        // dont validate if mapped to existing VD
+        if(de.getValueDomain() != null &&
+           de.getValueDomain().getPublicId() != null &&
+           de.getValueDomain().getVersion() != null)
           continue;
 
         String prefName = de.getValueDomain().getLongName();
