@@ -451,7 +451,7 @@ public class XMIParser2 implements Parser {
 
     tv = clazz.getTaggedValue(TV_VD_DATATYPE);
     if(tv != null) {
-      event.setDatatype(tv.getValue());
+      event.setDatatype(tv.getValue().trim());
     }
 
     tv = clazz.getTaggedValue(TV_VD_TYPE);
@@ -461,7 +461,7 @@ public class XMIParser2 implements Parser {
 
     tv = clazz.getTaggedValue(TV_CD_ID);
     if(tv != null) {
-      event.setCdId(tv.getValue());
+      event.setCdId(tv.getValue().trim());
     }
     
     tv = clazz.getTaggedValue(TV_CD_VERSION);
@@ -563,7 +563,7 @@ public class XMIParser2 implements Parser {
     // Is this attribute mapped to an existing CDE?
     tv = att.getTaggedValue(TV_DE_ID);
     if(tv != null) {
-      event.setPersistenceId(tv.getValue());
+      event.setPersistenceId(tv.getValue().trim());
     }
 
     tv = att.getTaggedValue(TV_DE_VERSION);
@@ -576,7 +576,7 @@ public class XMIParser2 implements Parser {
 
     tv = att.getTaggedValue(TV_VD_ID);
     if(tv != null) {
-      event.setTypeId(tv.getValue());
+      event.setTypeId(tv.getValue().trim());
     }
 
     tv = att.getTaggedValue(TV_VD_VERSION);
