@@ -28,36 +28,10 @@ import gov.nih.nci.ncicb.cadsr.loader.ReviewTrackerType;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchEvent;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchListener;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.TreeEvent;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.TreeListener;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.ViewChangeEvent;
-import gov.nih.nci.ncicb.cadsr.loader.ui.event.ViewChangeListener;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AbstractUMLNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AssociationEndNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AssociationNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.InheritedAttributeNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.NodeUtil;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.PackageNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.RootNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValidationNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueDomainNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueMeaningNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
-import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
-import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesEvent;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferencesListener;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -74,15 +48,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.ToolTipManager;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -695,113 +661,48 @@ public class NavigationPanel extends JPanel
     TreePath path = null;
     if(event.getSearchFromBeginning())
       selected = null;
-    //if(event.getSearchByLongName()) {
-    //search the tree in a forward direction from top to bottom
-    if(!event.getSearchFromBottom()) {
       
-      //if no node is selected then select the first node 
-      if(selected == null)
-        selected = (DefaultMutableTreeNode)tree.getPathForRow(0).getLastPathComponent();
-
-      selected = selected.getNextNode();
-      while(selected != null) {
-        AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
-        if(event.getSearchByLongName()) 
-          {
-            Concept [] concepts = NodeUtil.getConceptsFromNode(n);
-            for(int i=0; i < concepts.length; i++) {
-              //System.out.println("Concepts" + i +" "+ concepts[i]);
-              if(!event.getSearchString().toLowerCase().contains(concepts[i].getLongName().toLowerCase())) 
-                {
-                  path = new TreePath(selected.getPath());
-                  tree.setSelectionPath(path);
-                  tree.scrollPathToVisible(path);
-                  newViewEvent(path);
-                  selected = null;
-                  break;
-                }
-            }    
-          }
-        else {
-          //if there is a match then select that node in the tree
-          if(event.getExactMatch()) {
-            if((n.getDisplay().toLowerCase()).equals(event.getSearchString().toLowerCase()))
-              {
-                path = new TreePath(selected.getPath());
-                tree.setSelectionPath(path);
-                tree.scrollPathToVisible(path);
-                newViewEvent(path);
-                break;        
-              }
-          }
-          else 
-            if((n.getDisplay().toLowerCase()).contains(event.getSearchString().toLowerCase())) 
-              {
-                path = new TreePath(selected.getPath());
-                tree.setSelectionPath(path);
-                tree.scrollPathToVisible(path);
-                newViewEvent(path);
-                break;        
-              }
-          }
-        if(selected != null)
-          selected = selected.getNextNode();
-      }
-    }
+    //if no node is selected then select the first node 
+    if(selected == null)
+      selected = (DefaultMutableTreeNode)tree.getPathForRow(0).getLastPathComponent();
     
-    //search the tree in backward direction from bottom to top
-    else 
-      {
-        //if no node is selected then select the last node in the tree
-        if(selected == null)
-          selected = (DefaultMutableTreeNode)tree.getPathForRow(tree.getRowCount()-1).getLastPathComponent();
+    selected = event.getSearchFromBottom()?selected.getPreviousNode():selected.getNextNode();
 
-        selected = selected.getPreviousNode();
-        while(selected != null) {
-          AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
-          if(event.getSearchByLongName()) 
-            {
-              Concept [] concepts = NodeUtil.getConceptsFromNode(n);
-              for(int i=0; i < concepts.length; i++) {
-                //System.out.println("Concepts" + i +" "+ concepts[i]);
-                if(event.getSearchString().toLowerCase().contains(concepts[i].getLongName().toLowerCase())) 
-                  {
-                    path = new TreePath(selected.getPath());
-                    tree.setSelectionPath(path);
-                    tree.scrollPathToVisible(path);
-                    newViewEvent(path);
-                    selected = null;
-                    break;
-                  }
-              }    
-            }
-        
-          else {  
-            //if there is a match then select that node in the tree
-            if((n.getDisplay().toLowerCase()).contains(event.getSearchString().toLowerCase())) 
-              {
-                path = new TreePath(selected.getPath());
-                tree.setSelectionPath(path);
-                tree.scrollPathToVisible(path);
-                newViewEvent(path);
-                break;        
-              }
+    while(selected != null) {
+      AbstractUMLNode n = (AbstractUMLNode) selected.getUserObject();
+      if(event.getSearchByLongName()) {
+        Concept [] concepts = NodeUtil.getConceptsFromNode(n);
+        boolean found = false;
+        for(int i=0; i < concepts.length; i++) {
+          if(concepts[i].getLongName().toLowerCase().contains(event.getSearchString().toLowerCase())) {
+            path = new TreePath(selected.getPath());
+            tree.setSelectionPath(path);
+            tree.scrollPathToVisible(path);
+            newViewEvent(path);
+            selected = null;
+            return;
           }
-          if(selected != null)
-            selected = selected.getPreviousNode();
+        }    
+      } else {
+        String searchFor = n.getDisplay().toLowerCase();
+        String searchBy = event.getSearchString().toLowerCase();
+        if((event.getExactMatch() && searchFor.equals(searchBy)) ||
+           (!event.getExactMatch() && searchFor.contains(searchBy))
+           ) {
+          path = new TreePath(selected.getPath());
+          tree.setSelectionPath(path);
+          tree.scrollPathToVisible(path);
+          newViewEvent(path);
+          return;
         }
       }
+      if(selected != null)
+        selected = event.getSearchFromBottom()?selected.getPreviousNode():selected.getNextNode();
+    }
     
-
     //if no match was found display error message
     if(path == null)
-      {
-        //int result = JOptionPane.showConfirmDialog(null, "Text Not Found", "No Match", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        //if(result == JOptionPane.YES_OPTION)
-        //  search(event);
-        
-        JOptionPane.showMessageDialog(null,"Text Not Found", "No Match",JOptionPane.ERROR_MESSAGE);
-      }
+      JOptionPane.showMessageDialog(null,"Text Not Found", "No Match",JOptionPane.ERROR_MESSAGE);
 
   }
 
