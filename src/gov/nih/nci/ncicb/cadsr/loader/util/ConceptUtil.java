@@ -103,9 +103,16 @@ public class ConceptUtil {
     for(Concept con : concepts) {
       ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
       compCon.setConcept(con);
-      compCon.setOrder(concepts.size() - 1 - c);
+      if(reverseOrder)
+        compCon.setOrder(concepts.size() - 1 - c);
+      else 
+        compCon.setOrder(c);
+        
       compCon.setConceptDerivationRule(condr);
-      compCons.add(0, compCon);
+      if(reverseOrder)
+        compCons.add(0, compCon);
+      else 
+        compCons.add(compCon);
       c++;
     }
 
