@@ -63,7 +63,7 @@ public class ObjectUpdater {
       compCon.setConcept(con);
       compCon.setOrder(newConcepts.length - 1 - c);
       compCon.setConceptDerivationRule(condr);
-      compCons.add(compCon);
+      compCons.add(0, compCon);
       c++;
     }
     condr.setComponentConcepts(compCons);
