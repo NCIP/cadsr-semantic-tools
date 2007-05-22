@@ -75,18 +75,33 @@ public class ConceptCodeValidator implements Validator {
         }
       }
 
+    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+    if(vds != null)
+      for(ValueDomain vd: vds) {
+        if(vd.getConceptDerivationRule().getComponentConcepts().size() == 0)
+          items.addItem
+            (new ValidationConceptWarning
+             (PropertyAccessor.getProperty
+              ("vd.missing.concept", vd.getLongName()), vd));
+        else {
+          checkConcepts(vd);
+        }
+      }
+
+
     List<ValueMeaning> vms = elements.getElements(DomainObjectFactory.newValueMeaning());
     if(vms != null)
       for(ValueMeaning vm : vms) {
         if(vm.getConceptDerivationRule().getComponentConcepts().size() == 0)
           items.addItem
-            (new ValidationConceptError
+            (new ValidationConceptWarning
              (PropertyAccessor.getProperty
               ("vm.missing.concept", vm.getLongName()), vm));
         else {
           checkConcepts(vm);
         }
       }
+
 
     List<ObjectClassRelationship> ocrs = elements.getElements(DomainObjectFactory.newObjectClassRelationship());
     if(ocrs != null)
@@ -119,6 +134,10 @@ public class ConceptCodeValidator implements Validator {
 
   private void checkConcepts(ValueMeaning vm) {
     checkConcepts(vm, vm.getConceptDerivationRule());
+  }
+
+  private void checkConcepts(ValueDomain vd) {
+    checkConcepts(vd, vd.getConceptDerivationRule());
   }
 
   private void checkConcepts(AdminComponent ac, ConceptDerivationRule condr) {
