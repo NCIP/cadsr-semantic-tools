@@ -936,12 +936,12 @@ public class XMIParser2 implements Parser {
 
     // now check that we don't have a misused tagged value.
     // tag + 
-    Collection<UMLTaggedValue> taggedValues = elt.getTaggedValues();
-    for(UMLTaggedValue _tv : taggedValues) {
-      if(_tv.getName().startsWith(tag + separator))
-        if(!_tv.getName().matches(tag + separator + "[2345678]?"))
-          throw new ParserException(PropertyAccessor.getProperty("invalid.tagged.value", _tv.getName()));
-    }
+//     Collection<UMLTaggedValue> taggedValues = elt.getTaggedValues();
+//     for(UMLTaggedValue _tv : taggedValues) {
+//       if(_tv.getName().startsWith(tag + separator))
+//         if(!_tv.getName().matches(tag + separator + "[2345678]?"))
+//           throw new ParserException(PropertyAccessor.getProperty("invalid.tagged.value", _tv.getName()));
+//     }
 
   }
 
