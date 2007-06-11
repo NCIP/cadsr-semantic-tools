@@ -176,6 +176,9 @@ public class XMIWriter2 implements ElementWriter {
 
         // Map to Existing DE
         if(!StringUtil.isEmpty(de.getPublicId()) && de.getVersion() != null) {
+          att.removeTaggedValue(XMIParser2.TV_DE_ID);
+          att.removeTaggedValue(XMIParser2.TV_DE_VERSION);
+
           att.addTaggedValue(XMIParser2.TV_DE_ID,
                              de.getPublicId());
 
@@ -187,6 +190,8 @@ public class XMIWriter2 implements ElementWriter {
           att.removeTaggedValue(XMIParser2.TV_DE_VERSION);
           
            if(!StringUtil.isEmpty(de.getValueDomain().getPublicId()) && de.getValueDomain().getVersion() != null) {
+            att.removeTaggedValue(XMIParser2.TV_VD_ID);
+            att.removeTaggedValue(XMIParser2.TV_VD_VERSION);
             att.addTaggedValue(XMIParser2.TV_VD_ID,
                                de.getValueDomain().getPublicId());
             att.addTaggedValue(XMIParser2.TV_VD_VERSION,
