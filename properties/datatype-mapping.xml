@@ -129,4 +129,12 @@
   <alias name="Vector"/>
 </alias-list>
 
+<alias-list name="java.math.BigDecimal">
+  <alias name="bigdecimal"/>
+</alias-list>
+
+<alias-list name="java.sql.Timestamp">
+  <alias name="timestamp"/>
+</alias-list>
+
 </Datatype-mapping>
