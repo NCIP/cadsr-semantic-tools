@@ -99,7 +99,7 @@ public class ObjectClassPersister extends UMLPersister
 
         // does this oc exist?
         List<String> eager = new ArrayList<String>();
-        eager.add(EagerConstants.AC_CS_CSI);
+//         eager.add(EagerConstants.AC_CS_CSI);
 
         String[] conceptCodes = oc.getPreferredName().split(":");
         Concept[] concepts = new Concept[conceptCodes.length];
@@ -176,13 +176,13 @@ public class ObjectClassPersister extends UMLPersister
 
         // is definition the same?
         // if not, then add alternate Def
-        if (!isSameDefinition(newDef, concepts))
-        {
+//         if (!isSameDefinition(newDef, concepts))
+//         {
           // if((newDef.length() > 0) &&
           // !newDef.equals(newOc.getPreferredDefinition())) {
           addAlternateDefinition(newOc, newDef, Definition.TYPE_UML_CLASS,
                   packageName);
-        }
+//         }
 
         // addAlternateName(newOc, newName, AlternateName.TYPE_UML_CLASS
         // ,packageName);
