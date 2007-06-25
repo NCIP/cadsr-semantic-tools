@@ -95,6 +95,8 @@ public class XMIWriter2 implements ElementWriter {
   private void readModel() {
     for(UMLPackage pkg : model.getPackages())
       doPackage(pkg);
+
+    int xi = 0;
     for(UMLAssociation assoc : model.getAssociations()) {
         List<UMLAssociationEnd> ends = assoc.getAssociationEnds();
         UMLAssociationEnd aEnd = ends.get(0);
@@ -106,11 +108,19 @@ public class XMIWriter2 implements ElementWriter {
             source = aEnd;
             target = bEnd;
         }
-        
-        String key = assoc.getRoleName()+"~"+source.getRoleName()+"~"+target.getRoleName();
+
+        // The assocMap is used in parallel with the Object Class Relationships (OCR). To easily find the
+        // corresponding OCR for an Association and the reverse, the key for the map represents the index
+        // of the OCR in its list. This works because the same XMI is read/parsed for to create both. In this
+        // loop the model.getAssociations() will be in the same order so we can use an artificial index
+        // counter.
+
+        String key = String.valueOf(xi); // assoc.getRoleName()+"~"+source.getRoleName()+"~"+target.getRoleName();
         assocMap.put(key,assoc);
         assocEndMap.put(key+"~source",source);
         assocEndMap.put(key+"~target",target);
+        
+        ++xi;
     }
   }
 
@@ -233,8 +243,12 @@ public class XMIWriter2 implements ElementWriter {
       }
     }
 
-    for(ObjectClassRelationship ocr : ocrs) {
+    for(int xi = 0; xi < ocrs.size(); ++xi) {
       
+      // For this to work the OCRS must appear in the same order as the model.getAssociations().
+      // This is further noted in the readModel() method with the assocMap.put(...) reference.
+      ObjectClassRelationship ocr = ocrs.get(xi);
+
       ConceptDerivationRule rule = ocr.getConceptDerivationRule();
       ConceptDerivationRule srule = ocr.getSourceRoleConceptDerivationRule();
       ConceptDerivationRule trule = ocr.getTargetRoleConceptDerivationRule();
@@ -244,7 +258,9 @@ public class XMIWriter2 implements ElementWriter {
       
       sendProgressEvent(status++, goal, "Relationship: " + fullName);
 
-      String key = ocr.getLongName()+"~"+ocr.getSourceRole()+"~"+ocr.getTargetRole();
+      // The key assigned to the assocMap entry is the index from the OCRS list. See the readModel()
+      // method for more information at the assocMap.put(...)
+      String key = String.valueOf(xi); // ocr.getLongName()+"~"+ocr.getSourceRole()+"~"+ocr.getTargetRole();
       UMLAssociation assoc = assocMap.get(key);
       UMLAssociationEnd source = assocEndMap.get(key+"~source");
       UMLAssociationEnd target = assocEndMap.get(key+"~target");
@@ -436,14 +452,20 @@ public class XMIWriter2 implements ElementWriter {
         }
       }
       
-      for(ObjectClassRelationship ocr : ocrs) {
+      for(int xi = 0; xi < ocrs.size(); ++xi) {
+          
+          // For this to work the OCRS must appear in the same order as the model.getAssociations().
+          // This is further noted in the readModel() method with the assocMap.put(...) reference.
+          ObjectClassRelationship ocr  = ocrs.get(xi);
 
           final OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
           final String fullPropName = nameBuilder.buildRoleName(ocr);
           final String tPropName = fullPropName + " Target";
           final String sPropName = fullPropName + " Source";
           
-          final String key = ocr.getLongName()+"~"+ocr.getSourceRole()+"~"+ocr.getTargetRole();
+          // The key assigned to the assocMap entry is the index from the OCRS list. See the readModel()
+          // method for more information at the assocMap.put(...)
+          final String key = String.valueOf(xi); // ocr.getLongName()+"~"+ocr.getSourceRole()+"~"+ocr.getTargetRole();
           final UMLAssociation assoc = assocMap.get(key);
           final UMLAssociationEnd target = assocEndMap.get(key+"~target");
           final UMLAssociationEnd source = assocEndMap.get(key+"~source");
