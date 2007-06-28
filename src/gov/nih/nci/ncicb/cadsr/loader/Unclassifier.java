@@ -9,6 +9,11 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.apache.log4j.*;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+
+
+import javax.swing.JOptionPane;
 /**
  * <code>Unclassifier</code> is a convenience script for unclassifying all
  * AC's, alt names and definitions from a previous model load.  
@@ -16,6 +21,8 @@ import javax.sql.DataSource;
  * @author <a href="mailto:rokickik@mail.nih.gov">Konrad Rokicki</a>
  */
 public class Unclassifier {
+
+  private static Logger logger = Logger.getLogger(Unclassifier.class.getName());
 
   private static final String CS_CHECK = 
       "  select count(*) from" +
@@ -82,7 +89,7 @@ public class Unclassifier {
   public static void main(String[] args) throws Exception {
 
     if(args.length != 2) {
-      System.err.println("unclassify [CS name] [CS version]");
+      logger.error("unclassify [CS name] [CS version]");
       System.exit(1);
     }
 
@@ -90,7 +97,7 @@ public class Unclassifier {
     try {
       projectVersion = new Float(args[1]);
     } catch (NumberFormatException ex) {
-      System.err.println("Parameter projectVersion must be a number");
+      logger.error("Parameter projectVersion must be a number");
       System.exit(1);
     }
 
@@ -104,49 +111,55 @@ public class Unclassifier {
     Connection conn = null;
     PreparedStatement stmt = null;
     try {
-        System.out.println("Starting unclassification");
+        logger.debug("Starting unclassification of --" + csName + "--" + csVersion);
       
         conn = dataSource.getConnection();
         conn.setAutoCommit(false);
 
-        System.out.println("Checking for CS");
+        logger.debug("Checking for CS");
         stmt = conn.prepareStatement(CS_CHECK);
         stmt.setString(1, csName);
         stmt.setFloat(2, csVersion);
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        System.out.println("  "+rs.getInt(1)+" CS found");
+        logger.debug("  "+rs.getInt(1)+" CS found");
         
-        System.out.println("Deleting definitions");
+        logger.debug("Deleting definitions");
         stmt = conn.prepareStatement(DEL_DEFINITIONS_SQL);
         stmt.setString(1, csName);
         stmt.setFloat(2, csVersion);
         int definitionsDeleted = stmt.executeUpdate();
-        System.out.println("  "+definitionsDeleted+" deleted");
+        logger.debug("  "+definitionsDeleted+" deleted");
 
-        System.out.println("Deleting alt names");
+        logger.debug("Deleting alt names");
         stmt = conn.prepareStatement(DEL_ALTNAMES_SQL);
         stmt.setString(1, csName);
         stmt.setFloat(2, csVersion);
         int altNamesDeleted = stmt.executeUpdate();
-        System.out.println("  "+altNamesDeleted+" deleted");
+        logger.debug("  "+altNamesDeleted+" deleted");
         
-        System.out.println("Deleting attribute classifications");
+        logger.debug("Deleting attribute classifications");
         stmt = conn.prepareStatement(DEL_ATTRS_SQL);
         stmt.setString(1, csName);
         stmt.setFloat(2, csVersion);
         int attrDeleted = stmt.executeUpdate();
-        System.out.println("  "+attrDeleted+" deleted");
+        logger.debug("  "+attrDeleted+" deleted");
 
-        System.out.println("Deleting AC classifications");
+        logger.debug("Deleting AC classifications");
         stmt = conn.prepareStatement(DEL_ACS_SQL);
         stmt.setString(1, csName);
         stmt.setFloat(2, csVersion);
         int acDeleted = stmt.executeUpdate();
-        System.out.println("  "+acDeleted+" deleted");
+        logger.debug("  "+acDeleted+" deleted");
         
-        conn.commit();
-        System.out.println("Unclassification complete");
+        String answ = JOptionPane.showInputDialog(PropertyAccessor.getProperty("unclassify.commit"));
+        if(answ == null || !answ.equals("y")) {
+          conn.rollback();
+          logger.debug("user rolled back");
+        } else {
+          conn.commit();
+          logger.debug("Unclassification complete");
+        }
     }
     catch (SQLException e) {
         if (conn != null) {
