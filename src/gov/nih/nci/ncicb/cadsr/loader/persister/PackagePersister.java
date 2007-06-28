@@ -56,10 +56,10 @@ public class PackagePersister extends UMLPersister {
 
         ClassificationSchemeItem subProject = DomainObjectFactory.newClassificationSchemeItem();
         subProject.setName(defaults.getPackageDisplay(pkg.getName()));
+        subProject.setType(ClassificationSchemeItem.TYPE_UML_PROJECT);
         // Verify is there is a sub project
         if(!subProject.getName().equals(pkg.getName())) {
           subProject.setAudit(defaults.getAudit());
-          subProject.setType(ClassificationSchemeItem.TYPE_UML_PROJECT);
 
           // See if it already exist in DB
           List l = classificationSchemeItemDAO.find(subProject);
