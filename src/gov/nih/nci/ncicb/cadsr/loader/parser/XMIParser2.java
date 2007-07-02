@@ -40,8 +40,6 @@ import gov.nih.nci.ncicb.xmiinout.util.ModelUtil;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterClass;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterPackage;
 
-import java.io.*;
-
 import java.util.*;
 
 /**
@@ -162,7 +160,7 @@ public class XMIParser2 implements Parser {
   //   public static final String TV_HUMAN_REVIEWED = "HUMAN_REVIEWED";
   public static final String TV_OWNER_REVIEWED = "OWNER_REVIEWED";
   public static final String TV_CURATOR_REVIEWED = "CURATOR_REVIEWED";
-
+  
   private int totalNumberOfElements = 0, currentElementIndex = 0;
   private boolean filterClassAndPackages = false;
 
@@ -682,11 +680,11 @@ public class XMIParser2 implements Parser {
     // even though it does in the model.
     if(aEvent.getClassName().equals(bEvent.getClassName())) {
       if(navig.equals("B") && StringUtil.isEmpty(bEvent.getRoleName())) {
-          bEvent.setRoleName(aEvent.getRoleName());
+          bEvent.setRoleName(Validator.RSVD_PREFIX + aEvent.getRoleName() + Validator.RSVD_SUFFIX);
         bEvent.setLowCardinality(aEvent.getLowCardinality());
         bEvent.setHighCardinality(aEvent.getHighCardinality());
       } else if (navig.equals("A") && StringUtil.isEmpty(aEvent.getRoleName())) {
-          aEvent.setRoleName(bEvent.getRoleName());
+          aEvent.setRoleName(Validator.RSVD_PREFIX + bEvent.getRoleName() + Validator.RSVD_SUFFIX);
           aEvent.setLowCardinality(bEvent.getLowCardinality());
           aEvent.setHighCardinality(bEvent.getHighCardinality());
       }

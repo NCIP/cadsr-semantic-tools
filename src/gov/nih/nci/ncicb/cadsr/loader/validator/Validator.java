@@ -19,7 +19,6 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.validator;
 
-import java.util.List;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 /**
@@ -28,6 +27,12 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
  * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
  */
 public interface Validator {
+
+    /**
+     * Reserved prefix and suffix characters for generated names.
+     */
+    public static final String RSVD_PREFIX = "[[";
+    public static final String RSVD_SUFFIX = "]]";
 
   /**
    * @return a list of Validation errors.

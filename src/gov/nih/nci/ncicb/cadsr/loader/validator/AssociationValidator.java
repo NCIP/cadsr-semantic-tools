@@ -63,23 +63,30 @@ public class AssociationValidator implements Validator {
         
         continue;
       }
-      if(!areRoleNamesValid(ocr)) {
+      if(!isSourceRoleValid(ocr)) {
         items.addItem(new ValidationError
                    (PropertyAccessor.getProperty(
-                      "association.missing.role", 
+                      "association.missing.sourceRole", 
                       new String[] {ocr.getSource().getLongName(),
                                     ocr.getTarget().getLongName()}),
                     ocr)); 
                    ;
-        
-        continue;
       }
+      if(!isTargetRoleValid(ocr)) {
+          items.addItem(new ValidationError
+                     (PropertyAccessor.getProperty(
+                        "association.missing.targetRole", 
+                        new String[] {ocr.getSource().getLongName(),
+                                      ocr.getTarget().getLongName()}),
+                      ocr)); 
+                     ;
+        }
     }
     
     
     //validates whether there is more than 1 Association between
     //two classes
-    Map<ObjectClass, String> s = new HashMap<ObjectClass, String>();
+//    Map<ObjectClass, String> s = new HashMap<ObjectClass, String>();
     Map<String, List<ObjectClassRelationship>> mapOfOcrs = new HashMap<String, List<ObjectClassRelationship>>();
     for(ObjectClassRelationship currentOcr : ocrs)
       //check to make sure the ocr is an association 
@@ -125,19 +132,30 @@ public class AssociationValidator implements Validator {
     return items;
   }
 
-  private boolean areRoleNamesValid(ObjectClassRelationship ocr) {
-    return !(
-      ocr.getType().equals(ObjectClassRelationship.TYPE_HAS)
-      && 
-      (ocr.getTargetRole() == null 
-       || ocr.getTargetRole().length() == 0
-       || 
-       (ocr.getDirection().equals(ObjectClassRelationship.DIRECTION_BOTH) && (
-          ocr.getSourceRole().length() == 0 
-          ||ocr.getSourceRole() == null )
-        )
-       )
-      );
+  private boolean isSourceRoleValid(ObjectClassRelationship ocr)
+  {
+      if (ocr.getType().equals(ObjectClassRelationship.TYPE_HAS))
+      {
+          if (ocr.getDirection().equals(ObjectClassRelationship.DIRECTION_BOTH))
+          {
+              if (ocr.getSourceRole().length() == 0 || ocr.getSourceRole() == null)
+                  return false;
+          }
+      }
+      return true;
+  }
+
+  private boolean isTargetRoleValid(ObjectClassRelationship ocr) {
+      if (ocr.getType().equals(ObjectClassRelationship.TYPE_HAS))
+      {
+          if (ocr.getTargetRole() == null || ocr.getTargetRole().length() == 0)
+              return false;
+    
+          if (ocr.getTargetRole().equals(RSVD_PREFIX + ocr.getSourceRole() + RSVD_SUFFIX))
+              return false;
+      }
+      
+      return true;
   }
 
 }
