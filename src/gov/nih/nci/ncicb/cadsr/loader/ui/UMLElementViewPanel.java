@@ -17,7 +17,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class UMLElementViewPanel extends JPanel
-  implements NavigationListener, Editable {
+  implements Editable, NodeViewPanel {
 
   private ConceptEditorPanel conceptEditorPanel;
   private DEPanel dePanel;

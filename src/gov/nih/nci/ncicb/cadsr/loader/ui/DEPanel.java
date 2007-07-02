@@ -133,7 +133,7 @@ public class DEPanel extends JPanel
             updateFields();
                            
             firePropertyChangeEvent(
-                                    new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
+                                    new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
 
 //             firePropertyChangeEvent(
 //                                     new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
@@ -151,7 +151,7 @@ public class DEPanel extends JPanel
             clear();
             
             firePropertyChangeEvent
-              (new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
+              (new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
             
 
 //               fireElementChangeEvent(new ElementChangeEvent(node));
@@ -308,13 +308,13 @@ public class DEPanel extends JPanel
 
     if(tempDE.getDataElementConcept() != null) {
       firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
-      firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, true));
+      firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, true));
     }
     else {
       firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, true));
-      firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false));
+      firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false));
     }  
-    firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false));
+    firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
     
       
 

@@ -284,11 +284,11 @@ public class ConceptEditorPanel extends JPanel
     orderChanged = false;
     
     firePropertyChangeEvent(
-      new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false));
+      new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
     firePropertyChangeEvent(
-      new PropertyChangeEvent(this, ButtonPanel.ADD, null, true));
+      new PropertyChangeEvent(this, AddButtonPanel.ADD, null, true));
     firePropertyChangeEvent(
-      new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, true));
+      new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, true));
 //    firePropertyChangeEvent(
 //      new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
 
@@ -313,6 +313,12 @@ public class ConceptEditorPanel extends JPanel
     this.add(summaryPanel,BorderLayout.NORTH); 
     
     initViewPanel();
+
+    firePropertyChangeEvent(
+      new PropertyChangeEvent(this, AddButtonPanel.ADD, null, areAllFieldEntered()));
+    firePropertyChangeEvent(
+      new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, areAllFieldEntered()));
+
   }
   
   private void initViewPanel() {
@@ -412,11 +418,11 @@ public class ConceptEditorPanel extends JPanel
           orderChanged = true;
 
           firePropertyChangeEvent(
-            new PropertyChangeEvent(this, ButtonPanel.SAVE, null, areAllFieldEntered()));
+            new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, areAllFieldEntered()));
           firePropertyChangeEvent(
-            new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false));
+            new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false));
           firePropertyChangeEvent(
-            new PropertyChangeEvent(this, ButtonPanel.ADD, null, false));          
+            new PropertyChangeEvent(this, AddButtonPanel.ADD, null, false));          
         }
       };
       
@@ -430,13 +436,13 @@ public class ConceptEditorPanel extends JPanel
           orderChanged = true;
 
           firePropertyChangeEvent(
-            new PropertyChangeEvent(this, ButtonPanel.SAVE, null, areAllFieldEntered()));          
+            new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, areAllFieldEntered()));          
           //setSaveButtonState(areAllFieldEntered());
           firePropertyChangeEvent(
-            new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false));
+            new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false));
           //reviewButton.setEnabled(false);
           firePropertyChangeEvent(
-            new PropertyChangeEvent(this, ButtonPanel.ADD, null, false)); 
+            new PropertyChangeEvent(this, AddButtonPanel.ADD, null, false)); 
           //addButton.setEnabled(false);
         }
       };
@@ -473,13 +479,13 @@ public class ConceptEditorPanel extends JPanel
 
               if(areAllFieldEntered()) {
               firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true)); 
+                new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true)); 
               } else {
                 firePropertyChangeEvent(
-                  new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false)); 
+                  new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false)); 
               }
               firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false)); 
+                new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false)); 
             }
           }
         });
@@ -590,15 +596,12 @@ public class ConceptEditorPanel extends JPanel
       initViewPanel();
       this.updateUI();
 
-      if(concepts.length > 1)
-        firePropertyChangeEvent
-          (new PropertyChangeEvent(this, ButtonPanel.DELETE, null, true));
       firePropertyChangeEvent
-        (new PropertyChangeEvent(this, ButtonPanel.SAVE, null, areAllFieldEntered()));
+        (new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, areAllFieldEntered()));
       firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.ADD, null, false));
+                new PropertyChangeEvent(this, AddButtonPanel.ADD, null, false));
       firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false));
+                new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false));
   }
   
   
@@ -628,19 +631,19 @@ public class ConceptEditorPanel extends JPanel
       
       if(areAllFieldEntered()) {
         firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
+                new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
       } else {
         firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false));
+                new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
       }
       firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.ADD, null, false));
+                new PropertyChangeEvent(this, AddButtonPanel.ADD, null, false));
       firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false));
+                new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false));
       
-      if(concepts.length < 2)
-        firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.DELETE, null, false));
+//       if(concepts.length < 2)
+//         firePropertyChangeEvent(
+//                 new PropertyChangeEvent(this, ButtonPanel.DELETE, null, false));
       this.updateUI();
 
       remove = true;
@@ -660,13 +663,13 @@ public class ConceptEditorPanel extends JPanel
   public void keyReleased(KeyEvent evt) {
     if(areAllFieldEntered()) {
       firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
+                new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
     } else {
       firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.SAVE, null, false));
+                new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
     }
     firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.REVIEW, null, false));
+                new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false));
     updateHeaderLabels();
   }
   

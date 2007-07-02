@@ -409,19 +409,19 @@ public class NavigationPanel extends JPanel
           // inherited attribute
           InheritedAttributeNode attNode = (InheritedAttributeNode)o;
           
-          String fpath = attNode.getFullPath();
-          int sd = fpath.lastIndexOf(".");
-          String sourceClassName = fpath.substring(0, sd);
-          String attributeName = fpath.substring(sd+1);
+//           String fpath = attNode.getFullPath();
+//           int sd = fpath.lastIndexOf(".");
+//           String sourceClassName = fpath.substring(0, sd);
+//           String attributeName = fpath.substring(sd+1);
           
-          AttributeNode anode = findSuper(sourceClassName,attributeName);
+//           AttributeNode anode = findSuper(sourceClassName,attributeName);
           
-          if (anode != null) {
-              ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_INHERITED);
-              evt.setViewObject(anode);
-              evt.setInNewTab(false);
-              fireViewChangeEvent(evt);
-          }
+//           if (anode != null) {
+          ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_INHERITED);
+          evt.setViewObject(o);
+          evt.setInNewTab(false);
+          fireViewChangeEvent(evt);
+//           }
     	}
         else {
             // normal attribute

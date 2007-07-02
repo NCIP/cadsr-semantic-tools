@@ -29,12 +29,13 @@ import javax.swing.JPanel;
 public class ButtonPanel extends JPanel implements ActionListener, 
   PropertyChangeListener
 {
-  private JButton addButton, deleteButton, saveButton, switchButton;
-  private JButton previousButton, nextButton;
+  private JButton switchButton;
   private JCheckBox reviewButton;
-  
-  private List<ReviewListener> reviewListeners 
-    = new ArrayList<ReviewListener>();
+
+  private NavigationButtonPanel navigationButtonPanel;
+  private AddButtonPanel addButtonPanel;
+  private ApplyButtonPanel applyButtonPanel;
+
     
   private List<NavigationListener> navigationListeners 
     = new ArrayList<NavigationListener>();
@@ -46,13 +47,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
   private Editable viewPanel;
   private Editable editable;
   
-  static final String ADD = "ADD",
-    DELETE = "DELETE",
-    SAVE = "APPLY", 
-    PREVIOUS = "PREVIOUS",
-    NEXT = "NEXT",
+  static final String 
     PREVIEW = "PREVIEW",
-    REVIEW = "REVIEW",
     SETUP = "SETUP",
     SWITCH = "SWITCH",
     DELETEBUTTON = "DELETEBUTTON";
@@ -67,6 +63,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
     propChangeListeners.add(l);
+
+    applyButtonPanel.addPropertyChangeListener(l);
   }
   
   public ButtonPanel(ConceptEditorPanel conceptEditorPanel, 
@@ -81,55 +79,31 @@ public class ButtonPanel extends JPanel implements ActionListener,
     
     runMode = (RunMode)(selections.getProperty("MODE"));
     
-    addButton = new JButton("Add");
-    deleteButton = new JButton("Remove");
-    saveButton = new JButton("Apply");
     switchButton = new JButton();
-    if(runMode.equals(RunMode.Reviewer))
-      reviewButton = new JCheckBox("<html> Model <br> Owner <br> Verified</html");
-    else if(runMode.equals(RunMode.Curator))
-      reviewButton = new JCheckBox("<html>Human<br>Verified</html>");
-    else { //if(runMode.equals(RunMode.UnannotatedXmi)) {
-      reviewButton = new JCheckBox("<html>Not<br>Available</html>");
-      reviewButton.setVisible(false);
-    }
 
 
-    previousButton = new JButton("Previous");
-    nextButton = new JButton("Next");
+    ReviewableUMLNode revNode = (ReviewableUMLNode)conceptEditorPanel.getNode();
 
-
-    reviewButton.setSelected(isReviewed());
-
-    reviewButton.setActionCommand(REVIEW);
-    addButton.setActionCommand(ADD);
-    deleteButton.setActionCommand(DELETE);
-    saveButton.setActionCommand(SAVE);
-    previousButton.setActionCommand(PREVIOUS);
-    nextButton.setActionCommand(NEXT);
     switchButton.setActionCommand(SWITCH);
     
-    addButton.addActionListener(this);
-    deleteButton.addActionListener(this);
-    saveButton.addActionListener(this);
-    reviewButton.addActionListener(this);
-    previousButton.addActionListener(this);
-    nextButton.addActionListener(this);
     switchButton.addActionListener(this);
     
-    this.add(addButton);
-    //this.add(deleteButton);
-    this.add(saveButton);
-    this.add(reviewButton);
-    this.add(previousButton);
-    this.add(nextButton);
+    navigationButtonPanel = new NavigationButtonPanel();
+    addButtonPanel = new AddButtonPanel(conceptEditorPanel);
+    applyButtonPanel = new ApplyButtonPanel(viewPanel, revNode);
+
+    this.add(addButtonPanel);
+    this.add(applyButtonPanel);
+
+    this.add(navigationButtonPanel);
+
     this.add(switchButton);
 
   }
   
   public void update() 
   {
-    reviewButton.setSelected(isReviewed());
+    applyButtonPanel.update();
     if(editable instanceof DEPanel) {
       DataElement de = (DataElement)conceptEditorPanel.getNode().getUserObject();
       if(!StringUtil.isEmpty(de.getPublicId())) 
@@ -154,29 +128,28 @@ public class ButtonPanel extends JPanel implements ActionListener,
   }
   
   public void addReviewListener(ReviewListener listener) {
-    reviewListeners.add(listener);
+//     reviewListeners.add(listener);
+    applyButtonPanel.addReviewListener(listener);
   }
   
   public void addNavigationListener(NavigationListener listener) 
   {
     navigationListeners.add(listener);
+
+    navigationButtonPanel.addNavigationListener(listener);
+    applyButtonPanel.addNavigationListener(listener);
   }
   
   public void propertyChange(PropertyChangeEvent e) 
   {
-    if(e.getPropertyName().equals(DELETE)) {
-      deleteButton.setEnabled((Boolean)e.getNewValue());      
-    } else if(e.getPropertyName().equals(ADD)) {
-      addButton.setEnabled((Boolean)e.getNewValue());
-    } else if(e.getPropertyName().equals(SAVE)) {
-      setSaveButtonState((Boolean)e.getNewValue());
-    } else if(e.getPropertyName().equals(REVIEW)) {
-      reviewButton.setEnabled((Boolean)e.getNewValue());
-    } else if (e.getPropertyName().equals(SETUP)) {
+    if (e.getPropertyName().equals(SETUP)) {
       initButtonPanel();
     } else if (e.getPropertyName().equals(SWITCH)) {
       switchButton.setEnabled((Boolean)e.getNewValue());
     }
+
+    addButtonPanel.propertyChange(e);
+    applyButtonPanel.propertyChange(e);
   }
   
   private void fireNavigationEvent(NavigationEvent event) 
@@ -191,37 +164,36 @@ public class ButtonPanel extends JPanel implements ActionListener,
   }
   
   public void setEnabled(boolean enabled) {
+      addButtonPanel.setVisible(enabled);
+      applyButtonPanel.setVisible(enabled);
+
       if (enabled) {
           // enabling does not necessarily enable every single button
           initButtonPanel();
           return;
       }
-      addButton.setEnabled(enabled);
-      deleteButton.setEnabled(enabled);
-      saveButton.setEnabled(enabled);
-      switchButton.setEnabled(enabled);
-      reviewButton.setEnabled(enabled);
+//       addButton.setEnabled(false);
+//       saveButton.setEnabled(false);
+      switchButton.setEnabled(false);
+//       reviewButton.setEnabled(false);
   }
   
   private void initButtonPanel() {  
     Concept[] concepts = conceptEditorPanel.getConcepts();
-    if(concepts.length < 2)
-      deleteButton.setEnabled(false);
-    else
-      deleteButton.setEnabled(true);
-    
-    if(conceptEditorPanel.areAllFieldEntered()) {
-      reviewButton.setEnabled(true);
-      addButton.setEnabled(true);
-    } else {
-      addButton.setEnabled(false);
-      reviewButton.setEnabled(false);
-    }
-    setSaveButtonState(false);
-    
+//     if(conceptEditorPanel.areAllFieldEntered()) {
+//       reviewButton.setEnabled(true);
+// //       addButton.setEnabled(true);
+//     } else {
+// //       addButton.setEnabled(false);
+//       reviewButton.setEnabled(false);
+//     }
+
+    boolean reviewButtonState = false;
     if(concepts.length == 0)
-      reviewButton.setEnabled(false);
-    
+      reviewButtonState = false;
+    else 
+      reviewButtonState = true;
+  
     switchButton.setVisible(editable instanceof DEPanel);
     
     if(editable instanceof DEPanel && conceptEditorPanel.getVDPanel().isMappedToLocalVD())
@@ -231,52 +203,35 @@ public class ButtonPanel extends JPanel implements ActionListener,
     if(editable instanceof DEPanel) {
       DataElement de = (DataElement)conceptEditorPanel.getNode().getUserObject();
       if(!StringUtil.isEmpty(de.getPublicId())) {
-        addButton.setVisible(false);
-        deleteButton.setVisible(false);
-        reviewButton.setEnabled(true);
+        addButtonPanel.setVisible(false);
+        reviewButtonState = true;
       } else {
-        addButton.setVisible(true);
-        deleteButton.setVisible(true);
+        addButtonPanel.setVisible(true);
         
       }
     } else if(editable instanceof OCPanel) {
       ObjectClass oc = (ObjectClass)conceptEditorPanel.getNode().getUserObject();
       if(!StringUtil.isEmpty(oc.getPublicId())) {
-        addButton.setVisible(false);
-        deleteButton.setVisible(false);
-        reviewButton.setEnabled(true);
+        addButtonPanel.setVisible(false);
+        reviewButtonState = true;
       } else {
-        addButton.setVisible(true);
-        deleteButton.setVisible(true);
+        addButtonPanel.setVisible(true);
       }
     } else if(editable == null) {
-      addButton.setVisible(true);
-      deleteButton.setVisible(true);
+      addButtonPanel.setVisible(true);
     }
+
+    applyButtonPanel.init(reviewButtonState);
     
   }
   
-  private void setSaveButtonState(boolean b) {
-    saveButton.setEnabled(b);
-
-    PropertyChangeEvent evt = new PropertyChangeEvent(this, SAVE, null, b);
-    firePropertyChangeEvent(evt);
-  }
   
   public void setEditablePanel(Editable editable) {
     this.editable = editable;
   }
 
   public void navigate(NavigationEvent evt) {  
-    if(saveButton.isEnabled()) {
-      if(JOptionPane.showConfirmDialog(this, "There are unsaved changes in this concept, would you like to apply the changes now?", "Unsaved Changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) 
-      {
-        try {
-          viewPanel.applyPressed();
-        } catch (ApplyException e){
-        } // end of try-catch
-      }
-    }
+    applyButtonPanel.navigate(evt);
   }
   
   private void firePropertyChangeEvent(PropertyChangeEvent evt) {
@@ -286,47 +241,11 @@ public class ButtonPanel extends JPanel implements ActionListener,
   
   public void actionPerformed(ActionEvent evt) {
     AbstractButton button = (AbstractButton)evt.getSource();
-    if(button.getActionCommand().equals(SAVE)) {
-      try {
-        viewPanel.applyPressed();
-
-        //reviewButton.setEnabled(false);
-        //saveButton.setEnabled(false);
-
-        ReviewEvent event = new ReviewEvent();
-        event.setUserObject(conceptEditorPanel.getNode()); 
-        event.setReviewed(reviewButton.isSelected());
-        
-        if(runMode.equals(RunMode.Reviewer)) {
-          event.setType(ReviewEventType.Owner);
-        } else if (runMode.equals(RunMode.Curator)) {
-          event.setType(ReviewEventType.Curator);
-        } else return;
-        
-        fireReviewEvent(event);
-      } catch (ApplyException e){
-      } // end of try-catch
-    } else if(button.getActionCommand().equals(ADD)) {
-        conceptEditorPanel.addPressed();
- 
-    } else if(button.getActionCommand().equals(DELETE)) {
-        conceptEditorPanel.removePressed();
-    } else if(button.getActionCommand().equals(PREVIOUS)) {
-      NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_PREVIOUS);
-      fireNavigationEvent(event);
-      conceptEditorPanel.setRemove(false);
-      //remove = false;
-    } else if(button.getActionCommand().equals(NEXT)) {
-      NavigationEvent event = new NavigationEvent(NavigationEvent.NAVIGATE_NEXT);
-      fireNavigationEvent(event);
-      conceptEditorPanel.setRemove(false);
-      //remove = false;
-    } else if(button.getActionCommand().equals(SWITCH)) {
+    if(button.getActionCommand().equals(SWITCH)) {
       if(switchButton.getText().equals(SWITCH_TO_DE)) {
         ((UMLElementViewPanel)viewPanel).switchCards(UMLElementViewPanel.DE_PANEL_KEY);
         switchButton.setText(SWITCH_TO_CONCEPT);
-        addButton.setVisible(false);
-        deleteButton.setVisible(false);
+        addButtonPanel.setVisible(false);
       } else if (switchButton.getText().equals(SWITCH_TO_CONCEPT)) {
         ((UMLElementViewPanel)viewPanel).switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
         if(editable instanceof DEPanel) {
@@ -336,49 +255,13 @@ public class ButtonPanel extends JPanel implements ActionListener,
         } else if(editable == null) {
         
         }
-        addButton.setVisible(true);
-        deleteButton.setVisible(true);
+        addButtonPanel.setVisible(true);
       } else if(switchButton.getText().equals(SWITCH_TO_OC)) {
          ((UMLElementViewPanel)viewPanel).switchCards(UMLElementViewPanel.OC_PANEL_KEY);
          switchButton.setText(SWITCH_TO_CONCEPT);
       }
     }
-
-    else if(button.getActionCommand().equals(REVIEW)) {
-
-      ReviewEvent event = new ReviewEvent();
-      event.setUserObject(conceptEditorPanel.getNode()); 
-      event.setReviewed(reviewButton.isSelected());
-
-      if(runMode.equals(RunMode.Reviewer)) {
-        event.setType(ReviewEventType.Owner);
-      } else if (runMode.equals(RunMode.Curator)) {
-        event.setType(ReviewEventType.Curator);
-      } else return;
-
-      fireReviewEvent(event);
-      
-      //if item is reviewed go to next item in the tree
-      if(reviewButton.isSelected()) 
-      {
-        NavigationEvent goToNext = new NavigationEvent(NavigationEvent.NAVIGATE_NEXT);
-        fireNavigationEvent(goToNext);
-      }
-        
-    }
-    
   }
  
-  
-  private void fireReviewEvent(ReviewEvent event) {
-    for(ReviewListener l : reviewListeners)
-      l.reviewChanged(event);
-  }
-  
-  private boolean isReviewed() 
-  {
-    UMLNode node = conceptEditorPanel.getNode();
-    return ((ReviewableUMLNode)node).isReviewed();
-  }
   
 }

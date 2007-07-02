@@ -96,7 +96,7 @@ public class VDPanel extends JPanel
             vdDatatypeTitleLabel.setVisible(true);
             
             firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ButtonPanel.SAVE, null, true));
+                new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
           }
         }
       }

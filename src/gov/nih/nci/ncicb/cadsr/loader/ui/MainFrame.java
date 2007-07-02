@@ -66,7 +66,6 @@ public class MainFrame extends JFrame
   private JMenu fileMenu = new JMenu("File");
   private JMenuItem saveMenuItem = new JMenuItem("Save");
   private JMenuItem saveAsMenuItem = new JMenuItem("Save As");
-  //private JMenuItem exportErrorsMenuItem = new JMenuItem("Export");
   private JMenuItem exitMenuItem = new JMenuItem("Exit");
 
   private JMenu editMenu = new JMenu("Edit");
@@ -81,7 +80,6 @@ public class MainFrame extends JFrame
 
   private JMenu runMenu = new JMenu("Run");
   private JMenuItem validateMenuItem = new JMenuItem("Validate");
-  //private JMenuItem uploadMenuItem = new JMenuItem("Upload");
   private JMenuItem defaultsMenuItem = new JMenuItem("Defaults");
   private JMenuItem validateConceptsMenuItem = new JMenuItem("Validate Concepts");
 
@@ -103,7 +101,8 @@ public class MainFrame extends JFrame
 
   private JLabel infoLabel = new JLabel(" ");
 
-  private Map<String, UMLElementViewPanel> viewPanels = new HashMap();
+//   private Map<String, UMLElementViewPanel> viewPanels = new HashMap();
+  private Map<String, NodeViewPanel> viewPanels = new HashMap();
   private AssociationViewPanel associationViewPanel = null;
   private ValueDomainViewPanel vdViewPanel = null;
 
@@ -194,7 +193,6 @@ public class MainFrame extends JFrame
     fileMenu.add(saveAsMenuItem);
     fileMenu.addSeparator();
     fileMenu.add(findMenuItem);
-    //fileMenu.add(exportErrorsMenuItem);
     fileMenu.addSeparator();
     fileMenu.add(exitMenuItem);
     mainMenuBar.add(fileMenu);
@@ -214,7 +212,6 @@ public class MainFrame extends JFrame
 //     elementMenu.add(previewReuseMenuItem);
     mainMenuBar.add(elementMenu);
 
-//     runMenu.add(validateMenuItem);
     if(runMode.equals(RunMode.Reviewer)) {
       runMenu.add(defaultsMenuItem);
       runMenu.add(validateConceptsMenuItem);
@@ -352,13 +349,6 @@ public class MainFrame extends JFrame
       }
     });
 
-/*
-    exportErrorsMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent event) {
-          JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
-        } 
-      });
-*/
     validateMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           ValidationItems.getInstance().clear();
@@ -372,8 +362,6 @@ public class MainFrame extends JFrame
           tb.buildTree(elements);
 
           errorPanel.update(tb.getRootNode());
-
-//           JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
         } 
       });
       
@@ -389,13 +377,7 @@ public class MainFrame extends JFrame
         }
       }
     });
-/*
-    uploadMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent event) {
-          JOptionPane.showMessageDialog(_this, "Sorry, Not Implemented Yet", "Not Implemented", JOptionPane.INFORMATION_MESSAGE);
-        } 
-      });
-*/
+
     applyMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
           UMLElementViewPanel viewPanel =
@@ -446,39 +428,39 @@ public class MainFrame extends JFrame
           new AboutPanel();
         }
       });
-      
-      indexMenuItem.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent evt) {
-            String errMsg = "Error attempting to launch web browser";
-            String osName = System.getProperty("os.name");
-            String url = "http://gforge.nci.nih.gov/projects/siw/";
-            try {
-              if (osName.startsWith("Mac OS")) {
-                Class fileMgr = Class.forName("com.apple.eio.FileManager");
-                Method openURL = fileMgr.getDeclaredMethod("openURL",
-                                                           new Class[] {String.class});
-                openURL.invoke(null, new Object[] {url});
-              }
-              else if (osName.startsWith("Windows"))
-                Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
-              else { //assume Unix or Linux
-                String[] browsers = {
-                  "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
-                String browser = null;
-                for (int count = 0; count < browsers.length && browser == null; count++)
-                  if (Runtime.getRuntime().exec(
-                                                new String[] {"which", browsers[count]}).waitFor() == 0)
-                    browser = browsers[count];
-                if (browser == null)
-                  throw new Exception("Could not find web browser");
-                else
-                  Runtime.getRuntime().exec(new String[] {browser, url});
-              }
-            } catch (Exception e) {
-              JOptionPane.showMessageDialog(null, errMsg + ":\n" + e.getLocalizedMessage());
+    
+    indexMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          String errMsg = "Error attempting to launch web browser";
+          String osName = System.getProperty("os.name");
+          String url = "http://gforge.nci.nih.gov/projects/siw/";
+          try {
+            if (osName.startsWith("Mac OS")) {
+              Class fileMgr = Class.forName("com.apple.eio.FileManager");
+              Method openURL = fileMgr.getDeclaredMethod("openURL",
+                                                         new Class[] {String.class});
+              openURL.invoke(null, new Object[] {url});
             }
+            else if (osName.startsWith("Windows"))
+              Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+            else { //assume Unix or Linux
+              String[] browsers = {
+                "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
+              String browser = null;
+              for (int count = 0; count < browsers.length && browser == null; count++)
+                if (Runtime.getRuntime().exec(
+                      new String[] {"which", browsers[count]}).waitFor() == 0)
+                  browser = browsers[count];
+              if (browser == null)
+                throw new Exception("Could not find web browser");
+              else
+                Runtime.getRuntime().exec(new String[] {browser, url});
+            }
+          } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, errMsg + ":\n" + e.getLocalizedMessage());
           }
-        });      
+        }
+      });      
   }
 
   public void viewChanged(ViewChangeEvent event) {
@@ -486,29 +468,46 @@ public class MainFrame extends JFrame
     previewReuseMenuItem.setEnabled(false);
 
     if(event.getType() == ViewChangeEvent.VIEW_CONCEPTS
-        || event.getType() == ViewChangeEvent.VIEW_VALUE_MEANING
-        || event.getType() == ViewChangeEvent.VIEW_INHERITED) {
-      UMLNode node = (UMLNode)event.getViewObject();
+       || event.getType() == ViewChangeEvent.VIEW_VALUE_MEANING
+       || event.getType() == ViewChangeEvent.VIEW_INHERITED) {
 
+      UMLNode node = (UMLNode)event.getViewObject();
+      
       // If concept is already showing, just bring it up front
       if(viewPanels.containsKey(node.getFullPath())) {
-        UMLElementViewPanel pa = viewPanels.get(node.getFullPath());
-        viewTabbedPane.setSelectedComponent(pa);
-        pa.setEnabled(event.getType() != ViewChangeEvent.VIEW_INHERITED);
+        NodeViewPanel pa = viewPanels.get(node.getFullPath());
+        viewTabbedPane.setSelectedComponent((JPanel)pa);
+
+        // no longer needed with 3.2.1.1 inherited att feature
+//         pa.setEnabled(event.getType() != ViewChangeEvent.VIEW_INHERITED);
         return;
       }
-
+      
       if (node instanceof AttributeNode) {
-          DataElement de = (DataElement)node.getUserObject();
-          if (StringUtil.isEmpty(de.getPublicId())) {
-              previewReuseMenuItem.setEnabled(true);
-          }
+        DataElement de = (DataElement)node.getUserObject();
+        if (StringUtil.isEmpty(de.getPublicId())) {
+          previewReuseMenuItem.setEnabled(true);
+        }
       }
       
+      // if we ask for new tab, or no tab yet, or it's an assoc or a VD. 
+      // then open a new tab.
       if((event.getInNewTab() == true) || (viewPanels.size() == 0) 
           || viewTabbedPane.getSelectedComponent() instanceof AssociationViewPanel
           || viewTabbedPane.getSelectedComponent() instanceof ValueDomainViewPanel) {
-        UMLElementViewPanel viewPanel = new UMLElementViewPanel(node);
+
+
+        String tabTitle = node.getDisplay();
+        if(node instanceof AttributeNode) 
+          tabTitle = node.getParent().getDisplay() 
+            + "." + tabTitle;
+        
+        NodeViewPanel viewPanel = null;
+        if(event.getType() == ViewChangeEvent.VIEW_INHERITED) {
+          viewPanel = new InheritedAttributeViewPanel(node);
+        } else {
+          viewPanel = new UMLElementViewPanel(node);
+        }          
 
         viewPanel.addPropertyChangeListener(this);
         viewPanel.addReviewListener(navigationPanel);
@@ -517,22 +516,19 @@ public class MainFrame extends JFrame
         viewPanel.addElementChangeListener(ChangeTracker.getInstance());
         viewPanel.addNavigationListener(navigationPanel);
         navigationPanel.addNavigationListener(viewPanel);
-
-        String tabTitle = node.getDisplay();
-        if(node instanceof AttributeNode) 
-          tabTitle = node.getParent().getDisplay() 
-            + "." + tabTitle;
-
-        viewTabbedPane.addTab(tabTitle, viewPanel);
-        viewTabbedPane.setSelectedComponent(viewPanel);
-
+        
+        
+        viewTabbedPane.addTab(tabTitle, (JPanel)viewPanel);
+        viewTabbedPane.setSelectedComponent((JPanel)viewPanel);
+        
         viewPanel.setName(node.getFullPath());
         viewPanels.put(viewPanel.getName(), viewPanel);
+        
         infoLabel.setText(tabTitle);
 
-        viewPanel.setEnabled(event.getType() != ViewChangeEvent.VIEW_INHERITED);
+//           viewPanel.setEnabled(event.getType() != ViewChangeEvent.VIEW_INHERITED);
         
-      } else {
+      } else { // if not, update current tab.
         UMLElementViewPanel viewPanel = (UMLElementViewPanel)
           viewTabbedPane.getSelectedComponent();
         viewPanels.remove(viewPanel.getName());
@@ -576,7 +572,7 @@ public class MainFrame extends JFrame
       viewTabbedPane.setSelectedComponent(associationViewPanel);
 
     }
-      else if(event.getType() == ViewChangeEvent.VIEW_VALUE_DOMAIN) {
+    else if(event.getType() == ViewChangeEvent.VIEW_VALUE_DOMAIN) {
       UMLNode node = (UMLNode)event.getViewObject();
       
       if(vdViewPanel == null) {
@@ -587,9 +583,9 @@ public class MainFrame extends JFrame
       }
       else
         vdViewPanel.update((ValueDomain)node.getUserObject());
-        
+      
       viewTabbedPane.setSelectedComponent(vdViewPanel);
-      }
+    }
   }
 
   public boolean closeTab(int index) {
