@@ -81,34 +81,55 @@ public class ModeSelectionPanel extends JPanel {
     
     group = new ButtonGroup();
 
-    unannotatedXmiOption = new JRadioButton("1. Review un-annotated XMI File");
+    unannotatedXmiOption = new JRadioButton("1. " + RunMode.UnannotatedXmi.getTitleName());
     unannotatedXmiOption.setActionCommand(RunMode.UnannotatedXmi.toString());
 
-    roundtripOption = new JRadioButton("2. Perform XMI Roundtrip");
+    roundtripOption = new JRadioButton("2. " + RunMode.Roundtrip.getTitleName());
     roundtripOption.setActionCommand(RunMode.Roundtrip.toString());
     
-    annotateOption = new JRadioButton("3. Run Semantic Connector");
+    annotateOption = new JRadioButton("3. " + RunMode.GenerateReport.getTitleName());
     annotateOption.setActionCommand(RunMode.GenerateReport.toString());
         
-    curateOption = new JRadioButton("4. Curate XMI File");
+    curateOption = new JRadioButton("4. " + RunMode.Curator.getTitleName());
     curateOption.setActionCommand(RunMode.Curator.toString());
 
-    reviewOption = new JRadioButton("5. Review Annotated Model");
+    reviewOption = new JRadioButton("5. " + RunMode.Reviewer.getTitleName());
     reviewOption.setActionCommand(RunMode.Reviewer.toString());
 
-    if(prefs.getModeSelection() == null) 
-      unannotatedXmiOption.setSelected(true);
-    else if(prefs.getModeSelection().equals(RunMode.AnnotateXMI.toString()))
-      reviewOption.setSelected(true);
-    else if(prefs.getModeSelection().equals(RunMode.Curator.toString()))
-      curateOption.setSelected(true);
-    else if(prefs.getModeSelection().equals(RunMode.Roundtrip.toString()))
-      reviewOption.setSelected(true);
-    else if(prefs.getModeSelection().equals(RunMode.Reviewer.toString()))
-      reviewOption.setSelected(true);
-    else
-      unannotatedXmiOption.setSelected(true);
-      
+    // Get the preference setting for mode and set the radio buttons appropriately.
+    RunMode mode = RunMode.UnannotatedXmi;
+    try
+    {
+        mode = RunMode.valueOf(prefs.getModeSelection());
+    }
+    catch (Exception ex)
+    {
+        // Ignore any exceptions and let "mode" default.
+    }
+    
+    switch (mode)
+    {
+        case AnnotateXMI:
+            reviewOption.setSelected(true);
+            break;
+            
+        case Curator:
+            curateOption.setSelected(true);
+            break;
+
+        case Roundtrip:
+            reviewOption.setSelected(true);
+            break;
+            
+        case Reviewer:
+            reviewOption.setSelected(true);
+            break;
+            
+        default:
+            unannotatedXmiOption.setSelected(true);
+            break;
+    }
+    
     group.add(unannotatedXmiOption);
     group.add(roundtripOption);
     group.add(annotateOption);

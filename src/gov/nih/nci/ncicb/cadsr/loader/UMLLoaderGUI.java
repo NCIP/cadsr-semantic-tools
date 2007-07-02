@@ -30,20 +30,12 @@ import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
-import java.io.*;
 import java.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
-import gov.nih.nci.ncicb.cadsr.loader.parser.*;
-import gov.nih.nci.ncicb.cadsr.loader.persister.*;
-import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
-import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
-
 import org.apache.log4j.*;
-
-import gov.nih.nci.ncicb.cadsr.jaas.SwingCallbackHandler;
 
 /** 
  * The main starting point for the UI. 
@@ -152,7 +144,7 @@ public class UMLLoaderGUI
         }
       });
 
-    mainFrame.setTitle(PropertyAccessor.getProperty("siw.title") + " -- " + mode.getTitleName());
+    mainFrame.setWorkingTitle(null);
 
     mainFrame.setVisible(true);
 

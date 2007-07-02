@@ -27,12 +27,12 @@ package gov.nih.nci.ncicb.cadsr.loader.util;
 public enum RunMode {
   GenerateReport("Run Semantic Connector"), 
   AnnotateXMI("Review Annotated XMI"), 
-    Curator("Curate XMI"), 
-    Reviewer("Review Annotated XMI"), 
-    Roundtrip("Run Roundtrip"),
+    Curator("Curate XMI File"), 
+    Reviewer("Review Annotated XMI File"), 
+    Roundtrip("Perform XMI Roundtrip"),
     Loader("UML Loader"),
     FixEa("Run fix-EA"),
-    UnannotatedXmi("Review Unannotated XMI")
+    UnannotatedXmi("Review Unannotated XMI File")
     ;
 
   private String titleName;

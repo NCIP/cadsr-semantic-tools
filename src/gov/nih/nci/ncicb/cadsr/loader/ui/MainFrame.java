@@ -171,6 +171,19 @@ public class MainFrame extends JFrame
     } 
   }
 
+  /**
+   * Set the working title on the frame window.
+   * 
+   * @param file_ null to use the current file name or !null to change the current file name as with
+   *    a "Save As"
+   */
+  public void setWorkingTitle(String file_)
+  {
+      if (file_ != null && file_.length() > 0)
+          saveFilename = file_;
+      this.setTitle(PropertyAccessor.getProperty("siw.title") + " - " + saveFilename + " - " + runMode.getTitleName());
+  }
+
   private void jbInit() {
     this.getContentPane().setLayout(new BorderLayout());
     this.setSize(new Dimension(830, 650));
@@ -178,9 +191,7 @@ public class MainFrame extends JFrame
     
     this.setIconImage(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif")).getImage());
 
-    UserSelections selections = UserSelections.getInstance();
-    String fileName = new File((String)selections.getProperty("FILENAME")).getName();
-    this.setTitle("Semantic Integration Workbench - " + fileName);
+    setWorkingTitle(null);
 
     jSplitPane2.setOrientation(JSplitPane.VERTICAL_SPLIT);
     jSplitPane1.setDividerLocation(160);
@@ -337,7 +348,7 @@ public class MainFrame extends JFrame
 
             UserPreferences.getInstance().setRecentDir(filePath);
             xmiWriter.setOutput(filePath);
-            saveFilename = filePath;
+            setWorkingTitle(filePath);
             try {
               xmiWriter.write(ElementsLists.getInstance());
               infoLabel.setText("File Saved");

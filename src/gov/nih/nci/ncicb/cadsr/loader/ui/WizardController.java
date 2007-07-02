@@ -115,7 +115,7 @@ public class WizardController implements ActionListener {
         ModeSelectionPanel panel = 
           (ModeSelectionPanel)descriptor.getPanelComponent();
         
-        mode = Enum.valueOf(RunMode.class, panel.getSelection());
+        mode = RunMode.valueOf(panel.getSelection());
         
         fireNewRunMode(mode);
         userSelections.setProperty("MODE", mode);
@@ -136,27 +136,36 @@ public class WizardController implements ActionListener {
             (ProgressFileSelectionPanelDescriptor)model
             .getPanelDescriptor(ProgressFileSelectionPanelDescriptor.IDENTIFIER);
 
-
-        ModeSelectionPanelDescriptor mspDesc =
-            (ModeSelectionPanelDescriptor)model
-            .getPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
-        
-
-        if(mode.equals(RunMode.GenerateReport)) {
-          desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-        } else if(mode.equals(RunMode.AnnotateXMI)) {
-          desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-        } else if(mode.equals(RunMode.Reviewer)) {
-          desc.setNextPanelDescriptor("FINISH");
-        } else if(mode.equals(RunMode.Curator)) {
-          desc.setNextPanelDescriptor("FINISH");
-        } else if(mode.equals(RunMode.Roundtrip)) {
-          desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-          desc.setBackPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
-        } else if(mode.equals(RunMode.FixEa)) {
-          desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-          desc.setBackPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
+        // Set the next panel based on the wizard selection.
+        switch (mode)
+        {
+            case GenerateReport:
+                desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+                break;
+                
+            case AnnotateXMI:
+                desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+                break;
+                
+            case Reviewer:
+                desc.setNextPanelDescriptor("FINISH");
+                break;
+                
+            case Curator:
+                desc.setNextPanelDescriptor("FINISH");
+                break;
+                
+            case Roundtrip:
+                desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+                desc.setBackPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
+                break;
+                
+            case FixEa:
+                desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+                desc.setBackPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
+                break;
         }
+
         
       }
 
