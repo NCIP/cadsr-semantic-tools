@@ -28,12 +28,6 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
  */
 public interface Validator {
 
-    /**
-     * Reserved prefix and suffix characters for generated names.
-     */
-    public static final String RSVD_PREFIX = "[[";
-    public static final String RSVD_SUFFIX = "]]";
-
   /**
    * @return a list of Validation errors.
    */

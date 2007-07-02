@@ -674,21 +674,6 @@ public class XMIParser2 implements Parser {
       event.setReviewed(tv.getValue().equals("1"));
     }
     setConceptInfo(assoc, event, TV_TYPE_ASSOC_ROLE);
-    
-    // netbeans seems to read self pointing associations wrong. 
-    // Such that an end is navigable but has no target role, 
-    // even though it does in the model.
-    if(aEvent.getClassName().equals(bEvent.getClassName())) {
-      if(navig.equals("B") && StringUtil.isEmpty(bEvent.getRoleName())) {
-          bEvent.setRoleName(Validator.RSVD_PREFIX + aEvent.getRoleName() + Validator.RSVD_SUFFIX);
-        bEvent.setLowCardinality(aEvent.getLowCardinality());
-        bEvent.setHighCardinality(aEvent.getHighCardinality());
-      } else if (navig.equals("A") && StringUtil.isEmpty(aEvent.getRoleName())) {
-          aEvent.setRoleName(Validator.RSVD_PREFIX + bEvent.getRoleName() + Validator.RSVD_SUFFIX);
-          aEvent.setLowCardinality(bEvent.getLowCardinality());
-          aEvent.setHighCardinality(bEvent.getHighCardinality());
-      }
-    }
 
     logger.debug("Adding association. AClassName: " + aEvent.getClassName());
     

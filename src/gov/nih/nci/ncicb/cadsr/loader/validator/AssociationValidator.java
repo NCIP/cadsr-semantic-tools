@@ -126,9 +126,6 @@ public class AssociationValidator implements Validator {
             
         }
         
-      
-    
-    
     return items;
   }
 
@@ -149,9 +146,6 @@ public class AssociationValidator implements Validator {
       if (ocr.getType().equals(ObjectClassRelationship.TYPE_HAS))
       {
           if (ocr.getTargetRole() == null || ocr.getTargetRole().length() == 0)
-              return false;
-    
-          if (ocr.getTargetRole().equals(RSVD_PREFIX + ocr.getSourceRole() + RSVD_SUFFIX))
               return false;
       }
       
