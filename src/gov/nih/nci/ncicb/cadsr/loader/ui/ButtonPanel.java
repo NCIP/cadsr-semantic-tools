@@ -180,13 +180,6 @@ public class ButtonPanel extends JPanel implements ActionListener,
   
   private void initButtonPanel() {  
     Concept[] concepts = conceptEditorPanel.getConcepts();
-//     if(conceptEditorPanel.areAllFieldEntered()) {
-//       reviewButton.setEnabled(true);
-// //       addButton.setEnabled(true);
-//     } else {
-// //       addButton.setEnabled(false);
-//       reviewButton.setEnabled(false);
-//     }
 
     boolean reviewButtonState = false;
     if(concepts.length == 0)

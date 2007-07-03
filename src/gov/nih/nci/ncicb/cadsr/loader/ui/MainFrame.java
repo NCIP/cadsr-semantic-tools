@@ -488,9 +488,6 @@ public class MainFrame extends JFrame
       if(viewPanels.containsKey(node.getFullPath())) {
         NodeViewPanel pa = viewPanels.get(node.getFullPath());
         viewTabbedPane.setSelectedComponent((JPanel)pa);
-
-        // no longer needed with 3.2.1.1 inherited att feature
-//         pa.setEnabled(event.getType() != ViewChangeEvent.VIEW_INHERITED);
         return;
       }
       
@@ -508,55 +505,16 @@ public class MainFrame extends JFrame
           || viewTabbedPane.getSelectedComponent() instanceof ValueDomainViewPanel) {
 
 
-        String tabTitle = node.getDisplay();
-        if(node instanceof AttributeNode) 
-          tabTitle = node.getParent().getDisplay() 
-            + "." + tabTitle;
-        
-        NodeViewPanel viewPanel = null;
-        if(event.getType() == ViewChangeEvent.VIEW_INHERITED) {
-          viewPanel = new InheritedAttributeViewPanel(node);
-        } else {
-          viewPanel = new UMLElementViewPanel(node);
-        }          
+        newTab(event, node);
 
-        viewPanel.addPropertyChangeListener(this);
-        viewPanel.addReviewListener(navigationPanel);
-        viewPanel.addReviewListener(ownerTracker);
-        viewPanel.addReviewListener(curatorTracker);
-        viewPanel.addElementChangeListener(ChangeTracker.getInstance());
-        viewPanel.addNavigationListener(navigationPanel);
-        navigationPanel.addNavigationListener(viewPanel);
-        
-        
-        viewTabbedPane.addTab(tabTitle, (JPanel)viewPanel);
-        viewTabbedPane.setSelectedComponent((JPanel)viewPanel);
-        
-        viewPanel.setName(node.getFullPath());
-        viewPanels.put(viewPanel.getName(), viewPanel);
-        
-        infoLabel.setText(tabTitle);
-
-//           viewPanel.setEnabled(event.getType() != ViewChangeEvent.VIEW_INHERITED);
-        
       } else { // if not, update current tab.
-        UMLElementViewPanel viewPanel = (UMLElementViewPanel)
+        NodeViewPanel viewPanel = (NodeViewPanel)
           viewTabbedPane.getSelectedComponent();
+
+        viewTabbedPane.remove(viewTabbedPane.getSelectedIndex());
         viewPanels.remove(viewPanel.getName());
-             
-        String tabTitle = node.getDisplay();
-        if(node instanceof AttributeNode) 
-          tabTitle = node.getParent().getDisplay() 
-            + "." + tabTitle;
-        viewTabbedPane.setTitleAt(viewTabbedPane.getSelectedIndex(), tabTitle);
+        newTab(event, node);
 
-        viewPanel.setName(node.getFullPath());
-        viewPanel.updateNode(node);
-        
-        viewPanels.put(viewPanel.getName(), viewPanel);
-        infoLabel.setText(tabTitle);
-
-        viewPanel.setEnabled(event.getType() != ViewChangeEvent.VIEW_INHERITED);
       }
 
     } else if(event.getType() == ViewChangeEvent.VIEW_ASSOCIATION) {
@@ -599,6 +557,37 @@ public class MainFrame extends JFrame
     }
   }
 
+  private void newTab(ViewChangeEvent event, UMLNode node) {
+    String tabTitle = node.getDisplay();
+    if(node instanceof AttributeNode) 
+      tabTitle = node.getParent().getDisplay() 
+        + "." + tabTitle;
+    
+    NodeViewPanel viewPanel = null;
+    if(event.getType() == ViewChangeEvent.VIEW_INHERITED) {
+      viewPanel = new InheritedAttributeViewPanel(node);
+    } else {
+      viewPanel = new UMLElementViewPanel(node);
+    }          
+    
+    viewPanel.addPropertyChangeListener(this);
+    viewPanel.addReviewListener(navigationPanel);
+    viewPanel.addReviewListener(ownerTracker);
+    viewPanel.addReviewListener(curatorTracker);
+    viewPanel.addElementChangeListener(ChangeTracker.getInstance());
+    viewPanel.addNavigationListener(navigationPanel);
+    navigationPanel.addNavigationListener(viewPanel);
+    
+    
+    viewTabbedPane.addTab(tabTitle, (JPanel)viewPanel);
+    viewTabbedPane.setSelectedComponent((JPanel)viewPanel);
+    
+    viewPanel.setName(node.getFullPath());
+    viewPanels.put(viewPanel.getName(), viewPanel);
+    
+    infoLabel.setText(tabTitle);
+  }
+  
   public boolean closeTab(int index) {
 
     Component c = viewTabbedPane.getComponentAt(index);

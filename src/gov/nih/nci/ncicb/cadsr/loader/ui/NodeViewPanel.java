@@ -3,6 +3,8 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
@@ -18,5 +20,7 @@ public interface NodeViewPanel extends NavigationListener {
 
   public String getName();
   public void setName(String name);
+
+  public void updateNode(UMLNode node);
 
 }
