@@ -670,7 +670,6 @@ public class UMLDefaultHandler
           newDe.setValueDomain(de.getValueDomain());
           newDe.setLongName(newDec.getLongName() + " " + de.getValueDomain().getLongName());
 
-
           for(Definition def : de.getDefinitions()) {
             if(def.getType().equals(Definition.TYPE_UML_DE)) {
               Definition newDef = DomainObjectFactory.newDefinition();
@@ -712,7 +711,7 @@ public class UMLDefaultHandler
           newElts.add(newDe);
           newElts.add(newDec);
 
-          inheritedAttributes.add(newDe);
+          inheritedAttributes.add(newDe, de);
 
         }
       }
