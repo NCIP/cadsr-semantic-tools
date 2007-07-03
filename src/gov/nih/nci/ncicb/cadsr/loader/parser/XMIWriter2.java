@@ -161,7 +161,8 @@ public class XMIWriter2 implements ElementWriter {
       }
         
     }
-      
+
+    InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
     for(DataElement de : des) {
       DataElementConcept dec = de.getDataElementConcept();
       String fullPropName = null;
@@ -176,43 +177,64 @@ public class XMIWriter2 implements ElementWriter {
         
       boolean changed = changeTracker.get(fullPropName);
       if(changed) {
-        // drop all current concept tagged values
-        Collection<UMLTaggedValue> allTvs = att.getTaggedValues();
-        for(UMLTaggedValue tv : allTvs) {
-          if(tv.getName().startsWith("Property") ||
-             tv.getName().startsWith("PropertyQualifier"))
-            att.removeTaggedValue(tv.getName());
-        }
-
-        // Map to Existing DE
-        if(!StringUtil.isEmpty(de.getPublicId()) && de.getVersion() != null) {
-          att.removeTaggedValue(XMIParser2.TV_DE_ID);
-          att.removeTaggedValue(XMIParser2.TV_DE_VERSION);
-
-          att.addTaggedValue(XMIParser2.TV_DE_ID,
-                             de.getPublicId());
-
-          att.addTaggedValue(XMIParser2.TV_DE_VERSION,
-                             de.getVersion().toString());
-
-        } else {
-          att.removeTaggedValue(XMIParser2.TV_DE_ID);
-          att.removeTaggedValue(XMIParser2.TV_DE_VERSION);
+        if(!inheritedList.isInherited(de)) {
+          // drop all current concept tagged values
+          Collection<UMLTaggedValue> allTvs = att.getTaggedValues();
+          for(UMLTaggedValue tv : allTvs) {
+            if(tv.getName().startsWith("Property") ||
+               tv.getName().startsWith("PropertyQualifier"))
+              att.removeTaggedValue(tv.getName());
+          }
           
-           if(!StringUtil.isEmpty(de.getValueDomain().getPublicId()) && de.getValueDomain().getVersion() != null) {
-            att.removeTaggedValue(XMIParser2.TV_VD_ID);
-            att.removeTaggedValue(XMIParser2.TV_VD_VERSION);
-            att.addTaggedValue(XMIParser2.TV_VD_ID,
-                               de.getValueDomain().getPublicId());
-            att.addTaggedValue(XMIParser2.TV_VD_VERSION,
-                               de.getValueDomain().getVersion().toString());
-           }
-           else {
-            att.removeTaggedValue(XMIParser2.TV_VD_ID);
-            att.removeTaggedValue(XMIParser2.TV_VD_VERSION);
-           }
-          String [] conceptCodes = dec.getProperty().getPreferredName().split(":");
-          addConceptTvs(att, conceptCodes, XMIParser2.TV_TYPE_PROPERTY);
+          // Map to Existing DE
+          if(!StringUtil.isEmpty(de.getPublicId()) && de.getVersion() != null) {
+            att.removeTaggedValue(XMIParser2.TV_DE_ID);
+            att.removeTaggedValue(XMIParser2.TV_DE_VERSION);
+            
+            att.addTaggedValue(XMIParser2.TV_DE_ID,
+                               de.getPublicId());
+            
+            att.addTaggedValue(XMIParser2.TV_DE_VERSION,
+                               de.getVersion().toString());
+            
+          } else {
+            att.removeTaggedValue(XMIParser2.TV_DE_ID);
+            att.removeTaggedValue(XMIParser2.TV_DE_VERSION);
+            
+            if(!StringUtil.isEmpty(de.getValueDomain().getPublicId()) && de.getValueDomain().getVersion() != null) {
+              att.removeTaggedValue(XMIParser2.TV_VD_ID);
+              att.removeTaggedValue(XMIParser2.TV_VD_VERSION);
+              att.addTaggedValue(XMIParser2.TV_VD_ID,
+                                 de.getValueDomain().getPublicId());
+              att.addTaggedValue(XMIParser2.TV_VD_VERSION,
+                                 de.getValueDomain().getVersion().toString());
+            }
+            else {
+              att.removeTaggedValue(XMIParser2.TV_VD_ID);
+              att.removeTaggedValue(XMIParser2.TV_VD_VERSION);
+            }
+            String [] conceptCodes = dec.getProperty().getPreferredName().split(":");
+            addConceptTvs(att, conceptCodes, XMIParser2.TV_TYPE_PROPERTY);
+          }
+        } else {
+          ObjectClass oc = de.getDataElementConcept().getObjectClass();
+          String fullClassName = LookupUtil.lookupFullName(oc);
+          
+          UMLClass clazz = classMap.get(fullClassName);
+
+          String attributeName = LookupUtil.lookupFullName(de);
+          attributeName = attributeName.substring(attributeName.lastIndexOf(".") + 1);
+
+          clazz.removeTaggedValue(XMIParser2.TV_INHERITED_DE_ID.replace("{1}", attributeName));
+          clazz.removeTaggedValue(XMIParser2.TV_INHERITED_DE_VERSION.replace("{1}", attributeName));
+          clazz.removeTaggedValue(XMIParser2.TV_INHERITED_VD_ID.replace("{1}", attributeName));
+          clazz.removeTaggedValue(XMIParser2.TV_INHERITED_VD_VERSION.replace("{1}", attributeName));
+          
+          if(!StringUtil.isEmpty(de.getPublicId())) {
+            clazz.addTaggedValue(XMIParser2.TV_INHERITED_DE_ID.replace("{1}", attributeName), de.getPublicId());
+            clazz.addTaggedValue(XMIParser2.TV_INHERITED_DE_VERSION.replace("{1}", attributeName), de.getVersion().toString());
+          }
+
         }
 
       }

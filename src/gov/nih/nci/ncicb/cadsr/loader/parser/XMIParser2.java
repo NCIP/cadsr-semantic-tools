@@ -88,6 +88,13 @@ public class XMIParser2 implements Parser {
   public static final String TV_CD_ID = "CADSR_ConceptualDomainPublicID";
   public static final String TV_CD_VERSION = "CADSR_ConceptualDomainVersion";
 
+
+  public static final String TV_INHERITED_DE_ID = "CADSR_Inherited.{1}.DE_ID";
+  public static final String TV_INHERITED_DE_VERSION = "CADSR_Inherited.{1}.DE_VERSION";
+  public static final String TV_INHERITED_VD_ID = "CADSR_Inherited.{1}.VD_ID";
+  public static final String TV_INHERITED_VD_VERSION = "CADSR_Inherited.{1}.VD_VERSION";
+  public static final String TV_INHERITED_VALUE_DOMAIN = "CADSR_Inherited.{1}.Local Value Domain";
+
   /**
    * Tagged Value name for Concept Code
    */
