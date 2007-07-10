@@ -270,6 +270,26 @@ public class XMIParser2 implements Parser {
         gEvent.setChildClassName(
           getPackageName(subClass.getPackage()) + "." + subClass.getName());
 
+        // find all inherited mappings 
+        for(UMLAttribute parentAtt : parentClass.getAttributes()) {
+          String attName = parentAtt.getName();
+
+          // get inherited vd mapping
+          UMLTaggedValue idTv  = subClass.getTaggedValue(TV_INHERITED_VD_ID.replace("{1}", attName));
+          if(idTv != null) {
+            UMLTaggedValue versionTv  = subClass.getTaggedValue(TV_INHERITED_VD_VERSION.replace("{1}", attName));
+            if(versionTv != null) {
+              try {
+                IdVersionPair idVersionPair = new IdVersionPair(idTv.getValue(), new Float(versionTv.getValue()));
+                gEvent.addTypeMapping(attName, idVersionPair);
+              } catch (NumberFormatException e){
+                logger.warn(PropertyAccessor.getProperty("version.numberFormatException", versionTv.getValue()));
+              }
+            }
+          }
+          
+        }
+
         childGeneralizationMap.put(gEvent.getChildClassName(), gEvent);
 
       }
@@ -632,20 +652,6 @@ public class XMIParser2 implements Parser {
   }
 
 
-//   private void doDataType(UMLDataType dt) {
-//     listener.newDataType(new NewDataTypeEvent(dt.getName()));
-//   }
-
-//   private void doOperation(Operation op) {
-//     NewOperationEvent event = new NewOperationEvent(op.getName());
-//     event.setClassName(className);
-//     listener.newOperation(event);
-//   }
-
-//   private void doStereotype(Stereotype st) {
-//     logger.debug("--- Stereotype " + st.getName());
-//   }
-
   private void doAssociation(UMLAssociation assoc) throws ParserException {
     NewAssociationEvent event = new NewAssociationEvent();
     event.setRoleName(assoc.getRoleName());
@@ -689,31 +695,6 @@ public class XMIParser2 implements Parser {
     
     associationEvents.add(event);
   }
-
-//   private void doComponent(Component comp) {
-//     logger.debug("--- Component: " + comp.getName());
-//   }
-
-//   private String cardinality(AssociationEnd end) {
-//     Collection range = end.getMultiplicity().getRange();
-
-//     for (Iterator it = range.iterator(); it.hasNext();) {
-//       MultiplicityRange mr = (MultiplicityRange) it.next();
-//       int low = mr.getLower();
-//       int high = mr.getUpper();
-
-//       if (low == high) {
-//         return "" + low;
-//       }
-//       else {
-//         String h = (high >= 0) ? ("" + high) : "*";
-
-//         return low + ".." + h;
-//       }
-//     }
-
-//     return "";
-//   }
 
   
 

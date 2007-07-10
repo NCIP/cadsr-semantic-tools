@@ -429,11 +429,6 @@ public class XMIWriter2 implements ElementWriter {
         DataElementConcept dec = de.getDataElementConcept();
 
         String fullClassName = LookupUtil.lookupFullName(de.getDataElementConcept().getObjectClass());
-//         String fullClassName = null;
-//         for(AlternateName an : dec.getObjectClass().getAlternateNames()) {
-//           if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
-//             fullClassName = an.getName();
-//         }
         String fullPropName = fullClassName + "." + dec.getProperty().getLongName();
 
         String attributeName = LookupUtil.lookupFullName(de);

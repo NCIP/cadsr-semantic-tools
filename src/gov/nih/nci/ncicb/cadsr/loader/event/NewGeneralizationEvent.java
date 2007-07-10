@@ -19,6 +19,8 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.event;
 
+import java.util.*;
+
 /**
  * Used by UML Loader to indicate a new inheritance event.
  *
@@ -28,6 +30,8 @@ public class NewGeneralizationEvent implements LoaderEvent {
 
   private String parentClassName;
   private String childClassName;
+
+  private Map<String, IdVersionPair> typeMappings = new HashMap<String, IdVersionPair>();
 
   /**
    * Get the ParentClassName value.
@@ -62,6 +66,13 @@ public class NewGeneralizationEvent implements LoaderEvent {
     this.parentClassName = newParentClassName;
   }
 
-  
+
+  public void addTypeMapping(String attributeName, IdVersionPair idVersionPair) {
+    typeMappings.put(attributeName, idVersionPair);
+  }
+
+  public IdVersionPair getTypeMapping(String attributeName) {
+    return typeMappings.get(attributeName);
+  }
 
 }

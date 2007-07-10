@@ -416,46 +416,8 @@ public class UMLDefaultHandler
       ValueDomain vd = DomainObjectFactory.newValueDomain();
       vd.setLongName(datatype);
     
-      ValueDomain existingVd = null;  
       if(event.getTypeId() != null) {
-        Map<String, Object> queryFields = 
-          new HashMap<String, Object>();
-        queryFields.put(CadsrModule.PUBLIC_ID, event.getTypeId());
-        queryFields.put(CadsrModule.VERSION, event.getTypeVersion());
-
-        List<ValueDomain> result = null;
-
-        try {
-          result =  new ArrayList<ValueDomain>(cadsrModule.findValueDomain(queryFields));
-        } catch (Exception e){
-          logger.error("Could not query cadsr module ", e);
-        } // end of try-catch
-
-        if(result.size() == 0) {
-          ChangeTracker changeTracker = ChangeTracker.getInstance();
-//         ValidationItems.getInstance()
-//           .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", new String[] 
-//             {event.getClassName() + "." + event.getName(),
-//              ConventionUtil.publicIdVersion(de)}), de));
-
-          ValidationItems.getInstance()
-            .addItem(new ValidationError(PropertyAccessor.getProperty("vd.doesnt.exist", event.getClassName() + "." + event.getName(),
-                event.getTypeId() + "v" + event.getTypeVersion()), de));
-
-        
-          vd.setPublicId(null);
-          vd.setVersion(null);
-          changeTracker.put
-          (event.getClassName() + "." + event.getName(), 
-           true);
-      } else {
-        existingVd = result.get(0);
-      vd.setLongName(existingVd.getLongName());
-      vd.setPublicId(existingVd.getPublicId());
-      vd.setVersion(existingVd.getVersion());
-      vd.setContext(existingVd.getContext());
-      vd.setDataType(existingVd.getDataType());
-      }
+        populateExistingVd(vd, event.getTypeId(), event.getTypeVersion(), event.getClassName() + "." + event.getName());
       }
       
       de.setValueDomain(vd);
@@ -504,6 +466,43 @@ public class UMLDefaultHandler
     elements.addElement(dec);
     elements.addElement(prop);
   }
+
+    private void populateExistingVd(ValueDomain vd, String vdId, Float vdVersion, String attributeName) {
+      Map<String, Object> queryFields =
+        new HashMap<String, Object>();
+      queryFields.put(CadsrModule.PUBLIC_ID, vdId);
+      queryFields.put(CadsrModule.VERSION, vdVersion);
+
+      List<ValueDomain> result = null;
+
+      try {
+        result =  new ArrayList<ValueDomain>(cadsrModule.findValueDomain(queryFields));
+      } catch (Exception e){
+        logger.error("Could not query cadsr module ", e);
+      } // end of try-catch
+
+      if(result.size() == 0) {
+        ChangeTracker changeTracker = ChangeTracker.getInstance();
+
+        ValidationItems.getInstance()
+          .addItem(new ValidationError(PropertyAccessor.getProperty("vd.doesnt.exist", attributeName,
+              vdId + "v" + vdVersion), null));
+
+      
+        vd.setPublicId(null);
+        vd.setVersion(null);
+        changeTracker.put
+        (attributeName, 
+         true);
+      } else {
+        ValueDomain existingVd  = result.get(0);
+        vd.setLongName(existingVd.getLongName());
+        vd.setPublicId(existingVd.getPublicId());
+        vd.setVersion(existingVd.getVersion());
+        vd.setContext(existingVd.getContext());
+        vd.setDataType(existingVd.getDataType());
+      }
+    }
 
   public void newInterface(NewInterfaceEvent event) {
     logger.debug("Interface: " + event.getName());
@@ -614,7 +613,6 @@ public class UMLDefaultHandler
 
   public void newGeneralization(NewGeneralizationEvent event) {
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
-    ObjectClass oc = DomainObjectFactory.newObjectClass();
 
     AlternateName an = DomainObjectFactory.newAlternateName();
     an.setName(event.getParentClassName());
@@ -642,12 +640,6 @@ public class UMLDefaultHandler
       for(DataElement de : des) {
         DataElementConcept dec = de.getDataElementConcept();
         if(dec.getObjectClass() == parentOc) {
-          // We found property belonging to parent
-          // Duplicate it for child.
-//           Property newProp = DomainObjectFactory.newProperty();
-//           newProp.setLongName(dec.getProperty().getLongName());
-//           newProp.setPreferredName(dec.getProperty().getPreferredName());
-
 
           DataElementConcept newDec = DomainObjectFactory.newDataElementConcept();
           newDec.setProperty(dec.getProperty());
@@ -667,8 +659,16 @@ public class UMLDefaultHandler
           newDec.setLongName(className + ":" + propName);		
           DataElement newDe = DomainObjectFactory.newDataElement();
           newDe.setDataElementConcept(newDec);
-          newDe.setValueDomain(de.getValueDomain());
           newDe.setLongName(newDec.getLongName() + " " + de.getValueDomain().getLongName());
+
+          IdVersionPair vdIdVersionPair = event.getTypeMapping(propName);
+          if(vdIdVersionPair != null) {
+            ValueDomain existingVd = DomainObjectFactory.newValueDomain();
+            populateExistingVd(existingVd, vdIdVersionPair.getId(), vdIdVersionPair.getVersion(), className + "." + propName);
+            newDe.setValueDomain(existingVd);
+          } else {
+            newDe.setValueDomain(de.getValueDomain());
+          }
 
           for(Definition def : de.getDefinitions()) {
             if(def.getType().equals(Definition.TYPE_UML_DE)) {
@@ -678,8 +678,6 @@ public class UMLDefaultHandler
               newDe.addDefinition(newDef);
             }
           }
-          
-          
 
           AlternateName fullName = DomainObjectFactory.newAlternateName();
           fullName.setType(AlternateName.TYPE_FULL_NAME);
