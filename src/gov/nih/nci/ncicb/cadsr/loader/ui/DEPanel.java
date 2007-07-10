@@ -55,6 +55,8 @@ public class DEPanel extends JPanel
 
 
   private static final String SEARCH = "SEARCH", CLEAR = "CLEAR";
+
+  private boolean modified = false;
   
   public DEPanel(UMLNode node)  {
     this.node = node;
@@ -105,6 +107,7 @@ public class DEPanel extends JPanel
           JButton button = (JButton)event.getSource();
           if(button.getActionCommand().equals(SEARCH)) {
             CadsrDialog cd = BeansAccessor.getCadsrDEDialog();
+
             // update dialog with current node
             cd.init(node);
             cd.setVisible(true);
@@ -138,6 +141,7 @@ public class DEPanel extends JPanel
 //             firePropertyChangeEvent(
 //                                     new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
 
+            modified = true;
             }
           }
           
@@ -154,6 +158,7 @@ public class DEPanel extends JPanel
               (new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
             
 
+            modified = true;
 //               fireElementChangeEvent(new ElementChangeEvent(node));
                   
           }
@@ -244,6 +249,11 @@ public class DEPanel extends JPanel
   
   public void apply() 
   {
+    if(!modified)
+      return;
+    
+    modified = false;
+    
     de.setLongName(tempDE.getLongName());
     de.setPublicId(tempDE.getPublicId());
     de.setVersion(tempDE.getVersion());
@@ -287,6 +297,12 @@ public class DEPanel extends JPanel
          (tempDE.getDataElementConcept().getObjectClass().getVersion());
        de.getDataElementConcept().getObjectClass().setLongName
          (tempDE.getDataElementConcept().getObjectClass().getLongName());
+
+       de.getDataElementConcept().getProperty().setPublicId
+         (tempDE.getDataElementConcept().getProperty().getPublicId());
+       de.getDataElementConcept().getProperty().setVersion
+         (tempDE.getDataElementConcept().getProperty().getVersion());
+
      } else {
       boolean found = false;
        List<DataElement> des = ElementsLists.getInstance()

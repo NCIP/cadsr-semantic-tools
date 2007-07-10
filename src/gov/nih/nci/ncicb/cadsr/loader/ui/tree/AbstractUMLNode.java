@@ -37,7 +37,7 @@ public abstract class AbstractUMLNode<ParentNode extends UMLNode> implements UML
   
   private Set<ValidationNode> validationNodes = new LinkedHashSet();
 
-  private ParentNode parent;
+  protected ParentNode parent;
 
   protected Object userObject;
 

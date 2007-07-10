@@ -6,6 +6,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -38,9 +39,13 @@ public class VDPanel extends JPanel
   
   private List<PropertyChangeListener> propChangeListeners 
     = new ArrayList<PropertyChangeListener>(); 
+
+  private List<ElementChangeListener> changeListeners 
+    = new ArrayList<ElementChangeListener>();
   
   private ValueDomain tempVD, vd;
   private UMLNode node;
+  private boolean modified = false;
 
   public VDPanel(UMLNode node)
   {
@@ -97,6 +102,8 @@ public class VDPanel extends JPanel
             
             firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
+
+            modified = true;
           }
         }
       }
@@ -114,6 +121,13 @@ public class VDPanel extends JPanel
   
   public void apply() 
   {
+    if(!modified)
+      return;
+    modified = false;
+
+    if(node.getUserObject() instanceof DataElement) 
+      vd = ((DataElement)node.getUserObject()).getValueDomain();
+
     if(tempVD != null) {
       vd.setLongName(tempVD.getLongName());
       vd.setPublicId(tempVD.getPublicId());
@@ -121,6 +135,11 @@ public class VDPanel extends JPanel
       vd.setContext(tempVD.getContext());
       vd.setDataType(tempVD.getDataType());
     }
+    
+    firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
+    firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, true));
+    fireElementChangeEvent(new ElementChangeEvent(node));
+
   }
   
   public void updateNode(UMLNode node) 
@@ -168,13 +187,19 @@ public class VDPanel extends JPanel
   public void addPropertyChangeListener(PropertyChangeListener l) {
     propChangeListeners.add(l);
   }
+  public void addElementChangeListener(ElementChangeListener listener) {
+    changeListeners.add(listener);
+  }
   
   private void firePropertyChangeEvent(PropertyChangeEvent evt) {
     for(PropertyChangeListener l : propChangeListeners) 
       l.propertyChange(evt);
   }
   
-  
+  private void fireElementChangeEvent(ElementChangeEvent event) {
+    for(ElementChangeListener l : changeListeners)
+      l.elementChanged(event);
+  }
   
   private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
     insertInBag(bagComp, comp, x, y, 1, 1);
@@ -187,23 +212,22 @@ public class VDPanel extends JPanel
     bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
 
-  public boolean isMappedToLocalVD() 
-  {
+  public boolean isMappedToLocalVD() {
     if(node.getUserObject() instanceof DataElement) {
-    ValueDomain vd = ((DataElement)node.getUserObject()).getValueDomain();
-    ElementsLists elements = ElementsLists.getInstance();
-    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
-    if(vd.getPublicId() != null)
-      return false;
+      ValueDomain _vd = ((DataElement)node.getUserObject()).getValueDomain();
+      ElementsLists elements = ElementsLists.getInstance();
+      List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+      if(_vd.getPublicId() != null)
+        return false;
       
-    if(vds != null) {
-      for(ValueDomain currentVd : vds) 
-        if(currentVd.getLongName().equals(vd.getLongName()))
-          return true;
-          
-    }
+      if(vds != null) {
+        for(ValueDomain currentVd : vds) 
+          if(currentVd.getLongName().equals(_vd.getLongName()))
+            return true;
+        
+      }
     }
     return false;
   }
-
+  
 }

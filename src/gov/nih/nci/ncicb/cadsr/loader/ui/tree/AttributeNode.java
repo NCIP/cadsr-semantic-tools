@@ -25,21 +25,21 @@ import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-public class AttributeNode extends AbstractUMLNode<ClassNode>
-  implements ReviewableUMLNode
-  {
+// public class AttributeNode extends AbstractUMLNode<ClassNode>
+public class AttributeNode extends AbstractUMLNode<UMLNode>
+  implements ReviewableUMLNode {
   static final Icon REVIEWED_ICON = 
     new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-attribute-checked.gif"));
-
+  
   static final Icon DEFAULT_ICON = 
     new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-attribute.gif"));
-
-
+  
+  
   private boolean reviewed = false;
   
   public AttributeNode(DataElement de) {
     display = de.getDataElementConcept().getProperty().getLongName();
-
+    
     for(AlternateName an : de.getAlternateNames()) {
       if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
         fullPath = an.getName();
@@ -48,20 +48,37 @@ public class AttributeNode extends AbstractUMLNode<ClassNode>
     
     icon = DEFAULT_ICON;
   }
-
+  
   public void setReviewed(boolean currentStatus) {
     reviewed = currentStatus;
-
+    
     setIcon(reviewed?REVIEWED_ICON:DEFAULT_ICON);
-
+    
+    //     UMLNode pNode = (UMLNode)getParent();
+    //     if(pNode instanceof PackageNode)
+    //       pNode = pNode.getParent();
+    
     //calls setReviewed method on parent 
     ClassNode parent = (ClassNode) getParent();
     parent.setReviewed(parent.isReviewed());
-
-
+    
+    
   }
   
   public boolean isReviewed() {
     return reviewed;  
   }
+  
+  public ClassNode getParent() {
+    if(parent instanceof ClassNode)
+      return (ClassNode)parent;
+    else if(parent instanceof PackageNode) {
+      PackageNode packNode = (PackageNode)parent; 
+      return (ClassNode)packNode.getParent();
+    }
+
+    return null;
+  }
+    
+    
 }

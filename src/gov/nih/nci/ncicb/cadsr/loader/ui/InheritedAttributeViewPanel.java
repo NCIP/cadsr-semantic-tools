@@ -60,7 +60,8 @@ public class InheritedAttributeViewPanel extends JPanel
 
 //     conceptEditorPanel.addPropertyChangeListener(buttonPanel);
     dePanel.addPropertyChangeListener(applyButtonPanel);
-//     ocPanel.addPropertyChangeListener(buttonPanel);
+    vdPanel.addPropertyChangeListener(applyButtonPanel);
+    //     ocPanel.addPropertyChangeListener(buttonPanel);
 //     cardPanel = new JPanel();
     initUI();
     updateNode(node);
@@ -110,6 +111,7 @@ public class InheritedAttributeViewPanel extends JPanel
   
   public void addElementChangeListener(ElementChangeListener listener) {
     dePanel.addElementChangeListener(listener);
+    vdPanel.addElementChangeListener(listener);
   }
 
   public void addPropertyChangeListener(PropertyChangeListener l) {
@@ -123,11 +125,16 @@ public class InheritedAttributeViewPanel extends JPanel
 
   public void applyPressed() throws ApplyException
   {
+  
     dePanel.applyPressed();
 //     if(displayedPanel instanceof Editable) 
 //     {
 //      ((Editable)displayedPanel).applyPressed();
 //     }
+    vdPanel.applyPressed();
+
+    updateView();
+
   }
 
 
@@ -155,7 +162,8 @@ public class InheritedAttributeViewPanel extends JPanel
     applyButtonPanel.update();
     
     // need to figure out what goes in next line
-    applyButtonPanel.init(false);
+    applyButtonPanel.init(true);
+
 
     updateView();
     
@@ -269,5 +277,6 @@ public class InheritedAttributeViewPanel extends JPanel
       
     return null;
   }
+
 
 }

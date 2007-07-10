@@ -13,8 +13,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.FreestyleModule;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 
 import java.awt.BorderLayout;
@@ -120,6 +119,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   private static Logger logger = Logger.getLogger(CadsrDialog.class.getName());
   
   private UMLNode node;
+
+  private InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
   
   public CadsrDialog(int runMode)
   {
@@ -423,7 +424,18 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
           boolean excludeRetired = false;
           if(er != null)
             excludeRetired = er;
-          for(SearchResults sr : freestyleModule.findSearchResults(text, excludeRetired)) {
+
+
+          DataElement searchDE = (DataElement)node.getUserObject();
+
+//           for(SearchResults sr : freestyleModule.findSearchResults(text, excludeRetired)) {
+          Property prop = null;
+          if(inheritedList.isInherited(searchDE)) {
+            DataElement parentDE = inheritedList.getParent(searchDE);
+            prop = parentDE.getDataElementConcept().getProperty();
+          }
+
+          for (DataElement de : cadsrModule.findDataElement(queryFields, searchDE.getDataElementConcept().getObjectClass(), prop)) {
             Object[] list = 
               (Object[]) selections.getProperty("exclude.registration.statuses");
             
@@ -438,9 +450,11 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
                 setOfExcluded.add(s);
             }
             
-            if(sr != null)
-              if(!setOfExcluded.contains(sr.getRegistrationStatus()))
-                resultSet.add(new SearchResultWrapper(sr));
+//             if(sr != null)
+//               if(!setOfExcluded.contains(sr.getRegistrationStatus()))
+//                 resultSet.add(new SearchResultWrapper(sr));
+//             if(!setOfExcluded.contains(de.getRegistrationStatus()))
+            resultSet.add(new SearchResultWrapper(de));
           }
           break;
         case MODE_VD:
