@@ -115,19 +115,58 @@ public class CadsrPublicApiModule implements CadsrModule {
     return CadsrTransformer.cdListPublicToPrivate(listResult);
   }
 
-  
+
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement>
-    findDataElement(Map<String, Object> queryFields) throws Exception {
+    findDataElement(Map<String, Object> queryFields, gov.nih.nci.ncicb.cadsr.domain.ObjectClass oc, gov.nih.nci.ncicb.cadsr.domain.Property prop) throws Exception {
     
     gov.nih.nci.cadsr.domain.DataElement searchDE = new gov.nih.nci.cadsr.domain.DataElement();
     
     buildExample(searchDE, queryFields);
 
-    List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.DataElement.class, searchDE)));
     
+    if(oc != null || prop != null) {
+      gov.nih.nci.cadsr.domain.DataElementConcept searchDEC = new gov.nih.nci.cadsr.domain.DataElementConcept();
+      searchDE.setDataElementConcept(searchDEC);
+      
+      if(oc != null) {
+        gov.nih.nci.cadsr.domain.ObjectClass searchOC = new gov.nih.nci.cadsr.domain.ObjectClass();
+        if(oc.getPublicId() != null) {
+          searchOC.setPublicID(new Long(oc.getPublicId()));
+          searchOC.setVersion(new Float(oc.getVersion()));
+          searchDEC.setObjectClass(searchOC);
+        }
+      }
+      if(prop != null) {
+        gov.nih.nci.cadsr.domain.Property searchProp = new gov.nih.nci.cadsr.domain.Property();
+        if(prop.getPublicId() != null) {
+          searchProp.setPublicID(new Long(prop.getPublicId()));
+          searchProp.setVersion(new Float(prop.getVersion()));
+          searchDEC.setProperty(searchProp);
+        }
+      }
+      
+    }
+      
+
+    List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.DataElement.class, searchDE)));
+
+    // STOP !!!!!! next truncate is temporary until we figure out how to handle large size or if we use freestyle
+    //  Following is for testing only !!
+    if(listResult.size() > 20)
+      return CadsrTransformer.deListPublicToPrivate(listResult.subList(0, 20));
+
     return CadsrTransformer.deListPublicToPrivate(listResult);
+
   }
   
+
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement>
+    findDataElement(Map<String, Object> queryFields) throws Exception {
+    
+    return findDataElement(queryFields, null, null);
+    
+  }
+
   private void buildExample(Object o, Map<String, Object> queryFields) {
 
     for(String s : queryFields.keySet()) {
@@ -153,6 +192,7 @@ public class CadsrPublicApiModule implements CadsrModule {
           Method m = o.getClass().getMethod("set" + StringUtil.upperFirst(s), field.getClass());
           m.invoke(o, field); 
         }
+
       } catch(Exception e) {
         e.printStackTrace();
       } // end of try-catch
