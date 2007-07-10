@@ -70,6 +70,17 @@ public class ClassNode extends AbstractUMLNode<PackageNode>
             changeIcon = false;
             break;
           }
+        } else if(l instanceof PackageNode) {
+          for(UMLNode inheritedChild : ((PackageNode)l).getChildren()) {
+            if (inheritedChild instanceof AttributeNode) {
+              AttributeNode next = (AttributeNode) inheritedChild;
+              if(!next.isReviewed()) 
+                {
+                  changeIcon = false;
+                  break;
+                }
+            }
+          }
         }
       }
       
