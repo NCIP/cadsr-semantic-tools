@@ -216,7 +216,7 @@ public class XMIWriter2 implements ElementWriter {
             String [] conceptCodes = dec.getProperty().getPreferredName().split(":");
             addConceptTvs(att, conceptCodes, XMIParser2.TV_TYPE_PROPERTY);
           }
-        } else {
+        } else { // in case of inherited attribute
           ObjectClass oc = de.getDataElementConcept().getObjectClass();
           String fullClassName = LookupUtil.lookupFullName(oc);
           
@@ -233,8 +233,10 @@ public class XMIWriter2 implements ElementWriter {
           if(!StringUtil.isEmpty(de.getPublicId())) {
             clazz.addTaggedValue(XMIParser2.TV_INHERITED_DE_ID.replace("{1}", attributeName), de.getPublicId());
             clazz.addTaggedValue(XMIParser2.TV_INHERITED_DE_VERSION.replace("{1}", attributeName), de.getVersion().toString());
+          } else if(!StringUtil.isEmpty(de.getValueDomain().getPublicId())) {
+            clazz.addTaggedValue(XMIParser2.TV_INHERITED_VD_ID.replace("{1}", attributeName), de.getValueDomain().getPublicId());
+            clazz.addTaggedValue(XMIParser2.TV_INHERITED_VD_VERSION.replace("{1}", attributeName), de.getValueDomain().getVersion().toString());
           }
-
         }
 
       }
@@ -394,7 +396,7 @@ public class XMIWriter2 implements ElementWriter {
   private void markHumanReviewed() throws ParserException {
     try{ 
       List<ObjectClass> ocs = cadsrObjects.getElements(DomainObjectFactory.newObjectClass());
-      List<DataElementConcept> decs = cadsrObjects.getElements(DomainObjectFactory.newDataElementConcept());
+      List<DataElement> des = cadsrObjects.getElements(DomainObjectFactory.newDataElement());
       List<ValueDomain> vds = cadsrObjects.getElements(DomainObjectFactory.newValueDomain());
       List<ObjectClassRelationship> ocrs = cadsrObjects.getElements(DomainObjectFactory.newObjectClassRelationship());
       
@@ -422,28 +424,48 @@ public class XMIWriter2 implements ElementWriter {
         }
       }
 
-      for(DataElementConcept dec : decs) {
-        String fullClassName = null;
-        for(AlternateName an : dec.getObjectClass().getAlternateNames()) {
-          if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
-            fullClassName = an.getName();
-        }
+      InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
+      for(DataElement de : des) {
+        DataElementConcept dec = de.getDataElementConcept();
+
+        String fullClassName = LookupUtil.lookupFullName(de.getDataElementConcept().getObjectClass());
+//         String fullClassName = null;
+//         for(AlternateName an : dec.getObjectClass().getAlternateNames()) {
+//           if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+//             fullClassName = an.getName();
+//         }
         String fullPropName = fullClassName + "." + dec.getProperty().getLongName();
-        
+
+        String attributeName = LookupUtil.lookupFullName(de);
+        attributeName = attributeName.substring(attributeName.lastIndexOf(".") + 1);
+
         Boolean reviewed = ownerReviewTracker.get(fullPropName);
         if(reviewed != null) {
-          UMLAttribute umlAtt = attributeMap.get(fullPropName);
-          umlAtt.removeTaggedValue(XMIParser2.TV_OWNER_REVIEWED);
-          umlAtt.addTaggedValue(XMIParser2.TV_OWNER_REVIEWED,
+          if(!inheritedList.isInherited(de)) {
+            UMLAttribute umlAtt = attributeMap.get(fullPropName);
+            umlAtt.removeTaggedValue(XMIParser2.TV_OWNER_REVIEWED);
+            umlAtt.addTaggedValue(XMIParser2.TV_OWNER_REVIEWED,
                                 reviewed?"1":"0");
+          } else {
+            UMLClass clazz = classMap.get(fullClassName);
+            clazz.removeTaggedValue(XMIParser2.TV_INHERITED_OWNER_REVIEWED.replace("{1}", attributeName));
+            clazz.addTaggedValue(XMIParser2.TV_INHERITED_OWNER_REVIEWED.replace("{1}", attributeName), reviewed?"1":"0");
+          }
         }
 
         reviewed = curatorReviewTracker.get(fullPropName);
         if(reviewed != null) {
-          UMLAttribute umlAtt = attributeMap.get(fullPropName);
-          umlAtt.removeTaggedValue(XMIParser2.TV_CURATOR_REVIEWED);
-          umlAtt.addTaggedValue(XMIParser2.TV_CURATOR_REVIEWED,
+          if(!inheritedList.isInherited(de)) {
+            UMLAttribute umlAtt = attributeMap.get(fullPropName);
+            umlAtt.removeTaggedValue(XMIParser2.TV_CURATOR_REVIEWED);
+            umlAtt.addTaggedValue(XMIParser2.TV_CURATOR_REVIEWED,
                                 reviewed?"1":"0");
+          } else {
+            UMLClass clazz = classMap.get(fullClassName);
+            clazz.removeTaggedValue(XMIParser2.TV_INHERITED_CURATOR_REVIEWED.replace("{1}", attributeName));
+            clazz.addTaggedValue(XMIParser2.TV_INHERITED_CURATOR_REVIEWED.replace("{1}", attributeName), reviewed?"1":"0");
+          }
+            
         }
 
       }

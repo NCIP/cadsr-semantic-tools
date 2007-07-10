@@ -167,6 +167,9 @@ public class XMIParser2 implements Parser {
   //   public static final String TV_HUMAN_REVIEWED = "HUMAN_REVIEWED";
   public static final String TV_OWNER_REVIEWED = "OWNER_REVIEWED";
   public static final String TV_CURATOR_REVIEWED = "CURATOR_REVIEWED";
+
+  public static final String TV_INHERITED_OWNER_REVIEWED = "CADSR_Inherited.{1}.OWNER_REVIEWED";
+  public static final String TV_INHERITED_CURATOR_REVIEWED = "CADSR_Inherited.{1}.CURATOR_REVIEWED";
   
   private int totalNumberOfElements = 0, currentElementIndex = 0;
   private boolean filterClassAndPackages = false;
