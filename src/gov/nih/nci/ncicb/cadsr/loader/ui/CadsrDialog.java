@@ -398,7 +398,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       String selection = (String) searchSourceCombo.getSelectedItem();
       String text = searchField.getText();
 
-      resultSet = new ArrayList();
+      resultSet = new ArrayList<SearchResultWrapper>();
       
       _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       
@@ -485,7 +485,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     else if(button.getActionCommand().equals(SUGGEST)) {
         
         searchField.setText("");
-        resultSet = new ArrayList();
+        resultSet = new ArrayList<SearchResultWrapper>();
         
         ClassNode classNode = (ClassNode)node.getParent();
         AttributeNode attrNode = (AttributeNode)node;
@@ -526,7 +526,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     } else {
       StringBuilder sb = new StringBuilder();
       int start = pageSize * pageIndex;
-      int end = (int)Math.min(resultSet.size(), start + pageSize); 
+      int end = Math.min(resultSet.size(), start + pageSize); 
       sb.append(start);
       sb.append("-");
       sb.append(end);

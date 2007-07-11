@@ -12,7 +12,6 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 
 import java.util.*;
 import javax.swing.*;
@@ -35,14 +34,8 @@ public class InheritedAttributeViewPanel extends JPanel
 
   private UMLNode node;
 
-  private JPanel cardPanel;
-  
-  private JPanel displayedPanel;
-
   static final String DE_PANEL_KEY = "dePanel", 
     VD_PANEL_KEY = "vdPanel";
-    
-  private Map<String, JPanel> panelKeyMap = new HashMap<String, JPanel>();
 
   private ElementsLists elements = ElementsLists.getInstance();
 
@@ -142,7 +135,7 @@ public class InheritedAttributeViewPanel extends JPanel
     
     this.node = node;
     // is UMLNode a de?
-    DataElement de = (DataElement)node.getUserObject();
+//    DataElement de = (DataElement)node.getUserObject();
 
 //     if(!StringUtil.isEmpty(de.getPublicId())) {
 //       switchCards(DE_PANEL_KEY);

@@ -276,8 +276,22 @@ public class XMIParser2 implements Parser {
         for(UMLAttribute parentAtt : parentClass.getAttributes()) {
           String attName = parentAtt.getName();
 
-          // get inherited vd mapping
-          UMLTaggedValue idTv  = subClass.getTaggedValue(TV_INHERITED_VD_ID.replace("{1}", attName));
+          // get inherited CDE mapping
+          UMLTaggedValue idTv  = subClass.getTaggedValue(TV_INHERITED_DE_ID.replace("{1}", attName));
+          if(idTv != null) {
+            UMLTaggedValue versionTv  = subClass.getTaggedValue(TV_INHERITED_DE_VERSION.replace("{1}", attName));
+            if(versionTv != null) {
+              try {
+                IdVersionPair idVersionPair = new IdVersionPair(idTv.getValue(), new Float(versionTv.getValue()));
+                gEvent.addPersistenceMapping(attName, idVersionPair);
+              } catch (NumberFormatException e){
+                logger.warn(PropertyAccessor.getProperty("version.numberFormatException", versionTv.getValue()));
+              }
+            }
+          }
+
+          // get inherited VD mapping
+          idTv  = subClass.getTaggedValue(TV_INHERITED_VD_ID.replace("{1}", attName));
           if(idTv != null) {
             UMLTaggedValue versionTv  = subClass.getTaggedValue(TV_INHERITED_VD_VERSION.replace("{1}", attName));
             if(versionTv != null) {

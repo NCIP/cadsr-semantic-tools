@@ -1,5 +1,5 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
-import gov.nih.nci.ncicb.cadsr.dao.DataElementDAO;
+
 import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
@@ -44,8 +44,6 @@ public class DEPanel extends JPanel
 
   private DataElement tempDE, de;
   private UMLNode node;
-
-  private DataElement nodeDe;
 
   private List<PropertyChangeListener> propChangeListeners 
     = new ArrayList<PropertyChangeListener>();  
