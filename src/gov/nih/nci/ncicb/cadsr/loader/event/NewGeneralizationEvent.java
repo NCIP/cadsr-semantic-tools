@@ -32,6 +32,7 @@ public class NewGeneralizationEvent implements LoaderEvent {
   private String childClassName;
 
   private Map<String, IdVersionPair> typeMappings = new HashMap<String, IdVersionPair>();
+  private Map<String, Boolean> reviews = new HashMap<String, Boolean>();
 
   /**
    * Get the ParentClassName value.
@@ -73,6 +74,14 @@ public class NewGeneralizationEvent implements LoaderEvent {
 
   public IdVersionPair getTypeMapping(String attributeName) {
     return typeMappings.get(attributeName);
+  }
+
+  public void addReview(String attributeName, Boolean b) {
+    reviews.put(attributeName, b);
+  }
+
+  public Boolean getReview(String attributeName) {
+    return reviews.get(attributeName);
   }
 
 }

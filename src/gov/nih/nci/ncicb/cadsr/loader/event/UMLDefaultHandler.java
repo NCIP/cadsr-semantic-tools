@@ -34,13 +34,12 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
 
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTrackerType;
-import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationError;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
 
 /**
  * This class implements UMLHandler specifically to handle UML events and 
- * convert them into caDSR objects.<br/> The handler's responsibility is to 
+ * convert them into caDSR objects.<br> The handler's responsibility is to 
  * transform events received into cadsr domain objects, and store those objects 
  * in the Elements List.
  *
@@ -136,7 +135,7 @@ public class UMLDefaultHandler
     ClassSchemeClassSchemeItem csCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
     csCsi.setCsi(csi);
     acCsCsi.setCsCsi(csCsi);
-    List l = new ArrayList();
+    List<AdminComponentClassSchemeClassSchemeItem> l = new ArrayList<AdminComponentClassSchemeClassSchemeItem>();
     l.add(acCsCsi);
     vd.setAcCsCsis(l);
 
@@ -265,7 +264,7 @@ public class UMLDefaultHandler
     ClassSchemeClassSchemeItem csCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
     csCsi.setCsi(csi);
     acCsCsi.setCsCsi(csCsi);
-    List l = new ArrayList();
+    List<AdminComponentClassSchemeClassSchemeItem> l = new ArrayList<AdminComponentClassSchemeClassSchemeItem>();
     l.add(acCsCsi);
     oc.setAcCsCsis(l);
 
@@ -326,7 +325,7 @@ public class UMLDefaultHandler
       }
     } 
 
-    List concepts = createConcepts(event);
+    List<Concept> concepts = createConcepts(event);
     
     Property prop = DomainObjectFactory.newProperty();
 
@@ -670,6 +669,12 @@ public class UMLDefaultHandler
             newDe.setValueDomain(de.getValueDomain());
           }
 
+          
+          Boolean isReviewed = event.getReview(propName);
+          if(isReviewed != null)
+            reviewTracker.put(event.getChildClassName() + "." + propName, isReviewed);
+          
+
           for(Definition def : de.getDefinitions()) {
             if(def.getType().equals(Definition.TYPE_UML_DE)) {
               Definition newDef = DomainObjectFactory.newDefinition();
@@ -690,6 +695,8 @@ public class UMLDefaultHandler
           fullName.setType(AlternateName.TYPE_UML_DE);
           fullName.setName(className + ":" + propName);
           newDe.addAlternateName(fullName);
+
+
 
 //           for(Iterator it2 = de.getAlternateNames().iterator(); it2.hasNext();) {
 //             AlternateName an = (AlternateName)it2.next();
@@ -757,20 +764,20 @@ public class UMLDefaultHandler
   }
 
 
-  private void verifyConcepts(AdminComponent cause, List concepts) {
-    for(Iterator it = concepts.iterator(); it.hasNext(); ) {
-      Concept concept = (Concept)it.next();
-      if(StringUtil.isEmpty(concept.getPreferredName())) {
-        ValidationItems.getInstance()
-          .addItem(new ValidationError(
-                                       PropertyAccessor.getProperty("validation.concept.missing.for", cause.getLongName()),
-                                       cause));
-//         elements.addElement(new ConceptError(
-//                        ConceptError.SEVERITY_ERROR,
-//                        PropertyAccessor.getProperty("validation.concept.missing.for", eltName)));
-      }
-    }
-  }
+//  private void verifyConcepts(AdminComponent cause, List concepts) {
+//    for(Iterator it = concepts.iterator(); it.hasNext(); ) {
+//      Concept concept = (Concept)it.next();
+//      if(StringUtil.isEmpty(concept.getPreferredName())) {
+//        ValidationItems.getInstance()
+//          .addItem(new ValidationError(
+//                                       PropertyAccessor.getProperty("validation.concept.missing.for", cause.getLongName()),
+//                                       cause));
+////         elements.addElement(new ConceptError(
+////                        ConceptError.SEVERITY_ERROR,
+////                        PropertyAccessor.getProperty("validation.concept.missing.for", eltName)));
+//      }
+//    }
+//  }
 
   public void setCadsrModule(CadsrModule module) {
     this.cadsrModule = module;

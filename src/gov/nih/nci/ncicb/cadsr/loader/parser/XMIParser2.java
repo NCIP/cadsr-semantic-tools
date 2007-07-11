@@ -62,7 +62,7 @@ public class XMIParser2 implements Parser {
   Map<String, NewGeneralizationEvent> childGeneralizationMap = 
     new HashMap<String, NewGeneralizationEvent>();
 
-  private String reviewTag = null;
+  private String reviewTag = null, inheritedReviewTag = null;
   
   private ProgressListener progressListener = null;
 
@@ -197,8 +197,10 @@ public class XMIParser2 implements Parser {
       RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
       if(runMode.equals(RunMode.Curator) || (runMode.equals(RunMode.GenerateReport))) {
         reviewTag = TV_CURATOR_REVIEWED;
+        inheritedReviewTag = TV_INHERITED_CURATOR_REVIEWED;
       } else {
         reviewTag = TV_OWNER_REVIEWED;
+        inheritedReviewTag = TV_INHERITED_OWNER_REVIEWED;
       }
 
       FilterPackage p = new FilterPackage("");
@@ -286,6 +288,12 @@ public class XMIParser2 implements Parser {
                 logger.warn(PropertyAccessor.getProperty("version.numberFormatException", versionTv.getValue()));
               }
             }
+          }
+
+          // get reviews
+          UMLTaggedValue reviewTv = subClass.getTaggedValue(inheritedReviewTag.replace("{1}", attName));
+          if(reviewTv != null) {
+            gEvent.addReview(attName, reviewTv.getValue().equals("1")?true:false);
           }
           
         }
