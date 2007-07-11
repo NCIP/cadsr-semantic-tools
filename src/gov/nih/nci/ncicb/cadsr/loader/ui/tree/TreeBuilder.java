@@ -179,63 +179,72 @@ public class TreeBuilder implements UserPreferencesListener {
     // Find all DEs that have this OC.
     DataElement o = DomainObjectFactory.newDataElement();
     List<DataElement> des = elements.getElements(o);
-    List<UMLNode> inherited = new ArrayList();
+    List<AttributeNode> inherited = new ArrayList<AttributeNode>();
     PackageNode inheritedPackage = new PackageNode("Inherited Attributes", "Inherited Attributes");
+
+    InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
     
-      for(DataElement de : des) {
-        try {
-          String fullClassName = null;
-          for(AlternateName an : de.getDataElementConcept().getObjectClass().getAlternateNames()) {
-            if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
-              fullClassName = an.getName();
-          }
-
-          if(fullClassName.equals(parentNode.getFullPath())) {
-            UMLNode node = new AttributeNode(de);
-
+    for(DataElement de : des) {
+      try {
+        String fullClassName = null;
+        for(AlternateName an : de.getDataElementConcept().getObjectClass().getAlternateNames()) {
+          if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
+            fullClassName = an.getName();
+        }
+        
+        if(fullClassName.equals(parentNode.getFullPath())) {
+          UMLNode node = new AttributeNode(de);
           
-            Boolean reviewed = reviewTracker.get(node.getFullPath());
-            if(reviewed != null) {
-              parentNode.addChild(node);
-              ((AttributeNode) node).setReviewed(reviewed);
+          
+          Boolean reviewed = reviewTracker.get(node.getFullPath());
+          
+          if(inheritedList.isInherited(de)) {
+            node = new InheritedAttributeNode(de);
+            inherited.add((InheritedAttributeNode)node);
+          } else {
+            parentNode.addChild(node);
+            ((AttributeNode) node).setReviewed(reviewed);
+          }            
+
+          List<ValidationItem> items = findValidationItems(de.getDataElementConcept().getProperty());
+          for(ValidationItem item : items) {
+            ValidationNode vNode = null;
+            if (item instanceof ValidationWarning) {
+              vNode = new WarningNode(item);
+            } else {
+              vNode = new ErrorNode(item);
             }
-            else {
-              node = new InheritedAttributeNode(de);
-              inherited.add(node);
-            }
-            
-            List<ValidationItem> items = findValidationItems(de.getDataElementConcept().getProperty());
-            for(ValidationItem item : items) {
-              ValidationNode vNode = null;
-              if (item instanceof ValidationWarning) {
-                vNode = new WarningNode(item);
-              } else {
-                vNode = new ErrorNode(item);
-              }
-              node.addValidationNode(vNode);
-            }
-            items = findValidationItems(de);
-            for(ValidationItem item : items) {
-              ValidationNode vNode = null;
-              if (item instanceof ValidationWarning) {
-                vNode = new WarningNode(item);
-              } else {
-                vNode = new ErrorNode(item);
-              }
-              node.addValidationNode(vNode);
-            }
+            node.addValidationNode(vNode);
           }
-        } catch (NullPointerException e){
-          e.printStackTrace();
-        } // end of try-catch
+          items = findValidationItems(de);
+          for(ValidationItem item : items) {
+            ValidationNode vNode = null;
+            if (item instanceof ValidationWarning) {
+              vNode = new WarningNode(item);
+            } else {
+              vNode = new ErrorNode(item);
+            }
+            node.addValidationNode(vNode);
+          }
+        }
+      } catch (NullPointerException e){
+        e.printStackTrace();
+      } // end of try-catch
+    }
+
+    if(inherited.size() > 0)
+      parentNode.addChild(inheritedPackage);
+
+    if(showInheritedAttributes) {
+      for(AttributeNode inherit : inherited) {
+        inheritedPackage.addChild(inherit);
+        Boolean reviewed = reviewTracker.get(inherit.getFullPath());
+        inherit.setReviewed(reviewed);
       }
-      if(showInheritedAttributes) {
-        for(UMLNode inherit : inherited)
-          inheritedPackage.addChild(inherit);
-      }
-      
-      if(inheritedPackage.getChildren().size() > 0)
-        parentNode.addChild(inheritedPackage);
+    }
+    
+    
+    
   }
 
   private void doValueDomains(UMLNode parentNode) {
