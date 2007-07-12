@@ -11,6 +11,8 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
+
 import java.beans.PropertyChangeListener;
 
 import java.util.*;
@@ -39,6 +41,8 @@ public class InheritedAttributeViewPanel extends JPanel
 
   private ElementsLists elements = ElementsLists.getInstance();
 
+  private UserPreferences prefs = UserPreferences.getInstance();
+
   public InheritedAttributeViewPanel(UMLNode node) 
   {
     this.node = node;
@@ -66,8 +70,16 @@ public class InheritedAttributeViewPanel extends JPanel
 
     JPanel editPanel = new JPanel();
     editPanel.setLayout(new GridBagLayout());
-    insertInBag(editPanel, dePanel, 0, 0);
-    insertInBag(editPanel, vdPanel, 0, 1);
+
+    if(prefs.getUmlDescriptionOrder().equals("first"))
+      insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 0);
+    else
+      insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 3); 
+
+    insertInBag(editPanel, dePanel, 0, 1);
+    insertInBag(editPanel, vdPanel, 0, 2);
+
+//     if(prefs.getUmlDescriptionOrder().equals("last"))
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); 

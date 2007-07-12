@@ -331,7 +331,7 @@ public class ConceptEditorPanel extends JPanel
     JPanel[] conceptPanels = new JPanel[concepts.length];
 
     if(prefs.getUmlDescriptionOrder().equals("first"))
-      insertInBag(gridPanel, createDescriptionPanel(), 0, 0);
+      insertInBag(gridPanel, UIUtil.createDescriptionPanel(node), 0, 0);
 
     boolean primaryConceptFirst = prefs.getOrderOfConcepts().equalsIgnoreCase("first");
     
@@ -494,11 +494,11 @@ public class ConceptEditorPanel extends JPanel
     UserSelections selections = UserSelections.getInstance();
     if(node.getUserObject() instanceof DataElement
       && !selections.getProperty("MODE").equals(RunMode.Curator))
-      insertInBag(gridPanel, vdPanel, 0, concepts.length + 2);
+      insertInBag(gridPanel, vdPanel, 0, concepts.length + 1);
     updateHeaderLabels();
     
     if(prefs.getUmlDescriptionOrder().equals("last"))
-      insertInBag(gridPanel, createDescriptionPanel(), 0, concepts.length + 1); 
+      insertInBag(gridPanel, UIUtil.createDescriptionPanel(node), 0, concepts.length + 2); 
 
     this.add(scrollPane, BorderLayout.CENTER);
     
@@ -521,55 +521,6 @@ public class ConceptEditorPanel extends JPanel
     nameLabel.setText(s);
   }
   
-  private JPanel createDescriptionPanel() {
-    JPanel umlPanel = new JPanel();
-
-    String s = "UML Class Documentation";
-    Object o = node.getUserObject();
-    if(node instanceof AttributeNode) {
-      s = "UML Attribute Description";
-    } else if(node instanceof ValueMeaningNode) {
-      s = "UML ValueMeaning Description";
-    }
-    
-    umlPanel.setBorder
-      (BorderFactory.createTitledBorder(s));   
-    umlPanel.setLayout(new BorderLayout());
-
-    JTextArea descriptionArea = new JTextArea(5, 54);
-    JScrollPane descScrollPane = new JScrollPane(descriptionArea);
-
-    if(node instanceof ClassNode) {
-      ObjectClass oc = (ObjectClass) node.getUserObject();
-      descriptionArea.setText(oc.getPreferredDefinition());
-    } else if(node instanceof AttributeNode) {
-      DataElement de = (DataElement) node.getUserObject();
-
-      for(Definition def : (List<Definition>) de.getDefinitions()) {
-        descriptionArea.setText(def.getDefinition());
-        break;
-      }
-    } else if(node instanceof ValueMeaningNode) {
-      ValueMeaning vm = (ValueMeaning)node.getUserObject();
-      for(Definition def :  vm.getDefinitions()) {
-        descriptionArea.setText(def.getDefinition());
-        break;
-      }
-    }
-
-    descriptionArea.setLineWrap(true);
-    descriptionArea.setEditable(false);
-    
-    if(StringUtil.isEmpty(descriptionArea.getText())) 
-    {
-      umlPanel.setVisible(false);
-    }
-
-    umlPanel.add(descScrollPane, BorderLayout.CENTER);
-    
-    return umlPanel;
- 
-  }
   
   public void applyPressed() throws ApplyException {
     updateHeaderLabels();
