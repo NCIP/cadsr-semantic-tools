@@ -21,8 +21,7 @@ package gov.nih.nci.ncicb.cadsr.loader.parser;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.*;
-import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
-import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.NewConceptEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
@@ -128,6 +127,7 @@ public class RoundtripWriter2 implements ElementWriter {
     if(progressListener != null)
       progressListener.newProgressEvent(pEvt);
       
+    InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
 
     for(DataElement de : des) {
       pEvt.setStatus(pEvt.getStatus() + 1);
@@ -142,27 +142,46 @@ public class RoundtripWriter2 implements ElementWriter {
           fullPropName = an.getName();
       }
         
-      UMLAttribute att = attributeMap.get(fullPropName);
-      if(att == null) {
-        logger.info("Parser Can't find attribute: " + fullPropName + "\n Probably inherited. That should be ok.");
-        continue;
-      }
+      if(!inheritedList.isInherited(de)) {
+        UMLAttribute att = attributeMap.get(fullPropName);
+        if(att == null) {
+          logger.info("Parser Can't find attribute: " + fullPropName + "\n Probably inherited. That should be ok.");
+          continue;
+        }
         
-      // remove all TVs for DE_ID and Version
-      Collection<UMLTaggedValue> allTvs = att.getTaggedValues();
-      for(UMLTaggedValue tv : allTvs) {
-        if(tv.getName().startsWith("CADSR_DE"))
-          att.removeTaggedValue(tv.getName());
+        // remove all TVs for DE_ID and Version
+        Collection<UMLTaggedValue> allTvs = att.getTaggedValues();
+        for(UMLTaggedValue tv : allTvs) {
+          if(tv.getName().startsWith("CADSR_DE"))
+            att.removeTaggedValue(tv.getName());
+        }
+        
+        if(!StringUtil.isEmpty(de.getPublicId())) {
+          
+          att.addTaggedValue(XMIParser2.TV_DE_ID,
+                             de.getPublicId());
+          att.addTaggedValue(XMIParser2.TV_DE_VERSION,
+                             de.getVersion().toString());
+        }
+      } else { // in case of inherited attribute
+        ObjectClass oc = de.getDataElementConcept().getObjectClass();
+        String fullClassName = LookupUtil.lookupFullName(oc);
+          
+        UMLClass clazz = classMap.get(fullClassName);
+        
+        String attributeName = LookupUtil.lookupFullName(de);
+        attributeName = attributeName.substring(attributeName.lastIndexOf(".") + 1);
+          
+        if(!StringUtil.isEmpty(de.getPublicId())) {
+          clazz.removeTaggedValue(XMIParser2.TV_INHERITED_DE_ID.replace("{1}", attributeName));
+          clazz.removeTaggedValue(XMIParser2.TV_INHERITED_DE_VERSION.replace("{1}", attributeName));
+          clazz.removeTaggedValue(XMIParser2.TV_INHERITED_VD_ID.replace("{1}", attributeName));
+          clazz.removeTaggedValue(XMIParser2.TV_INHERITED_VD_VERSION.replace("{1}", attributeName));
+          
+          clazz.addTaggedValue(XMIParser2.TV_INHERITED_DE_ID.replace("{1}", attributeName), de.getPublicId());
+          clazz.addTaggedValue(XMIParser2.TV_INHERITED_DE_VERSION.replace("{1}", attributeName), de.getVersion().toString());
+        }
       }
-
-      if(!StringUtil.isEmpty(de.getPublicId())) {
-
-        att.addTaggedValue(XMIParser2.TV_DE_ID,
-                           de.getPublicId());
-        att.addTaggedValue(XMIParser2.TV_DE_VERSION,
-                           de.getVersion().toString());
-      }
-
     }
 
   }
