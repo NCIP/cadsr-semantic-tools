@@ -65,7 +65,6 @@ public class UMLLoaderGUI
   }
 
   public void start() {
-
     InitClass initClass = new InitClass(this);
     Thread t = new Thread(initClass);
     t.setPriority(Thread.MIN_PRIORITY);
