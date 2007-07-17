@@ -82,7 +82,7 @@ public class VDPanel extends JPanel
 
     
     searchVdButton.setActionCommand(SEARCH);
-    searchVdButton.setVisible(inheritedAttributes.isInherited(de) ||  !isMappedToLocalVD());
+    searchVdButton.setVisible(!isMappedToLocalVD(de));
       
     searchVdButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
@@ -153,7 +153,7 @@ public class VDPanel extends JPanel
     if(node.getUserObject() instanceof DataElement) {
       DataElement de = (DataElement)node.getUserObject();
       vd = de.getValueDomain();
-      searchVdButton.setVisible(inheritedAttributes.isInherited(de) ||!isMappedToLocalVD());
+      searchVdButton.setVisible(!isMappedToLocalVD(de));
       
       vdLongNameValueLabel.setText(vd.getLongName()); 
       
@@ -218,20 +218,23 @@ public class VDPanel extends JPanel
     bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
 
-  public boolean isMappedToLocalVD() {
-    if(node.getUserObject() instanceof DataElement) {
-      ValueDomain _vd = ((DataElement)node.getUserObject()).getValueDomain();
-      ElementsLists elements = ElementsLists.getInstance();
-      List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
-      if(_vd.getPublicId() != null)
-        return false;
-      
-      if(vds != null) {
-        for(ValueDomain currentVd : vds) 
-          if(currentVd.getLongName().equals(_vd.getLongName()))
+  public boolean isMappedToLocalVD(DataElement de) {
+    ValueDomain _vd = de.getValueDomain();
+    ElementsLists elements = ElementsLists.getInstance();
+    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+    if(_vd.getPublicId() != null)
+      return false;
+    
+    if(vds != null) {
+      for(ValueDomain currentVd : vds) 
+        if(currentVd.getLongName().equals(_vd.getLongName())) {
+          if(inheritedAttributes.isInherited(de)) { 
+            DataElement parentDE = inheritedAttributes.getParent(de);
+            return !de.getValueDomain().getLongName().equals(parentDE.getValueDomain().getLongName());
+          } else
             return true;
-        
-      }
+        }
+      
     }
     return false;
   }
