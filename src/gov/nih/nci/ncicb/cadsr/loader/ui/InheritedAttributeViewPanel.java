@@ -43,6 +43,8 @@ public class InheritedAttributeViewPanel extends JPanel
 
   private UserPreferences prefs = UserPreferences.getInstance();
 
+  private InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
+
   public InheritedAttributeViewPanel(UMLNode node) 
   {
     this.node = node;
@@ -191,16 +193,30 @@ public class InheritedAttributeViewPanel extends JPanel
     AttributeNode parentNode = findSuper(className, attributeName, rootNode);
 
     DataElement de = (DataElement)node.getUserObject();
-    DataElement parentDE = (DataElement)parentNode.getUserObject();
+    DataElement parentDE = inheritedAttributes.getParent(de);
+      // (DataElement)parentNode.getUserObject();
       
-    if (parentNode != null) {
-
-      if(StringUtil.isEmpty(parentDE.getPublicId())) {
-        dePanel.setVisible(false);
-      } else {
-        dePanel.setVisible(true);
-      }
+    // we only show dePanel 
+    // if parent is mapped to DE or
+    // if parent has no concept mapping or
+    // if de is already mapped
+    if(parentDE != null) {
+      dePanel.setVisible(
+        !vdPanel.isMappedToLocalVD(de) 
+        &&
+        ( !StringUtil.isEmpty(parentDE.getPublicId())
+          || !StringUtil.isEmpty(de.getPublicId())
+          || StringUtil.isEmpty(parentDE.getDataElementConcept().getProperty().getPreferredName()) 
+          ));
     }
+    
+//     if (parentNode != null) {
+//       if(StringUtil.isEmpty(parentDE.getPublicId())) {
+//         dePanel.setVisible(false);
+//       } else {
+//         dePanel.setVisible(true);
+//       }
+//     }
 
     if(StringUtil.isEmpty(de.getPublicId())) {
       vdPanel.setVisible(true);
