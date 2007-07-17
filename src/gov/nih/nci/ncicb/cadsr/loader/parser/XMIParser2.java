@@ -255,65 +255,7 @@ public class XMIParser2 implements Parser {
       }
 
       for (UMLGeneralization g : model.getGeneralizations()) {
-        UMLClass parentClass = g.getSupertype();
-
-        UMLClass subClass = g.getSubtype();
-        // Check if the parent is not explicitely excluded.
-        String ppName = getPackageName(parentClass.getPackage());
-        if(StringUtil.isEmpty(ppName) || !isInPackageFilter(ppName)) {
-          logger.info(PropertyAccessor.getProperty("skip.inheritance", ppName + "." + parentClass.getName(), getPackageName(subClass.getPackage()) + "." + subClass.getName()));
-          continue;
-        }
-
-        NewGeneralizationEvent gEvent = new NewGeneralizationEvent();
-        gEvent.setParentClassName(
-          getPackageName(parentClass.getPackage()) + "." + parentClass.getName());
-
-        gEvent.setChildClassName(
-          getPackageName(subClass.getPackage()) + "." + subClass.getName());
-
-        // find all inherited mappings 
-        for(UMLAttribute parentAtt : parentClass.getAttributes()) {
-          String attName = parentAtt.getName();
-
-          // get inherited CDE mapping
-          UMLTaggedValue idTv  = subClass.getTaggedValue(TV_INHERITED_DE_ID.replace("{1}", attName));
-          if(idTv != null) {
-            UMLTaggedValue versionTv  = subClass.getTaggedValue(TV_INHERITED_DE_VERSION.replace("{1}", attName));
-            if(versionTv != null) {
-              try {
-                IdVersionPair idVersionPair = new IdVersionPair(idTv.getValue(), new Float(versionTv.getValue()));
-                gEvent.addPersistenceMapping(attName, idVersionPair);
-              } catch (NumberFormatException e){
-                logger.warn(PropertyAccessor.getProperty("version.numberFormatException", versionTv.getValue()));
-              }
-            }
-          }
-
-          // get inherited VD mapping
-          idTv  = subClass.getTaggedValue(TV_INHERITED_VD_ID.replace("{1}", attName));
-          if(idTv != null) {
-            UMLTaggedValue versionTv  = subClass.getTaggedValue(TV_INHERITED_VD_VERSION.replace("{1}", attName));
-            if(versionTv != null) {
-              try {
-                IdVersionPair idVersionPair = new IdVersionPair(idTv.getValue(), new Float(versionTv.getValue()));
-                gEvent.addTypeMapping(attName, idVersionPair);
-              } catch (NumberFormatException e){
-                logger.warn(PropertyAccessor.getProperty("version.numberFormatException", versionTv.getValue()));
-              }
-            }
-          }
-
-          // get reviews
-          UMLTaggedValue reviewTv = subClass.getTaggedValue(inheritedReviewTag.replace("{1}", attName));
-          if(reviewTv != null) {
-            gEvent.addReview(attName, reviewTv.getValue().equals("1")?true:false);
-          }
-          
-        }
-
-        childGeneralizationMap.put(gEvent.getChildClassName(), gEvent);
-
+        doGeneralization(g);
       }
       
       fireLastEvents();
@@ -325,6 +267,73 @@ public class XMIParser2 implements Parser {
     catch (Exception e) {
       throw new ParserException(e);
     } // end of try-catch
+  }
+
+  private void doGeneralization(UMLGeneralization g) {
+    UMLClass parentClass = g.getSupertype();
+    
+    UMLClass subClass = g.getSubtype();
+    // Check if the parent is not explicitely excluded.
+    String ppName = getPackageName(parentClass.getPackage());
+    if(StringUtil.isEmpty(ppName) || !isInPackageFilter(ppName)) {
+      logger.info(PropertyAccessor.getProperty("skip.inheritance", ppName + "." + parentClass.getName(), getPackageName(subClass.getPackage()) + "." + subClass.getName()));
+      return;
+    }
+    
+    NewGeneralizationEvent gEvent = new NewGeneralizationEvent();
+    gEvent.setParentClassName(
+      getPackageName(parentClass.getPackage()) + "." + parentClass.getName());
+    
+    gEvent.setChildClassName(
+      getPackageName(subClass.getPackage()) + "." + subClass.getName());
+    
+    // find all inherited mappings 
+    for(UMLAttribute parentAtt : parentClass.getAttributes()) {
+      String attName = parentAtt.getName();
+
+      // get inherited Local VD mapping
+      UMLTaggedValue localVDTv = subClass.getTaggedValue(TV_INHERITED_VALUE_DOMAIN.replace("{1}", attName));
+      if(localVDTv != null) {
+        gEvent.addDatatypeMapping(attName, localVDTv.getValue());
+      }
+
+      // get inherited CDE mapping
+      UMLTaggedValue idTv  = subClass.getTaggedValue(TV_INHERITED_DE_ID.replace("{1}", attName));
+      if(idTv != null) {
+        UMLTaggedValue versionTv  = subClass.getTaggedValue(TV_INHERITED_DE_VERSION.replace("{1}", attName));
+        if(versionTv != null) {
+          try {
+            IdVersionPair idVersionPair = new IdVersionPair(idTv.getValue(), new Float(versionTv.getValue()));
+            gEvent.addPersistenceMapping(attName, idVersionPair);
+          } catch (NumberFormatException e){
+            logger.warn(PropertyAccessor.getProperty("version.numberFormatException", versionTv.getValue()));
+          }
+        }
+      }
+      
+      // get inherited VD mapping
+      idTv  = subClass.getTaggedValue(TV_INHERITED_VD_ID.replace("{1}", attName));
+      if(idTv != null) {
+        UMLTaggedValue versionTv  = subClass.getTaggedValue(TV_INHERITED_VD_VERSION.replace("{1}", attName));
+        if(versionTv != null) {
+          try {
+            IdVersionPair idVersionPair = new IdVersionPair(idTv.getValue(), new Float(versionTv.getValue()));
+            gEvent.addTypeMapping(attName, idVersionPair);
+          } catch (NumberFormatException e){
+            logger.warn(PropertyAccessor.getProperty("version.numberFormatException", versionTv.getValue()));
+          }
+        }
+      }
+      
+      // get reviews
+      UMLTaggedValue reviewTv = subClass.getTaggedValue(inheritedReviewTag.replace("{1}", attName));
+      if(reviewTv != null) {
+        gEvent.addReview(attName, reviewTv.getValue().equals("1")?true:false);
+      }
+      
+    }
+    
+    childGeneralizationMap.put(gEvent.getChildClassName(), gEvent);
   }
 
   private int countNumberOfElements(UMLModel model) {

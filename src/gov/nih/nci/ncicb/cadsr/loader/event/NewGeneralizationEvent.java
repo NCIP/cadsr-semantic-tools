@@ -31,7 +31,9 @@ public class NewGeneralizationEvent implements LoaderEvent {
   private String parentClassName;
   private String childClassName;
 
+  private Map<String, String> datatypeMappings = new HashMap<String, String>();
   private Map<String, IdVersionPair> typeMappings = new HashMap<String, IdVersionPair>();
+  private Map<String, IdVersionPair> persistenceMappings = new HashMap<String, IdVersionPair>();
   private Map<String, Boolean> reviews = new HashMap<String, Boolean>();
 
   /**
@@ -67,6 +69,13 @@ public class NewGeneralizationEvent implements LoaderEvent {
     this.parentClassName = newParentClassName;
   }
 
+  public void addDatatypeMapping(String attributeName, String datatype) {
+    datatypeMappings.put(attributeName, datatype);
+  }
+
+  public String getDatatypeMapping(String attributeName) {
+    return datatypeMappings.get(attributeName);
+  }
 
   public void addTypeMapping(String attributeName, IdVersionPair idVersionPair) {
     typeMappings.put(attributeName, idVersionPair);
@@ -74,6 +83,14 @@ public class NewGeneralizationEvent implements LoaderEvent {
 
   public IdVersionPair getTypeMapping(String attributeName) {
     return typeMappings.get(attributeName);
+  }
+
+  public void addPersistenceMapping(String attributeName, IdVersionPair idVersionPair) {
+    persistenceMappings.put(attributeName, idVersionPair);
+  }
+
+  public IdVersionPair getPersistenceMapping(String attributeName) {
+    return persistenceMappings.get(attributeName);
   }
 
   public void addReview(String attributeName, Boolean b) {

@@ -290,39 +290,7 @@ public class UMLDefaultHandler
     // populate if there is valid existing mapping
     DataElement existingDe = null;
     if(event.getPersistenceId() != null) {
-      Map<String, Object> queryFields = 
-        new HashMap<String, Object>();
-      queryFields.put(CadsrModule.PUBLIC_ID, event.getPersistenceId());
-      queryFields.put(CadsrModule.VERSION, event.getPersistenceVersion());
-
-      List<DataElement> result = null;
-
-      try {
-        result =  new ArrayList<DataElement>(cadsrModule.findDataElement(queryFields));
-      } catch (Exception e){
-        logger.error("Could not query cadsr module ", e);
-      } // end of try-catch
-
-      if(result.size() == 0) {
-        ChangeTracker changeTracker = ChangeTracker.getInstance();
-//         ValidationItems.getInstance()
-//           .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", new String[] 
-//             {event.getClassName() + "." + event.getName(),
-//              ConventionUtil.publicIdVersion(de)}), de));
-
-        ValidationItems.getInstance()
-          .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", event.getClassName() + "." + event.getName(),
-               event.getPersistenceId() + "v" + event.getPersistenceVersion()), de));
-
-        
-        de.setPublicId(null);
-        de.setVersion(null);
-        changeTracker.put
-          (event.getClassName() + "." + event.getName(), 
-           true);
-      } else {
-        existingDe = result.get(0);
-      }
+      existingDe = findExistingDe(event.getPersistenceId(), event.getPersistenceVersion(), de, event.getClassName(), event.getName());
     } 
 
     List<Concept> concepts = createConcepts(event);
@@ -361,52 +329,17 @@ public class UMLDefaultHandler
         oc = o;
       }
     }
+
+    dec.setObjectClass(oc);
     
     if(existingDe != null) {
-      if(oc.getPublicId() != null) {
-        // Verify conflicts
-
-        if(!existingDe.getDataElementConcept().getObjectClass().getPublicId().equals(oc.getPublicId()) || !existingDe.getDataElementConcept().getObjectClass().getVersion().equals(oc.getVersion())) {
-          // Oc was already mapped by an existing DE. This DE conflicts with the previous mapping. 
-
-        ValidationItems.getInstance()
-          .addItem(new ValidationError(PropertyAccessor.getProperty("de.conflict", new String[] 
-            {event.getClassName() + "." + event.getName(),
-             ocMapping.get(ConventionUtil.publicIdVersion(oc)).getLongName()}), de));
-          
-
-        }
-      } else {
-        oc.setPublicId(existingDe.getDataElementConcept().getObjectClass().getPublicId());
-        oc.setVersion(existingDe.getDataElementConcept().getObjectClass().getVersion());
-        // Keep track so if there's conflict, we know both ends of the conflict
-        ocMapping.put(ConventionUtil.publicIdVersion(oc), de);
-
-        oc.setLongName(existingDe.getDataElementConcept().getObjectClass().getLongName());
-        oc.setPreferredName("");
-        ChangeTracker changeTracker = ChangeTracker.getInstance();
-        changeTracker.put
-          (event.getClassName(), 
-           true);
-      }
-
+      mapToExistingDE(oc, de, existingDe, event.getClassName(), event.getName());
+      
       prop.setPublicId(existingDe.getDataElementConcept().getProperty().getPublicId());
       prop.setVersion(existingDe.getDataElementConcept().getProperty().getVersion());
 
-    }
-
-    dec.setObjectClass(oc);
-
-    if(existingDe != null) {
-      de.setLongName(existingDe.getLongName());
-      de.setContext(existingDe.getContext());
-      de.setPublicId(existingDe.getPublicId());
-      de.setVersion(existingDe.getVersion());
-      de.setLatestVersionIndicator(existingDe.getLatestVersionIndicator());
-      de.setValueDomain(existingDe.getValueDomain());
     } else {
       de.setLongName(dec.getLongName() + " " + event.getType());
-    //     de.setPreferredDefinition(event.getDescription());
 
       String datatype = event.getType().trim();
       if(DatatypeMapping.getKeys().contains(datatype.toLowerCase())) 
@@ -465,6 +398,78 @@ public class UMLDefaultHandler
     elements.addElement(dec);
     elements.addElement(prop);
   }
+
+    private DataElement findExistingDe(String id, Float version, DataElement de, String className, String attributeName) {
+    
+      DataElement existingDe = null;
+      Map<String, Object> queryFields =
+        new HashMap<String, Object>();
+      queryFields.put(CadsrModule.PUBLIC_ID, id);
+      queryFields.put(CadsrModule.VERSION, version);
+
+      List<DataElement> result = null;
+
+      try {
+        result =  new ArrayList<DataElement>(cadsrModule.findDataElement(queryFields));
+      } catch (Exception e){
+        logger.error("Could not query cadsr module ", e);
+      } // end of try-catch
+
+      if(result.size() == 0) {
+        ChangeTracker changeTracker = ChangeTracker.getInstance();
+
+        ValidationItems.getInstance()
+          .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", className + "." + attributeName,
+               id + "v" + version), de));
+
+        
+        de.setPublicId(null);
+        de.setVersion(null);
+        changeTracker.put
+          (className + "." + attributeName, 
+           true);
+      } else {
+        existingDe = result.get(0);
+      }
+      return existingDe;
+    }
+
+    private void mapToExistingDE(ObjectClass oc, DataElement de, DataElement existingDe, String className, String attributeName) {
+
+      if(oc.getPublicId() != null) {
+        // Verify conflicts
+
+        if(!existingDe.getDataElementConcept().getObjectClass().getPublicId().equals(oc.getPublicId()) || !existingDe.getDataElementConcept().getObjectClass().getVersion().equals(oc.getVersion())) {
+          // Oc was already mapped by an existing DE. This DE conflicts with the previous mapping. 
+
+        ValidationItems.getInstance()
+          .addItem(new ValidationError(PropertyAccessor.getProperty("de.conflict", new String[] 
+            {className + "." + attributeName,
+             ocMapping.get(ConventionUtil.publicIdVersion(oc)).getLongName()}), de));
+          
+
+        }
+      } else {
+        oc.setPublicId(existingDe.getDataElementConcept().getObjectClass().getPublicId());
+        oc.setVersion(existingDe.getDataElementConcept().getObjectClass().getVersion());
+        // Keep track so if there's conflict, we know both ends of the conflict
+        ocMapping.put(ConventionUtil.publicIdVersion(oc), de);
+
+        oc.setLongName(existingDe.getDataElementConcept().getObjectClass().getLongName());
+        oc.setPreferredName("");
+        ChangeTracker changeTracker = ChangeTracker.getInstance();
+        changeTracker.put
+          (className, 
+           true);
+      }
+
+      de.setLongName(existingDe.getLongName());
+      de.setContext(existingDe.getContext());
+      de.setPublicId(existingDe.getPublicId());
+      de.setVersion(existingDe.getVersion());
+      de.setLatestVersionIndicator(existingDe.getLatestVersionIndicator());
+      de.setValueDomain(existingDe.getValueDomain());
+    }
 
     private void populateExistingVd(ValueDomain vd, String vdId, Float vdVersion, String attributeName) {
       Map<String, Object> queryFields =
@@ -660,13 +665,33 @@ public class UMLDefaultHandler
           newDe.setDataElementConcept(newDec);
           newDe.setLongName(newDec.getLongName() + " " + de.getValueDomain().getLongName());
 
-          IdVersionPair vdIdVersionPair = event.getTypeMapping(propName);
-          if(vdIdVersionPair != null) {
-            ValueDomain existingVd = DomainObjectFactory.newValueDomain();
-            populateExistingVd(existingVd, vdIdVersionPair.getId(), vdIdVersionPair.getVersion(), className + "." + propName);
-            newDe.setValueDomain(existingVd);
+          // check local VD mapping
+          String localType = event.getDatatypeMapping(propName);
+          if(localType != null) {
+            ValueDomain vd = DomainObjectFactory.newValueDomain();
+            vd.setLongName(localType);
+            newDe.setValueDomain(vd);
           } else {
-            newDe.setValueDomain(de.getValueDomain());
+            // check existing de mapping
+            IdVersionPair deIdVersionPair = event.getPersistenceMapping(propName);
+            if(deIdVersionPair != null) {
+              DataElement existingDe = findExistingDe(deIdVersionPair.getId(), deIdVersionPair.getVersion(), newDe, className, propName);
+              
+              if(existingDe != null) {
+                mapToExistingDE(childOc, newDe, existingDe, className, propName);
+              }
+            } 
+            if(newDe.getPublicId() == null) {
+              // check existing vd mapping
+              IdVersionPair vdIdVersionPair = event.getTypeMapping(propName);
+              if(vdIdVersionPair != null) {
+                ValueDomain existingVd = DomainObjectFactory.newValueDomain();
+                populateExistingVd(existingVd, vdIdVersionPair.getId(), vdIdVersionPair.getVersion(), className + "." + propName);
+                newDe.setValueDomain(existingVd);
+              } else {
+                newDe.setValueDomain(de.getValueDomain());
+              }
+            }
           }
 
           
