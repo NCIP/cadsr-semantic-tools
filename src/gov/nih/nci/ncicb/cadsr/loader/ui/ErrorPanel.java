@@ -18,11 +18,11 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 
-import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import java.io.File;
 import java.io.FileWriter;
 import javax.swing.*;
@@ -33,8 +33,6 @@ import java.awt.event.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
@@ -42,9 +40,6 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 
 import java.util.*;
 
-import javax.swing.tree.DefaultTreeCellRenderer;
-
-import org.apache.log4j.spi.LoggingEvent;
 import org.jdom.*;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -62,11 +57,12 @@ public class ErrorPanel extends JPanel implements MouseListener {
   
   private JCheckBoxMenuItem conceptCb = new JCheckBoxMenuItem("Hide Concept Errors", false);
   private UMLNode node;
-  private JPanel cbPanel;
   
   private UserSelections userSelections = UserSelections.getInstance();
 
   private boolean hideConceptError = false;
+
+  private InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
 
   private java.util.List<PropertyChangeListener> propChangeListeners = 
     new ArrayList<PropertyChangeListener>();
@@ -170,7 +166,6 @@ public class ErrorPanel extends JPanel implements MouseListener {
       
     menuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
-          String saveDir = UserPreferences.getInstance().getRecentDir();
           JFileChooser chooser = new JFileChooser();
           javax.swing.filechooser.FileFilter filter = 
             new javax.swing.filechooser.FileFilter() {
@@ -218,9 +213,17 @@ public class ErrorPanel extends JPanel implements MouseListener {
     //     displaySet = new HashSet<UMLNode>();
 
     for (ValidationNode valNode: valNodes) {
-      if (!(hideConceptError && valNode.getUserObject() instanceof ValidationConceptError)) {
-        navTree(valNode);
+      if (valNode.getUserObject() instanceof ValidationConceptError) {
+        if(hideConceptError)
+          continue;
+        if(valNode.getParent() instanceof AttributeNode) {
+          AttributeNode attNode = (AttributeNode)valNode.getParent();
+          DataElement de = (DataElement)attNode.getUserObject();
+          if(inheritedList.isInherited(de))
+            continue;
+        }
       }
+      navTree(valNode);
     }
 
     for (UMLNode child: children) {
@@ -229,9 +232,9 @@ public class ErrorPanel extends JPanel implements MouseListener {
   }
 
   private void navTree(UMLNode node) {
-    if(node instanceof PackageNode)
-      if(node.getDisplay().equals("Inherited Attributes"))
-        return;
+//     if(node instanceof PackageNode)
+//       if(node.getDisplay().equals("Inherited Attributes"))
+//         return;
 
     UMLNode pNode = node.getParent();
     if (pNode != null) {
@@ -318,23 +321,24 @@ public class ErrorPanel extends JPanel implements MouseListener {
       if (!(hideConceptError && valNode.getUserObject() instanceof ValidationConceptError)) {
         DefaultMutableTreeNode newNode = 
           new DefaultMutableTreeNode(valNode);
-
+        
         node.add(newNode);
-            }
-
-        }
-        for (UMLNode child: children) {
-          DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(child);
-
-          if (displaySet.contains(child) && child.getDisplay() != "Inherited Attributes")
-            node.add(newNode);
-
-          doNode(newNode);
-        }
-
-        return node;
-
+      }
+      
     }
+    for (UMLNode child: children) {
+      DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(child);
+      
+      //           if (displaySet.contains(child) && child.getDisplay() != "Inherited Attributes")
+      if (displaySet.contains(child))
+        node.add(newNode);
+      
+      doNode(newNode);
+    }
+    
+    return node;
+    
+  }
 
   private void firePropertyChange(PropertyChangeEvent evt) {
     for(PropertyChangeListener l : propChangeListeners) {

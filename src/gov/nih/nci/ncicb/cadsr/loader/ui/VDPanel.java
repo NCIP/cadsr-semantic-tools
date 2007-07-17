@@ -4,8 +4,7 @@ import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
-import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
-import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -47,12 +46,17 @@ public class VDPanel extends JPanel
   private UMLNode node;
   private boolean modified = false;
 
+  private InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
+
   public VDPanel(UMLNode node)
   {
     this.node = node;
-    if(node.getUserObject() instanceof DataElement) 
-       vd = ((DataElement)node.getUserObject()).getValueDomain();
-    
+    DataElement de = null;
+    if(node.getUserObject() instanceof DataElement) {
+      de = (DataElement)node.getUserObject();
+      vd = de.getValueDomain();
+    }    
+
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
     
@@ -75,9 +79,10 @@ public class VDPanel extends JPanel
     
     this.add(mainPanel);
     this.setSize(300, 300);
+
     
     searchVdButton.setActionCommand(SEARCH);
-    searchVdButton.setVisible(!isMappedToLocalVD());
+    searchVdButton.setVisible(inheritedAttributes.isInherited(de) ||  !isMappedToLocalVD());
       
     searchVdButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
@@ -146,41 +151,42 @@ public class VDPanel extends JPanel
   {
     this.node = node;
     if(node.getUserObject() instanceof DataElement) {
-       vd = ((DataElement)node.getUserObject()).getValueDomain();
-       searchVdButton.setVisible(!isMappedToLocalVD());
-
-       vdLongNameValueLabel.setText(vd.getLongName()); 
-       
-       if(vd != null && !StringUtil.isEmpty(vd.getPublicId())) {
-         vdContextNameValueLabel.setText(vd.getContext().getName());
-         vdVersionValueLabel.setText(vd.getVersion().toString());
-         vdPublicIdValueLabel.setText(vd.getPublicId());
-         vdDatatypeValueLabel.setText(vd.getDataType());
-         
+      DataElement de = (DataElement)node.getUserObject();
+      vd = de.getValueDomain();
+      searchVdButton.setVisible(inheritedAttributes.isInherited(de) ||!isMappedToLocalVD());
+      
+      vdLongNameValueLabel.setText(vd.getLongName()); 
+      
+      if(vd != null && !StringUtil.isEmpty(vd.getPublicId())) {
+        vdContextNameValueLabel.setText(vd.getContext().getName());
+        vdVersionValueLabel.setText(vd.getVersion().toString());
+        vdPublicIdValueLabel.setText(vd.getPublicId());
+        vdDatatypeValueLabel.setText(vd.getDataType());
+        
         vdLongNameTitleLabel.setVisible(true);
         vdPublicIdTitleLabel.setVisible(true);
         vdContextNameTitleLabel.setVisible(true);
         vdVersionTitleLabel.setVisible(true);
         vdDatatypeTitleLabel.setVisible(true);
-       }
-       else 
-         { 
-           vdContextNameValueLabel.setText("");
-           vdVersionValueLabel.setText("");
-           vdPublicIdValueLabel.setText("");
-           vdDatatypeValueLabel.setText("");
-         }
+      }
+      else 
+        { 
+          vdContextNameValueLabel.setText("");
+          vdVersionValueLabel.setText("");
+          vdPublicIdValueLabel.setText("");
+          vdDatatypeValueLabel.setText("");
+        }
       
       if(vdLongNameValueLabel.getText().equals(""))
-          vdLongNameTitleLabel.setVisible(false);
+        vdLongNameTitleLabel.setVisible(false);
       if(vdVersionValueLabel.getText().equals(""))
-          vdVersionTitleLabel.setVisible(false);
+        vdVersionTitleLabel.setVisible(false);
       if(vdPublicIdValueLabel.getText().equals(""))
-          vdPublicIdTitleLabel.setVisible(false);
+        vdPublicIdTitleLabel.setVisible(false);
       if(vdDatatypeValueLabel.getText() == null || vdDatatypeValueLabel.getText().equals(""))
-          vdDatatypeTitleLabel.setVisible(false);
+        vdDatatypeTitleLabel.setVisible(false);
       if(vdContextNameValueLabel.getText().equals(""))
-          vdContextNameTitleLabel.setVisible(false);
+        vdContextNameTitleLabel.setVisible(false);
     }
   }
 

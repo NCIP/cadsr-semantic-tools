@@ -425,17 +425,22 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
           if(er != null)
             excludeRetired = er;
 
-
           DataElement searchDE = (DataElement)node.getUserObject();
-
-//           for(SearchResults sr : freestyleModule.findSearchResults(text, excludeRetired)) {
           Property prop = null;
           if(inheritedList.isInherited(searchDE)) {
             DataElement parentDE = inheritedList.getParent(searchDE);
             prop = parentDE.getDataElementConcept().getProperty();
           }
 
-          for (DataElement de : cadsrModule.findDataElement(queryFields, searchDE.getDataElementConcept().getObjectClass(), prop)) {
+          for(SearchResults sr : freestyleModule.findSearchResults(text, excludeRetired)) {
+            if(prop != null && (!prop.getPublicId().equals(new Integer(sr.getPropertyID()).toString()) || !prop.getVersion().equals(new Float(sr.getPropertyVersion())))) // prop doesn't match, skip this one.
+              continue;
+            ObjectClass searchOC = searchDE.getDataElementConcept().getObjectClass();
+            if(searchOC.getPublicId() != null
+               && (!searchOC.getPublicId().equals(new Integer(sr.getObjectClassID()).toString()) 
+                   || !searchOC.getVersion().equals(new Float(sr.getObjectClassVersion()))))
+              continue;
+
             Object[] list = 
               (Object[]) selections.getProperty("exclude.registration.statuses");
             
@@ -450,11 +455,9 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
                 setOfExcluded.add(s);
             }
             
-//             if(sr != null)
-//               if(!setOfExcluded.contains(sr.getRegistrationStatus()))
-//                 resultSet.add(new SearchResultWrapper(sr));
-//             if(!setOfExcluded.contains(de.getRegistrationStatus()))
-            resultSet.add(new SearchResultWrapper(de));
+            if(sr != null)
+              if(!setOfExcluded.contains(sr.getRegistrationStatus()))
+                resultSet.add(new SearchResultWrapper(sr));
           }
           break;
         case MODE_VD:
@@ -485,7 +488,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     else if(button.getActionCommand().equals(SUGGEST)) {
         
         searchField.setText("");
-        resultSet = new ArrayList<SearchResultWrapper>();
+        resultSet = new ArrayList();
         
         ClassNode classNode = (ClassNode)node.getParent();
         AttributeNode attrNode = (AttributeNode)node;
@@ -526,7 +529,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     } else {
       StringBuilder sb = new StringBuilder();
       int start = pageSize * pageIndex;
-      int end = Math.min(resultSet.size(), start + pageSize); 
+      int end = (int)Math.min(resultSet.size(), start + pageSize); 
       sb.append(start);
       sb.append("-");
       sb.append(end);
