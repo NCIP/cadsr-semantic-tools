@@ -1,9 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.util;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 
@@ -33,6 +30,10 @@ public class InheritedAttributeList
 
   public DataElement getParent(DataElement de) {
     return map.get(de);
+  }
+
+  public Collection<DataElement> getAllInherited() {
+    return map.keySet();
   }
   
 }
