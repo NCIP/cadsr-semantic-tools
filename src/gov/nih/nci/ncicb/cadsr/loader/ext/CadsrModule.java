@@ -37,10 +37,7 @@ public interface CadsrModule
   
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement>
     findDataElement(Map<String, Object> queryFields) throws Exception;
-
-  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement>
-    findDataElement(Map<String, Object> queryFields, gov.nih.nci.ncicb.cadsr.domain.ObjectClass oc, gov.nih.nci.ncicb.cadsr.domain.Property prop) throws Exception; 
- 
+  
 //   public gov.nih.nci.ncicb.cadsr.domain.DataElement 
 //     findDataElementByPublicId(String id, Float version) throws Exception;
 

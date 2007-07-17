@@ -40,6 +40,8 @@ public class FreestyleModule {
     }
 
     search.restrictResultsByType(SearchAC.DE);
+    search.setResultsLimit(2000);
+
     Vector<SearchResults> srResult = search.findReturningSearchResults(searchString);
     
     return srResult;

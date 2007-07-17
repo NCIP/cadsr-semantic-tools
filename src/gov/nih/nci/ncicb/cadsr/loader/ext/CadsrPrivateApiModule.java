@@ -84,11 +84,6 @@ public class CadsrPrivateApiModule implements CadsrModule
     return DAOAccessor.getDataElementDAO().find(de);
   }
 
-  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement>
-    findDataElement(Map<String, Object> queryFields, gov.nih.nci.ncicb.cadsr.domain.ObjectClass oc, gov.nih.nci.ncicb.cadsr.domain.Property prop) throws Exception {
-    return null;
-  }
-  
 //   public DataElement 
 //     findDataElementByPublicId(String id, Float version) throws Exception  {
 //     return null;
