@@ -189,8 +189,12 @@ public class ButtonPanel extends JPanel implements ActionListener,
   
     switchButton.setVisible(editable instanceof DEPanel);
     
-    if(editable instanceof DEPanel && conceptEditorPanel.getVDPanel().isMappedToLocalVD())
-      switchButton.setEnabled(false);
+    if(editable instanceof DEPanel) {
+      UMLNode node = conceptEditorPanel.getNode();
+      DataElement de = (DataElement)node.getUserObject();
+      if(conceptEditorPanel.getVDPanel().isMappedToLocalVD(de))
+        switchButton.setEnabled(false);
+    }
     
     // disable add if DEPanel is showing
     if(editable instanceof DEPanel) {
