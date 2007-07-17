@@ -230,6 +230,9 @@
   <bean name="duplicateAttributeValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateAttributeValidator"/>
 
+  <bean name="inheritanceValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.InheritanceValidator"/>
+
   <bean name="mainValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.UMLValidator">
     <property name="validators">
@@ -242,6 +245,7 @@
         <ref bean="duplicateValidator"/>
         <ref bean="latestVersionValidator"/>
         <ref bean="duplicateAttributeValidator"/>
+        <ref bean="inheritanceValidator"/>
       </list>
     </property>
   </bean>
