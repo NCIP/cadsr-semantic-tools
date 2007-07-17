@@ -34,6 +34,8 @@ public class ConceptCodeValidator implements Validator {
 
   private ValidationItems items = ValidationItems.getInstance();
 
+  private InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
+
   public ConceptCodeValidator() {
   }
 
@@ -62,14 +64,16 @@ public class ConceptCodeValidator implements Validator {
     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
     if(des != null)
       for(DataElement de : des ) {
-        if(StringUtil.isEmpty(de.getPublicId()) || de.getVersion() == null) {
-          // no existing DE mapping -- check for concepts
-          Property prop = de.getDataElementConcept().getProperty();
-          if(StringUtil.isEmpty(prop.getPublicId()) || prop.getVersion() == null) {
-            if(StringUtil.isEmpty(prop.getPreferredName()))
-              items.addItem(new ValidationConceptError("Attribute: " + prop.getLongName() + " has no concept code.", prop));
-            else {
-              checkConcepts(prop);
+        if(!inheritedList.isInherited(de)) {
+          if(StringUtil.isEmpty(de.getPublicId()) || de.getVersion() == null) {
+            // no existing DE mapping -- check for concepts
+            Property prop = de.getDataElementConcept().getProperty();
+            if(StringUtil.isEmpty(prop.getPublicId()) || prop.getVersion() == null) {
+              if(StringUtil.isEmpty(prop.getPreferredName()))
+                items.addItem(new ValidationConceptError("Attribute: " + prop.getLongName() + " has no concept code.", prop));
+              else {
+                checkConcepts(prop);
+              }
             }
           }
         }
