@@ -9,7 +9,11 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
+
+import org.apache.log4j.Logger;
 
 /**
  * Validate issues that come from mapping inherited attributes <ul>
@@ -17,7 +21,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
  * all the way down the inheritance path.
  * <ul>
  */
-public class InheritanceValidator implements Validator {
+public class InheritanceValidator implements Validator, CadsrModuleListener {
   private ElementsLists elements = ElementsLists.getInstance();
 
   private ValidationItems items = ValidationItems.getInstance();
@@ -25,6 +29,10 @@ public class InheritanceValidator implements Validator {
   private ProgressListener progressListener;
 
   private InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
+
+  private CadsrModule cadsrModule = null;
+
+  private Logger logger = Logger.getLogger(InheritanceValidator.class.getName());
 
   public InheritanceValidator() {
   }
@@ -51,7 +59,24 @@ public class InheritanceValidator implements Validator {
                             (PropertyAccessor.getProperty
                              ("inherited.and.parent.property.mismatch", LookupUtil.lookupFullName(inheritedDE), LookupUtil.lookupFullName(parentDE)),inheritedDE));
             }
-          } else {
+          } else { // parentDE mapped to concept. Verify that concepts match
+            String conceptConcat = parentDE.getDataElementConcept().getProperty().getPreferredName();
+            String[] revCodes = conceptConcat.split(":");
+            String[] conceptCodes = new String[revCodes.length];
+            for(int i=0; i<revCodes.length; i++)
+              conceptCodes[i] = revCodes[revCodes.length - 1 - i];
+
+            if(conceptCodes.length > 0) {
+              try {
+                if(!cadsrModule.matchDEToPropertyConcepts(inheritedDE, conceptCodes)) {
+                  items.addItem(new ValidationError
+                                (PropertyAccessor.getProperty
+                                 ("inherited.concept.mismatch", LookupUtil.lookupFullName(inheritedDE)), inheritedDE));
+                }
+              } catch (Exception e) {
+                logger.error(e);
+              } // end of try-catch
+            }
 //             if(!inheritedList.isInherited(parentDE)) {
 //               items.addItem(new ValidationError
 //                             (PropertyAccessor.getProperty
@@ -64,6 +89,10 @@ public class InheritanceValidator implements Validator {
       }
     }
     return items;
+  }
+
+  public void setCadsrModule(CadsrModule module) {
+    this.cadsrModule = module;
   }
 
 }
