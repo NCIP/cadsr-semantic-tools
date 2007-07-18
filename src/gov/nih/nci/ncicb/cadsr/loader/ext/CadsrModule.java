@@ -53,6 +53,12 @@ public interface CadsrModule
 
   public List<gov.nih.nci.ncicb.cadsr.domain.PermissibleValue> getPermissibleValues(gov.nih.nci.ncicb.cadsr.domain.ValueDomain vd)
     throws Exception;
+
+  /**
+   * Verify that this CDE's property has the provided concepts
+   * DE must have publicID and version
+   */
+  public boolean matchDEToPropertyConcepts(gov.nih.nci.ncicb.cadsr.domain.DataElement de, String[] conceptCodes) throws Exception;
   
   public void setServiceURL(String url);
 

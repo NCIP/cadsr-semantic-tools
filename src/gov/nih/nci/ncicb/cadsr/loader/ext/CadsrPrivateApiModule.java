@@ -8,9 +8,13 @@ import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
+import org.apache.log4j.Logger;
 
 public class CadsrPrivateApiModule implements CadsrModule
 {
+
+  private Logger logger = Logger.getLogger(CadsrPublicApiModule.class.getName());
+
   public CadsrPrivateApiModule()
   {
 
@@ -122,6 +126,36 @@ public class CadsrPrivateApiModule implements CadsrModule
       vd.getId());
   }
 
+
+  public boolean matchDEToPropertyConcepts(gov.nih.nci.ncicb.cadsr.domain.DataElement de, String[] conceptCodes) throws Exception {
+    
+    Map<String, Object> queryFields = new HashMap<String, Object>();
+    queryFields.put(CadsrModule.PUBLIC_ID, de.getPublicId());
+    queryFields.put(CadsrModule.VERSION, de.getVersion());
+
+    List<DataElement> results = new ArrayList<DataElement>(findDataElement(queryFields));
+    
+    if(results.size() == 0) {
+      logger.error("Can't find CDE : " + de.getPublicId() + " v " + de.getVersion() + "\\n Please contact support");
+      return false;
+    }
+    
+    DataElement resultDE = results.get(0);
+    Property resultProp = resultDE.getDataElementConcept().getProperty();
+    
+    // following DAO method reads concepts in reverse order
+    String[] revCodes = new String[conceptCodes.length];
+    for(int i = 0; i<conceptCodes.length; i++)
+      revCodes[i] = conceptCodes[revCodes.length - i - 1];
+
+    List<Property> resultProps = DAOAccessor.getPropertyDAO().findByConceptCodes(revCodes, resultProp.getContext());
+    for(Property _prop : resultProps) {
+      if(_prop.getVersion().equals(resultProp.getVersion()) && 
+         _prop.getPublicId().equals(resultProp.getPublicId()))
+        return true;
+    }
+    return false;
+  }
   
   public void setServiceURL(String url){ 
   }
@@ -154,8 +188,34 @@ public class CadsrPrivateApiModule implements CadsrModule
         e.printStackTrace();
       } // end of try-catch
     }
-
   }
+
+  public static void main(String[] args) {
+    CadsrPrivateApiModule testModule = new CadsrPrivateApiModule();
+    
+    try {
+      System.out.println("Test matchDE");
+      DataElement de = DomainObjectFactory.newDataElement();
+      de.setPublicId("2533339");
+      de.setVersion(1.0f);
+      String[] conceptCodes = new String[] {"C43821", "C16423"};
+      // test that should return true
+      if(testModule.matchDEToPropertyConcepts(de, conceptCodes))
+        System.out.println("ok");
+      else
+        System.out.println("no good");
+      
+      conceptCodes = new String[] {"C16423", "C43821"};
+      // test that should return false
+      if(!testModule.matchDEToPropertyConcepts(de, conceptCodes))
+        System.out.println("ok");
+      else
+        System.out.println("no good");
+
+    } catch (Exception e) {
+    } // end of try-catch
+
+  }      
 
 
 }

@@ -1,6 +1,8 @@
 package gov.nih.nci.ncicb.cadsr.loader.ext;
 
+import gov.nih.nci.cadsr.domain.ComponentConcept;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
+import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.bean.DataElementBean;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import gov.nih.nci.system.applicationservice.ApplicationService;
@@ -10,12 +12,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
 
@@ -31,7 +32,6 @@ public class CadsrPublicApiModule implements CadsrModule {
   private static ApplicationService service = null;
 
   private Logger logger = Logger.getLogger(CadsrPrivateApiModule.class.getName());
-
 
   public CadsrPublicApiModule() {
 
@@ -262,83 +262,135 @@ public class CadsrPublicApiModule implements CadsrModule {
   {
     throw new RuntimeException("not implemented");
   }
+
+  public boolean matchDEToPropertyConcepts(gov.nih.nci.ncicb.cadsr.domain.DataElement de, String[] conceptCodes) throws Exception {
+
+    if(StringUtil.isEmpty(de.getPublicId()))
+      return false;
+
+    gov.nih.nci.cadsr.domain.DataElement searchDE = new gov.nih.nci.cadsr.domain.DataElement();
+    searchDE.setPublicID(new Long(de.getPublicId()));
+    searchDE.setVersion(de.getVersion());
+    
+    List<gov.nih.nci.cadsr.domain.DataElement> results =  
+      service.search(gov.nih.nci.cadsr.domain.DataElement.class.getName(), searchDE);
+
+    if(results.size() == 0) {
+      logger.error("Can't find CDE : " + de.getPublicId() + " v " + de.getVersion() + "\\n Please contact support");
+      return false;
+    }
+
+    gov.nih.nci.cadsr.domain.DataElement resultDE = results.get(0);
+
+    gov.nih.nci.cadsr.domain.ConceptDerivationRule conDR = 
+      resultDE.getDataElementConcept().getProperty().getConceptDerivationRule();
+    
+    Collection compConcepts = conDR.getComponentConceptCollection();
+    if(compConcepts.size() != conceptCodes.length)
+        return false;
+    
+    Iterator it = compConcepts.iterator();
+    while(it.hasNext()) {
+        ComponentConcept comp = (ComponentConcept)it.next();
+        if(!conceptCodes[comp.getDisplayOrder()].equals(comp.getConcept().getPreferredName()))
+            return false;
+    }
+        
+    return true;
+
+  }
+
   
   public void setServiceURL(String url) {
     this.serviceURL = url;
     service = ApplicationService.getRemoteInstance(serviceURL);
   }
 
-  private void prepareCriteria(DetachedCriteria criteria, Map<String, Object> queryFields, List<String> eager) {
-    for(String field : queryFields.keySet()) {
-      Object o = queryFields.get(field);
-      if(o instanceof String) {
-        String s = (String)o;
-        s = s.replace('*', '%');
-        if(s.indexOf("%") != -1) {
-          criteria.add(Expression.like(field, s));
-          continue;
-        }
-      } 
-      criteria.add(Expression.eq(field, o));
-    }
-
-    if(eager != null) {
-      for(String s : eager) {
-        criteria.setFetchMode(s, FetchMode.JOIN);
-      }
-    }
-
-  }
+//  private void prepareCriteria(DetachedCriteria criteria, Map<String, Object> queryFields, List<String> eager) {
+//    for(String field : queryFields.keySet()) {
+//      Object o = queryFields.get(field);
+//      if(o instanceof String) {
+//        String s = (String)o;
+//        s = s.replace('*', '%');
+//        if(s.indexOf("%") != -1) {
+//          criteria.add(Expression.like(field, s));
+//          continue;
+//        }
+//      } 
+//      criteria.add(Expression.eq(field, o));
+//    }
+//
+//    if(eager != null) {
+//      for(String s : eager) {
+//        criteria.setFetchMode(s, FetchMode.JOIN);
+//      }
+//    }
+//
+//  }
 
   public static void main(String[] args) {
-    CadsrModule testModule = new CadsrPublicApiModule("http://cabio-stage.nci.nih.gov/cacore31/http/remoteService");
+    CadsrModule testModule = new CadsrPublicApiModule("http://cabio.nci.nih.gov/cacore32/http/remoteService");
     try {
 
-      System.out.println("Test Find CS");
-      {
-        Map<String, Object> queryFields = new HashMap<String, Object>();
-        queryFields.put(CadsrModule.LONG_NAME, "Transcription Annotation Prioritization and Screening System");
-        queryFields.put(CadsrModule.VERSION, 1f);
+//       System.out.println("Test Find CS");
+//       {
+//         Map<String, Object> queryFields = new HashMap<String, Object>();
+//         queryFields.put(CadsrModule.LONG_NAME, "Transcription Annotation Prioritization and Screening System");
+//         queryFields.put(CadsrModule.VERSION, 1f);
 
-        Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme> list = testModule.findClassificationScheme(queryFields);
+//         Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme> list = testModule.findClassificationScheme(queryFields);
         
-        System.out.println(list.size());
-        for(gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme o : list) {
-          System.out.println(o.getPreferredName());
-          System.out.println(o.getPublicId());
-        }
+//         System.out.println(list.size());
+//         for(gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme o : list) {
+//           System.out.println(o.getPreferredName());
+//           System.out.println(o.getPublicId());
+//         }
         
-      }
+//       }
 
-      System.out.println("Test Find VD");
-      {
-        Map<String, Object> queryFields = new HashMap<String, Object>();
-        queryFields.put(CadsrModule.LONG_NAME, "java.lang.*");
+//       System.out.println("Test Find VD");
+//       {
+//         Map<String, Object> queryFields = new HashMap<String, Object>();
+//         queryFields.put(CadsrModule.LONG_NAME, "java.lang.*");
 
-        Collection<gov.nih.nci.ncicb.cadsr.domain.ValueDomain> list = testModule.findValueDomain(queryFields);
+//         Collection<gov.nih.nci.ncicb.cadsr.domain.ValueDomain> list = testModule.findValueDomain(queryFields);
         
-        System.out.println(list.size());
-        for(gov.nih.nci.ncicb.cadsr.domain.ValueDomain o : list) {
-          System.out.println(o.getPreferredName());
-          System.out.println(o.getPublicId());
-        }
+//         System.out.println(list.size());
+//         for(gov.nih.nci.ncicb.cadsr.domain.ValueDomain o : list) {
+//           System.out.println(o.getPreferredName());
+//           System.out.println(o.getPublicId());
+//         }
         
-      }
+//       }
 
-      System.out.println("Test Find DE");
-      {
-        Map<String, Object> queryFields = new HashMap<String, Object>();
-        queryFields.put(CadsrModule.LONG_NAME, "Patient*");
+//       System.out.println("Test Find DE");
+//       {
+//         Map<String, Object> queryFields = new HashMap<String, Object>();
+//         queryFields.put(CadsrModule.LONG_NAME, "Patient*");
 
-        Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> list = testModule.findDataElement(queryFields);
+//         Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> list = testModule.findDataElement(queryFields);
         
-        System.out.println(list.size());
-        for(gov.nih.nci.ncicb.cadsr.domain.DataElement o : list) {
-          System.out.println(o.getPreferredName());
-          System.out.println(o.getPublicId());
-        }
+//         System.out.println(list.size());
+//         for(gov.nih.nci.ncicb.cadsr.domain.DataElement o : list) {
+//           System.out.println(o.getPreferredName());
+//           System.out.println(o.getPublicId());
+//         }
         
-      }
+//       }
+
+      System.out.println("Test matchDE");
+      gov.nih.nci.ncicb.cadsr.domain.DataElement de = DomainObjectFactory.newDataElement();
+      de.setPublicId("2533339");
+      String[] conceptCodes = new String[] {"C43821", "C16423"};
+      // test that should return true
+      if(testModule.matchDEToPropertyConcepts(de, conceptCodes))
+        System.out.println("ok");
+
+      conceptCodes = new String[] {"C16423", "C43821"};
+      // test that should return false
+      if(!testModule.matchDEToPropertyConcepts(de, conceptCodes))
+        System.out.println("ok");
+      
 
 
     }
