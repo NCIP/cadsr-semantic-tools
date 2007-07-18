@@ -433,7 +433,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
           }
 
           for(SearchResults sr : freestyleModule.findSearchResults(text, excludeRetired)) {
-            if(prop != null && (!prop.getPublicId().equals(new Integer(sr.getPropertyID()).toString()) || !prop.getVersion().equals(new Float(sr.getPropertyVersion())))) // prop doesn't match, skip this one.
+            if(prop != null && prop.getVersion() != null && (!prop.getPublicId().equals(new Integer(sr.getPropertyID()).toString()) || !prop.getVersion().equals(new Float(sr.getPropertyVersion())))) // prop doesn't match, skip this one.
               continue;
             ObjectClass searchOC = searchDE.getDataElementConcept().getObjectClass();
             if(searchOC.getPublicId() != null
