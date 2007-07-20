@@ -25,21 +25,23 @@ package gov.nih.nci.ncicb.cadsr.loader.util;
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
 public enum RunMode {
-  GenerateReport("Run Semantic Connector"), 
-  AnnotateXMI("Review Annotated XMI"), 
-    Curator("Curate XMI File"), 
-    Reviewer("Review Annotated XMI File"), 
-    Roundtrip("Perform XMI Roundtrip"),
-    Loader("UML Loader"),
-    FixEa("Run fix-EA"),
-    UnannotatedXmi("Review Unannotated XMI File")
+  GenerateReport("Run Semantic Connector", "Model Owner"), 
+  AnnotateXMI("Review Annotated XMI", "Model Owner"), 
+    Curator("Curate XMI File", "Vocabulary Reviewer"), 
+    Reviewer("Review Annotated XMI File", "Model Owner"), 
+    Roundtrip("Perform XMI Roundtrip", "Model Owner"),
+    Loader("UML Loader", "Model Owner"),
+    FixEa("Run fix-EA", "Model Owner"),
+    UnannotatedXmi("Review Unannotated XMI File", "Model Owner")
     ;
 
   private String titleName;
+  private String author;
 
-  RunMode(String name) 
+  RunMode(String name, String author) 
     {
       this.titleName = name;
+      this.author = author;
     }
 
   public String toString() {
@@ -50,4 +52,8 @@ public enum RunMode {
     {
       return titleName;
     }
+  public String getAuthor()
+  {
+      return author;
+  }
 }

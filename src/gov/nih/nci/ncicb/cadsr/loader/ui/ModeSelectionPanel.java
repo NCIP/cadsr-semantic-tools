@@ -81,19 +81,19 @@ public class ModeSelectionPanel extends JPanel {
     
     group = new ButtonGroup();
 
-    unannotatedXmiOption = new JRadioButton("1. " + RunMode.UnannotatedXmi.getTitleName());
+    unannotatedXmiOption = new JRadioButton("1. " + RunMode.UnannotatedXmi.getTitleName() + " (" + RunMode.UnannotatedXmi.getAuthor() + ")");
     unannotatedXmiOption.setActionCommand(RunMode.UnannotatedXmi.toString());
 
-    roundtripOption = new JRadioButton("2. " + RunMode.Roundtrip.getTitleName());
+    roundtripOption = new JRadioButton("2. " + RunMode.Roundtrip.getTitleName() + " (" + RunMode.Roundtrip.getAuthor() + ")");
     roundtripOption.setActionCommand(RunMode.Roundtrip.toString());
     
-    annotateOption = new JRadioButton("3. " + RunMode.GenerateReport.getTitleName());
+    annotateOption = new JRadioButton("3. " + RunMode.GenerateReport.getTitleName() + " (" + RunMode.GenerateReport.getAuthor() + ")");
     annotateOption.setActionCommand(RunMode.GenerateReport.toString());
         
-    curateOption = new JRadioButton("4. " + RunMode.Curator.getTitleName());
+    curateOption = new JRadioButton("4. " + RunMode.Curator.getTitleName() + " (" + RunMode.Curator.getAuthor() + ")");
     curateOption.setActionCommand(RunMode.Curator.toString());
 
-    reviewOption = new JRadioButton("5. " + RunMode.Reviewer.getTitleName());
+    reviewOption = new JRadioButton("5. " + RunMode.Reviewer.getTitleName() + " (" + RunMode.Reviewer.getAuthor() + ")");
     reviewOption.setActionCommand(RunMode.Reviewer.toString());
 
     // Get the preference setting for mode and set the radio buttons appropriately.
