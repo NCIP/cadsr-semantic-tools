@@ -82,7 +82,8 @@ public class VDPanel extends JPanel
 
     
     searchVdButton.setActionCommand(SEARCH);
-    searchVdButton.setVisible(!isMappedToLocalVD(de));
+    if(de != null)
+      searchVdButton.setVisible(!isMappedToLocalVD(de));
       
     searchVdButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {

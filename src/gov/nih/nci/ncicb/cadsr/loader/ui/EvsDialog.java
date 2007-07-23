@@ -23,6 +23,7 @@ import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -286,11 +287,13 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
 
       _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-      if(selection.equals(CONCEPT_CODE)) {
-        resultSet.add(module.findByConceptCode(text, includeRetiredCB.isSelected()));
-      }
-      if(selection.equals(SYNONYMS)) {
-        resultSet.addAll(module.findBySynonym(text, includeRetiredCB.isSelected()));
+      if(!StringUtil.isEmpty(text)) {
+        if(selection.equals(CONCEPT_CODE)) {
+          resultSet.add(module.findByConceptCode(text, includeRetiredCB.isSelected()));
+        }
+        if(selection.equals(SYNONYMS)) {
+          resultSet.addAll(module.findBySynonym(text, includeRetiredCB.isSelected()));
+        }
       }
 
       _this.setCursor(Cursor.getDefaultCursor());
