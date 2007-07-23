@@ -59,9 +59,18 @@ public class AttributeNode extends AbstractUMLNode<UMLNode>
     //       pNode = pNode.getParent();
     
     //calls setReviewed method on parent 
-    ClassNode parent = (ClassNode) getParent();
-    parent.setReviewed(parent.isReviewed());
+
+//     UMLNode parent = getParent();
     
+
+//     ClassNode parent = (ClassNode) getParent();
+    UMLNode parent = (UMLNode)getParent();
+    if(parent instanceof ClassNode) {
+      ((ClassNode)parent).setReviewed(((ClassNode)parent).isReviewed());
+    } else if(parent instanceof PackageNode) {
+      parent = ((PackageNode)parent).getParent();
+      ((ClassNode)parent).setReviewed(((ClassNode)parent).isReviewed());
+    }
     
   }
   
@@ -69,16 +78,16 @@ public class AttributeNode extends AbstractUMLNode<UMLNode>
     return reviewed;  
   }
   
-  public ClassNode getParent() {
-    if(parent instanceof ClassNode)
-      return (ClassNode)parent;
-    else if(parent instanceof PackageNode) {
-      PackageNode packNode = (PackageNode)parent; 
-      return (ClassNode)packNode.getParent();
-    }
+//   public ClassNode getParent() {
+//     if(parent instanceof ClassNode)
+//       return (ClassNode)parent;
+//     else if(parent instanceof PackageNode) {
+//       PackageNode packNode = (PackageNode)parent; 
+//       return (ClassNode)packNode.getParent();
+//     }
 
-    return null;
-  }
+//     return null;
+//   }
     
     
 }

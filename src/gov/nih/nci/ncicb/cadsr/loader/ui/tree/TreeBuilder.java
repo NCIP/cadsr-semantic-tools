@@ -239,7 +239,8 @@ public class TreeBuilder implements UserPreferencesListener {
       for(AttributeNode inherit : inherited) {
         inheritedPackage.addChild(inherit);
         Boolean reviewed = reviewTracker.get(inherit.getFullPath());
-        inherit.setReviewed(reviewed);
+        if(reviewed != null)
+          inherit.setReviewed(reviewed);
       }
     }
     
