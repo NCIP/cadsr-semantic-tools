@@ -232,7 +232,7 @@ public class TreeBuilder implements UserPreferencesListener {
       } // end of try-catch
     }
 
-    if(inherited.size() > 0)
+    if((inherited.size() > 0) && showInheritedAttributes)
       parentNode.addChild(inheritedPackage);
 
     if(showInheritedAttributes) {
