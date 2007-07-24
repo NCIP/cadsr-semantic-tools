@@ -61,7 +61,6 @@
 
   <available file="${lib.dir}/cadsr-api.jar" property="available.cadsr"/>
   <available file="build.properties" property="available.build.props"/>
-  <available file="input.properties" property="available.input.props"/>
 
   <target name="fail1" unless="available.cadsr">
     <fail message="missing cadsr-api jar, please build cadsr service layer first"/>
@@ -69,10 +68,6 @@
 
   <target name="fail2" unless="available.build.props">
     <fail message="missing build.properties, please create one first first"/>
-  </target>
-
-  <target name="fail3" unless="available.input.props">
-    <fail message="missing input.properties, please create one first first (username and password)"/>
   </target>
 
   <target name="compile" depends="fail1">
