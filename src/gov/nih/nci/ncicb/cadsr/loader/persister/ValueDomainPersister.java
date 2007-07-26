@@ -143,7 +143,7 @@ public class ValueDomainPersister extends UMLPersister {
   private PermissibleValue isPvIncluded(PermissibleValue pv, List<PermissibleValue> pvs) 
   { 
     for(PermissibleValue thisPv : pvs) {
-      if(pv.getValueMeaning().getLongName().trim().equalsIgnoreCase(pv.getValueMeaning().getLongName().trim()))
+      if(pv.getValueMeaning().getLongName().trim().equalsIgnoreCase(thisPv.getValueMeaning().getLongName().trim()))
         return thisPv;
     }
     return null;
