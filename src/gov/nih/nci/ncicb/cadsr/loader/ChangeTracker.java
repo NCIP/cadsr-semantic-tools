@@ -23,6 +23,12 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AbstractUMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
+
+import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
+
+import gov.nih.nci.ncicb.cadsr.domain.DataElement;
+
+
 import java.util.HashMap;
 
 /**
@@ -60,8 +66,12 @@ public class ChangeTracker implements ElementChangeListener
   
   public void elementChanged(ElementChangeEvent event) 
   {
-    AbstractUMLNode absNode = (AbstractUMLNode) event.getUserObject();
-    this.put(absNode.getFullPath(), true);
+    if(event.getUserObject() instanceof AbstractUMLNode) {
+      AbstractUMLNode absNode = (AbstractUMLNode) event.getUserObject();
+      this.put(absNode.getFullPath(), true);
+    } else if(event.getUserObject() instanceof DataElement) {
+      this.put(LookupUtil.lookupFullName((DataElement)event.getUserObject()), true);
+    }
   }
 
   public void clear() {
