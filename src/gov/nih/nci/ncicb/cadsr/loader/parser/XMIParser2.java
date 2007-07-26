@@ -224,7 +224,15 @@ public class XMIParser2 implements Parser {
       XmiInOutHandler handler = (XmiInOutHandler)UserSelections.getInstance().getProperty("XMI_HANDLER");
 
       if(handler == null) {
-        handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
+        // find extension
+        String ext = null;
+        if(filename.indexOf(".") > 0)
+          ext = filename.substring(filename.lastIndexOf(".") + 1);
+
+        if(ext != null && ext.equals("uml"))
+          handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.ArgoUMLDefault);
+        else
+          handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
         
         String s = filename.replaceAll("\\ ", "%20");
         
@@ -239,8 +247,9 @@ public class XMIParser2 implements Parser {
         UserSelections.getInstance().setProperty("XMI_HANDLER", handler);
       }
 
-      UMLModel model = handler.getModel("EA Model");
-
+//       UMLModel model = handler.getModel("EA Model");
+      UMLModel model = handler.getModel();
+  
       totalNumberOfElements = countNumberOfElements(model);
       
       evt.setMessage("Parsing ...");
@@ -773,10 +782,12 @@ public class XMIParser2 implements Parser {
 
     for(Iterator<String> it = childGeneralizationMap.keySet().iterator(); it.hasNext(); ) {
       String childClass = it.next();
+      recursionSet.add(childClass);
       recurseInheritance(childClass);
       
 //       listener.newGeneralization(childGeneralizationMap.get(childClass));
       it = childGeneralizationMap.keySet().iterator(); it.hasNext();
+      recursionSet.removeAll(recursionSet);
 
     }
 
@@ -788,10 +799,15 @@ public class XMIParser2 implements Parser {
 
   }
 
+  private Set<String> recursionSet = new HashSet<String>();
+
   private void recurseInheritance(String childClass) {
     NewGeneralizationEvent genz = childGeneralizationMap.get(childClass);
-    if(childGeneralizationMap.containsKey(genz.getParentClassName())) {
-      recurseInheritance(genz.getParentClassName());
+    String parentClassName = genz.getParentClassName();
+    if(childGeneralizationMap.containsKey(parentClassName) && !recursionSet.contains(parentClassName)) {
+      recursionSet.add(parentClassName);
+
+      recurseInheritance(parentClassName);
     }
 
     listener.newGeneralization(genz);
