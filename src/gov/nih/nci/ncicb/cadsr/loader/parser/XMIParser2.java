@@ -774,7 +774,7 @@ public class XMIParser2 implements Parser {
       return event;
   }
   
-  private void fireLastEvents() {
+  private void fireLastEvents() throws ParserException {
     for (Iterator<NewAssociationEvent> it = associationEvents.iterator(); it.hasNext();) {
       listener.newAssociation(it.next());
     }
@@ -801,10 +801,15 @@ public class XMIParser2 implements Parser {
 
   private Set<String> recursionSet = new HashSet<String>();
 
-  private void recurseInheritance(String childClass) {
+  private void recurseInheritance(String childClass) 
+    throws ParserException{
+
     NewGeneralizationEvent genz = childGeneralizationMap.get(childClass);
     String parentClassName = genz.getParentClassName();
-    if(childGeneralizationMap.containsKey(parentClassName) && !recursionSet.contains(parentClassName)) {
+    if(recursionSet.contains(parentClassName))
+      throw new ParserException(PropertyAccessor.getProperty("cyclic.inheritance.error", childClass, parentClassName));
+    
+    if(childGeneralizationMap.containsKey(parentClassName)) {
       recursionSet.add(parentClassName);
 
       recurseInheritance(parentClassName);
