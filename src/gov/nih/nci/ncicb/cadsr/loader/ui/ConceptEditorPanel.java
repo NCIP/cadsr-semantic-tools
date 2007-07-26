@@ -257,9 +257,19 @@ public class ConceptEditorPanel extends JPanel
       if(toAll) {
         if(o instanceof DataElement) {
           DataElement de = (DataElement)o;
-          ObjectUpdater.updateByAltName(de.getDataElementConcept().getProperty().getLongName(), concepts, newConcepts);
+          String attName = de.getDataElementConcept().getProperty().getLongName();
+          ObjectUpdater.updateByAltName(attName, concepts, newConcepts);
+
+          // sent change tracker event for each element
+          List<DataElement> des = (List<DataElement>)ElementsLists.getInstance().getElements(DomainObjectFactory.newDataElement().getClass());
+          for(DataElement _de : des) {
+            if(_de.getDataElementConcept().getProperty().getLongName().equals(attName)) {
+              fireElementChangeEvent(new ElementChangeEvent(_de));
+            }
+          }
         }
-      } else if(o instanceof ValueMeaning) {
+      } 
+      if(o instanceof ValueMeaning) {
         ValueMeaning vm = (ValueMeaning)o;
         ObjectUpdater.update(vm, concepts, newConcepts);
       } else if(o instanceof ObjectClassRelationship) {
