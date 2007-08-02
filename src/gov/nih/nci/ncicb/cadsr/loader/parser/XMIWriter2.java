@@ -64,7 +64,7 @@ public class XMIWriter2 implements ElementWriter {
     try {
       handler = (XmiInOutHandler)(UserSelections.getInstance().getProperty("XMI_HANDLER"));
 
-      model = handler.getModel("EA Model");
+      model = handler.getModel();
 
       this.cadsrObjects = elements;
     

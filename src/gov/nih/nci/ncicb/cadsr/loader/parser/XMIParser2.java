@@ -87,7 +87,8 @@ public class XMIParser2 implements Parser {
   public static final String TV_VD_TYPE = "CADSR_ValueDomainType";
   public static final String TV_CD_ID = "CADSR_ConceptualDomainPublicID";
   public static final String TV_CD_VERSION = "CADSR_ConceptualDomainVersion";
-
+  public static final String TV_REP_ID = "CADSR_RepresentationPublicID";
+  public static final String TV_REP_VERSION = "CADSR_RepresentationVersion";
 
   public static final String TV_INHERITED_DE_ID = "CADSR_Inherited.{1}.DE_ID";
   public static final String TV_INHERITED_DE_VERSION = "CADSR_Inherited.{1}.DE_VERSION";
@@ -229,11 +230,6 @@ public class XMIParser2 implements Parser {
         if(filename.indexOf(".") > 0)
           ext = filename.substring(filename.lastIndexOf(".") + 1);
 
-        if(ext != null && ext.equals("uml"))
-          handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.ArgoUMLDefault);
-        else
-          handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
-        
         String s = filename.replaceAll("\\ ", "%20");
         
         // Some file systems use absolute URIs that do 
@@ -241,15 +237,39 @@ public class XMIParser2 implements Parser {
         if(!s.startsWith("/"))
           s = "/" + s;    
         java.net.URI uri = new java.net.URI("file://" + s);
+
+
+        HandlerEnum handlerEnum = null;
+        if(ext != null && ext.equals("uml")) 
+          handlerEnum = HandlerEnum.ArgoUMLDefault;
+        else
+          handlerEnum = HandlerEnum.EADefault;
+
+        handler = XmiHandlerFactory.getXmiHandler(handlerEnum);
         handler.load(uri);
+        UMLModel model = handler.getModel();
+        if(model == null) {
+          logger.info("Can't open file with expected parser, will try another");
+          if(handlerEnum.equals(HandlerEnum.EADefault))
+            handlerEnum = HandlerEnum.ArgoUMLDefault;
+          else
+            handlerEnum = HandlerEnum.EADefault;
+          
+          handler = XmiHandlerFactory.getXmiHandler(handlerEnum);
+          handler.load(uri);
+          model = handler.getModel();
+          if(model == null) {
+            throw new Exception("Can't open file. Unknown format.");
+          } 
+        } 
         
         // save in memory for fast-save
         UserSelections.getInstance().setProperty("XMI_HANDLER", handler);
       }
 
 //       UMLModel model = handler.getModel("EA Model");
+
       UMLModel model = handler.getModel();
-  
       totalNumberOfElements = countNumberOfElements(model);
       
       evt.setMessage("Parsing ...");
@@ -272,8 +292,7 @@ public class XMIParser2 implements Parser {
       listener.endParsing();
       long stop = System.currentTimeMillis();
       logger.debug("parsing took: "+(stop-start)+" ms");
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new ParserException(e);
     } // end of try-catch
   }
@@ -536,6 +555,20 @@ public class XMIParser2 implements Parser {
     if(tv != null) {
       try {
         event.setCdVersion(new Float(tv.getValue()));
+      } catch (NumberFormatException e){
+        logger.warn(PropertyAccessor.getProperty("version.numberFormatException", tv.getValue()));
+      } // end of try-catch
+    }
+
+    tv = clazz.getTaggedValue(TV_REP_ID);
+    if(tv != null) {
+      event.setRepTermId(tv.getValue().trim());
+    }
+    
+    tv = clazz.getTaggedValue(TV_REP_VERSION);
+    if(tv != null) {
+      try {
+        event.setRepTermVersion(new Float(tv.getValue()));
       } catch (NumberFormatException e){
         logger.warn(PropertyAccessor.getProperty("version.numberFormatException", tv.getValue()));
       } // end of try-catch
