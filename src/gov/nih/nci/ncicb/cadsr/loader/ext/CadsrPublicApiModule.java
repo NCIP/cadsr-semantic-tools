@@ -105,7 +105,6 @@ public class CadsrPublicApiModule implements CadsrModule {
   public Collection<gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain>
     findConceptualDomain(Map<String, Object> queryFields) throws Exception {
     
-    
     gov.nih.nci.cadsr.domain.ConceptualDomain searchCD = new gov.nih.nci.cadsr.domain.ConceptualDomain();
     
     buildExample(searchCD, queryFields);
@@ -113,6 +112,18 @@ public class CadsrPublicApiModule implements CadsrModule {
     List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.ConceptualDomain.class, searchCD)));
     
     return CadsrTransformer.cdListPublicToPrivate(listResult);
+  }
+
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.Representation>
+    findRepresentation(Map<String, Object> queryFields) throws Exception {
+    
+    gov.nih.nci.cadsr.domain.Representation searchRep = new gov.nih.nci.cadsr.domain.Representation();
+    
+    buildExample(searchRep, queryFields);
+
+    List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.Representation.class, searchRep)));
+    
+    return CadsrTransformer.repListPublicToPrivate(listResult);
   }
 
   

@@ -78,6 +78,16 @@ public class CadsrPrivateApiModule implements CadsrModule
   }
 
 
+  public Collection<Representation>
+    findRepresentation(Map<String, Object> queryFields) throws Exception  {
+
+    Representation rep = DomainObjectFactory.newRepresentation();
+    buildExample(rep, queryFields);
+
+    return DAOAccessor.getRepresentationDAO().find(rep);
+
+  }
+
   
   public Collection<DataElement>
     findDataElement(Map<String, Object> queryFields) throws Exception  {

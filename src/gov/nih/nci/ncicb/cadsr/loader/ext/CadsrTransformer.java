@@ -102,12 +102,33 @@ public class CadsrTransformer {
     return outCD;
   }
 
+  public static gov.nih.nci.ncicb.cadsr.domain.Representation repPublicToPrivate(gov.nih.nci.cadsr.domain.Representation inRep) {
+
+    gov.nih.nci.ncicb.cadsr.domain.Representation outRep = DomainObjectFactory.newRepresentation();    
+
+    acPublicToPrivate(outRep, inRep);
+
+    return outRep;
+  }
+
   public static List<gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain> cdListPublicToPrivate(List<gov.nih.nci.cadsr.domain.ConceptualDomain> inCDs) {
 
-    List<gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain> result = new ArrayList();
+    List<gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain> result = 
+      new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain>();
 
     for(gov.nih.nci.cadsr.domain.ConceptualDomain inCD : inCDs) {
       result.add(cdPublicToPrivate(inCD));
+    }
+    return result;
+  }
+
+  public static List<gov.nih.nci.ncicb.cadsr.domain.Representation> repListPublicToPrivate(List<gov.nih.nci.cadsr.domain.Representation> inReps) {
+
+    List<gov.nih.nci.ncicb.cadsr.domain.Representation> result = 
+      new ArrayList<gov.nih.nci.ncicb.cadsr.domain.Representation>();
+
+    for(gov.nih.nci.cadsr.domain.Representation inRep : inReps) {
+      result.add(repPublicToPrivate(inRep));
     }
     return result;
   }

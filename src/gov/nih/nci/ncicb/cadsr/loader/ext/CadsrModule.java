@@ -34,6 +34,8 @@ public interface CadsrModule
   public Collection<gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain>
     findConceptualDomain(Map<String, Object> queryFields) throws Exception;
 
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.Representation>
+    findRepresentation(Map<String, Object> queryFields) throws Exception;
   
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement>
     findDataElement(Map<String, Object> queryFields) throws Exception;
