@@ -29,7 +29,7 @@
     <jar href="lib/commons-logging.jar"/>
     <jar href="lib/datafile.jar"/>
     <jar href="lib/dom4j-1.4.jar"/>
-    <jar href="lib/ehcache-0.7.jar"/>
+    <jar href="lib/ehcache-1.2.3.jar"/>
     <jar href="lib/freemarker.jar"/>
     <jar href="lib/freestylesearch.jar"/>
     <jar href="lib/hibernate3.jar"/>
