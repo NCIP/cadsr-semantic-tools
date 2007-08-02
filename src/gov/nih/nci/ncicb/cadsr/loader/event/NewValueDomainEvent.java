@@ -32,10 +32,48 @@ public class NewValueDomainEvent extends NewConceptualEvent {
   private String cdId;
   private Float cdVersion;
   private String packageName;
+  private String repTermId;
+  private Float repTermVersion;
 
   public NewValueDomainEvent(String name) {
     this.name = name;
   }
+
+
+  /**
+   * Get the RepTermVersion value.
+   * @return the RepTermVersion value.
+   */
+  public Float getRepTermVersion() {
+    return repTermVersion;
+  }
+
+  /**
+   * Set the RepTermVersion value.
+   * @param newRepTermVersion The new RepTermVersion value.
+   */
+  public void setRepTermVersion(Float newRepTermVersion) {
+    this.repTermVersion = newRepTermVersion;
+  }
+
+  
+  /**
+   * Get the RepId value.
+   * @return the RepId value.
+   */
+  public String getRepTermId() {
+    return repTermId;
+  }
+
+  /**
+   * Set the RepId value.
+   * @param newRepId The new RepId value.
+   */
+  public void setRepTermId(String newRepId) {
+    this.repTermId = newRepId;
+  }
+
+  
 
   public String getName() {
     return name;

@@ -116,11 +116,13 @@ public class UMLDefaultHandler
 //     if(result.size() > 0) {
 //       cd = result.get(0);
 //     }
-      
-
 
     vd.setConceptualDomain(cd);
 
+    Representation repTerm = DomainObjectFactory.newRepresentation();
+    repTerm.setPublicId(event.getRepTermId());
+    repTerm.setVersion(event.getRepTermVersion());
+    vd.setRepresentation(repTerm);
 
     // create CSI for package (since 3.2)
     ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
