@@ -135,6 +135,21 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
               ("vd.missing.cdVersion", vd.getLongName()), vd));
         }
 
+        if(StringUtil.isEmpty(vd.getRepresentation().getPublicId())) {
+          items.addItem
+            (new ValidationError
+             (PropertyAccessor.getProperty
+              ("vd.missing.repTermId", vd.getLongName()), vd));
+        }
+        if(vd.getRepresentation().getVersion() == null) {
+          items.addItem
+            (new ValidationError
+             (PropertyAccessor.getProperty
+              ("vd.missing.repTermVersion", vd.getLongName()), vd));
+        }
+        
+
+
         if(vd.getConceptualDomain().getVersion() != null && 
            vd.getConceptualDomain().getPublicId() != null) {
           
@@ -160,8 +175,35 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
           } catch (Exception e){
             logger.error("Cannot query cadsr for CD " + e);
           } // end of try-catch
-
         }
+
+        if(vd.getRepresentation().getVersion() != null && 
+           vd.getRepresentation().getPublicId() != null) {
+          
+          Map<String, Object> queryFields = 
+            new HashMap<String, Object>();
+          queryFields.put(CadsrModule.PUBLIC_ID, vd.getRepresentation().getPublicId());
+          try {
+            queryFields.put(CadsrModule.VERSION, vd.getRepresentation().getVersion());
+            Collection<Representation> repTerms = cadsrModule.findRepresentation(queryFields);
+            if(repTerms.size() != 1) {
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.repTerm.match.incorrect", vd.getLongName()), vd));
+            } else {
+              vd.setRepresentation(repTerms.iterator().next());
+            }
+          } catch (NumberFormatException e) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.missing.repVersionId", vd.getLongName()), vd));
+          } catch (Exception e){
+            logger.error("Cannot query cadsr for Representation " + e);
+          } 
+        }
+
 
         Map<String, Object> queryFields = 
           new HashMap<String, Object>();
