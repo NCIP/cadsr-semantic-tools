@@ -42,6 +42,7 @@ public class DAOAccessor implements Runnable {
   private static LoaderDAO loaderDAO;
   private static ContextDAO contextDAO;
   private static ConceptualDomainDAO conceptualDomainDAO;
+  private static RepresentationDAO representationDAO;
 
   private static Logger logger = Logger.getLogger(DAOAccessor.class.getName());
 
@@ -109,6 +110,10 @@ public class DAOAccessor implements Runnable {
     conceptualDomainDAO = (ConceptualDomainDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("conceptualDomainDAO");
 
+    logger.debug("Loading RepresentationDAO bean");
+    representationDAO = (RepresentationDAO) ApplicationContextFactory.getApplicationContext()
+      .getBean("representationDAO");
+
     logger.debug("Loading LoaderDAO bean");
     loaderDAO = (LoaderDAO) ApplicationContextFactory.getApplicationContext()
       .getBean("loaderDAO");
@@ -173,6 +178,10 @@ public class DAOAccessor implements Runnable {
 
   public synchronized static ConceptualDomainDAO getConceptualDomainDAO() {
     return conceptualDomainDAO;
+  }
+
+  public synchronized static RepresentationDAO getRepresentationDAO() {
+    return representationDAO;
   }
 
   public void run() {
