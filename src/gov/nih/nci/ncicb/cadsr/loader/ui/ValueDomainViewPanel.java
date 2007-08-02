@@ -9,12 +9,14 @@ public class ValueDomainViewPanel extends JPanel
     vdDatatypeTitleLabel = new JLabel("VD Datatype"),
     vdTypeTitleLabel = new JLabel("VD Type"),
     vdCdIdTitleLabel = new JLabel("VD CD PublicId / Version"),
+    vdRepIdTitleLabel = new JLabel("Representation PublicId / Version"),
     vdCdLongNameTitleLabel = new JLabel("VD CD Long Name");
   
   private JTextArea vdPrefDefValueTextField = new JTextArea();
   private JTextField vdDatatypeValueLabel = new JTextField(),
     vdTypeValueLabel = new JTextField(),
     vdCdIdValueLabel = new JTextField(),
+    vdRepIdValueLabel = new JTextField(),
     vdCdLongNameValueLabel = new JTextField();
   
   private JScrollPane scrollPane;
@@ -43,6 +45,7 @@ public class ValueDomainViewPanel extends JPanel
     vdDatatypeValueLabel.setEditable(false);
     vdTypeValueLabel.setEditable(false);
     vdCdIdValueLabel.setEditable(false);
+    vdRepIdValueLabel.setEditable(false);
     vdCdLongNameValueLabel.setEditable(false);
         
     vdPrefDefValueTextField.setLineWrap(true);
@@ -69,6 +72,9 @@ public class ValueDomainViewPanel extends JPanel
     
     insertInBag(mainPanel, vdCdLongNameTitleLabel, 0, 6);
     insertInBag(mainPanel, vdCdLongNameValueLabel, 1, 6);
+
+    insertInBag(mainPanel, vdRepIdTitleLabel, 0, 7);
+    insertInBag(mainPanel, vdRepIdValueLabel, 1, 7);
     
     this.add(mainPanel);
   }
@@ -85,6 +91,10 @@ public class ValueDomainViewPanel extends JPanel
       vdCdLongNameValueLabel.setText(vd.getConceptualDomain().getLongName());
     else
       vdCdLongNameValueLabel.setText("Unable to lookup CD Long Name");
+
+    vdRepIdValueLabel.setText(vd.getRepresentation().getPublicId() +
+      " / " + vd.getRepresentation().getVersion());
+
   }
   
   private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
