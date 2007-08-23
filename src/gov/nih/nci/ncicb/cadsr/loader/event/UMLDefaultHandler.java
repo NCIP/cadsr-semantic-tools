@@ -691,7 +691,11 @@ public class UMLDefaultHandler
                 populateExistingVd(existingVd, vdIdVersionPair.getId(), vdIdVersionPair.getVersion(), className + "." + propName);
                 newDe.setValueDomain(existingVd);
               } else {
-                newDe.setValueDomain(de.getValueDomain());
+                ValueDomain newVD = DomainObjectFactory.newValueDomain();
+                newVD.setLongName(de.getValueDomain().getLongName());
+                newVD.setPublicId(de.getValueDomain().getPublicId());
+                newVD.setVersion(de.getValueDomain().getVersion());
+                newDe.setValueDomain(newVD);
               }
             }
           }
