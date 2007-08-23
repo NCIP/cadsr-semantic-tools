@@ -608,6 +608,10 @@ public class XMIWriter2 implements ElementWriter {
   }
  
 
+  /**
+   * This method moved to DefinitionSplitter. Remove in next version. 
+   * @deprecated
+   */
   private void addSplitTaggedValue(UMLTaggableElement elt, String tag, String value, String separator) 
   {  
 
