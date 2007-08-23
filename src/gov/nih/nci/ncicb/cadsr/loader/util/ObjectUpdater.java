@@ -180,24 +180,27 @@ public class ObjectUpdater {
         }
       }
       for(ObjectClassRelationship ocr : ocrs) {
-        for(ComponentConcept compCon : ocr.getConceptDerivationRule().getComponentConcepts()) {
-          if(concept.getPreferredName().equals(compCon.getConcept().getPreferredName())) {
-            found = true;
-            continue a;
+        if(ocr.getConceptDerivationRule() != null)
+          for(ComponentConcept compCon : ocr.getConceptDerivationRule().getComponentConcepts()) {
+            if(concept.getPreferredName().equals(compCon.getConcept().getPreferredName())) {
+              found = true;
+              continue a;
+            }
           }
-        }
-        for(ComponentConcept compCon : ocr.getSourceRoleConceptDerivationRule().getComponentConcepts()) {
-          if(concept.getPreferredName().equals(compCon.getConcept().getPreferredName())) {
-            found = true;
-            continue a;
+        if(ocr.getSourceRoleConceptDerivationRule() != null)
+          for(ComponentConcept compCon : ocr.getSourceRoleConceptDerivationRule().getComponentConcepts()) {
+            if(concept.getPreferredName().equals(compCon.getConcept().getPreferredName())) {
+              found = true;
+              continue a;
+            }
           }
-        }
-        for(ComponentConcept compCon : ocr.getTargetRoleConceptDerivationRule().getComponentConcepts()) {
-          if(concept.getPreferredName().equals(compCon.getConcept().getPreferredName())) {
-            found = true;
-            continue a;
-          }
-        }        
+        if(ocr.getTargetRoleConceptDerivationRule() != null)
+          for(ComponentConcept compCon : ocr.getTargetRoleConceptDerivationRule().getComponentConcepts()) {
+            if(concept.getPreferredName().equals(compCon.getConcept().getPreferredName())) {
+              found = true;
+              continue a;
+            }
+          }        
       }
       if(!found) {
         removeFromConcepts(concept);
