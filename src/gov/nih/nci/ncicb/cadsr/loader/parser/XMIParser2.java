@@ -39,6 +39,7 @@ import gov.nih.nci.ncicb.xmiinout.util.ModelUtil;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterClass;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterPackage;
+import java.io.*;
 
 import java.util.*;
 
@@ -986,8 +987,6 @@ public class XMIParser2 implements Parser {
         }
       }
     }
-//     if(sb.length() > 2000)
-//       return sb.substring(0, 2000);
 
     return sb.toString();
   }
