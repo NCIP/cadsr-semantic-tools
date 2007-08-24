@@ -694,7 +694,8 @@ public class UMLDefaultHandler
                 ValueDomain newVD = DomainObjectFactory.newValueDomain();
                 newVD.setLongName(de.getValueDomain().getLongName());
                 newVD.setPublicId(de.getValueDomain().getPublicId());
-                newVD.setVersion(de.getValueDomain().getVersion());
+                newVD.setVersion(de.getValueDomain().getVersion()); 
+                newVD.setContext(de.getValueDomain().getContext());
                 newDe.setValueDomain(newVD);
               }
             }
