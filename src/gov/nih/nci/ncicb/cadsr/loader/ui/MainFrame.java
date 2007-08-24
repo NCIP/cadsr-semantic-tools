@@ -224,7 +224,7 @@ public class MainFrame extends JFrame
     mainMenuBar.add(elementMenu);
 
     if(runMode.equals(RunMode.Reviewer)) {
-      runMenu.add(defaultsMenuItem);
+//       runMenu.add(defaultsMenuItem);
       runMenu.add(validateConceptsMenuItem);
       mainMenuBar.add(runMenu);
     }
