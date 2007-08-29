@@ -274,6 +274,76 @@ public class CadsrPublicApiModule implements CadsrModule {
     throw new RuntimeException("not implemented");
   }
 
+  public List<gov.nih.nci.ncicb.cadsr.domain.Concept> getConcepts(gov.nih.nci.ncicb.cadsr.domain.ObjectClass oc) {
+    ArrayList<gov.nih.nci.ncicb.cadsr.domain.Concept> result = 
+      new ArrayList<gov.nih.nci.ncicb.cadsr.domain.Concept>();
+
+    if(StringUtil.isEmpty(oc.getPublicId()))
+      return result;
+
+    try {
+      gov.nih.nci.cadsr.domain.ObjectClass searchOC = new gov.nih.nci.cadsr.domain.ObjectClass();
+      searchOC.setPublicID(new Long(oc.getPublicId()));
+      searchOC.setVersion(oc.getVersion());
+      
+      List<gov.nih.nci.cadsr.domain.ObjectClass> ocs =  
+        service.search(gov.nih.nci.cadsr.domain.ObjectClass.class.getName(), searchOC);
+
+      if(ocs.size() != 1)
+        return result;
+
+      gov.nih.nci.cadsr.domain.ObjectClass resOc = ocs.iterator().next();
+      Collection<gov.nih.nci.cadsr.domain.ComponentConcept> comps = resOc.getConceptDerivationRule().getComponentConceptCollection();
+
+      for(gov.nih.nci.cadsr.domain.ComponentConcept comp : comps) {
+        gov.nih.nci.cadsr.domain.Concept conc = comp.getConcept();
+        gov.nih.nci.ncicb.cadsr.domain.Concept concept = DomainObjectFactory.newConcept();
+        CadsrTransformer.acPublicToPrivate(concept, conc);
+        result.add(0, concept);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    } // end of try-catch
+
+    return result;
+
+    
+  }
+  public List<gov.nih.nci.ncicb.cadsr.domain.Concept> getConcepts(gov.nih.nci.ncicb.cadsr.domain.Property prop) {
+    ArrayList<gov.nih.nci.ncicb.cadsr.domain.Concept> result = 
+      new ArrayList<gov.nih.nci.ncicb.cadsr.domain.Concept>();
+
+    if(StringUtil.isEmpty(prop.getPublicId()))
+      return result;
+
+    try {
+      gov.nih.nci.cadsr.domain.Property searchProp = new gov.nih.nci.cadsr.domain.Property();
+      searchProp.setPublicID(new Long(prop.getPublicId()));
+      searchProp.setVersion(prop.getVersion());
+      
+      List<gov.nih.nci.cadsr.domain.Property> props =  
+        service.search(gov.nih.nci.cadsr.domain.Property.class.getName(), searchProp);
+
+      if(props.size() != 1)
+        return result;
+
+      gov.nih.nci.cadsr.domain.Property resProp = props.iterator().next();
+      Collection<gov.nih.nci.cadsr.domain.ComponentConcept> comps = resProp.getConceptDerivationRule().getComponentConceptCollection();
+
+      for(gov.nih.nci.cadsr.domain.ComponentConcept comp : comps) {
+        gov.nih.nci.cadsr.domain.Concept conc = comp.getConcept();
+        gov.nih.nci.ncicb.cadsr.domain.Concept concept = DomainObjectFactory.newConcept();
+        CadsrTransformer.acPublicToPrivate(concept, conc);
+        result.add(0, concept);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    } // end of try-catch
+
+    return result;
+  }
+
+
   public boolean matchDEToPropertyConcepts(gov.nih.nci.ncicb.cadsr.domain.DataElement de, String[] conceptCodes) throws Exception {
 
     if(StringUtil.isEmpty(de.getPublicId()))
@@ -389,20 +459,29 @@ public class CadsrPublicApiModule implements CadsrModule {
         
 //       }
 
-      System.out.println("Test matchDE");
-      gov.nih.nci.ncicb.cadsr.domain.DataElement de = DomainObjectFactory.newDataElement();
-      de.setPublicId("2533339");
-      String[] conceptCodes = new String[] {"C43821", "C16423"};
-      // test that should return true
-      if(testModule.matchDEToPropertyConcepts(de, conceptCodes))
-        System.out.println("ok");
+//       System.out.println("Test matchDE");
+//       gov.nih.nci.ncicb.cadsr.domain.DataElement de = DomainObjectFactory.newDataElement();
+//       de.setPublicId("2533339");
+//       String[] conceptCodes = new String[] {"C43821", "C16423"};
+//       // test that should return true
+//       if(testModule.matchDEToPropertyConcepts(de, conceptCodes))
+//         System.out.println("ok");
+//
+//       conceptCodes = new String[] {"C16423", "C43821"};
+//       // test that should return false
+//       if(!testModule.matchDEToPropertyConcepts(de, conceptCodes))
+//         System.out.println("ok");
+//      
 
-      conceptCodes = new String[] {"C16423", "C43821"};
-      // test that should return false
-      if(!testModule.matchDEToPropertyConcepts(de, conceptCodes))
-        System.out.println("ok");
-      
-
+      System.out.println("Test find OC Concepts");
+      gov.nih.nci.ncicb.cadsr.domain.ObjectClass oc = DomainObjectFactory.newObjectClass();
+      oc.setPublicId("2241624");
+//       oc.setPublicId("2557779");
+      oc.setVersion(1f);
+      List<gov.nih.nci.ncicb.cadsr.domain.Concept> concepts = testModule.getConcepts(oc);
+      for(gov.nih.nci.ncicb.cadsr.domain.Concept con : concepts) {
+        System.out.println(con.getLongName());
+      }
 
     }
     catch (Exception e) {

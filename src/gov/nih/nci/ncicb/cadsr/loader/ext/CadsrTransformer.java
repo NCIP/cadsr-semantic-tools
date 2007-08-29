@@ -138,7 +138,7 @@ public class CadsrTransformer {
   /**
    * Copies values from inAc to outAc
    */
-  private static void acPublicToPrivate(gov.nih.nci.ncicb.cadsr.domain.AdminComponent outAc, gov.nih.nci.cadsr.domain.AdministeredComponent inAc) {
+  public static void acPublicToPrivate(gov.nih.nci.ncicb.cadsr.domain.AdminComponent outAc, gov.nih.nci.cadsr.domain.AdministeredComponent inAc) {
 
     gov.nih.nci.ncicb.cadsr.domain.Lifecycle lc = DomainObjectFactory.newLifecycle();
     gov.nih.nci.ncicb.cadsr.domain.Audit audit = DomainObjectFactory.newAudit();

@@ -57,6 +57,19 @@ public interface CadsrModule
     throws Exception;
 
   /**
+   * @param oc ObjectClass to look for. PubID must be set.
+   * @return ordered list of concept (primary first)
+   */
+  public List<gov.nih.nci.ncicb.cadsr.domain.Concept> getConcepts(gov.nih.nci.ncicb.cadsr.domain.ObjectClass oc);
+
+  /**
+   * @param prop Property to look for. PubID must be set.
+   * @return ordered list of concept (primary first)
+   */
+  public List<gov.nih.nci.ncicb.cadsr.domain.Concept> getConcepts(gov.nih.nci.ncicb.cadsr.domain.Property prop);
+
+
+  /**
    * Verify that this CDE's property has the provided concepts
    * DE must have publicID and version
    */
