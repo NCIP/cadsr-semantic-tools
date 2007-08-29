@@ -41,10 +41,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
     orderOfConceptsBox = new JCheckBox(PropertyAccessor.getProperty("preference.concept.order")),
     showInheritedAttributesBox = new JCheckBox(PropertyAccessor.getProperty("preference.inherited.attributes")),
     sortElementsBox = new JCheckBox(PropertyAccessor.getProperty("preference.sort.elements")),
-    preTBox = new JCheckBox(PropertyAccessor.getProperty("preference.concept.validator.preT"));
-
-  
-
+    preTBox = new JCheckBox(PropertyAccessor.getProperty("preference.concept.validator.preT")),
+    inheritedCDEMappingBox = new JCheckBox(PropertyAccessor.getProperty("preference.inherited.cde.warning"));
   
   private JButton apply = new JButton("Apply");
   private JButton cancel = new JButton("Cancel");
@@ -70,11 +68,12 @@ public class PreferenceDialog extends JDialog implements ActionListener
     centerPanel.add(showInheritedAttributesBox);
     centerPanel.add(sortElementsBox);
     centerPanel.add(preTBox);
+//     centerPanel.add(inheritedCDEMappingBox);
 
     this.getContentPane().setLayout(new BorderLayout());
     this.getContentPane().add(centerPanel);
     this.getContentPane().add(southPanel,BorderLayout.SOUTH);
-    this.setSize(300,325);
+    this.setSize(300,350);
     
     apply.setActionCommand(APPLY);
     cancel.setActionCommand(CANCEL);
@@ -112,6 +111,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
 
     preTBox.setSelected(prefs.getPreTBox());
 
+    inheritedCDEMappingBox.setSelected(prefs.getBoolean("de.over.vd.mapping.warning"));
   }
   
   public void actionPerformed(ActionEvent event) 
@@ -144,6 +144,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
       prefs.setSortElements(sortElementsBox.isSelected());
       
       prefs.setPreTBox(preTBox.isSelected());
+
+      prefs.setBoolean("de.over.vd.mapping.warning", inheritedCDEMappingBox.isSelected());
       
       if(button.getActionCommand().equals(OK))
         this.dispose();
