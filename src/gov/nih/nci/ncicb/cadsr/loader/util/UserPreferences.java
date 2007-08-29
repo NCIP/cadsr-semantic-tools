@@ -270,6 +270,19 @@ public class UserPreferences {
     prefs.put(runMode.toString() + "-recentFiles", sb.toString());
   }
 
+  public void setBoolean(String property, boolean b) {
+    UserSelections selections = UserSelections.getInstance();
+
+    prefs.put(property, new Boolean(b).toString());
+  }
+
+  public boolean getBoolean(String property) {
+    UserSelections selections = UserSelections.getInstance();
+
+    return new Boolean(prefs.get(property, "false"));
+    
+  }
+
   private void fireUserPreferencesEvent(UserPreferencesEvent event) 
   {
     for(UserPreferencesListener l : userPrefsListeners)
