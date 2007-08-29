@@ -10,6 +10,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.DEMappingUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -55,6 +56,10 @@ public class DEPanel extends JPanel
   private static final String SEARCH = "SEARCH", CLEAR = "CLEAR";
 
   private boolean modified = false;
+
+  private InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
+
+  private UserPreferences userPrefs = UserPreferences.getInstance();
   
   public DEPanel(UMLNode node)  {
     this.node = node;
@@ -249,7 +254,15 @@ public class DEPanel extends JPanel
   {
     if(!modified)
       return;
-    
+
+    // uncomment to enable feature
+
+//     if(inheritedAttributes.isInherited(de)) { 
+//       if(!userPrefs.getBoolean("de.over.vd.mapping.warning")) {
+//         DontWarnMeAgainDialog dontWarnDialog = new DontWarnMeAgainDialog("de.over.vd.mapping.warning");
+//       }
+//     }
+
     modified = false;
     
     de.setLongName(tempDE.getLongName());
