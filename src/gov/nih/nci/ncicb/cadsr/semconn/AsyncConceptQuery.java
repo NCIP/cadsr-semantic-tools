@@ -55,25 +55,25 @@ public class AsyncConceptQuery implements Callable<String> {
         SemmConnUtility.evaluateString(term, options, words);
 
         for (final String s : options) {
-            final List<Concept> result = (List<Concept>) searchEvs(s);
-            if (!result.isEmpty() && found.isEmpty()) {
-                found.addAll(result);
-            }
+          final List<Concept> result = (List<Concept>) searchEvs(s);
+          if (!result.isEmpty() && found.isEmpty()) {
+            found.addAll(0, result);
+          }
         }
 
         if (found.isEmpty()) {
-            for (final String s : words) {
-                final List<Concept> result2 = (List<Concept>) searchEvs(s);
-                if (!result2.isEmpty()) {
-                    found.addAll(result2);
-                }
+          for (final String s : words) {
+            final List<Concept> result2 = (List<Concept>) searchEvs(s);
+            if (!result2.isEmpty()) {
+              found.addAll(0, result2);
             }
+          }
         }
 
         for (final Concept con : found) {
-            ElementsLists.getInstance().addElement(con);
+          ElementsLists.getInstance().addElement(con);
         }
-
+        
         final String name = ConceptUtil.preferredNameFromConcepts(found);
         //System.out.println("Concept Preferred Name:" + name);
         //System.err.println(tid + " async call (" + term + ") returned: " + name);
