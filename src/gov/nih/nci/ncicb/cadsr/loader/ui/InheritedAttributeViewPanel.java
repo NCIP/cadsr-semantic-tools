@@ -34,6 +34,8 @@ public class InheritedAttributeViewPanel extends JPanel
   private ApplyButtonPanel applyButtonPanel;
   private NavigationButtonPanel navButtonPanel;
 
+  private JLabel explainLabel;
+
   private UMLNode node;
 
   static final String DE_PANEL_KEY = "dePanel", 
@@ -45,6 +47,8 @@ public class InheritedAttributeViewPanel extends JPanel
 
   private InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
 
+  private JLabel conceptNamesLabel = new JLabel();
+
   public InheritedAttributeViewPanel(UMLNode node) 
   {
     this.node = node;
@@ -55,13 +59,9 @@ public class InheritedAttributeViewPanel extends JPanel
     applyButtonPanel = new ApplyButtonPanel(this, (ReviewableUMLNode)node);
     navButtonPanel = new NavigationButtonPanel();    
 
-//     buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);
-
-//     conceptEditorPanel.addPropertyChangeListener(buttonPanel);
     dePanel.addPropertyChangeListener(applyButtonPanel);
     vdPanel.addPropertyChangeListener(applyButtonPanel);
-    //     ocPanel.addPropertyChangeListener(buttonPanel);
-//     cardPanel = new JPanel();
+
     initUI();
     updateNode(node);
   }
@@ -73,15 +73,25 @@ public class InheritedAttributeViewPanel extends JPanel
     JPanel editPanel = new JPanel();
     editPanel.setLayout(new GridBagLayout());
 
+    JPanel signaturePanel = new JPanel(new FlowLayout());
+    JLabel conceptNamesTitle = new JLabel("UML Concepts: ");
+    signaturePanel.add(conceptNamesTitle);
+    signaturePanel.add(conceptNamesLabel);
+
+//     add(signaturePanel, BorderLayout.NORTH);
+
+    explainLabel = new JLabel("<html><u color=BLUE>Explain this</u></html>");
+    ToolTipManager.sharedInstance().registerComponent(explainLabel);
+    ToolTipManager.sharedInstance().setDismissDelay(3600000);
+//     insertInBag(editPanel, explainLabel, 1, 0);
+    
     if(prefs.getUmlDescriptionOrder().equals("first"))
-      insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 0);
+      insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 1, 2, 1);
     else
-      insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 3); 
+      insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 4, 2, 1); 
 
-    insertInBag(editPanel, dePanel, 0, 1);
-    insertInBag(editPanel, vdPanel, 0, 2);
-
-//     if(prefs.getUmlDescriptionOrder().equals("last"))
+    insertInBag(editPanel, dePanel, 0, 2);
+    insertInBag(editPanel, vdPanel, 0, 3);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); 
@@ -134,10 +144,6 @@ public class InheritedAttributeViewPanel extends JPanel
   {
   
     dePanel.applyPressed();
-//     if(displayedPanel instanceof Editable) 
-//     {
-//      ((Editable)displayedPanel).applyPressed();
-//     }
     vdPanel.applyPressed();
 
     updateView();
@@ -148,24 +154,10 @@ public class InheritedAttributeViewPanel extends JPanel
   public void updateNode(UMLNode node) {
     
     this.node = node;
-    // is UMLNode a de?
-//    DataElement de = (DataElement)node.getUserObject();
-
-//     if(!StringUtil.isEmpty(de.getPublicId())) {
-//       switchCards(DE_PANEL_KEY);
-//     } else {
-//       switchCards(CONCEPT_PANEL_KEY);
-//     }
       
     dePanel.updateNode(node);
     vdPanel.updateNode(node);
 
-    
-//     buttonPanel.setEditablePanel(dePanel);
-
-//     buttonPanel.propertyChange
-//       (new PropertyChangeEvent(this, ButtonPanel.SETUP, null, true));
-    
     applyButtonPanel.update();
     
     // need to figure out what goes in next line
@@ -194,7 +186,6 @@ public class InheritedAttributeViewPanel extends JPanel
 
     DataElement de = (DataElement)node.getUserObject();
     DataElement parentDE = inheritedAttributes.getParent(de);
-      // (DataElement)parentNode.getUserObject();
       
     // we only show dePanel 
     // if parent is mapped to DE or
@@ -210,20 +201,27 @@ public class InheritedAttributeViewPanel extends JPanel
           ));
     }
     
-//     if (parentNode != null) {
-//       if(StringUtil.isEmpty(parentDE.getPublicId())) {
-//         dePanel.setVisible(false);
-//       } else {
-//         dePanel.setVisible(true);
-//       }
-//     }
-
     if(StringUtil.isEmpty(de.getPublicId())) {
       vdPanel.setVisible(true);
     } else {
       vdPanel.setVisible(false);
     }
     
+    if(dePanel.isVisible()) {
+      explainLabel.setToolTipText("<html>From here, you may either map to a Value Domain<br>" + 
+                                  "or a CDE. Please note that if you map to a CDE, <br>" + 
+                                  "any Value Domain mapping for this attribute will be cleared.<br>" + 
+                                  "Your CDE queries will be filtered to CDEs that match existing<br>" + 
+                                  "Object Class or Property mappings</html>");
+    } else if(!dePanel.isVisible() && vdPanel.isVisible()){
+      explainLabel.setToolTipText("<html> You may only map this inherited attribute to a Value Domain.<br>" + 
+                                  "If you need to map this inherited attribute to an existing CDE,<br>" + 
+                                  " you will need to remove the concept mapping of the parent attribute.</html>");
+    } else {
+      explainLabel.setToolTipText("<html>Because this inherited attribute is mapped to a caDSR <br>" + 
+                                  "Local Value Domain, you may not map the attribute to a CDE or a Value Domain.<br>" + 
+                                  "You can remove the mapping to the caDSR Local Value Domain in your UML modeling tool.</html>");
+    }
 
   }
 
