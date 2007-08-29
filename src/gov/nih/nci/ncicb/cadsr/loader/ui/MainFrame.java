@@ -559,9 +559,14 @@ public class MainFrame extends JFrame
 
   private void newTab(ViewChangeEvent event, UMLNode node) {
     String tabTitle = node.getDisplay();
-    if(node instanceof AttributeNode) 
-      tabTitle = node.getParent().getDisplay() 
-        + "." + tabTitle;
+    if(node instanceof AttributeNode) {
+      if(event.getType() == ViewChangeEvent.VIEW_INHERITED) 
+        tabTitle = node.getParent().getParent().getDisplay() 
+          + "." + tabTitle;
+      else
+        tabTitle = node.getParent().getDisplay() 
+          + "." + tabTitle;
+    }
     
     NodeViewPanel viewPanel = null;
     if(event.getType() == ViewChangeEvent.VIEW_INHERITED) {
