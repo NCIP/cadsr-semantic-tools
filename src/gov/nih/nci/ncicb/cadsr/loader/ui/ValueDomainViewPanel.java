@@ -54,6 +54,9 @@ public class ValueDomainViewPanel extends JPanel
     scrollPane
       .setVerticalScrollBarPolicy
       (JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+    //    scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+
     //vdPrefDefValueTextField.setSize(200,200);
     scrollPane = new JScrollPane(vdPrefDefValueTextField);
     scrollPane.setPreferredSize(new Dimension(200, 100));

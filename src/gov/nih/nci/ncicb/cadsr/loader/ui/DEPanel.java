@@ -78,6 +78,8 @@ public class DEPanel extends JPanel
 
     scrollPane = new JScrollPane(mainPanel);
     
+    // scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+
     insertInBag(mainPanel, clearButton, 0, 5, 2 ,1);
     insertInBag(mainPanel, searchDeButton, 1, 5);
     

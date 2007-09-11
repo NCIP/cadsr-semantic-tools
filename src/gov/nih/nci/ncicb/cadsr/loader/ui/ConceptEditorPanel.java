@@ -336,6 +336,8 @@ public class ConceptEditorPanel extends JPanel
     gridPanel = new JPanel(new GridBagLayout());
 
     scrollPane = new JScrollPane(gridPanel);
+//    scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+    
 
     conceptUIs = new ConceptUI[concepts.length];
     JPanel[] conceptPanels = new JPanel[concepts.length];

@@ -102,6 +102,9 @@ public class InheritedAttributeViewPanel extends JPanel
 
     JScrollPane scrollPane = new JScrollPane(editPanel);
 
+    // uncomment
+//     scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+
     this.add(scrollPane, BorderLayout.CENTER);
     this.add(buttonPanel, BorderLayout.SOUTH);
   }
