@@ -667,23 +667,23 @@ public class UMLDefaultHandler
           newDe.setDataElementConcept(newDec);
           newDe.setLongName(newDec.getLongName() + " " + de.getValueDomain().getLongName());
 
-          // check local VD mapping
-          String localType = event.getDatatypeMapping(propName);
-          if(localType != null) {
-            ValueDomain vd = DomainObjectFactory.newValueDomain();
-            vd.setLongName(localType);
-            newDe.setValueDomain(vd);
-          } else {
-            // check existing de mapping
-            IdVersionPair deIdVersionPair = event.getPersistenceMapping(propName);
-            if(deIdVersionPair != null) {
-              DataElement existingDe = findExistingDe(deIdVersionPair.getId(), deIdVersionPair.getVersion(), newDe, className, propName);
-              
-              if(existingDe != null) {
-                mapToExistingDE(childOc, newDe, existingDe, className, propName);
-              }
-            } 
-            if(newDe.getPublicId() == null) {
+          // check existing de mapping
+          IdVersionPair deIdVersionPair = event.getPersistenceMapping(propName);
+          if(deIdVersionPair != null) {
+            DataElement existingDe = findExistingDe(deIdVersionPair.getId(), deIdVersionPair.getVersion(), newDe, className, propName);
+            
+            if(existingDe != null) {
+              mapToExistingDE(childOc, newDe, existingDe, className, propName);
+            }
+          } 
+          if(newDe.getPublicId() == null) {
+            // check local VD mapping
+            String localType = event.getDatatypeMapping(propName);
+            if(localType != null) {
+              ValueDomain vd = DomainObjectFactory.newValueDomain();
+              vd.setLongName(localType);
+              newDe.setValueDomain(vd);
+            } else {
               // check existing vd mapping
               IdVersionPair vdIdVersionPair = event.getTypeMapping(propName);
               if(vdIdVersionPair != null) {
@@ -700,7 +700,8 @@ public class UMLDefaultHandler
               }
             }
           }
-
+        
+        
           
           Boolean isReviewed = event.getReview(propName);
           if(isReviewed != null)
