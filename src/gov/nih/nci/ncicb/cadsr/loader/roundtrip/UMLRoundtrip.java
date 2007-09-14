@@ -122,7 +122,8 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
       if(progressListener != null) 
         progressListener.newProgressEvent(pEvt);
 
-      String className = oc.getLongName();
+//       String className = oc.getLongName();
+      String className = LookupUtil.lookupFullName(oc);
       int ind = className.lastIndexOf(".");
       if(ind < 0)
         continue;
