@@ -32,7 +32,9 @@ public enum RunMode {
     Roundtrip("Perform XMI Roundtrip", "Model Owner"),
     Loader("UML Loader", "Model Owner"),
     FixEa("Run fix-EA", "Model Owner"),
-    UnannotatedXmi("Review Unannotated XMI File", "Model Owner")
+    UnannotatedXmi("Review Unannotated XMI File", "Model Owner"),
+    GMEDefaults("Generate Default GME Tags", "Model Owner"),
+    GMECleanup("GME Cleanup", "Model Owner")
     ;
 
   private String titleName;

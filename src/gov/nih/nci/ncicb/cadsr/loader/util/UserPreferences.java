@@ -179,6 +179,19 @@ public class UserPreferences {
     prefs.putBoolean("conceptValidatePreT", b);
   }
 
+  public boolean getShowGMETags() 
+  {
+    return prefs.getBoolean("showGmeTags", true);
+  }
+  
+  public void setShowGMETags(boolean b) 
+  {
+    prefs.putBoolean("showGmeTags", b);
+    UserPreferencesEvent event = 
+      new UserPreferencesEvent(UserPreferencesEvent.SHOW_GME_TAGS,(Boolean.valueOf(b)).toString());
+    fireUserPreferencesEvent(event);
+  }
+
   public boolean getSortElements() 
   {
     return prefs.getBoolean("sortElements", false);
@@ -285,8 +298,11 @@ public class UserPreferences {
 
   private void fireUserPreferencesEvent(UserPreferencesEvent event) 
   {
-    for(UserPreferencesListener l : userPrefsListeners)
+    for(UserPreferencesListener l : userPrefsListeners) {
+      if(l == null)
+        userPrefsListeners.remove(l);
       l.preferenceChange(event);
+    }
   }
 
   public void addUserPreferencesListener(UserPreferencesListener listener) 

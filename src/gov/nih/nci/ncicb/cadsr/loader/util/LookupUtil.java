@@ -131,6 +131,18 @@ public class LookupUtil {
     return null;
   }
 
+  
+  public static DataElement lookupDataElement(AlternateName altName) {
+    for(DataElement de : ElementsLists.getInstance().getElements(DomainObjectFactory.newDataElement())) {
+      for(AlternateName an : de.getAlternateNames()) {
+        if(an.getType().equals(altName.getType()) && an.getName().equals(altName.getName()))
+          return de;
+      }
+    }
+    return null;
+  }
+
+
   public static String lookupFullName(ObjectClass oc) {
     for(AlternateName altName : oc.getAlternateNames()) {
       if(altName.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
