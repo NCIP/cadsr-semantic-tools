@@ -6,8 +6,16 @@
   <bean name="siw"
     class="gov.nih.nci.ncicb.cadsr.loader.UMLLoaderGUI"
     >
+    <!--
     <property name="roundtripDescriptor">
       <ref bean="roundtripDescriptor"/>
+    </property>
+    -->
+    <property name="panelDescriptors">
+      <list>
+        <ref bean="roundtripDescriptor"/>
+        <ref bean="gmeDefaultsDescriptor"/>
+      </list>
     </property>
     <property name="mainFrame">
       <ref bean="mainFrame"/>
@@ -35,6 +43,13 @@
     </property>
   </bean>
 
+  <bean name="gmeAction"
+    class="gov.nih.nci.ncicb.cadsr.loader.GMEAction"
+    >
+    <property name="parser"><ref bean="xmiParser2"/></property>
+    <property name="writer"><ref bean="gmeWriter"/></property>
+  </bean>
+
   <bean name="unclassifier"
     class="gov.nih.nci.ncicb.cadsr.loader.Unclassifier"
     >
@@ -60,6 +75,9 @@
     </property>
     <property name="roundtripAction">
       <ref bean="roundtripAction"/>
+    </property>
+    <property name="gmeAction">
+      <ref bean="gmeAction"/>
     </property>
   </bean>
 
@@ -143,6 +161,7 @@
         <ref bean="umlRoundtrip"/>
         <ref bean="valueDomainValidator"/>
         <ref bean="roundtripPanel"/>
+        <ref bean="gmeDefaultsPanel"/>
         <ref bean="cadsrDEDialog"/>
         <ref bean="cadsrVDDialog"/>
         <ref bean="deReuseDialog"/>
@@ -166,6 +185,10 @@
   </bean>
 -->
 
+  <bean name="gmeWriter"
+    class="gov.nih.nci.ncicb.cadsr.loader.parser.GMEWriter" 
+    singleton="true">
+  </bean>
 
   <bean name="xmiInOutWriter"
     class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIWriter2" 
@@ -260,9 +283,18 @@
     class="gov.nih.nci.ncicb.cadsr.loader.ui.RoundtripPanel">
   </bean>
 
+  <bean name="gmeDefaultsPanel"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.GMEDefaultsPanel">
+  </bean>
+
   <!-- Wizard Descriptors -->
   <bean name="roundtripDescriptor"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.RoundtripPanelDescriptor"
+    autowire="constructor">
+  </bean>
+
+  <bean name="gmeDefaultsDescriptor"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.GMEDefaultsPanelDescriptor"
     autowire="constructor">
   </bean>
 
