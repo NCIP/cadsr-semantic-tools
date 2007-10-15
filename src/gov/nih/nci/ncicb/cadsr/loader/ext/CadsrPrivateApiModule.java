@@ -20,6 +20,12 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   }
 
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.Context> 
+    getAllContexts() {
+    
+    return DAOAccessor.getContextDAO().findAll();
+
+  }
 
   public Collection<ClassificationScheme>
     findClassificationScheme(Map<String, Object> queryFields) throws Exception  {

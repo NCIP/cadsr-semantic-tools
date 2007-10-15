@@ -184,6 +184,22 @@ public class CadsrTransformer {
   }
 
   /**
+   * Transforms a Context List from public API to private API
+   */
+  public static Collection<gov.nih.nci.ncicb.cadsr.domain.Context> contextListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.Context> inContexts) {
+
+    List<gov.nih.nci.ncicb.cadsr.domain.Context> outContexts = 
+      new ArrayList<gov.nih.nci.ncicb.cadsr.domain.Context>();
+
+    for(gov.nih.nci.cadsr.domain.Context _con : inContexts) {
+      outContexts.add(contextPublicToPrivate(_con));
+    }
+
+    return outContexts;
+
+  }
+
+  /**
    * Transforms a DE List from public API to private API
    */
   public static Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> deListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.DataElement> inDEs) {

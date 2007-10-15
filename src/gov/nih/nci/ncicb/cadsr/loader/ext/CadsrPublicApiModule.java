@@ -44,7 +44,19 @@ public class CadsrPublicApiModule implements CadsrModule {
     service = ApplicationService.getRemoteInstance(serviceURL);
   }
 
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.Context> 
+    getAllContexts() {
+    
+    try {
+      gov.nih.nci.cadsr.domain.Context searchContext  = new gov.nih.nci.cadsr.domain.Context();
+      List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.Context.class.getName(), searchContext)));
+      
+      return CadsrTransformer.contextListPublicToPrivate(listResult);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    } // end of try-catch
 
+  }
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme>
     findClassificationScheme(Map<String, Object> queryFields) throws Exception {
