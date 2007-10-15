@@ -172,6 +172,14 @@ public class XMIParser2 implements Parser {
 
   public static final String TV_INHERITED_OWNER_REVIEWED = "CADSR_Inherited.{1}.OWNER_REVIEWED";
   public static final String TV_INHERITED_CURATOR_REVIEWED = "CADSR_Inherited.{1}.CURATOR_REVIEWED";
+
+  // GME Tagged Values
+  public static final String TV_GME_NAMESPACE = "GME_XMLNamespace";
+  public static final String TV_GME_XML_ELEMENT = "GME_XMLElement";
+  public static final String TV_GME_XML_LOC_REFERENCE = "GME_XMLLocReference";
+  public static final String TV_GME_SOURCE_XML_LOC_REFERENCE = "GME_SourceXMLLocRef";
+  public static final String TV_GME_TARGET_XML_LOC_REFERENCE = "GME_TargetXMLLocRef";
+  
   
   private int totalNumberOfElements = 0, currentElementIndex = 0;
   private boolean filterClassAndPackages = false;
@@ -402,11 +410,19 @@ public class XMIParser2 implements Parser {
       packageName += ("." + pack.getName());
     }
 
-    if(isInPackageFilter(packageName)) {
-      listener.newPackage(new NewPackageEvent(packageName));
-    } else {
-      logger.info(PropertyAccessor.getProperty("skip.package", packageName));
+    NewPackageEvent event = new NewPackageEvent(getPackageName(pack));
+    UMLTaggedValue tv = pack.getTaggedValue(TV_GME_NAMESPACE);
+    if(tv != null) {
+      event.setGmeNamespace(tv.getValue());
     }
+    
+    
+
+//     if(isInPackageFilter(packageName)) {
+    listener.newPackage(event);
+//     } else {
+//       logger.info(PropertyAccessor.getProperty("skip.package", packageName));
+//     }
 
     for(UMLPackage subPkg : pack.getPackages()) {
       String oldPackage = packageName;
@@ -492,6 +508,16 @@ public class XMIParser2 implements Parser {
     UMLTaggedValue tv = clazz.getTaggedValue(reviewTag);
     if(tv != null) {
       event.setReviewed(tv.getValue().equals("1")?true:false);
+    }
+
+    tv = clazz.getTaggedValue(TV_GME_NAMESPACE);
+    if(tv != null) {
+      event.setGmeNamespace(tv.getValue());
+    }
+
+    tv = clazz.getTaggedValue(TV_GME_XML_ELEMENT);
+    if(tv != null) {
+      event.setGmeXmlElement(tv.getValue());
     }
 
     if(isInPackageFilter(pName)) {
@@ -689,6 +715,10 @@ public class XMIParser2 implements Parser {
       } // end of try-catch
     }
 
+    tv = att.getTaggedValue(TV_GME_XML_LOC_REFERENCE);
+    if(tv != null) {
+      event.setGmeXmlLocRef(tv.getValue());
+    }
 
     setConceptInfo(att, event, TV_TYPE_PROPERTY);
 
@@ -764,6 +794,16 @@ public class XMIParser2 implements Parser {
       event.setReviewed(tv.getValue().equals("1"));
     }
     setConceptInfo(assoc, event, TV_TYPE_ASSOC_ROLE);
+
+    tv = assoc.getTaggedValue(TV_GME_SOURCE_XML_LOC_REFERENCE);
+    if(tv != null) {
+      event.setGmeSourceLocRef(tv.getValue());
+    }
+
+    tv = assoc.getTaggedValue(TV_GME_TARGET_XML_LOC_REFERENCE);
+    if(tv != null) {
+      event.setGmeTargetLocRef(tv.getValue());
+    }
 
     logger.debug("Adding association. AClassName: " + aEvent.getClassName());
     
