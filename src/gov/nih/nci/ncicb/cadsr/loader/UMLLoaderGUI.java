@@ -53,6 +53,9 @@ public class UMLLoaderGUI
   private UserSelections userSelections = UserSelections.getInstance();
 
   private RoundtripPanelDescriptor roundtripDesc;
+  private GMEDefaultsPanelDescriptor gmeDefaultsDesc;
+
+  private List<WizardPanelDescriptor> descriptors;
 
   private MainFrame mainFrame;
 
@@ -99,8 +102,13 @@ public class UMLLoaderGUI
 //     wizard.registerWizardPanel(FileSelectionPanelDescriptor.PACKAGE_FILTER_IDENTIFIER, fpDescForPackageFilter);
 
 
-//     WizardPanelDescriptor roundtrip = new RoundtripPanelDescriptor();
-    wizard.registerWizardPanel(RoundtripPanelDescriptor.IDENTIFIER, roundtripDesc);
+//     wizard.registerWizardPanel(RoundtripPanelDescriptor.IDENTIFIER, roundtripDesc);
+
+//     wizard.registerWizardPanel(GMEDefaultsPanelDescriptor.IDENTIFIER, gmeDefaultsDesc);
+
+    for(WizardPanelDescriptor _desc : descriptors) {
+      wizard.registerWizardPanel(_desc.getPanelDescriptorIdentifier(), _desc);
+    }
 
     WizardPanelDescriptor fileProgress = new ProgressFileSelectionPanelDescriptor();
     wizard.registerWizardPanel(ProgressFileSelectionPanelDescriptor.IDENTIFIER, fileProgress);
@@ -175,8 +183,16 @@ public class UMLLoaderGUI
 //     new UMLLoaderGUI();
 //   }
 
-  public void setRoundtripDescriptor(RoundtripPanelDescriptor desc) {
-    roundtripDesc = desc;
+//   public void setRoundtripDescriptor(RoundtripPanelDescriptor desc) {
+//     roundtripDesc = desc;
+//   }
+
+//   public void setGmeDefaulsDescriptor(GMEDefaultsPanelDescriptor desc) {
+//     gmeDefaultsDesc = desc;
+//   }
+
+  public void setPanelDescriptors(List<WizardPanelDescriptor> descriptors) {
+    this.descriptors = descriptors;
   }
 
   public void setUserPreferences(UserPreferences preferences) {
