@@ -105,6 +105,7 @@ public class MainFrame extends JFrame
   private Map<String, NodeViewPanel> viewPanels = new HashMap();
   private AssociationViewPanel associationViewPanel = null;
   private ValueDomainViewPanel vdViewPanel = null;
+  private PackageViewPanel packageViewPanel = null;
 
   private ReviewTracker ownerTracker, curatorTracker;
 
@@ -540,8 +541,7 @@ public class MainFrame extends JFrame
 
       viewTabbedPane.setSelectedComponent(associationViewPanel);
 
-    }
-    else if(event.getType() == ViewChangeEvent.VIEW_VALUE_DOMAIN) {
+    } else if(event.getType() == ViewChangeEvent.VIEW_VALUE_DOMAIN) {
       UMLNode node = (UMLNode)event.getViewObject();
       
       if(vdViewPanel == null) {
@@ -554,6 +554,27 @@ public class MainFrame extends JFrame
         vdViewPanel.update((ValueDomain)node.getUserObject());
       
       viewTabbedPane.setSelectedComponent(vdViewPanel);
+    } else if(event.getType() == ViewChangeEvent.VIEW_PACKAGE) {
+      UMLNode node = (UMLNode)event.getViewObject();
+      
+      if(node.getUserObject() == null)
+        return;
+
+      if(packageViewPanel == null) {
+        packageViewPanel = new PackageViewPanel(node);
+        // show only the last 15 chars of the package in tab title
+        String disp  = node.getFullPath();
+        if(disp.length() > 15)
+          disp = disp.substring(disp.length() - 15);
+
+        viewTabbedPane.addTab(disp, packageViewPanel);
+        packageViewPanel.setName("Package");
+        infoLabel.setText(node.getFullPath());
+      }
+      else
+        packageViewPanel.updateNode(node);
+      
+      viewTabbedPane.setSelectedComponent(packageViewPanel);
     }
   }
 
@@ -600,6 +621,8 @@ public class MainFrame extends JFrame
       associationViewPanel = null;
     if(c.equals(vdViewPanel))
       vdViewPanel = null;
+    if(c.equals(packageViewPanel))
+      packageViewPanel = null;
     viewPanels.remove(c.getName());
 
     return true;

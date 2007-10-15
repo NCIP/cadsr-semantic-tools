@@ -403,53 +403,30 @@ public class NavigationPanel extends JPanel
       DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
   	  
       Object o = dmtn.getUserObject();
-      if((o instanceof ClassNode) || (o instanceof AttributeNode)) 
-      {
+      ViewChangeEvent evt = null;
+      if((o instanceof ClassNode) || (o instanceof AttributeNode)) {
     	if(o instanceof InheritedAttributeNode) {
           // inherited attribute
           InheritedAttributeNode attNode = (InheritedAttributeNode)o;
           
-//           String fpath = attNode.getFullPath();
-//           int sd = fpath.lastIndexOf(".");
-//           String sourceClassName = fpath.substring(0, sd);
-//           String attributeName = fpath.substring(sd+1);
-          
-//           AttributeNode anode = findSuper(sourceClassName,attributeName);
-          
-//           if (anode != null) {
-          ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_INHERITED);
-          evt.setViewObject(o);
-          evt.setInNewTab(false);
-          fireViewChangeEvent(evt);
-//           }
+          evt = new ViewChangeEvent(ViewChangeEvent.VIEW_INHERITED);
     	}
         else {
-            // normal attribute
-            ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
-            evt.setViewObject(dmtn.getUserObject());
-            evt.setInNewTab(false);
-
-            fireViewChangeEvent(evt);
+          // normal attribute
+          evt = new ViewChangeEvent(ViewChangeEvent.VIEW_CONCEPTS);
         }
       } else if(o instanceof AssociationNode) {
-        ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_ASSOCIATION);
-        evt.setViewObject(dmtn.getUserObject());
-        evt.setInNewTab(false);
-
-        fireViewChangeEvent(evt);
+        evt = new ViewChangeEvent(ViewChangeEvent.VIEW_ASSOCIATION);
+      } else if(o instanceof ValueDomainNode) {
+        evt = new ViewChangeEvent(ViewChangeEvent.VIEW_VALUE_DOMAIN);
+      } else if(o instanceof ValueMeaningNode) {
+        evt = new ViewChangeEvent(ViewChangeEvent.VIEW_VALUE_MEANING);
+      } else if(o instanceof PackageNode) {
+        evt = new ViewChangeEvent(ViewChangeEvent.VIEW_PACKAGE);
       }
-      else if(o instanceof ValueDomainNode) {
-        ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_VALUE_DOMAIN);
+      if(evt != null) {
         evt.setViewObject(dmtn.getUserObject());
         evt.setInNewTab(false);
-        
-        fireViewChangeEvent(evt);
-      }
-      else if(o instanceof ValueMeaningNode) {
-        ViewChangeEvent evt = new ViewChangeEvent(ViewChangeEvent.VIEW_VALUE_MEANING);
-        evt.setViewObject(dmtn.getUserObject());
-        evt.setInNewTab(false);
-        
         fireViewChangeEvent(evt);
       }
     }
