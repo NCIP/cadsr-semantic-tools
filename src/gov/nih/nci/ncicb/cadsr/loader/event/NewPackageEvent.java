@@ -25,13 +25,33 @@ package gov.nih.nci.ncicb.cadsr.loader.event;
  * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
  */
 public class NewPackageEvent implements LoaderEvent {
-    private String name;
+  private String name;
+  private String gmeNamespace;
+  
+  public NewPackageEvent(String name) {
+    this.name = name;
+  }
+  
+  public String getName() {
+    return name;
+  }
+  
+  
+  /**
+   * Get the GmeNamespace value.
+   * @return the GmeNamespace value.
+   */
+  public String getGmeNamespace() {
+    return gmeNamespace;
+  }
+  
+  /**
+   * Set the GmeNamespace value.
+   * @param newGmeNamespace The new GmeNamespace value.
+   */
+  public void setGmeNamespace(String newGmeNamespace) {
+    this.gmeNamespace = newGmeNamespace;
+  }
 
-    public NewPackageEvent(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
+  
 }

@@ -29,6 +29,9 @@ public class NewClassEvent extends NewConceptualEvent {
   private String name;
   private String packageName;
 
+  private String gmeNamespace;
+  private String gmeXmlElement;
+
   public NewClassEvent(String name) {
     this.name = name;
   }
@@ -53,6 +56,39 @@ public class NewClassEvent extends NewConceptualEvent {
     this.packageName = newPackageName;
   }
 
-  
+
+  /**
+   * Get the GmeNamespace value.
+   * @return the GmeNamespace value.
+   */
+  public String getGmeNamespace() {
+    return gmeNamespace;
+  }
+
+  /**
+   * Set the GmeNamespace value.
+   * @param newGmeNamespace The new GmeNamespace value.
+   */
+  public void setGmeNamespace(String newGmeNamespace) {
+    this.gmeNamespace = newGmeNamespace;
+  }
+
+
+  /**
+   * Get the GmeXmlElement value.
+   * @return the GmeXmlElement value.
+   */
+  public String getGmeXmlElement() {
+    return gmeXmlElement;
+  }
+
+  /**
+   * Set the GmeXmlElement value.
+   * @param newGmeXmlElement The new GmeXmlElement value.
+   */
+  public void setGmeXmlElement(String newGmeXmlElement) {
+    this.gmeXmlElement = newGmeXmlElement;
+  }
+
   
 }

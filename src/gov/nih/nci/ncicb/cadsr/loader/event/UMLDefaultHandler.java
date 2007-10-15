@@ -27,7 +27,6 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 
-import gov.nih.nci.ncicb.cadsr.loader.persister.OCRRoleNameBuilder;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.*;
 import gov.nih.nci.ncicb.cadsr.loader.ext.*;
@@ -77,6 +76,24 @@ public class UMLDefaultHandler
 
   public void newPackage(NewPackageEvent event) {
     logger.info("Package: " + event.getName());
+
+
+    // handle this here if the package has GME info. If not, let classes handle package so we don't add empty package.
+    if(!StringUtil.isEmpty(event.getGmeNamespace())) {
+      ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
+      String pName = event.getName();
+      csi.setName(pName);
+      if (!packageList.contains(pName)) {
+        elements.addElement(csi);
+        packageList.add(pName);
+      }
+      
+      AlternateName gmeNamespaceName = DomainObjectFactory.newAlternateName();
+      gmeNamespaceName.setType(AlternateName.TYPE_GME_NAMESPACE);
+      gmeNamespaceName.setName(event.getGmeNamespace());
+      csi.addAlternateName(gmeNamespaceName);
+
+    }
   }
 
   public void newOperation(NewOperationEvent event) {
@@ -143,7 +160,7 @@ public class UMLDefaultHandler
 
     
 //     if(concepts.size() > 0)
-      vd.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, false));
+    vd.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, false));
 
     elements.addElement(vd);
     reviewTracker.put(event.getName(), event.isReviewed());
@@ -153,13 +170,6 @@ public class UMLDefaultHandler
     logger.info("Value Meaning: " + event.getName());
     
     List<Concept> concepts = createConcepts(event);
-
-//     // is the NO_CONCEPT in there? if so, forget concepts for this.
-//     boolean noConcept = false;
-//     for(Concept con : concepts) {
-//       if(con.getPreferredName().equals(NO_CONCEPT_CODE))
-//         noConcept = true;
-//     }
 
     ValueDomain vd = LookupUtil.lookupValueDomain(event.getValueDomainName());
 
@@ -201,11 +211,7 @@ public class UMLDefaultHandler
 
     }
     
-//     if(noConcept) {
-//       vm.setConceptDerivationRule(createConceptDerivationRule(new ArrayList<Concepts>()));
-//     } else {
     vm.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, true));
-//     }
 
     PermissibleValue pv = DomainObjectFactory.newPermissibleValue();
     pv.setValueMeaning(vm);
@@ -276,6 +282,19 @@ public class UMLDefaultHandler
     AlternateName className = DomainObjectFactory.newAlternateName();
     className.setType(AlternateName.TYPE_UML_CLASS);
     className.setName(event.getName().substring(event.getName().lastIndexOf(".") + 1));
+
+    if(!StringUtil.isEmpty(event.getGmeNamespace())) {
+      AlternateName gmeNamespaceName = DomainObjectFactory.newAlternateName();
+      gmeNamespaceName.setType(AlternateName.TYPE_GME_NAMESPACE);
+      gmeNamespaceName.setName(event.getGmeNamespace());
+      oc.addAlternateName(gmeNamespaceName);
+    }
+    if(!StringUtil.isEmpty(event.getGmeXmlElement())) {
+      AlternateName gmeXmlElementName = DomainObjectFactory.newAlternateName();
+      gmeXmlElementName.setType(AlternateName.TYPE_GME_XML_ELEMENT);
+      gmeXmlElementName.setName(event.getGmeXmlElement());
+      oc.addAlternateName(gmeXmlElementName);
+    }
 
     oc.addAlternateName(fullName);
     oc.addAlternateName(className);
@@ -376,6 +395,13 @@ public class UMLDefaultHandler
     fullName.setName(className + ":" + propName);
     de.addAlternateName(fullName);
 
+
+    if(!StringUtil.isEmpty(event.getGmeXmlLocRef())) {
+      AlternateName gmeXmlLocRefName = DomainObjectFactory.newAlternateName();
+      gmeXmlLocRefName.setType(AlternateName.TYPE_GME_XML_LOC_REF);
+      gmeXmlLocRefName.setName(event.getGmeXmlLocRef());
+      de.addAlternateName(gmeXmlLocRefName);
+    }
 
     if(!StringUtil.isEmpty(event.getDescription())) {
       Definition altDef = DomainObjectFactory.newDefinition();
@@ -607,6 +633,20 @@ public class UMLDefaultHandler
 
     if(!bDone) 
       logger.debug("!bDone: " + aEvent.getClassName() + " -- " + bEvent.getClassName());
+
+    if(!StringUtil.isEmpty(event.getGmeSourceLocRef())) {
+      AlternateName an = DomainObjectFactory.newAlternateName();
+      an.setType(AlternateName.TYPE_GME_SRC_XML_LOC_REF);
+      an.setName(event.getGmeSourceLocRef());
+      ocr.addAlternateName(an);
+    }
+
+    if(!StringUtil.isEmpty(event.getGmeTargetLocRef())) {
+      AlternateName an = DomainObjectFactory.newAlternateName();
+      an.setType(AlternateName.TYPE_GME_TARGET_XML_LOC_REF);
+      an.setName(event.getGmeTargetLocRef());
+      ocr.addAlternateName(an);
+    }
 
     elements.addElement(ocr);
 

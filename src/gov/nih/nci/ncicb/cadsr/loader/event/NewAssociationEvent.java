@@ -30,6 +30,43 @@ public class NewAssociationEvent extends NewConceptualEvent {
   private String direction;
   private NewAssociationEndEvent aEvent;
   private NewAssociationEndEvent bEvent;
+
+  private String gmeSourceLocRef;
+  private String gmeTargetLocRef;
+
+  /**
+   * Get the GmeTargetLocRef value.
+   * @return the GmeTargetLocRef value.
+   */
+  public String getGmeTargetLocRef() {
+    return gmeTargetLocRef;
+  }
+
+  /**
+   * Set the GmeTargetLocRef value.
+   * @param newGmeTargetLocRef The new GmeTargetLocRef value.
+   */
+  public void setGmeTargetLocRef(String newGmeTargetLocRef) {
+    this.gmeTargetLocRef = newGmeTargetLocRef;
+  }
+
+  /**
+   * Get the GmeSourceLocRef value.
+   * @return the GmeSourceLocRef value.
+   */
+  public String getGmeSourceLocRef() {
+    return gmeSourceLocRef;
+  }
+
+  /**
+   * Set the GmeSourceLocRef value.
+   * @param newGmeSourceLocRef The new GmeSourceLocRef value.
+   */
+  public void setGmeSourceLocRef(String newGmeSourceLocRef) {
+    this.gmeSourceLocRef = newGmeSourceLocRef;
+  }
+
+  
   
   public String getDirection() {
     return direction;

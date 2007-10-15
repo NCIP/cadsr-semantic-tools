@@ -33,6 +33,7 @@ public class NewAttributeEvent extends NewConceptualEvent {
   private String typeId;
   private Float typeVersion;
 
+  private String gmeXmlLocRef;
 
   public NewAttributeEvent(String name) {
     this.name = name;
@@ -81,5 +82,24 @@ public class NewAttributeEvent extends NewConceptualEvent {
   {
     return typeVersion;
   }
+
+
+  /**
+   * Get the GmeXmlLocRef value.
+   * @return the GmeXmlLocRef value.
+   */
+  public String getGmeXmlLocRef() {
+    return gmeXmlLocRef;
+  }
+
+  /**
+   * Set the GmeXmlLocRef value.
+   * @param newGmeXmlLocRef The new GmeXmlLocRef value.
+   */
+  public void setGmeXmlLocRef(String newGmeXmlLocRef) {
+    this.gmeXmlLocRef = newGmeXmlLocRef;
+  }
+
+  
 
 }
