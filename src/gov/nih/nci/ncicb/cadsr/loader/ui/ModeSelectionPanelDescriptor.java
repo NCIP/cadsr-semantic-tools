@@ -38,6 +38,8 @@ public class ModeSelectionPanelDescriptor
 
     if(panel.getSelection().equals(RunMode.GenerateReport.toString()))
       nextPanelDescriptor = PackageFilterSelectionPanelDescriptor.IDENTIFIER;
+    else if(panel.getSelection().equals(RunMode.GMEDefaults.toString()))
+      nextPanelDescriptor = GMEDefaultsPanelDescriptor.IDENTIFIER;
     else
       nextPanelDescriptor = FileSelectionPanelDescriptor.IDENTIFIER;
     backPanelDescriptor = ModeSelectionPanelDescriptor.IDENTIFIER;
@@ -50,6 +52,8 @@ public class ModeSelectionPanelDescriptor
       setNextPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
     } else if(evt.getActionCommand().equals(RunMode.GenerateReport.toString())) {
       setNextPanelDescriptor(PackageFilterSelectionPanelDescriptor.IDENTIFIER);
+    } else if(evt.getActionCommand().equals(RunMode.GMEDefaults.toString())) {
+      setNextPanelDescriptor(GMEDefaultsPanelDescriptor.IDENTIFIER);
     }
     else {
       setNextPanelDescriptor(FileSelectionPanelDescriptor.IDENTIFIER);

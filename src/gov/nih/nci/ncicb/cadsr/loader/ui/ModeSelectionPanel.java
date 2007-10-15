@@ -26,6 +26,8 @@ import javax.swing.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
+
 /**
  * Wizard step to choose run mode
  *
@@ -33,7 +35,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
  */
 public class ModeSelectionPanel extends JPanel {
 
-  private JRadioButton unannotatedXmiOption, roundtripOption, annotateOption, reviewOption, curateOption;
+  private JRadioButton unannotatedXmiOption, roundtripOption, annotateOption, reviewOption, curateOption, gmeDefaultsOption, gmeCleanupOption;
   private ButtonGroup group;
   private JPanel _this = this;
 
@@ -53,6 +55,8 @@ public class ModeSelectionPanel extends JPanel {
     annotateOption.addActionListener(l);
     curateOption.addActionListener(l);
     reviewOption.addActionListener(l);
+    gmeDefaultsOption.addActionListener(l);
+    gmeCleanupOption.addActionListener(l);
   }
 
   public String getSelection() {
@@ -96,38 +100,49 @@ public class ModeSelectionPanel extends JPanel {
     reviewOption = new JRadioButton("5. " + RunMode.Reviewer.getTitleName() + " (" + RunMode.Reviewer.getAuthor() + ")");
     reviewOption.setActionCommand(RunMode.Reviewer.toString());
 
+    gmeDefaultsOption = new JRadioButton("6. " + RunMode.GMEDefaults.getTitleName() + " (" + RunMode.GMEDefaults.getAuthor() + ")");
+    gmeDefaultsOption.setActionCommand(RunMode.GMEDefaults.toString());
+
+    gmeCleanupOption = new JRadioButton("7. " + RunMode.GMECleanup.getTitleName() + " (" + RunMode.GMECleanup.getAuthor() + ")");
+    gmeCleanupOption.setActionCommand(RunMode.GMECleanup.toString());
+
     // Get the preference setting for mode and set the radio buttons appropriately.
     RunMode mode = RunMode.UnannotatedXmi;
-    try
-    {
-        mode = RunMode.valueOf(prefs.getModeSelection());
+    try {
+      mode = RunMode.valueOf(prefs.getModeSelection());
     }
-    catch (Exception ex)
-    {
-        // Ignore any exceptions and let "mode" default.
+    catch (Exception ex){
+      // Ignore any exceptions and let "mode" default.
     }
     
-    switch (mode)
-    {
-        case AnnotateXMI:
-            reviewOption.setSelected(true);
-            break;
-            
-        case Curator:
-            curateOption.setSelected(true);
-            break;
+    switch (mode) {
+    case AnnotateXMI:
+      reviewOption.setSelected(true);
+      break;
+      
+    case Curator:
+      curateOption.setSelected(true);
+      break;
+      
+    case Roundtrip:
+      reviewOption.setSelected(true);
+      break;
+      
+    case Reviewer:
+      reviewOption.setSelected(true);
+      break;
 
-        case Roundtrip:
-            reviewOption.setSelected(true);
-            break;
-            
-        case Reviewer:
-            reviewOption.setSelected(true);
-            break;
-            
-        default:
-            unannotatedXmiOption.setSelected(true);
-            break;
+    case GMEDefaults:
+      gmeDefaultsOption.setSelected(true);
+      break;
+
+    case GMECleanup:
+      gmeCleanupOption.setSelected(true);
+      break;
+      
+    default:
+      unannotatedXmiOption.setSelected(true);
+      break;
     }
     
     group.add(unannotatedXmiOption);
@@ -135,6 +150,8 @@ public class ModeSelectionPanel extends JPanel {
     group.add(annotateOption);
     group.add(curateOption);
     group.add(reviewOption);
+    group.add(gmeDefaultsOption);
+    group.add(gmeCleanupOption);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new GridLayout(0, 1));
@@ -147,6 +164,8 @@ public class ModeSelectionPanel extends JPanel {
     buttonPanel.add(annotateOption);
     buttonPanel.add(curateOption);
     buttonPanel.add(reviewOption);
+    buttonPanel.add(gmeDefaultsOption);
+    buttonPanel.add(gmeCleanupOption);
 
     this.setLayout(new BorderLayout());
     this.add(infoPanel, BorderLayout.NORTH);
@@ -168,19 +187,6 @@ public class ModeSelectionPanel extends JPanel {
 
   }
 
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-
-    insertInBag(bagComp, comp, x, y, 1, 1);
-
-  }
-
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-  }
- 
   public static void main(String[] args) {
     JFrame frame = new JFrame("Prototype");
     frame.getContentPane().add(new ModeSelectionPanel());
