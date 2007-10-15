@@ -42,7 +42,9 @@ public class PreferenceDialog extends JDialog implements ActionListener
     showInheritedAttributesBox = new JCheckBox(PropertyAccessor.getProperty("preference.inherited.attributes")),
     sortElementsBox = new JCheckBox(PropertyAccessor.getProperty("preference.sort.elements")),
     preTBox = new JCheckBox(PropertyAccessor.getProperty("preference.concept.validator.preT")),
-    inheritedCDEMappingBox = new JCheckBox(PropertyAccessor.getProperty("preference.inherited.cde.warning"));
+    inheritedCDEMappingBox = new JCheckBox(PropertyAccessor.getProperty("preference.inherited.cde.warning")),
+    showGMETagsBox = new JCheckBox(PropertyAccessor.getProperty("show.gme.tags"));
+
   
   private JButton apply = new JButton("Apply");
   private JButton cancel = new JButton("Cancel");
@@ -69,6 +71,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     centerPanel.add(sortElementsBox);
     centerPanel.add(preTBox);
 //     centerPanel.add(inheritedCDEMappingBox);
+    centerPanel.add(showGMETagsBox);
 
     this.getContentPane().setLayout(new BorderLayout());
     this.getContentPane().add(centerPanel);
@@ -112,6 +115,9 @@ public class PreferenceDialog extends JDialog implements ActionListener
     preTBox.setSelected(prefs.getPreTBox());
 
     inheritedCDEMappingBox.setSelected(prefs.getBoolean("de.over.vd.mapping.warning"));
+
+    System.out.println("show GME Tags: " + prefs.getShowGMETags());
+    showGMETagsBox.setSelected(prefs.getShowGMETags());
   }
   
   public void actionPerformed(ActionEvent event) 
@@ -146,6 +152,8 @@ public class PreferenceDialog extends JDialog implements ActionListener
       prefs.setPreTBox(preTBox.isSelected());
 
       prefs.setBoolean("de.over.vd.mapping.warning", inheritedCDEMappingBox.isSelected());
+
+      prefs.setShowGMETags(showGMETagsBox.isSelected());
       
       if(button.getActionCommand().equals(OK))
         this.dispose();
