@@ -31,6 +31,10 @@ import java.beans.PropertyChangeListener;
 import java.util.Set;
 
 import javax.swing.JTabbedPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import java.awt.BorderLayout;
 
 /**
  * The Association viewer
@@ -50,6 +54,8 @@ public class AssociationViewPanel extends JTabbedPane
 
   private boolean showingConceptTabs = false;
 
+  private GMEViewPanel gmeViewPanel;
+
   public AssociationViewPanel(UMLNode node) {
     this.node = node;
     this.ocr = (ObjectClassRelationship)node.getUserObject();
@@ -63,6 +69,7 @@ public class AssociationViewPanel extends JTabbedPane
     this.ocr = (ObjectClassRelationship)node.getUserObject();
 
     detailViewPanel.update(ocr);
+    
 
     AssociationEndNode sourceEndNode = null, targetEndNode = null;
     Set<UMLNode> endNodes = node.getChildren();
@@ -74,6 +81,7 @@ public class AssociationViewPanel extends JTabbedPane
         targetEndNode = endNode;
     }
 
+    gmeViewPanel.updateNode(node);
     roleConceptPanel.updateNode(node);
     sourceConceptPanel.updateNode(sourceEndNode);
     targetConceptPanel.updateNode(targetEndNode);
@@ -94,9 +102,17 @@ public class AssociationViewPanel extends JTabbedPane
 
   private void initUI() {
 
-    detailViewPanel = new AssociationDetailViewPanel(ocr);
+    JPanel detailPanel = new JPanel();
+    detailPanel.setLayout(new BorderLayout());
 
-    addTab("Detail", detailViewPanel);
+    detailViewPanel = new AssociationDetailViewPanel(ocr);
+    detailPanel.add(detailViewPanel, BorderLayout.CENTER);
+
+    gmeViewPanel = new GMEViewPanel(node);
+    detailPanel.add(gmeViewPanel, BorderLayout.SOUTH);
+
+    JScrollPane scrollPane = new JScrollPane(detailPanel);
+    addTab("Detail", scrollPane);
     
     AssociationEndNode sourceEndNode = null, targetEndNode = null;
 

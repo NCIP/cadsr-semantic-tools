@@ -83,15 +83,14 @@ public class InheritedAttributeViewPanel extends JPanel
     explainLabel = new JLabel("<html><u color=BLUE>Explain this</u></html>");
     ToolTipManager.sharedInstance().registerComponent(explainLabel);
     ToolTipManager.sharedInstance().setDismissDelay(3600000);
-//     insertInBag(editPanel, explainLabel, 1, 0);
     
     if(prefs.getUmlDescriptionOrder().equals("first"))
-      insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 1, 2, 1);
+      UIUtil.insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 1, 2, 1);
     else
-      insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 4, 2, 1); 
+      UIUtil.insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 4, 2, 1); 
 
-    insertInBag(editPanel, dePanel, 0, 2);
-    insertInBag(editPanel, vdPanel, 0, 3);
+    UIUtil.insertInBag(editPanel, dePanel, 0, 2);
+    UIUtil.insertInBag(editPanel, vdPanel, 0, 3);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); 
@@ -109,16 +108,6 @@ public class InheritedAttributeViewPanel extends JPanel
     this.add(buttonPanel, BorderLayout.SOUTH);
   }
 
-
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-    insertInBag(bagComp, comp, x, y, 1, 1);
-  }
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-  }
 
   public void addReviewListener(ReviewListener listener) {
     applyButtonPanel.addReviewListener(listener);
