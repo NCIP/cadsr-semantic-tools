@@ -26,20 +26,28 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 public class PackageNode extends AbstractUMLNode<UMLNode> 
-  implements ReviewableUMLNode 
-  {
-
+  implements ReviewableUMLNode {
+  
   static final Icon REVIEWED_ICON = 
     new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-package-checked.gif"));
-
+  
   static final Icon DEFAULT_ICON = 
     new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-package.gif"));
 
   private boolean reviewed = true;
 
+  public PackageNode(ClassificationSchemeItem csi, String display) {
+    fullPath = csi.getName();
+    
+    this.display = display != null?
+      display:fullPath;
+    
+    userObject = csi;
+  }
+  
   public PackageNode(String fullName, String display) {
     fullPath = fullName;
-
+    
     this.display = display != null?
       display:fullName;
     

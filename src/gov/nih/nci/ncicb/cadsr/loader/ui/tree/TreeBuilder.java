@@ -125,10 +125,10 @@ public class TreeBuilder implements UserPreferencesListener {
     
     for(ClassificationSchemeItem pack : packages) {
       String alias = defaults.getPackageDisplay(pack.getName()); 
-        UMLNode node = new PackageNode(pack.getName(), alias);
-        parentNode.addChild(node);
-
-        doClasses(node);
+      UMLNode node = new PackageNode(pack, alias);
+      parentNode.addChild(node);
+      
+      doClasses(node);
     }
   }
 

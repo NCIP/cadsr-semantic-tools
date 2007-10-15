@@ -20,7 +20,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui.tree;
 
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship;
-import gov.nih.nci.ncicb.cadsr.loader.persister.OCRRoleNameBuilder;
+import gov.nih.nci.ncicb.cadsr.loader.util.OCRRoleNameBuilder;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
