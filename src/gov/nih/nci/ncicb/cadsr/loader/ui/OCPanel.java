@@ -2,6 +2,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -45,13 +46,10 @@ public class OCPanel extends JPanel
       
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
-    insertInBag(mainPanel, ocLongNameLabel, 0, 0);
-    insertInBag(mainPanel, ocLongNameValueLabel, 1, 0);
-    insertInBag(mainPanel, ocPublicIdLabel, 0, 1);
-    insertInBag(mainPanel, ocPublicIdValueLabel, 1, 1);
-    //insertInBag(mainPanel, ocVersionLabel, 0, 1);
-    //insertInBag(mainPanel, ocVersionValueLabel, 1, 1);
-    //insertInBag(mainPanel, searchOcButton, 1, 2);
+    UIUtil.insertInBag(mainPanel, ocLongNameLabel, 0, 0);
+    UIUtil.insertInBag(mainPanel, ocLongNameValueLabel, 1, 0);
+    UIUtil.insertInBag(mainPanel, ocPublicIdLabel, 0, 1);
+    UIUtil.insertInBag(mainPanel, ocPublicIdValueLabel, 1, 1);
     
     JPanel titlePanel = new JPanel();
     JLabel title = new JLabel("Map to OC");
@@ -132,17 +130,6 @@ public class OCPanel extends JPanel
       l.propertyChange(evt);
   }
   
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-    insertInBag(bagComp, comp, x, y, 1, 1);
-  }
-
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-  }
-
   public static void main(String[] args)
   {
 //    JFrame frame = new JFrame();

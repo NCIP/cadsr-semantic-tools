@@ -31,10 +31,15 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Component;
 import java.awt.BorderLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Component;
+import java.awt.Insets;
 
 import java.util.List;
 
 import javax.swing.*;
+
 
 public class UIUtil {
 
@@ -93,5 +98,17 @@ public class UIUtil {
     return umlPanel;
  
   }
+
+  public static void insertInBag(JPanel bagComp, Component comp, int x, int y) {
+    insertInBag(bagComp, comp, x, y, 1, 1);
+  }
+
+  public static void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
+    JPanel p = new JPanel();
+    p.add(comp);
+
+    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+  }
+
 
 }
