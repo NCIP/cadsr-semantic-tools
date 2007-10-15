@@ -6,6 +6,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
@@ -23,6 +24,7 @@ public class UMLElementViewPanel extends JPanel
   private DEPanel dePanel;
   private OCPanel ocPanel;
   private ButtonPanel buttonPanel;
+  private GMEViewPanel gmePanel;
 
   private UMLNode node;
 
@@ -43,6 +45,7 @@ public class UMLElementViewPanel extends JPanel
     conceptEditorPanel = new ConceptEditorPanel(node);
     dePanel = new DEPanel(node);
     ocPanel = new OCPanel(node);
+    gmePanel= new GMEViewPanel(node);
 
     if(node instanceof AttributeNode)
       buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);
@@ -54,6 +57,8 @@ public class UMLElementViewPanel extends JPanel
     conceptEditorPanel.addPropertyChangeListener(buttonPanel);
     dePanel.addPropertyChangeListener(buttonPanel);
     ocPanel.addPropertyChangeListener(buttonPanel);
+    gmePanel.addPropertyChangeListener(buttonPanel);
+
     cardPanel = new JPanel();
     initUI();
     updateNode(node);
@@ -80,7 +85,16 @@ public class UMLElementViewPanel extends JPanel
     newPanel.add(space);
     newPanel.add(buttonPanel);
     
-    this.add(cardPanel, BorderLayout.CENTER);
+    JPanel editPanel = new JPanel();
+//     editPanel.setLayout(new GridBagLayout());
+    editPanel.setLayout(new BorderLayout());
+
+    editPanel.add(cardPanel, BorderLayout.CENTER);
+    editPanel.add(gmePanel, BorderLayout.SOUTH);
+
+    JScrollPane scrollPane = new JScrollPane(editPanel);
+
+    this.add(scrollPane, BorderLayout.CENTER);
     this.add(newPanel, BorderLayout.SOUTH);
   }
   
@@ -128,7 +142,8 @@ public class UMLElementViewPanel extends JPanel
     conceptEditorPanel.updateNode(node);
     dePanel.updateNode(node);
     ocPanel.updateNode(node);
-
+    gmePanel.updateNode(node);
+    
     if(node instanceof AttributeNode)
       buttonPanel.setEditablePanel(dePanel);
     else if (node instanceof ValueMeaningNode)

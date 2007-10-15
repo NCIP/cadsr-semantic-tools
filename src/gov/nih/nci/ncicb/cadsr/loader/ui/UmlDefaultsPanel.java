@@ -120,27 +120,27 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
     cdContextNameField.setText(defaults.getConceptualDomain().getContext().getName());
     packageFilterField.setText(defaults.getPackageFilterString());
     
-    insertInBag(mainPanel, new JLabel(rowNames[0]), 0, 0);
-    insertInBag(mainPanel, new JLabel(rowNames[1]), 0, 1);
-    insertInBag(mainPanel, new JLabel(rowNames[2]), 0, 2);
-    insertInBag(mainPanel, new JLabel(rowNames[3]), 0, 3);
-    insertInBag(mainPanel, new JLabel(rowNames[4]), 0, 4);
-    insertInBag(mainPanel, new JLabel(rowNames[5]), 0, 5);
-    insertInBag(mainPanel, new JLabel(rowNames[6]), 0, 6);
-    insertInBag(mainPanel, new JLabel(rowNames[7]), 0, 7);
-    insertInBag(mainPanel, new JLabel(rowNames[8]), 0, 8);
-    insertInBag(mainPanel, new JLabel(rowNames[9]), 0, 9);
+    UIUtil.insertInBag(mainPanel, new JLabel(rowNames[0]), 0, 0);
+    UIUtil.insertInBag(mainPanel, new JLabel(rowNames[1]), 0, 1);
+    UIUtil.insertInBag(mainPanel, new JLabel(rowNames[2]), 0, 2);
+    UIUtil.insertInBag(mainPanel, new JLabel(rowNames[3]), 0, 3);
+    UIUtil.insertInBag(mainPanel, new JLabel(rowNames[4]), 0, 4);
+    UIUtil.insertInBag(mainPanel, new JLabel(rowNames[5]), 0, 5);
+    UIUtil.insertInBag(mainPanel, new JLabel(rowNames[6]), 0, 6);
+    UIUtil.insertInBag(mainPanel, new JLabel(rowNames[7]), 0, 7);
+    UIUtil.insertInBag(mainPanel, new JLabel(rowNames[8]), 0, 8);
+    UIUtil.insertInBag(mainPanel, new JLabel(rowNames[9]), 0, 9);
     
-    insertInBag(mainPanel, projectNameField, 1, 0);
-    insertInBag(mainPanel, projectVersionField, 1, 1);
-    insertInBag(mainPanel, contextNameField, 1, 2);
-    insertInBag(mainPanel, versionField, 1, 3);
-    insertInBag(mainPanel, workflowField, 1, 4);
-    insertInBag(mainPanel, longNameField, 1, 5);
-    insertInBag(mainPanel, descriptionScrollPane, 1, 6, 2, 1);
-    insertInBag(mainPanel, conceptualDomainField, 1, 7);
-    insertInBag(mainPanel, cdContextNameField, 1, 8);
-    insertInBag(mainPanel, packageFilterField, 1, 9);
+    UIUtil.insertInBag(mainPanel, projectNameField, 1, 0);
+    UIUtil.insertInBag(mainPanel, projectVersionField, 1, 1);
+    UIUtil.insertInBag(mainPanel, contextNameField, 1, 2);
+    UIUtil.insertInBag(mainPanel, versionField, 1, 3);
+    UIUtil.insertInBag(mainPanel, workflowField, 1, 4);
+    UIUtil.insertInBag(mainPanel, longNameField, 1, 5);
+    UIUtil.insertInBag(mainPanel, descriptionScrollPane, 1, 6, 2, 1);
+    UIUtil.insertInBag(mainPanel, conceptualDomainField, 1, 7);
+    UIUtil.insertInBag(mainPanel, cdContextNameField, 1, 8);
+    UIUtil.insertInBag(mainPanel, packageFilterField, 1, 9);
     
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout());
@@ -194,16 +194,4 @@ public class UmlDefaultsPanel extends JDialog implements ActionListener
     _this.dispose();
   }
   
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-
-    insertInBag(bagComp, comp, x, y, 1, 1);
-
-  }
-
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-  }
 }

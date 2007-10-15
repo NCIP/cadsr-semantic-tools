@@ -40,6 +40,8 @@ import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.semconn.SemanticConnectorException;
 import gov.nih.nci.ncicb.cadsr.semconn.*;
 
+import gov.nih.nci.ncicb.cadsr.domain.Context;
+
 import java.io.File;
 
 import org.apache.log4j.Logger;
@@ -72,6 +74,7 @@ public class WizardController implements ActionListener {
 
   private Parser xmiParser = null, preParser = null;
   private RoundtripAction roundtripAction = null;
+  private GMEAction gmeAction = null;
   private Validator validator = null;
 
   public WizardController() {}
@@ -159,7 +162,17 @@ public class WizardController implements ActionListener {
                 desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
                 desc.setBackPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
                 break;
-                
+
+            case GMEDefaults:
+                desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+                desc.setBackPanelDescriptor(GMEDefaultsPanelDescriptor.IDENTIFIER);
+                break; 
+
+            case GMECleanup:
+                desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+                desc.setBackPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
+                break; 
+               
             case FixEa:
                 desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
                 desc.setBackPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
@@ -182,6 +195,14 @@ public class WizardController implements ActionListener {
         userSelections.setProperty("PROJECT_NAME", panel.getProjectName());
         userSelections.setProperty("PROJECT_VERSION", new Float(panel.getProjectVersion()));
       }
+      if(descriptor.getPanelDescriptorIdentifier().equals(GMEDefaultsPanelDescriptor.IDENTIFIER)) {
+        GMEDefaultsPanel panel = 
+          (GMEDefaultsPanel)descriptor.getPanelComponent();
+        userSelections.setProperty("PROJECT_NAME", panel.getProjectName());
+        userSelections.setProperty("PROJECT_VERSION", new Float(panel.getProjectVersion()));
+        userSelections.setProperty("CONTEXT", panel.getContext());
+      }
+
 
       if(descriptor.getPanelDescriptorIdentifier().equals(FileSelectionPanelDescriptor.IDENTIFIER)) {
         FileSelectionPanel panel = 
@@ -294,6 +315,46 @@ public class WizardController implements ActionListener {
                   roundtripAction.doRoundtrip(projectName, projectVersion, filename, outputFile);
 
                   reportPanel.setOutputText("Roundtrip was completed. The output file can be found here: <br>" + outputFile);
+
+                  return null;
+
+                } 
+              };
+            worker.start(); 
+
+          } else if(mode.equals(RunMode.GMEDefaults)) {
+            SwingWorker worker = new SwingWorker() {
+                public Object construct() {
+                  gmeAction.addProgressListener(progressDesc);
+
+                  String projectName = (String)userSelections.getProperty("PROJECT_NAME");
+                  Float projectVersion = (Float)(userSelections.getProperty("PROJECT_VERSION"));
+                  Context context = (Context)(userSelections.getProperty("CONTEXT"));
+                  
+                  File f = new File(filename);
+                  outputFile = f.getParent() + "/GMEDefault_" + f.getName();
+
+                  gmeAction.generateDefaults(filename, outputFile, projectName, projectVersion, context);
+
+                  reportPanel.setOutputText("Default geration complete. The output file can be found here: <br>" + outputFile);
+
+                  return null;
+
+                } 
+              };
+            worker.start(); 
+
+          } else if(mode.equals(RunMode.GMECleanup)) {
+            SwingWorker worker = new SwingWorker() {
+                public Object construct() {
+                  gmeAction.addProgressListener(progressDesc);
+
+                  File f = new File(filename);
+                  outputFile = f.getParent() + "/GMECleanup_" + f.getName();
+
+                  gmeAction.cleanup(filename, outputFile);
+
+                  reportPanel.setOutputText("GME tags were removed from input file. The output file can be found here: <br>" + outputFile);
 
                   return null;
 
@@ -444,6 +505,11 @@ public class WizardController implements ActionListener {
   public void setRoundtripAction(RoundtripAction action) {
     this.roundtripAction = action;
   }
+
+  public void setGmeAction(GMEAction gmeAction) {
+    this.gmeAction = gmeAction;
+  }
+
   public void setXmiParser(gov.nih.nci.ncicb.cadsr.loader.parser.Parser parser) {
     this.xmiParser = parser;
   }

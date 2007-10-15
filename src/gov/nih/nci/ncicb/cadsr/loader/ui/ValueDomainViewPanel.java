@@ -1,7 +1,10 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
+
 import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 import java.awt.*;
 import javax.swing.*;
+
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 public class ValueDomainViewPanel extends JPanel
 {
@@ -61,23 +64,23 @@ public class ValueDomainViewPanel extends JPanel
     scrollPane = new JScrollPane(vdPrefDefValueTextField);
     scrollPane.setPreferredSize(new Dimension(200, 100));
     
-    insertInBag(mainPanel, vdPrefDefTitleLabel, 0, 1);
-    insertInBag(mainPanel, scrollPane, 1, 1, 3, 1); 
+    UIUtil.insertInBag(mainPanel, vdPrefDefTitleLabel, 0, 1);
+    UIUtil.insertInBag(mainPanel, scrollPane, 1, 1, 3, 1); 
     
-    insertInBag(mainPanel, vdDatatypeTitleLabel, 0, 3);
-    insertInBag(mainPanel, vdDatatypeValueLabel, 1, 3);
+    UIUtil.insertInBag(mainPanel, vdDatatypeTitleLabel, 0, 3);
+    UIUtil.insertInBag(mainPanel, vdDatatypeValueLabel, 1, 3);
     
-    insertInBag(mainPanel, vdTypeTitleLabel, 0, 4);
-    insertInBag(mainPanel, vdTypeValueLabel, 1, 4);
+    UIUtil.insertInBag(mainPanel, vdTypeTitleLabel, 0, 4);
+    UIUtil.insertInBag(mainPanel, vdTypeValueLabel, 1, 4);
     
-    insertInBag(mainPanel, vdCdIdTitleLabel, 0, 5);
-    insertInBag(mainPanel, vdCdIdValueLabel, 1, 5);
+    UIUtil.insertInBag(mainPanel, vdCdIdTitleLabel, 0, 5);
+    UIUtil.insertInBag(mainPanel, vdCdIdValueLabel, 1, 5);
     
-    insertInBag(mainPanel, vdCdLongNameTitleLabel, 0, 6);
-    insertInBag(mainPanel, vdCdLongNameValueLabel, 1, 6);
+    UIUtil.insertInBag(mainPanel, vdCdLongNameTitleLabel, 0, 6);
+    UIUtil.insertInBag(mainPanel, vdCdLongNameValueLabel, 1, 6);
 
-    insertInBag(mainPanel, vdRepIdTitleLabel, 0, 7);
-    insertInBag(mainPanel, vdRepIdValueLabel, 1, 7);
+    UIUtil.insertInBag(mainPanel, vdRepIdTitleLabel, 0, 7);
+    UIUtil.insertInBag(mainPanel, vdRepIdValueLabel, 1, 7);
     
     this.add(mainPanel);
   }
@@ -98,17 +101,6 @@ public class ValueDomainViewPanel extends JPanel
     vdRepIdValueLabel.setText(vd.getRepresentation().getPublicId() +
       " / " + vd.getRepresentation().getVersion());
 
-  }
-  
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-    insertInBag(bagComp, comp, x, y, 1, 1);
-  }
-  
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
   
   public static void main(String args[]) 

@@ -1,6 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -96,10 +97,10 @@ public class SearchPreferencesDialog extends JDialog
     else 
       workflowStatusCheckBox.setSelected(false);
     
-    insertInBag(centerPanel, new JLabel("Exclude Registration Status(es)"), 0,0);
-    insertInBag(centerPanel, listScrollPane, 0, 1, 2, 1);
-    insertInBag(centerPanel, new JLabel("<html>Exclude Retired Workflow Status<font size=1><br>CMTE Approved<br>CMTE SUBMTD<br>CMTE SUBMTD USED<br>RETIRED ARCHIVED<br>RETIRED PHASED OUT<br>RETIRED WITHDRAWN</font></html>"), 0, 2);
-    insertInBag(centerPanel, workflowStatusCheckBox, 1, 2);
+    UIUtil.insertInBag(centerPanel, new JLabel("Exclude Registration Status(es)"), 0,0);
+    UIUtil.insertInBag(centerPanel, listScrollPane, 0, 1, 2, 1);
+    UIUtil.insertInBag(centerPanel, new JLabel("<html>Exclude Retired Workflow Status<font size=1><br>CMTE Approved<br>CMTE SUBMTD<br>CMTE SUBMTD USED<br>RETIRED ARCHIVED<br>RETIRED PHASED OUT<br>RETIRED WITHDRAWN</font></html>"), 0, 2);
+    UIUtil.insertInBag(centerPanel, workflowStatusCheckBox, 1, 2);
     
     okButton.setActionCommand(OK);
     cancelButton.setActionCommand(CANCEL);
@@ -132,19 +133,6 @@ public class SearchPreferencesDialog extends JDialog
     }
   }
   
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-
-    insertInBag(bagComp, comp, x, y, 1, 1);
-
-  }
-
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-  }
-
   public static void main(String[] args) 
   { 
     SearchPreferencesDialog spd = new SearchPreferencesDialog();
