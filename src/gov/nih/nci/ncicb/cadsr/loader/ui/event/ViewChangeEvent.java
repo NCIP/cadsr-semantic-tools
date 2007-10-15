@@ -27,6 +27,7 @@ public class ViewChangeEvent {
   public static final int VIEW_VALUE_DOMAIN = 4;
   public static final int VIEW_VALUE_MEANING = 5;
   public static final int VIEW_INHERITED = 6;
+  public static final int VIEW_PACKAGE = 7;
 
   private int type;
   private Object viewObject;
