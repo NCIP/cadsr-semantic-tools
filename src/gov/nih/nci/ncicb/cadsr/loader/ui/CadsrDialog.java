@@ -16,6 +16,8 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -290,18 +292,18 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     if(mode == MODE_DE) {
       searchButton.setText("Freestyle Search");
       searchField.setColumns(20);
-      insertInBag(searchPanel, searchLabel, 0, 0);
-      insertInBag(searchPanel, searchField, 1, 0);
-      insertInBag(searchPanel, searchButton, 4, 0);
-      insertInBag(searchPanel, suggestButton, 5, 0);
+      UIUtil.insertInBag(searchPanel, searchLabel, 0, 0);
+      UIUtil.insertInBag(searchPanel, searchField, 1, 0);
+      UIUtil.insertInBag(searchPanel, searchButton, 4, 0);
+      UIUtil.insertInBag(searchPanel, suggestButton, 5, 0);
     }
     
     else {
-      insertInBag(searchPanel, searchLabel, 0, 0);
-      insertInBag(searchPanel, searchField, 1, 0);
-      insertInBag(searchPanel, whereToSearchLabel, 2, 0);
-      insertInBag(searchPanel, searchSourceCombo, 3, 0);
-      insertInBag(searchPanel, searchButton, 4, 0);
+      UIUtil.insertInBag(searchPanel, searchLabel, 0, 0);
+      UIUtil.insertInBag(searchPanel, searchField, 1, 0);
+      UIUtil.insertInBag(searchPanel, whereToSearchLabel, 2, 0);
+      UIUtil.insertInBag(searchPanel, searchSourceCombo, 3, 0);
+      UIUtil.insertInBag(searchPanel, searchButton, 4, 0);
     }
     
     searchField.addKeyListener(this);
@@ -376,17 +378,6 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     } finally {
       choiceAdminComponent = null;
     } 
-  }
-  
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-    insertInBag(bagComp, comp, x, y, 1, 1);
-  }
-
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
   
   public void actionPerformed(ActionEvent event) 

@@ -1,5 +1,8 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.loader.util.DatatypeMapping;
+
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -7,22 +10,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
+
+import java.util.*;
+
+import javax.swing.*;
 
 public class DatatypePanel extends JPanel implements ActionListener
 {
@@ -82,16 +73,16 @@ public class DatatypePanel extends JPanel implements ActionListener
     datatypeScrollPane.setPreferredSize(new Dimension(300, 125));
         
     //inserts components into the panel    
-    insertInBag(this, new JLabel("Enter Name for datatype"), 0, 0);
-    insertInBag(this, new JLabel("Map to"), 1, 0);
-    insertInBag(this, datatypeField, 0, 1);
-    insertInBag(this, associateComboBox, 1, 1);
-    insertInBag(this, addButton, 2, 1);
-    insertInBag(this, new JLabel("User Mappings"), 0, 2);
-    insertInBag(this, userDatatypeScrollPane, 0, 3, 2, 1);
-    insertInBag(this, new JLabel("System Mappings"), 0, 4);
-    insertInBag(this, datatypeScrollPane, 0, 5, 2, 1);
-    insertInBag(this, removeButton, 2, 3);
+    UIUtil.insertInBag(this, new JLabel("Enter Name for datatype"), 0, 0);
+    UIUtil.insertInBag(this, new JLabel("Map to"), 1, 0);
+    UIUtil.insertInBag(this, datatypeField, 0, 1);
+    UIUtil.insertInBag(this, associateComboBox, 1, 1);
+    UIUtil.insertInBag(this, addButton, 2, 1);
+    UIUtil.insertInBag(this, new JLabel("User Mappings"), 0, 2);
+    UIUtil.insertInBag(this, userDatatypeScrollPane, 0, 3, 2, 1);
+    UIUtil.insertInBag(this, new JLabel("System Mappings"), 0, 4);
+    UIUtil.insertInBag(this, datatypeScrollPane, 0, 5, 2, 1);
+    UIUtil.insertInBag(this, removeButton, 2, 3);
         
     addButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) 
@@ -132,16 +123,4 @@ public class DatatypePanel extends JPanel implements ActionListener
     }
   }
   
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-
-    insertInBag(bagComp, comp, x, y, 1, 1);
-
-  }
-
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-  }
 }

@@ -8,6 +8,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.NodeUtil;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -57,14 +58,14 @@ public class DEReuseDialog extends JDialog implements CadsrModuleListener {
         this.getContentPane().setLayout(new BorderLayout());
 
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        insertInBag(mainPanel, deLongNameTitleLabel, 0, 1);
-        insertInBag(mainPanel, deLongNameValueLabel, 1, 1);
-        insertInBag(mainPanel, deIdTitleLabel, 0, 2);
-        insertInBag(mainPanel, deIdValueLabel, 1, 2);
-        insertInBag(mainPanel, deContextNameTitleLabel, 0, 3);
-        insertInBag(mainPanel, deContextNameValueLabel, 1, 3);
-        insertInBag(mainPanel, vdLongNameTitleLabel, 0, 4);
-        insertInBag(mainPanel, vdLongNameValueLabel, 1, 4);
+        UIUtil.insertInBag(mainPanel, deLongNameTitleLabel, 0, 1);
+        UIUtil.insertInBag(mainPanel, deLongNameValueLabel, 1, 1);
+        UIUtil.insertInBag(mainPanel, deIdTitleLabel, 0, 2);
+        UIUtil.insertInBag(mainPanel, deIdValueLabel, 1, 2);
+        UIUtil.insertInBag(mainPanel, deContextNameTitleLabel, 0, 3);
+        UIUtil.insertInBag(mainPanel, deContextNameValueLabel, 1, 3);
+        UIUtil.insertInBag(mainPanel, vdLongNameTitleLabel, 0, 4);
+        UIUtil.insertInBag(mainPanel, vdLongNameValueLabel, 1, 4);
         
         Border margin = new EmptyBorder(10, 10, 5, 10); 
         mainPanel.setBorder(margin);
@@ -167,17 +168,6 @@ public class DEReuseDialog extends JDialog implements CadsrModuleListener {
         this.cadsrModule = cadsrModule;
     }
 
-    /**
-     * Convienence method for GridBags stolen from CadsrDialog.
-     */
-    private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-        JPanel p = new JPanel();
-        p.add(comp);
-        bagComp.add(p, new GridBagConstraints(
-                x, y, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, 
-                GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    }
-    
     /**
      * UI Test hardness.
      */

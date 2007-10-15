@@ -315,10 +315,10 @@ public class ConceptEditorPanel extends JPanel
     
     JLabel summaryNameTitle = new JLabel("UML Concept Name Summary: ");
     
-    insertInBag(summaryPanel, summaryTitle, 0, 0);
-    insertInBag(summaryPanel, conceptLabel, 1, 0);
-    insertInBag(summaryPanel, summaryNameTitle, 0, 1);
-    insertInBag(summaryPanel, nameLabel, 1, 1);
+    UIUtil.insertInBag(summaryPanel, summaryTitle, 0, 0);
+    UIUtil.insertInBag(summaryPanel, conceptLabel, 1, 0);
+    UIUtil.insertInBag(summaryPanel, summaryNameTitle, 0, 1);
+    UIUtil.insertInBag(summaryPanel, nameLabel, 1, 1);
 
     this.add(summaryPanel,BorderLayout.NORTH); 
     
@@ -335,7 +335,7 @@ public class ConceptEditorPanel extends JPanel
 
     gridPanel = new JPanel(new GridBagLayout());
 
-    scrollPane = new JScrollPane(gridPanel);
+//     scrollPane = new JScrollPane(gridPanel);
 //    scrollPane.getVerticalScrollBar().setUnitIncrement(30);
     
 
@@ -343,7 +343,7 @@ public class ConceptEditorPanel extends JPanel
     JPanel[] conceptPanels = new JPanel[concepts.length];
 
     if(prefs.getUmlDescriptionOrder().equals("first"))
-      insertInBag(gridPanel, UIUtil.createDescriptionPanel(node), 0, 0);
+      UIUtil.insertInBag(gridPanel, UIUtil.createDescriptionPanel(node), 0, 0);
 
     boolean primaryConceptFirst = prefs.getOrderOfConcepts().equalsIgnoreCase("first");
     
@@ -360,37 +360,37 @@ public class ConceptEditorPanel extends JPanel
 
       JPanel mainPanel = new JPanel(new GridBagLayout());
 
-      insertInBag(mainPanel, conceptUIs[i].labels[0], 0, 0);
-      insertInBag(mainPanel, conceptUIs[i].labels[1], 0, 1);
-      insertInBag(mainPanel, conceptUIs[i].labels[2], 0, 2);
-      insertInBag(mainPanel, conceptUIs[i].labels[3], 0, 3);
+      UIUtil.insertInBag(mainPanel, conceptUIs[i].labels[0], 0, 0);
+      UIUtil.insertInBag(mainPanel, conceptUIs[i].labels[1], 0, 1);
+      UIUtil.insertInBag(mainPanel, conceptUIs[i].labels[2], 0, 2);
+      UIUtil.insertInBag(mainPanel, conceptUIs[i].labels[3], 0, 3);
 
-      insertInBag(mainPanel, conceptUIs[i].code, 1, 0, 2, 1);
-      insertInBag(mainPanel, conceptUIs[i].name, 1, 1, 2, 1);
-      insertInBag(mainPanel, conceptUIs[i].defScrollPane, 1, 2, 2, 1);
-      insertInBag(mainPanel, conceptUIs[i].defSource, 1, 3,1, 1);
+      UIUtil.insertInBag(mainPanel, conceptUIs[i].code, 1, 0, 2, 1);
+      UIUtil.insertInBag(mainPanel, conceptUIs[i].name, 1, 1, 2, 1);
+      UIUtil.insertInBag(mainPanel, conceptUIs[i].defScrollPane, 1, 2, 2, 1);
+      UIUtil.insertInBag(mainPanel, conceptUIs[i].defSource, 1, 3,1, 1);
 
       JButton evsButton = conceptUIs[i].getEvsButton();
-      insertInBag(mainPanel, evsButton, 2, 3);
+      UIUtil.insertInBag(mainPanel, evsButton, 2, 3);
       
       JButton upButton = conceptUIs[i].getUpButton();
       JButton deleteButton = conceptUIs[i].getDeleteButton();
       JButton downButton = conceptUIs[i].getDownButton();
 
       JPanel arrowPanel = new JPanel(new GridBagLayout());
-      insertInBag(arrowPanel, upButton, 0, 0);
-      insertInBag(arrowPanel, deleteButton, 0, 1);
-      insertInBag(arrowPanel, downButton, 0, 2);
+      UIUtil.insertInBag(arrowPanel, upButton, 0, 0);
+      UIUtil.insertInBag(arrowPanel, deleteButton, 0, 1);
+      UIUtil.insertInBag(arrowPanel, downButton, 0, 2);
       
       conceptPanels[i].add(mainPanel, BorderLayout.CENTER);
       conceptPanels[i].add(arrowPanel, BorderLayout.EAST);
       
       //display Primary Concept first
       if(primaryConceptFirst)
-        insertInBag(gridPanel, conceptPanels[i], 0, i+1);
+        UIUtil.insertInBag(gridPanel, conceptPanels[i], 0, i+1);
       //display Qualifiers first
       else
-        insertInBag(gridPanel, conceptPanels[i], 0, conceptPanels.length - i);
+        UIUtil.insertInBag(gridPanel, conceptPanels[i], 0, conceptPanels.length - i);
 
       conceptUIs[i].code.addKeyListener(this);
       conceptUIs[i].name.addKeyListener(this);
@@ -506,13 +506,15 @@ public class ConceptEditorPanel extends JPanel
     UserSelections selections = UserSelections.getInstance();
     if(node.getUserObject() instanceof DataElement
       && !selections.getProperty("MODE").equals(RunMode.Curator))
-      insertInBag(gridPanel, vdPanel, 0, concepts.length + 1);
+      UIUtil.insertInBag(gridPanel, vdPanel, 0, concepts.length + 1);
     updateHeaderLabels();
     
     if(prefs.getUmlDescriptionOrder().equals("last"))
-      insertInBag(gridPanel, UIUtil.createDescriptionPanel(node), 0, concepts.length + 2); 
+      UIUtil.insertInBag(gridPanel, UIUtil.createDescriptionPanel(node), 0, concepts.length + 2); 
 
-    this.add(scrollPane, BorderLayout.CENTER);
+//     this.add(scrollPane, BorderLayout.CENTER);
+    this.add(gridPanel, BorderLayout.CENTER);
+
     
   }
   
@@ -555,7 +557,8 @@ public class ConceptEditorPanel extends JPanel
       newConcepts[newConcepts.length - 1] = concept;
       concepts = newConcepts;
 
-      this.remove(scrollPane);
+//       this.remove(scrollPane);
+      this.remove(gridPanel);
       initViewPanel();
       this.updateUI();
 
@@ -589,7 +592,8 @@ public class ConceptEditorPanel extends JPanel
       }
       concepts = newConcepts;
       
-      _this.remove(scrollPane);
+//       _this.remove(scrollPane);
+      _this.remove(gridPanel);
       initViewPanel();
       
       if(areAllFieldEntered()) {
@@ -641,7 +645,8 @@ public class ConceptEditorPanel extends JPanel
     if(event.getTypeOfEvent() == UserPreferencesEvent.UML_DESCRIPTION
         || event.getTypeOfEvent() == UserPreferencesEvent.ORDER_CONCEPTS) 
     {
-      _this.remove(scrollPane);
+//       _this.remove(scrollPane);
+      _this.remove(gridPanel);
       initViewPanel();
     }
   }
@@ -653,19 +658,6 @@ public class ConceptEditorPanel extends JPanel
   
   public void addElementChangeListener(ElementChangeListener listener) {
     changeListeners.add(listener);
-  }
-  
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-
-    insertInBag(bagComp, comp, x, y, 1, 1);
-
-  }
-
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
   
 }

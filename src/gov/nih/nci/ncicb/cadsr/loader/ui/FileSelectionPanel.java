@@ -43,6 +43,7 @@ import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.*;
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -166,13 +167,13 @@ implements ProgressListener {
 
     browsePanel.setLayout(new GridBagLayout());
 
-    insertInBag(browsePanel, 
+    UIUtil.insertInBag(browsePanel, 
                 new JLabel("Click browse to search for an " + fileExtension.toUpperCase() + " file"), 0, 0, 2, 1);
 
-    insertInBag(browsePanel, filePathField, 0, 1);
-    insertInBag(browsePanel, browseButton, 1, 1);
+    UIUtil.insertInBag(browsePanel, filePathField, 0, 1);
+    UIUtil.insertInBag(browsePanel, browseButton, 1, 1);
 
-    insertInBag(browsePanel, 
+    UIUtil.insertInBag(browsePanel, 
                 new JLabel("Recent Files:"), 0, 2, 2, 1);
 
 
@@ -209,7 +210,7 @@ implements ProgressListener {
             }            
         });
 
-      insertInBag(browsePanel, jl, 0, y++, 2, 1);
+      UIUtil.insertInBag(browsePanel, jl, 0, y++, 2, 1);
     }
 
 //     if(runMode != null && runMode.equals(RunMode.Reviewer)) {
@@ -275,19 +276,6 @@ implements ProgressListener {
 
   }
 
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-
-    insertInBag(bagComp, comp, x, y, 1, 1);
-
-  }
-
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-  }
-  
   public void fireActionEvent(ActionEvent event) 
   {
     for(ActionListener l : actionListeners)

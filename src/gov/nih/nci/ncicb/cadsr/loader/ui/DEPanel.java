@@ -6,6 +6,7 @@ import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
@@ -80,21 +81,21 @@ public class DEPanel extends JPanel
     
     // scrollPane.getVerticalScrollBar().setUnitIncrement(30);
 
-    insertInBag(mainPanel, clearButton, 0, 5, 2 ,1);
-    insertInBag(mainPanel, searchDeButton, 1, 5);
+    UIUtil.insertInBag(mainPanel, clearButton, 0, 5, 2 ,1);
+    UIUtil.insertInBag(mainPanel, searchDeButton, 1, 5);
     
     
-    insertInBag(mainPanel, deLongNameTitleLabel, 0, 1);
-    insertInBag(mainPanel, deLongNameValueLabel, 1, 1);
+    UIUtil.insertInBag(mainPanel, deLongNameTitleLabel, 0, 1);
+    UIUtil.insertInBag(mainPanel, deLongNameValueLabel, 1, 1);
 
-    insertInBag(mainPanel, deIdTitleLabel, 0, 2);
-    insertInBag(mainPanel, deIdValueLabel, 1, 2);
+    UIUtil.insertInBag(mainPanel, deIdTitleLabel, 0, 2);
+    UIUtil.insertInBag(mainPanel, deIdValueLabel, 1, 2);
 
-    insertInBag(mainPanel, deContextNameTitleLabel, 0, 3);
-    insertInBag(mainPanel, deContextNameValueLabel, 1, 3);
+    UIUtil.insertInBag(mainPanel, deContextNameTitleLabel, 0, 3);
+    UIUtil.insertInBag(mainPanel, deContextNameValueLabel, 1, 3);
 
-    insertInBag(mainPanel, vdLongNameTitleLabel, 0, 4);
-    insertInBag(mainPanel, vdLongNameValueLabel, 1, 4);
+    UIUtil.insertInBag(mainPanel, vdLongNameTitleLabel, 0, 4);
+    UIUtil.insertInBag(mainPanel, vdLongNameValueLabel, 1, 4);
 
     JPanel titlePanel = new JPanel();
     JLabel title = new JLabel("Map to CDE");
@@ -348,17 +349,6 @@ public class DEPanel extends JPanel
       
 
 
-  }
-
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-    insertInBag(bagComp, comp, x, y, 1, 1);
-  }
-  
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
 
   private void fireElementChangeEvent(ElementChangeEvent event) {

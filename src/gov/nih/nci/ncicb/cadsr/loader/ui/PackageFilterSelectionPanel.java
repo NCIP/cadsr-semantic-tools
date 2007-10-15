@@ -1,5 +1,8 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
+
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -89,13 +92,11 @@ public class PackageFilterSelectionPanel extends JPanel
     packagePathField.setFont(new Font("Serif", Font.PLAIN, 12));
     packageList.setFont(new Font("Serif", Font.PLAIN, 12));
 
-    insertInBag(centerPanel, packageLabel, 0, 0);
-    //insertInBag(centerPanel, aliasLabel, 1, 0);
-    insertInBag(centerPanel, packagePathField, 0, 1);
-    //insertInBag(centerPanel, aliasPathField, 1, 1);
-    insertInBag(centerPanel, addButton, 2, 1);
-    insertInBag(centerPanel, scrollPane, 0, 2, 2, 1);
-    insertInBag(centerPanel, removeButton, 2, 2);
+    UIUtil.insertInBag(centerPanel, packageLabel, 0, 0);
+    UIUtil.insertInBag(centerPanel, packagePathField, 0, 1);
+    UIUtil.insertInBag(centerPanel, addButton, 2, 1);
+    UIUtil.insertInBag(centerPanel, scrollPane, 0, 2, 2, 1);
+    UIUtil.insertInBag(centerPanel, removeButton, 2, 2);
     
     this.setLayout(new BorderLayout());
     this.add(infoPanel, BorderLayout.NORTH);
@@ -132,16 +133,4 @@ public class PackageFilterSelectionPanel extends JPanel
     }
   }
   
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y) {
-
-    insertInBag(bagComp, comp, x, y, 1, 1);
-
-  }
-
-  private void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height) {
-    JPanel p = new JPanel();
-    p.add(comp);
-
-    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-  }
 }
