@@ -232,6 +232,9 @@
   </bean>
 
   <!-- Validators -->
+  <bean name="gmeValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.GMEValidator">
+  </bean>
   <bean name="valueDomainValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.ValueDomainValidator">
   </bean>
@@ -274,6 +277,7 @@
         <ref bean="duplicateAttributeValidator"/>
         <ref bean="inheritanceValidator"/>
         <ref bean="definitionLengthValidator"/>
+        <ref bean="gmeValidator"/>
       </list>
     </property>
   </bean>
