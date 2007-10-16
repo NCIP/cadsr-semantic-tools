@@ -93,6 +93,7 @@ public class UMLElementViewPanel extends JPanel
     editPanel.add(gmePanel, BorderLayout.SOUTH);
 
     JScrollPane scrollPane = new JScrollPane(editPanel);
+    scrollPane.getVerticalScrollBar().setUnitIncrement(30);
 
     this.add(scrollPane, BorderLayout.CENTER);
     this.add(newPanel, BorderLayout.SOUTH);
