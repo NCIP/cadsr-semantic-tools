@@ -557,6 +557,9 @@ public class MainFrame extends JFrame
     } else if(event.getType() == ViewChangeEvent.VIEW_PACKAGE) {
       UMLNode node = (UMLNode)event.getViewObject();
       
+      if(!viewPanels.containsValue(packageViewPanel))
+        packageViewPanel = null;
+
       if(node.getUserObject() == null)
         return;
 
