@@ -218,7 +218,25 @@ public class DEPanel extends JPanel
     tempDE = DomainObjectFactory.newDataElement();
 
     ValueDomain vd = DomainObjectFactory.newValueDomain();
-    vd.setLongName("");
+
+    List<AttributeDatatypePair> attTypesPairs = ElementsLists.getInstance().getElements(new AttributeDatatypePair("", ""));
+    String datatype = null;
+    String attributeName = LookupUtil.lookupFullName(de);
+    for(AttributeDatatypePair pair : attTypesPairs) {
+      if(pair.getAttributeName().equals(attributeName)) {
+        datatype = pair.getDatatype();
+      }
+    }
+
+    if(datatype == null)
+      datatype = "";
+    else {
+      if(DatatypeMapping.getKeys().contains(datatype.toLowerCase())) 
+        datatype = DatatypeMapping.getMapping().get(datatype.toLowerCase());
+    }
+
+    vd.setLongName(datatype);
+
     tempDE.setValueDomain(vd);
 
     deLongNameValueLabel.setText("");
