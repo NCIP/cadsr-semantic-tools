@@ -29,6 +29,7 @@ public class WarningNode<UMLNode> extends AbstractUMLNode implements ValidationN
   public WarningNode(ValidationItem item) {
     fullPath = item.getMessage();
     display = item.getMessage();
+    userObject = item;
   }
 
   public Icon getIcon() {

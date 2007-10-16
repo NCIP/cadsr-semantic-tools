@@ -127,7 +127,18 @@ public class TreeBuilder implements UserPreferencesListener {
       String alias = defaults.getPackageDisplay(pack.getName()); 
       UMLNode node = new PackageNode(pack, alias);
       parentNode.addChild(node);
-      
+
+      List<ValidationItem> items = findValidationItems(pack);
+      for(ValidationItem item : items) {
+        ValidationNode vNode = null;
+        if (item instanceof ValidationWarning) {
+          vNode = new WarningNode(item);
+        } else {
+          vNode = new ErrorNode(item);
+        }
+        node.addValidationNode(vNode);
+      }
+
       doClasses(node);
     }
   }
