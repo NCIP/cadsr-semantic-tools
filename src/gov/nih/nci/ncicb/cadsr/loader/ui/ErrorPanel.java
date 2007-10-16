@@ -213,16 +213,19 @@ public class ErrorPanel extends JPanel implements MouseListener {
     //     displaySet = new HashSet<UMLNode>();
 
     for (ValidationNode valNode: valNodes) {
-      if (valNode.getUserObject() instanceof ValidationConceptError) {
+      ValidationItem valItem = (ValidationItem)valNode.getUserObject();
+      if (valItem instanceof ValidationConceptError) {
         if(hideConceptError)
           continue;
-        if(valNode.getParent() instanceof AttributeNode) {
-          AttributeNode attNode = (AttributeNode)valNode.getParent();
-          DataElement de = (DataElement)attNode.getUserObject();
-          if(inheritedList.isInherited(de))
-            continue;
-        }
       }
+      if(valNode.getParent() instanceof AttributeNode) {
+        AttributeNode attNode = (AttributeNode)valNode.getParent();
+        DataElement de = (DataElement)attNode.getUserObject();
+        if(inheritedList.isInherited(de))
+          if(!valItem.includeInInherited())
+            continue;
+      }
+
       navTree(valNode);
     }
 
