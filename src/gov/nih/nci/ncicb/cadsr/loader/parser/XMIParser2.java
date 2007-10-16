@@ -340,7 +340,7 @@ public class XMIParser2 implements Parser {
         UMLTaggedValue versionTv  = subClass.getTaggedValue(TV_INHERITED_DE_VERSION.replace("{1}", attName));
         if(versionTv != null) {
           try {
-            IdVersionPair idVersionPair = new IdVersionPair(idTv.getValue(), new Float(versionTv.getValue()));
+            IdVersionPair idVersionPair = new IdVersionPair(idTv.getValue().trim(), new Float(versionTv.getValue()));
             gEvent.addPersistenceMapping(attName, idVersionPair);
           } catch (NumberFormatException e){
             logger.warn(PropertyAccessor.getProperty("version.numberFormatException", versionTv.getValue()));
@@ -354,7 +354,7 @@ public class XMIParser2 implements Parser {
         UMLTaggedValue versionTv  = subClass.getTaggedValue(TV_INHERITED_VD_VERSION.replace("{1}", attName));
         if(versionTv != null) {
           try {
-            IdVersionPair idVersionPair = new IdVersionPair(idTv.getValue(), new Float(versionTv.getValue()));
+            IdVersionPair idVersionPair = new IdVersionPair(idTv.getValue().trim(), new Float(versionTv.getValue()));
             gEvent.addTypeMapping(attName, idVersionPair);
           } catch (NumberFormatException e){
             logger.warn(PropertyAccessor.getProperty("version.numberFormatException", versionTv.getValue()));
