@@ -62,9 +62,11 @@ public class InheritanceValidator implements Validator, CadsrModuleListener {
             Property parentProp = parentDE.getDataElementConcept().getProperty();
             if(!inheritedProp.getPublicId().equals(parentProp.getPublicId())
                || !inheritedProp.getVersion().equals(parentProp.getVersion())) {
-              items.addItem(new ValidationError
+              ValidationItem item = new ValidationError
                             (PropertyAccessor.getProperty
-                             ("inherited.and.parent.property.mismatch", LookupUtil.lookupFullName(inheritedDE), LookupUtil.lookupFullName(parentDE)),inheritedDE));
+                             ("inherited.and.parent.property.mismatch", LookupUtil.lookupFullName(inheritedDE), LookupUtil.lookupFullName(parentDE)),inheritedDE);
+              item.setIncludeInInherited(true);
+              items.addItem(item);
             }
           } else { // parentDE mapped to concept. Verify that concepts match
             String conceptConcat = parentDE.getDataElementConcept().getProperty().getPreferredName();
@@ -76,9 +78,11 @@ public class InheritanceValidator implements Validator, CadsrModuleListener {
             if(conceptCodes.length > 0) {
               try {
                 if(!cadsrModule.matchDEToPropertyConcepts(inheritedDE, conceptCodes)) {
-                  items.addItem(new ValidationError
+                  ValidationItem item = new ValidationError
                                 (PropertyAccessor.getProperty
-                                 ("inherited.concept.mismatch", LookupUtil.lookupFullName(inheritedDE)), inheritedDE));
+                                 ("inherited.concept.mismatch", LookupUtil.lookupFullName(inheritedDE)), inheritedDE);
+                  item.setIncludeInInherited(true);
+                  items.addItem(item);
                 }
               } catch (Exception e) {
                 logger.error(e);

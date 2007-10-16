@@ -44,12 +44,14 @@ public class GMEValidator implements Validator {
    */
   public ValidationItems validate() {
     List<ClassificationSchemeItem> csis = elements.getElements(DomainObjectFactory.newClassificationSchemeItem());
+    boolean gmeFound = false;
     if(csis != null)
       for(ClassificationSchemeItem csi : csis) {
         boolean nsFound = false, nameFound = false;
         for(AlternateName an : csi.getAlternateNames()) {
           if(an.getType().equals(AlternateName.TYPE_GME_NAMESPACE)) {
             nsFound = true;
+            gmeFound = true;
             try {
               new URI(an.getName());
             } catch (URISyntaxException e) {
@@ -60,9 +62,16 @@ public class GMEValidator implements Validator {
               
             } 
           }
-          
+        }
+        if(!nsFound) {
+          items.addItem(new ValidationWarning
+                        (PropertyAccessor.getProperty
+                         ("gme.missing.namespace"), csi));
         }
       }
+
+    List<ValidationItem> tempItems = new ArrayList<ValidationItem>();
+
     List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass().getClass());
     if(ocs != null) {   
       for(ObjectClass oc : ocs) {  
@@ -70,6 +79,7 @@ public class GMEValidator implements Validator {
         for(AlternateName an : oc.getAlternateNames()) {
           if(an.getType().equals(AlternateName.TYPE_GME_NAMESPACE)) {
             nsFound = true;
+            gmeFound = true;
             try {
               new URI(an.getName());
             } catch (URISyntaxException e) {
@@ -81,11 +91,81 @@ public class GMEValidator implements Validator {
             }
           } else if(an.getType().equals(AlternateName.TYPE_GME_XML_ELEMENT)) {
             nameFound = true;
+            gmeFound = true;
           }
         }
+        if(!nsFound) {
+          tempItems.add(new ValidationWarning
+                        (PropertyAccessor.getProperty
+                         ("gme.missing.namespace"), oc));
+        }
+        if(!nameFound) {
+          tempItems.add(new ValidationWarning
+                        (PropertyAccessor.getProperty
+                         ("gme.missing.xml.element"), oc));
+        }
+
+      }
+    }
+
+    List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement().getClass());
+    if(des != null) {   
+      for(DataElement de : des) {  
+        boolean nameFound = false;
+        for(AlternateName an : de.getAlternateNames()) {
+          if(an.getType().equals(AlternateName.TYPE_GME_XML_LOC_REF)) {
+            nameFound = true;
+            gmeFound = true;
+          }
+        }
+        if(!nameFound) {
+          tempItems.add(new ValidationWarning
+                        (PropertyAccessor.getProperty
+                         ("gme.missing.xml.loc.ref"), de));
+        }
+
+      }
+    }
+
+    List<ObjectClassRelationship> ocrs = elements.getElements(DomainObjectFactory.newObjectClassRelationship().getClass());
+    if(ocrs != null) {   
+      for(ObjectClassRelationship ocr : ocrs) {  
+        
+        // don't look at generalizations
+        if(ocr.getType().equals(ObjectClassRelationship.TYPE_IS))
+          continue;
+
+        boolean srcFound = false, targetFound = false;
+        for(AlternateName an : ocr.getAlternateNames()) {
+          if(an.getType().equals(AlternateName.TYPE_GME_SRC_XML_LOC_REF)) {
+            srcFound = true;
+            gmeFound = true;
+          } else if(an.getType().equals(AlternateName.TYPE_GME_TARGET_XML_LOC_REF)) {
+            targetFound = true;
+            gmeFound = true;
+          } 
+        }
+        if(!srcFound) {
+          tempItems.add(new ValidationWarning
+                        (PropertyAccessor.getProperty
+                         ("gme.missing.src.loc.ref"), ocr));
+        }
+        if(!targetFound) {
+          tempItems.add(new ValidationWarning
+                        (PropertyAccessor.getProperty
+                         ("gme.missing.target.loc.ref"), ocr));
+        }
+
       }
     }
     
+    
+    // we found at least one gme tag, so print error for all
+    if(gmeFound) {
+      for(ValidationItem item : tempItems)
+        items.addItem(item);
+    }
+
     return items;
   }
 }

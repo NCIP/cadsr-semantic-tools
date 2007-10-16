@@ -29,6 +29,7 @@ public abstract class ValidationItem {
 
   private String message;
   private Object rootCause;
+  private boolean includeInInherited = false;
 
   public ValidationItem(String message, Object rootCause) {
     this.message = message;
@@ -45,6 +46,14 @@ public abstract class ValidationItem {
   
   public Object getRootCause() {
     return rootCause;
+  }
+
+  public boolean includeInInherited() {
+    return includeInInherited;
+  }
+
+  public void setIncludeInInherited(boolean b) {
+    includeInInherited = true;
   }
 
 }
