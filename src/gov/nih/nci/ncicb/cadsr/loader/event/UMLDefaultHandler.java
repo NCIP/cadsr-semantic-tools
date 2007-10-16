@@ -352,6 +352,13 @@ public class UMLDefaultHandler
     }
 
     dec.setObjectClass(oc);
+
+    String datatype = event.getType().trim();
+    // save the datatype. We will use it if we clear a CDE mapping.
+    elements.addElement(new AttributeDatatypePair(packageName + "." + className + "." + propName, datatype.toLowerCase()));
+
+    if(DatatypeMapping.getKeys().contains(datatype.toLowerCase())) 
+      datatype = DatatypeMapping.getMapping().get(datatype.toLowerCase());
     
     if(existingDe != null) {
       mapToExistingDE(oc, de, existingDe, event.getClassName(), event.getName());
@@ -362,13 +369,9 @@ public class UMLDefaultHandler
     } else {
       de.setLongName(dec.getLongName() + " " + event.getType());
 
-      String datatype = event.getType().trim();
-      if(DatatypeMapping.getKeys().contains(datatype.toLowerCase())) 
-        datatype = DatatypeMapping.getMapping().get(datatype.toLowerCase());
-      
       ValueDomain vd = DomainObjectFactory.newValueDomain();
       vd.setLongName(datatype);
-    
+
       if(event.getTypeId() != null) {
         populateExistingVd(vd, event.getTypeId(), event.getTypeVersion(), event.getClassName() + "." + event.getName());
       }
@@ -446,9 +449,11 @@ public class UMLDefaultHandler
       if(result.size() == 0) {
         ChangeTracker changeTracker = ChangeTracker.getInstance();
 
+        ValidationError item = new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", className + "." + attributeName,
+                                                                               id + "v" + version), de);
+        item.setIncludeInInherited(true);
         ValidationItems.getInstance()
-          .addItem(new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", className + "." + attributeName,
-               id + "v" + version), de));
+          .addItem(item);
 
         
         de.setPublicId(null);
@@ -470,10 +475,14 @@ public class UMLDefaultHandler
         if(!existingDe.getDataElementConcept().getObjectClass().getPublicId().equals(oc.getPublicId()) || !existingDe.getDataElementConcept().getObjectClass().getVersion().equals(oc.getVersion())) {
           // Oc was already mapped by an existing DE. This DE conflicts with the previous mapping. 
 
-        ValidationItems.getInstance()
-          .addItem(new ValidationError(PropertyAccessor.getProperty("de.conflict", new String[] 
-            {className + "." + attributeName,
-             ocMapping.get(ConventionUtil.publicIdVersion(oc)).getLongName()}), de));
+          
+          ValidationError item = new ValidationError(PropertyAccessor.getProperty("de.conflict", new String[] 
+              {className + "." + attributeName,
+               ocMapping.get(ConventionUtil.publicIdVersion(oc)).getLongName()}), de);
+
+          item.setIncludeInInherited(true);
+          ValidationItems.getInstance()
+            .addItem(item);
           
 
         }
@@ -516,9 +525,11 @@ public class UMLDefaultHandler
       if(result.size() == 0) {
         ChangeTracker changeTracker = ChangeTracker.getInstance();
 
+        ValidationError item = new ValidationError(PropertyAccessor.getProperty("vd.doesnt.exist", attributeName,
+                                                                               vdId + "v" + vdVersion), null);
+        item.setIncludeInInherited(true);
         ValidationItems.getInstance()
-          .addItem(new ValidationError(PropertyAccessor.getProperty("vd.doesnt.exist", attributeName,
-              vdId + "v" + vdVersion), null));
+          .addItem(item);
 
       
         vd.setPublicId(null);
