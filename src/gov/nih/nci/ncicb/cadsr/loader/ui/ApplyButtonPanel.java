@@ -173,6 +173,8 @@ public class ApplyButtonPanel extends JPanel implements ActionListener, Property
           viewPanel.applyPressed();
         } catch (ApplyException e){
         } // end of try-catch
+      } else {
+        applyButton.setEnabled(false);
       }
     }
   }
