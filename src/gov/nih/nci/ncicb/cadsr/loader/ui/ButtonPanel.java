@@ -54,7 +54,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     DELETEBUTTON = "DELETEBUTTON";
 
   static final String 
-    SWITCH_TO_DE = "Map to DE",
+    SWITCH_TO_DE = "Map to CDE",
     SWITCH_TO_OC = "Map to OC",
     SWITCH_TO_CONCEPT = "Map to Concepts";
     
