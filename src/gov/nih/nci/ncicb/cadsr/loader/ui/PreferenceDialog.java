@@ -116,7 +116,6 @@ public class PreferenceDialog extends JDialog implements ActionListener
 
     inheritedCDEMappingBox.setSelected(prefs.getBoolean("de.over.vd.mapping.warning"));
 
-    System.out.println("show GME Tags: " + prefs.getShowGMETags());
     showGMETagsBox.setSelected(prefs.getShowGMETags());
   }
   
