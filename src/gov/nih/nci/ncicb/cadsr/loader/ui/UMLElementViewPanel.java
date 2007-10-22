@@ -86,11 +86,21 @@ public class UMLElementViewPanel extends JPanel
     newPanel.add(buttonPanel);
     
     JPanel editPanel = new JPanel();
-//     editPanel.setLayout(new GridBagLayout());
-    editPanel.setLayout(new BorderLayout());
+    editPanel.setLayout(new GridBagLayout());
 
-    editPanel.add(cardPanel, BorderLayout.CENTER);
-    editPanel.add(gmePanel, BorderLayout.SOUTH);
+    UserPreferences prefs = UserPreferences.getInstance();
+    if(prefs.getUmlDescriptionOrder().equals("first"))
+      UIUtil.insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 0);
+    else 
+      UIUtil.insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 3);
+
+    UIUtil.insertInBag(editPanel, cardPanel, 0, 1);
+    UIUtil.insertInBag(editPanel, gmePanel, 0, 2);
+
+//     editPanel.setLayout(new BorderLayout());
+
+//     editPanel.add(cardPanel, BorderLayout.CENTER);
+//     editPanel.add(gmePanel, BorderLayout.SOUTH);
 
     JScrollPane scrollPane = new JScrollPane(editPanel);
     scrollPane.getVerticalScrollBar().setUnitIncrement(30);
