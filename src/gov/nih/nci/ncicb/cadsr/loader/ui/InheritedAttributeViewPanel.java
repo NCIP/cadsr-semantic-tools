@@ -92,6 +92,8 @@ public class InheritedAttributeViewPanel extends JPanel
     UIUtil.insertInBag(editPanel, dePanel, 0, 2);
     UIUtil.insertInBag(editPanel, vdPanel, 0, 3);
 
+    UIUtil.insertInBag(editPanel, explainLabel, 1, 2);
+
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); 
     JLabel space = new JLabel("      ");
@@ -101,8 +103,7 @@ public class InheritedAttributeViewPanel extends JPanel
 
     JScrollPane scrollPane = new JScrollPane(editPanel);
 
-    // uncomment
-//     scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+    scrollPane.getVerticalScrollBar().setUnitIncrement(30);
 
     this.add(scrollPane, BorderLayout.CENTER);
     this.add(buttonPanel, BorderLayout.SOUTH);
@@ -205,7 +206,7 @@ public class InheritedAttributeViewPanel extends JPanel
                                   "any Value Domain mapping for this attribute will be cleared.<br>" + 
                                   "Your CDE queries will be filtered to CDEs that match existing<br>" + 
                                   "Object Class or Property mappings</html>");
-    } else if(!dePanel.isVisible() && vdPanel.isVisible()){
+    } else if(!dePanel.isVisible() && !vdPanel.isMappedToLocalVD(de)){
       explainLabel.setToolTipText("<html> You may only map this inherited attribute to a Value Domain.<br>" + 
                                   "If you need to map this inherited attribute to an existing CDE,<br>" + 
                                   " you will need to remove the concept mapping of the parent attribute.</html>");
