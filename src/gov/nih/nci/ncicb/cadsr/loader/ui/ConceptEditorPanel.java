@@ -342,8 +342,8 @@ public class ConceptEditorPanel extends JPanel
     conceptUIs = new ConceptUI[concepts.length];
     JPanel[] conceptPanels = new JPanel[concepts.length];
 
-    if(prefs.getUmlDescriptionOrder().equals("first"))
-      UIUtil.insertInBag(gridPanel, UIUtil.createDescriptionPanel(node), 0, 0);
+//     if(prefs.getUmlDescriptionOrder().equals("first"))
+//       UIUtil.insertInBag(gridPanel, UIUtil.createDescriptionPanel(node), 0, 0);
 
     boolean primaryConceptFirst = prefs.getOrderOfConcepts().equalsIgnoreCase("first");
     
@@ -489,9 +489,15 @@ public class ConceptEditorPanel extends JPanel
               conceptUIs[index].def.setText(c.getPreferredDefinition());
               conceptUIs[index].defSource.setText(c.getDefinitionSource());
 
+              if(StringUtil.isEmpty(c.getPreferredDefinition()))
+                 conceptUIs[index].def.setText(PropertyAccessor.getProperty("default.evs.definition"));
+              if(StringUtil.isEmpty(c.getDefinitionSource()))
+                 conceptUIs[index].defSource.setText(PropertyAccessor.getProperty("default.evs.definition.source"));
+                 
+
               if(areAllFieldEntered()) {
-              firePropertyChangeEvent(
-                new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true)); 
+                firePropertyChangeEvent(
+                  new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true)); 
               } else {
                 firePropertyChangeEvent(
                   new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false)); 
@@ -509,8 +515,8 @@ public class ConceptEditorPanel extends JPanel
       UIUtil.insertInBag(gridPanel, vdPanel, 0, concepts.length + 1);
     updateHeaderLabels();
     
-    if(prefs.getUmlDescriptionOrder().equals("last"))
-      UIUtil.insertInBag(gridPanel, UIUtil.createDescriptionPanel(node), 0, concepts.length + 2); 
+//     if(prefs.getUmlDescriptionOrder().equals("last"))
+//       UIUtil.insertInBag(gridPanel, UIUtil.createDescriptionPanel(node), 0, concepts.length + 2); 
 
 //     this.add(scrollPane, BorderLayout.CENTER);
     this.add(gridPanel, BorderLayout.CENTER);
