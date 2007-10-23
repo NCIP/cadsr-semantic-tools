@@ -1024,7 +1024,7 @@ public class XMIParser2 implements Parser {
 
     checkTaggedValues(elt, tag, separator);
 
-    UMLTaggedValue tv = elt.getTaggedValue(tag);
+    UMLTaggedValue tv = elt.getTaggedValue(tag, true);
     
     StringBuilder sb = new StringBuilder();
     if(tv == null)
