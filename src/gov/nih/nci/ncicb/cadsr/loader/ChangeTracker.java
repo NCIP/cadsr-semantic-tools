@@ -27,6 +27,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
+import gov.nih.nci.ncicb.cadsr.domain.Concept;
 
 
 import java.util.HashMap;
@@ -71,7 +72,10 @@ public class ChangeTracker implements ElementChangeListener
       this.put(absNode.getFullPath(), true);
     } else if(event.getUserObject() instanceof DataElement) {
       this.put(LookupUtil.lookupFullName((DataElement)event.getUserObject()), true);
+    } else if(event.getUserObject() instanceof Concept) {
+      this.put(((Concept)event.getUserObject()).getPreferredName(), true);
     }
+
   }
 
   public void clear() {
