@@ -573,6 +573,21 @@ public class XMIParser2 implements Parser {
       event.setType(tv.getValue());
     }
 
+    tv = clazz.getTaggedValue(TV_VD_ID);
+    if(tv != null) {
+      event.setVdId(tv.getValue().trim());
+    }
+    
+    tv = clazz.getTaggedValue(TV_VD_VERSION);
+    if(tv != null) {
+      try {
+        event.setVdVersion(new Float(tv.getValue()));
+      } catch (NumberFormatException e){
+        logger.warn(PropertyAccessor.getProperty("version.numberFormatException", tv.getValue()));
+      } // end of try-catch
+    }
+
+
     tv = clazz.getTaggedValue(TV_CD_ID);
     if(tv != null) {
       event.setCdId(tv.getValue().trim());
