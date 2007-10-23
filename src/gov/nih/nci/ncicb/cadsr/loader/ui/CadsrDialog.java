@@ -475,14 +475,19 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       pageIndex = 0;
       updateTable();
       
-    }
-    else if(button.getActionCommand().equals(SUGGEST)) {
-        
+    } else if(button.getActionCommand().equals(SUGGEST)) {
+      
         searchField.setText("");
         resultSet = new ArrayList();
-        
-        ClassNode classNode = (ClassNode)node.getParent();
+
         AttributeNode attrNode = (AttributeNode)node;
+        DataElement _de = (DataElement)node.getUserObject();
+        ClassNode classNode = null;
+        if(inheritedList.isInherited(_de)) {
+          classNode = (ClassNode)node.getParent().getParent();
+        } else {
+         classNode = (ClassNode)node.getParent();
+        }
         String className = classNode.getDisplay();
         String attrName = attrNode.getDisplay();
 
