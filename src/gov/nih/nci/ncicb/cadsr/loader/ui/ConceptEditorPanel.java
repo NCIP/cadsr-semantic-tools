@@ -231,11 +231,18 @@ public class ConceptEditorPanel extends JPanel
       //throw new ApplyException("Same Concept List");
     }
     
-    
     for(int i = 0; i<concepts.length; i++) {
       newConcepts[i] = concepts[i];
       // concept code has not changed
       if(conceptUIs[i].code.getText().equals(concepts[i].getPreferredName())) {
+        if(!concepts[i].getLongName().equals(conceptUIs[i].name.getText())
+           || !concepts[i].getPreferredDefinition().equals(conceptUIs[i].def.getText())
+           || !concepts[i].getDefinitionSource().equals(conceptUIs[i].defSource.getText())
+           )
+          
+          // if a field has changed, mark this concept as changed.
+          fireElementChangeEvent(new ElementChangeEvent(concepts[i]));
+
         concepts[i].setLongName(conceptUIs[i].name.getText());
         concepts[i].setPreferredDefinition(conceptUIs[i].def.getText());
         concepts[i].setDefinitionSource(conceptUIs[i].defSource.getText());
@@ -284,8 +291,7 @@ public class ConceptEditorPanel extends JPanel
             else
               ObjectUpdater.updateAssociationTarget(ocr, concepts, newConcepts);
         }
-      }
-      else
+      } else
         ObjectUpdater.update((AdminComponent)node.getUserObject(), concepts, newConcepts);
       
       concepts = newConcepts;
@@ -302,7 +308,11 @@ public class ConceptEditorPanel extends JPanel
 //    firePropertyChangeEvent(
 //      new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
 
+
+    // update the element that we just changed:
     fireElementChangeEvent(new ElementChangeEvent(node));
+
+    // Also update all the elements that use this concept
   }
     
     
@@ -665,7 +675,7 @@ public class ConceptEditorPanel extends JPanel
   public void addElementChangeListener(ElementChangeListener listener) {
     changeListeners.add(listener);
   }
-  
+
 }
   
   class ConceptUI {
