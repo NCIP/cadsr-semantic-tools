@@ -147,7 +147,14 @@ public class XMIWriter2 implements ElementWriter {
       sendProgressEvent(status++, goal, "Class: " + fullClassName);
 
       UMLClass clazz = classMap.get(fullClassName);
+
+      String [] conceptCodes = oc.getPreferredName().split(":");
+
       boolean changed = changeTracker.get(fullClassName);
+
+      // is one of the concepts in this OC changed?
+      for(String s : conceptCodes)
+        changed = changed | changeTracker.get(s);
 
       if(changed) {
         // drop all current concept tagged values
@@ -158,8 +165,6 @@ public class XMIWriter2 implements ElementWriter {
             clazz.removeTaggedValue(tv.getName());
         }
 
-        String [] conceptCodes = oc.getPreferredName().split(":");
-          
         addConceptTvs(clazz, conceptCodes, XMIParser2.TV_TYPE_CLASS);
       }
         
@@ -179,6 +184,12 @@ public class XMIWriter2 implements ElementWriter {
       UMLAttribute att = attributeMap.get(fullPropName);
         
       boolean changed = changeTracker.get(fullPropName);
+
+      String [] conceptCodes = dec.getProperty().getPreferredName().split(":");
+      // is one of the concepts in this Property changed?
+      for(String s : conceptCodes)
+        changed = changed | changeTracker.get(s);
+
       if(changed) {
         if(!inheritedList.isInherited(de)) {
           // drop all current concept tagged values
@@ -216,7 +227,6 @@ public class XMIWriter2 implements ElementWriter {
               att.removeTaggedValue(XMIParser2.TV_VD_ID);
               att.removeTaggedValue(XMIParser2.TV_VD_VERSION);
             }
-            String [] conceptCodes = dec.getProperty().getPreferredName().split(":");
             addConceptTvs(att, conceptCodes, XMIParser2.TV_TYPE_PROPERTY);
           }
         } else { // in case of inherited attribute
@@ -255,6 +265,12 @@ public class XMIWriter2 implements ElementWriter {
         UMLAttribute att = attributeMap.get(fullPropName);
           
         boolean changed = changeTracker.get(fullPropName);
+
+        String [] conceptCodes = ConceptUtil.getConceptCodes(vm);
+        // is one of the concepts in this VM changed?
+        for(String s : conceptCodes)
+          changed = changed | changeTracker.get(s);
+
         if(changed) {
           // drop all current concept tagged values
           Collection<UMLTaggedValue> allTvs = att.getTaggedValues();
@@ -264,7 +280,6 @@ public class XMIWriter2 implements ElementWriter {
             att.removeTaggedValue(tv.getName());
           }
 
-          String [] conceptCodes = ConceptUtil.getConceptCodes(vm);
           addConceptTvs(att, conceptCodes, XMIParser2.TV_TYPE_VM);
         }
       }
@@ -292,41 +307,60 @@ public class XMIWriter2 implements ElementWriter {
       UMLAssociationEnd source = assocEndMap.get(key+"~source");
       UMLAssociationEnd target = assocEndMap.get(key+"~target");
 
-      boolean changed = changeTracker.get(fullName);
-      boolean changedSource = changeTracker.get(fullName+" Source");
-      boolean changedTarget = changeTracker.get(fullName+" Target");
 
-      if(changed) {
-        dropCurrentAssocTvs(assoc);
+      // Role Level
+      {
         List<ComponentConcept> rConcepts = rule.getComponentConcepts();
         String[] rcodes = new String[rConcepts.size()];
         int i = 0;
         for (ComponentConcept con: rConcepts) {
-            rcodes[i++] = con.getConcept().getPreferredName();
+          rcodes[i++] = con.getConcept().getPreferredName();
         }
-        addConceptTvs(assoc, rcodes, XMIParser2.TV_TYPE_ASSOC_ROLE);
+        
+        boolean changed = changeTracker.get(fullName);
+        for(String s : rcodes)
+          changed = changed | changeTracker.get(s);
+        
+        if(changed) {
+          dropCurrentAssocTvs(assoc);
+          addConceptTvs(assoc, rcodes, XMIParser2.TV_TYPE_ASSOC_ROLE);
+        }
       }
-
-      if(changedSource) {
-        dropCurrentAssocTvs(source);
+      
+      // Source Level
+      {
         List<ComponentConcept> sConcepts = srule.getComponentConcepts();
         String[] scodes = new String[sConcepts.size()];
         int i = 0;
         for (ComponentConcept con: sConcepts) {
-            scodes[i++] = con.getConcept().getPreferredName();
+          scodes[i++] = con.getConcept().getPreferredName();
         }
-        addConceptTvs(source, scodes, XMIParser2.TV_TYPE_ASSOC_SOURCE);
+        boolean changedSource = changeTracker.get(fullName+" Source");
+        for(String s : scodes)
+          changedSource = changedSource | changeTracker.get(s);
+        if(changedSource) {
+          dropCurrentAssocTvs(source);
+          addConceptTvs(source, scodes, XMIParser2.TV_TYPE_ASSOC_SOURCE);
+        }
       }
 
-      if(changedTarget) {
-        dropCurrentAssocTvs(target);
+      // Target Level
+      {
         List<ComponentConcept> tConcepts = trule.getComponentConcepts();
         String[] tcodes = new String[tConcepts.size()];
         int i = 0;
         for (ComponentConcept con: tConcepts) {
-            tcodes[i++] = con.getConcept().getPreferredName();
+          tcodes[i++] = con.getConcept().getPreferredName();
         }
-        addConceptTvs(target, tcodes, XMIParser2.TV_TYPE_ASSOC_TARGET);
+
+        boolean changedTarget = changeTracker.get(fullName+" Target");
+        for(String s : tcodes)
+          changedTarget = changedTarget | changeTracker.get(s);
+
+        if(changedTarget) {
+          dropCurrentAssocTvs(target);
+          addConceptTvs(target, tcodes, XMIParser2.TV_TYPE_ASSOC_TARGET);
+        }
       }
       
     }
