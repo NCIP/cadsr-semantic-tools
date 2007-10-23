@@ -43,6 +43,8 @@ import gov.nih.nci.ncicb.cadsr.semconn.*;
 import gov.nih.nci.ncicb.cadsr.domain.Context;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import org.apache.log4j.Logger;
 
@@ -409,9 +411,22 @@ public class WizardController implements ActionListener {
                       cause = cause.getCause();
                     }
 
-                    msg  = msg + "\nThe application will now close.";
+                    msg  = msg + "\nThe application will now close.\n You have the option to save a detailed error message. Do you want to save it now?";
 
-                    JOptionPane.showMessageDialog((Frame)null,  msg, "Fatal Parsing Error", JOptionPane.ERROR_MESSAGE);
+                    if(JOptionPane.showConfirmDialog((Frame)null,  msg, "Fatal Parsing Error", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                      JFileChooser chooser = new JFileChooser();
+                      int returnVal = chooser.showOpenDialog(null);
+                      if(returnVal == JFileChooser.SAVE_DIALOG) {
+                        try {
+                          File file = chooser.getSelectedFile();
+                          PrintWriter pw = new PrintWriter(file);
+                          e.printStackTrace(pw);
+                          pw.close();
+                        } catch (IOException e2) {
+                          logger.error(e2, e2);
+                        } // end of try-catch
+                      }
+                    }
                     wizard.close(Wizard.ERROR_RETURN_CODE);
                   } catch (Exception e){
                     logger.error(e, e);
