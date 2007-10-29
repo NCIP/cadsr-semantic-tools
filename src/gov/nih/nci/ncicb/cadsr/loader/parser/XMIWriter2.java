@@ -309,7 +309,7 @@ public class XMIWriter2 implements ElementWriter {
 
 
       // Role Level
-      {
+      if (rule != null ){
         List<ComponentConcept> rConcepts = rule.getComponentConcepts();
         String[] rcodes = new String[rConcepts.size()];
         int i = 0;
@@ -328,7 +328,7 @@ public class XMIWriter2 implements ElementWriter {
       }
       
       // Source Level
-      {
+      if (srule != null) {
         List<ComponentConcept> sConcepts = srule.getComponentConcepts();
         String[] scodes = new String[sConcepts.size()];
         int i = 0;
@@ -345,7 +345,7 @@ public class XMIWriter2 implements ElementWriter {
       }
 
       // Target Level
-      {
+      if(trule != null) {
         List<ComponentConcept> tConcepts = trule.getComponentConcepts();
         String[] tcodes = new String[tConcepts.size()];
         int i = 0;
