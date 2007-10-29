@@ -24,9 +24,7 @@ import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
 import org.apache.log4j.Logger;
 
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
-import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
-import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 
@@ -311,18 +309,18 @@ public class XMIParser2 implements Parser {
     
     UMLClass subClass = g.getSubtype();
     // Check if the parent is not explicitely excluded.
-    String ppName = getPackageName(parentClass.getPackage());
+    String ppName = LookupUtil.getPackageName(parentClass.getPackage());
     if(StringUtil.isEmpty(ppName) || !isInPackageFilter(ppName)) {
-      logger.info(PropertyAccessor.getProperty("skip.inheritance", ppName + "." + parentClass.getName(), getPackageName(subClass.getPackage()) + "." + subClass.getName()));
+      logger.info(PropertyAccessor.getProperty("skip.inheritance", ppName + "." + parentClass.getName(), LookupUtil.getPackageName(subClass.getPackage()) + "." + subClass.getName()));
       return;
     }
     
     NewGeneralizationEvent gEvent = new NewGeneralizationEvent();
     gEvent.setParentClassName(
-      getPackageName(parentClass.getPackage()) + "." + parentClass.getName());
+      LookupUtil.getPackageName(parentClass.getPackage()) + "." + parentClass.getName());
     
     gEvent.setChildClassName(
-      getPackageName(subClass.getPackage()) + "." + subClass.getName());
+      LookupUtil.getPackageName(subClass.getPackage()) + "." + subClass.getName());
     
     // find all inherited mappings 
     for(UMLAttribute parentAtt : parentClass.getAttributes()) {
@@ -410,7 +408,7 @@ public class XMIParser2 implements Parser {
       packageName += ("." + pack.getName());
     }
 
-    NewPackageEvent event = new NewPackageEvent(getPackageName(pack));
+    NewPackageEvent event = new NewPackageEvent(LookupUtil.getPackageName(pack));
     UMLTaggedValue tv = pack.getTaggedValue(TV_GME_NAMESPACE);
     if(tv != null) {
       event.setGmeNamespace(tv.getValue());
@@ -439,7 +437,7 @@ public class XMIParser2 implements Parser {
 
   private void doClass(UMLClass clazz) throws ParserException {
     UMLDefaults defaults = UMLDefaults.getInstance();
-    String pName = getPackageName(clazz.getPackage());
+    String pName = LookupUtil.getPackageName(clazz.getPackage());
 
     className = clazz.getName();
 
@@ -482,7 +480,7 @@ public class XMIParser2 implements Parser {
     setConceptInfo(clazz, event, TV_TYPE_CLASS);
 
     logger.debug("CLASS: " + className);
-    logger.debug("CLASS PACKAGE: " + getPackageName(clazz.getPackage()));
+    logger.debug("CLASS PACKAGE: " + LookupUtil.getPackageName(clazz.getPackage()));
 
     if(isClassBanned(className)) {
       logger.info(PropertyAccessor.getProperty("class.filtered", className));
@@ -550,7 +548,7 @@ public class XMIParser2 implements Parser {
 
     NewValueDomainEvent event = new NewValueDomainEvent(className.trim());
 
-    String pName = getPackageName(clazz.getPackage());
+    String pName = LookupUtil.getPackageName(clazz.getPackage());
     if(pName != null)
       event.setPackageName(pName);
 
@@ -833,7 +831,7 @@ public class XMIParser2 implements Parser {
       NewAssociationEndEvent event = new NewAssociationEndEvent();
       
       UMLClass endClass = (UMLClass)(end.getUMLElement());
-      String pName = getPackageName(endClass.getPackage());
+      String pName = LookupUtil.getPackageName(endClass.getPackage());
       
       if(StringUtil.isEmpty(pName) || !isInPackageFilter(pName)) {
         logger.info(PropertyAccessor.getProperty("skip.association", endClass.getName() + " " + end.getRoleName()));
@@ -843,7 +841,7 @@ public class XMIParser2 implements Parser {
       
       event.setLowCardinality(end.getLowMultiplicity());
       event.setHighCardinality(end.getHighMultiplicity());
-      event.setClassName(getPackageName(endClass.getPackage()) + "." + endClass.getName());
+      event.setClassName(LookupUtil.getPackageName(endClass.getPackage()) + "." + endClass.getName());
       event.setRoleName(end.getRoleName());
       
       if(event.getClassName() == null) {
@@ -978,24 +976,6 @@ public class XMIParser2 implements Parser {
     return (packageFilter.size() == 0) || (packageFilter.containsKey(pName) || (UMLDefaults.getInstance().getDefaultPackageAlias() != null));
   }
 
-  private String getPackageName(UMLPackage pkg) {
-    StringBuffer pack = new StringBuffer();
-    String s = null;
-    do {
-      s = null;
-      if(pkg != null) {
-        s = pkg.getName(); 
-        if(s.indexOf(" ") == -1) {
-          if(pack.length() > 0)
-            pack.insert(0, '.');
-          pack.insert(0, s);
-        }
-        pkg = pkg.getParent();
-      }
-    } while (s != null);
-    
-    return pack.toString();
-  }
 
   private boolean isClassBanned(String className) {
     for(int i=0; i<bannedClassNames.length; i++) {
