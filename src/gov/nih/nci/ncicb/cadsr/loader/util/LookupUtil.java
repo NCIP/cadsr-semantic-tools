@@ -22,6 +22,8 @@ package gov.nih.nci.ncicb.cadsr.loader.util;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
+import gov.nih.nci.ncicb.xmiinout.domain.*;
+
 import java.util.*;
 
 public class LookupUtil {
@@ -157,6 +159,25 @@ public class LookupUtil {
         return altName.getName();
     }
     return null;
+  }
+
+  public static String getPackageName(UMLPackage pkg) {
+    StringBuffer pack = new StringBuffer();
+    String s = null;
+    do {
+      s = null;
+      if(pkg != null) {
+        s = pkg.getName(); 
+        if(s.indexOf(" ") == -1) {
+          if(pack.length() > 0)
+            pack.insert(0, '.');
+          pack.insert(0, s);
+        }
+        pkg = pkg.getParent();
+      }
+    } while (s != null);
+    
+    return pack.toString();
   }
 
 
