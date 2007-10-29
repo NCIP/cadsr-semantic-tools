@@ -48,7 +48,7 @@ public class GMEAction {
       String className = LookupUtil.lookupFullName(oc);
       String pkgName = className;
       if(pkgName.indexOf(".") > 0) {
-        pkgName = pkgName.substring(0, pkgName.indexOf("."));
+        pkgName = pkgName.substring(0, pkgName.lastIndexOf("."));
 
         if(!hasAltName(oc.getAlternateNames(), AlternateName.TYPE_GME_NAMESPACE)) {
           AlternateName altName = DomainObjectFactory.newAlternateName();
@@ -62,7 +62,7 @@ public class GMEAction {
         if(!hasAltName(oc.getAlternateNames(), AlternateName.TYPE_GME_XML_ELEMENT)) {
           AlternateName altName = DomainObjectFactory.newAlternateName();
           altName.setType(AlternateName.TYPE_GME_XML_ELEMENT);
-          altName.setName(className.substring(className.indexOf(".") + 1));
+          altName.setName(className.substring(className.lastIndexOf(".") + 1));
           
           oc.addAlternateName(altName);
           changeTracker.put(className, true);
@@ -86,6 +86,16 @@ public class GMEAction {
       }
     }
 
+//     // do the project 
+//     {
+//       ClassificationScheme cs = UMLDefaults.getInstance().getProjectCs();
+//       AlternateName altName = DomainObjectFactory.newAlternateName();
+//       altName.setType(AlternateName.TYPE_GME_NAMESPACE);
+//       altName.setName(namespace);
+//       cs.addAlternateName(altName);
+//     }
+    UserSelections.getInstance().setProperty("GME_NAMESPACE", namespace);
+
     List<ClassificationSchemeItem> csis = elements.getElements(DomainObjectFactory.newClassificationSchemeItem());
     for(ClassificationSchemeItem csi : csis) {
       if(!hasAltName(csi.getAlternateNames(), AlternateName.TYPE_GME_NAMESPACE)) {
@@ -97,6 +107,7 @@ public class GMEAction {
         changeTracker.put(csi.getName(), true);
       }
     }
+
 
     List<ObjectClassRelationship> ocrs = elements.getElements(DomainObjectFactory.newObjectClassRelationship());
     for(ObjectClassRelationship ocr : ocrs) {
