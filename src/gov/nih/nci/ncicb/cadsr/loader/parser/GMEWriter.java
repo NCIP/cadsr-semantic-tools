@@ -55,6 +55,16 @@ public class GMEWriter implements ElementWriter {
   }
 
   private void addGmeTags() {
+    // do the project 
+//     ClassificationScheme cs = UMLDefaults.getInstance().getProjectCs();
+    String namespace = (String)UserSelections.getInstance().getProperty("GME_NAMESPACE");
+
+    if(namespace != null) {
+      model.removeTaggedValue(XMIParser2.TV_GME_NAMESPACE);
+      model.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, namespace);
+    }
+
+    // now do the rest
     for(UMLPackage pkg : model.getPackages())
       doPackage(pkg);
     
@@ -67,12 +77,13 @@ public class GMEWriter implements ElementWriter {
     AlternateName attAltName = DomainObjectFactory.newAlternateName();
     attAltName.setType(AlternateName.TYPE_FULL_NAME);
 
-    boolean pkgChanged = changeTracker.get(pkg.getName());
+    String pkgName = LookupUtil.getPackageName(pkg);
+    boolean pkgChanged = changeTracker.get(pkgName);
     if(pkgChanged) {
       pkg.removeTaggedValue(XMIParser2.TV_GME_NAMESPACE);
       List<ClassificationSchemeItem> packages = cadsrObjects.getElements(DomainObjectFactory.newClassificationSchemeItem());
       for(ClassificationSchemeItem csi : packages) {
-        if(csi.getName().equals(pkg.getName())) {
+        if(csi.getName().equals(pkgName)) {
           for(AlternateName an : csi.getAlternateNames()) {
             if(an.getType().equals(AlternateName.TYPE_GME_NAMESPACE)) {
               pkg.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, an.getName());
