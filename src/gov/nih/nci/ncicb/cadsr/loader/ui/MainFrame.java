@@ -323,30 +323,22 @@ public class MainFrame extends JFrame
       public void actionPerformed(ActionEvent event) {
         String saveDir = UserPreferences.getInstance().getRecentDir();
         JFileChooser chooser = new JFileChooser(saveDir);
-        javax.swing.filechooser.FileFilter filter = 
-            new javax.swing.filechooser.FileFilter() {
-              String fileExtension = "xmi";
 
-              public boolean accept(File f) {
-                if (f.isDirectory()) {
-                  return true;
-                }                
-                return f.getName().endsWith("." + fileExtension);
-              }
-              public String getDescription() {
-                return fileExtension.toUpperCase() + " Files";
-              }
-            };
-            
-        chooser.setFileFilter(filter);
+        String extension = null;
+        String fileType = (String)UserSelections.getInstance().getProperty("FILE_TYPE");
+        if(fileType.equals("ARGO"))
+          extension = "uml";
+        else if(fileType.equals("EA"))
+          extension = "xmi";
+
+        chooser.setFileFilter(new InputFileFilter(extension));
         int returnVal = chooser.showSaveDialog(null);
           if(returnVal == JFileChooser.APPROVE_OPTION) {
             String filePath = chooser.getSelectedFile().getAbsolutePath();
-        String fileExtension = "xmi";
-
-	    if(!filePath.endsWith(fileExtension))
-	      filePath = filePath + "." + fileExtension;
-
+            
+	    if(!filePath.endsWith(extension))
+	      filePath = filePath + "." + extension;
+            
             UserPreferences.getInstance().setRecentDir(filePath);
             xmiWriter.setOutput(filePath);
             setWorkingTitle(filePath);
