@@ -227,24 +227,9 @@ implements ProgressListener {
         public void actionPerformed(ActionEvent evt) {
           String xmiDir = UserPreferences.getInstance().getRecentDir();
           JFileChooser chooser = new JFileChooser(xmiDir);
-          class MyFileFilter extends javax.swing.filechooser.FileFilter {
-            String extension = "";
-            MyFileFilter(String extension) {
-              this.extension = extension;
-            }
-            public boolean accept(File f) {
-              if (f.isDirectory()) {
-                return true;
-              }                
-              return f.getName().endsWith("." + extension);
-            }
-            public String getDescription() {
-              return extension.toUpperCase() + " Files";
-            }
-          };
 
-          chooser.addChoosableFileFilter(new MyFileFilter("uml"));
-          chooser.addChoosableFileFilter(new MyFileFilter("xmi"));
+          chooser.addChoosableFileFilter(new InputFileFilter("uml"));
+          chooser.addChoosableFileFilter(new InputFileFilter("xmi"));
           int returnVal = chooser.showOpenDialog(null);
           if(returnVal == JFileChooser.APPROVE_OPTION) {
             String filePath = chooser.getSelectedFile().getAbsolutePath();
