@@ -185,9 +185,10 @@ public class UMLDefaults {
     ContextDAO contextDAO = DAOAccessor.getContextDAO();
     ConceptualDomainDAO conceptualDomainDAO = DAOAccessor.getConceptualDomainDAO();
 
-    context = contextDAO.findByName(context.getName());
+    String cName = context.getName();
+    context = contextDAO.findByName(cName);
     if (context == null) {
-      logger.fatal(PropertyAccessor.getProperty("context.not.found", context.getName()));
+      logger.fatal(PropertyAccessor.getProperty("context.not.found", cName));
       System.exit(1);
     }
     
