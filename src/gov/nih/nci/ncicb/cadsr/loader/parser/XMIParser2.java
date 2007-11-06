@@ -269,9 +269,15 @@ public class XMIParser2 implements Parser {
             throw new Exception("Can't open file. Unknown format.");
           } 
         } 
-        
+
+        UserSelections userSelections = UserSelections.getInstance();
+        if(handlerEnum == HandlerEnum.ArgoUMLDefault) {
+          userSelections.setProperty("FILE_TYPE", "ARGO");
+        } else if(handlerEnum == HandlerEnum.EADefault){
+          userSelections.setProperty("FILE_TYPE", "EA");
+        }
         // save in memory for fast-save
-        UserSelections.getInstance().setProperty("XMI_HANDLER", handler);
+        userSelections.setProperty("XMI_HANDLER", handler);
       }
 
 //       UMLModel model = handler.getModel("EA Model");
