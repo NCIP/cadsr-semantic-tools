@@ -67,7 +67,6 @@ implements ProgressListener {
   private int goal;
 
   private RunMode runMode = null;
-  private String fileExtension = "xmi";
 
   private JCheckBox skipVdValidationCheckBox = 
     new JCheckBox("Skip Value Domain Validation"),
@@ -135,7 +134,7 @@ implements ProgressListener {
 
     infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif"))));
 
-    JLabel infoLabel = new JLabel("<html>Please choose a file to parse<br>The file must be in " + fileExtension.toUpperCase() + " format</html>");
+    JLabel infoLabel = new JLabel("<html>Please choose a file to parse<br>The file must be in XMI or (Argo) UML format</html>");
     infoPanel.add(infoLabel);
     
     this.add(infoPanel, BorderLayout.NORTH);
@@ -159,7 +158,7 @@ implements ProgressListener {
     browsePanel.setLayout(new GridBagLayout());
 
     UIUtil.insertInBag(browsePanel, 
-                new JLabel("Click browse to search for an " + fileExtension.toUpperCase() + " file"), 0, 0, 2, 1);
+                new JLabel("Click browse to search for an XMI or (Argo) UML file"), 0, 0, 2, 1);
 
     UIUtil.insertInBag(browsePanel, filePathField, 0, 1);
     UIUtil.insertInBag(browsePanel, browseButton, 1, 1);
@@ -228,20 +227,24 @@ implements ProgressListener {
         public void actionPerformed(ActionEvent evt) {
           String xmiDir = UserPreferences.getInstance().getRecentDir();
           JFileChooser chooser = new JFileChooser(xmiDir);
-          javax.swing.filechooser.FileFilter filter = 
-            new javax.swing.filechooser.FileFilter() {
-              public boolean accept(File f) {
-                if (f.isDirectory()) {
-                  return true;
-                }                
-                return f.getName().endsWith("." + fileExtension);
-              }
-              public String getDescription() {
-                return fileExtension.toUpperCase() + " Files";
-              }
-            };
-          
-          chooser.setFileFilter(filter);
+          class MyFileFilter extends javax.swing.filechooser.FileFilter {
+            String extension = "";
+            MyFileFilter(String extension) {
+              this.extension = extension;
+            }
+            public boolean accept(File f) {
+              if (f.isDirectory()) {
+                return true;
+              }                
+              return f.getName().endsWith("." + extension);
+            }
+            public String getDescription() {
+              return extension.toUpperCase() + " Files";
+            }
+          };
+
+          chooser.addChoosableFileFilter(new MyFileFilter("uml"));
+          chooser.addChoosableFileFilter(new MyFileFilter("xmi"));
           int returnVal = chooser.showOpenDialog(null);
           if(returnVal == JFileChooser.APPROVE_OPTION) {
             String filePath = chooser.getSelectedFile().getAbsolutePath();
