@@ -85,15 +85,6 @@ implements ProgressListener {
     UserSelections selections = UserSelections.getInstance();
     
     runMode = (RunMode)(selections.getProperty("MODE"));
-//     if(runMode.equals(RunMode.Curator)) 
-//       fileExtension = "xmi";
-//     else if(runMode.equals(RunMode.Reviewer)) 
-//       fileExtension = "xmi";
-//     else if(runMode.equals(RunMode.GenerateReport)) 
-//       fileExtension = "xmi";
-//     else if(runMode.equals(RunMode.AnnotateXMI))
-
-    fileExtension = "xmi";
 
     initUI();
   }
