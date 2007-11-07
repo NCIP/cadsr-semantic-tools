@@ -69,6 +69,7 @@
   <alias name="byte[]"/>
   <alias name="Byte[]"/>
   <alias name="java.lang.Byte[]"/>
+</alias-list>
 
 <alias-list name="anyClass Three Dimensional Array">
   <alias name="object[][][]"/>
@@ -76,7 +77,6 @@
   <alias name="java.lang.Object[][][]"/>
 </alias-list>
 
-</alias-list>
 <alias-list name="java.lang.IntegerArray">
   <alias name="int[]"/>
   <alias name="Integer[]"/>
@@ -136,5 +136,24 @@
 <alias-list name="java.sql.Timestamp">
   <alias name="timestamp"/>
 </alias-list>
+
+<!--  HL7 Mappings -->
+<alias-list name="HL7.ConceptDescriptor">
+  <alias name="CD"/>
+</alias-list>
+
+<alias-list name="HL7.InstanceIdentifier">
+  <alias name="II"/>
+</alias-list>
+
+<alias-list name="HL7.SET.CD">
+  <alias name="SET CD"/>
+</alias-list>
+
+<alias-list name="HL7.PQ">
+  <alias name="PQ"/>
+</alias-list>
+
+
 
 </Datatype-mapping>
