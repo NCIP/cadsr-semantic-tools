@@ -160,6 +160,7 @@
       <list>
         <ref bean="umlRoundtrip"/>
         <ref bean="valueDomainValidator"/>
+        <ref bean="duplicateValidator"/>
         <ref bean="roundtripPanel"/>
         <ref bean="gmeDefaultsPanel"/>
         <ref bean="cadsrDEDialog"/>
