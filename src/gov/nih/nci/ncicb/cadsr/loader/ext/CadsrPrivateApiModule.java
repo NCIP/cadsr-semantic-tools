@@ -143,10 +143,18 @@ public class CadsrPrivateApiModule implements CadsrModule
   }
 
   public List<gov.nih.nci.ncicb.cadsr.domain.Concept> getConcepts(gov.nih.nci.ncicb.cadsr.domain.ObjectClass oc) {
-    return null;
+
+    List<Concept> concepts = 
+      DAOAccessor.getObjectClassDAO().getConcepts(oc);
+    
+    return concepts;
+    
   }
   public List<gov.nih.nci.ncicb.cadsr.domain.Concept> getConcepts(gov.nih.nci.ncicb.cadsr.domain.Property prop) {
-    return null;
+    List<Concept> concepts = 
+      DAOAccessor.getPropertyDAO().getConcepts(prop);
+    
+    return concepts;
   }
 
 
@@ -215,25 +223,36 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   public static void main(String[] args) {
     CadsrPrivateApiModule testModule = new CadsrPrivateApiModule();
-    
+
     try {
-      System.out.println("Test matchDE");
-      DataElement de = DomainObjectFactory.newDataElement();
-      de.setPublicId("2533339");
-      de.setVersion(1.0f);
-      String[] conceptCodes = new String[] {"C43821", "C16423"};
-      // test that should return true
-      if(testModule.matchDEToPropertyConcepts(de, conceptCodes))
-        System.out.println("ok");
-      else
-        System.out.println("no good");
+//       System.out.println("Test matchDE");
+//       DataElement de = DomainObjectFactory.newDataElement();
+//       de.setPublicId("2533339");
+//       de.setVersion(1.0f);
+//       String[] conceptCodes = new String[] {"C43821", "C16423"};
+//       // test that should return true
+//       if(testModule.matchDEToPropertyConcepts(de, conceptCodes))
+//         System.out.println("ok");
+//       else
+//         System.out.println("no good");
       
-      conceptCodes = new String[] {"C16423", "C43821"};
-      // test that should return false
-      if(!testModule.matchDEToPropertyConcepts(de, conceptCodes))
-        System.out.println("ok");
-      else
-        System.out.println("no good");
+//       conceptCodes = new String[] {"C16423", "C43821"};
+//       // test that should return false
+//       if(!testModule.matchDEToPropertyConcepts(de, conceptCodes))
+//         System.out.println("ok");
+//       else
+//         System.out.println("no good");
+
+      System.out.println("Test find OC Concepts");
+      gov.nih.nci.ncicb.cadsr.domain.ObjectClass oc = DomainObjectFactory.newObjectClass();
+      oc.setPublicId("2241624");
+//       oc.setPublicId("2557779");
+      oc.setVersion(1f);
+      List<gov.nih.nci.ncicb.cadsr.domain.Concept> concepts = testModule.getConcepts(oc);
+      for(gov.nih.nci.ncicb.cadsr.domain.Concept con : concepts) {
+        System.out.println(con.getLongName());
+      }
+
 
     } catch (Exception e) {
     } // end of try-catch
