@@ -509,23 +509,21 @@ public class XMIWriter2 implements ElementWriter {
           String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getLongName();
 
           Boolean reviewed = ownerReviewTracker.get(fullPropName);
-          if(reviewed == null) {
-            continue;
+          UMLAttribute umlAtt = null;
+          if(reviewed != null) {
+            umlAtt = attributeMap.get(fullPropName);
+            umlAtt.removeTaggedValue(XMIParser2.TV_OWNER_REVIEWED);
+            umlAtt.addTaggedValue(XMIParser2.TV_OWNER_REVIEWED,
+                                  reviewed?"1":"0");
           }
-          UMLAttribute umlAtt = attributeMap.get(fullPropName);
-          umlAtt.removeTaggedValue(XMIParser2.TV_OWNER_REVIEWED);
-          umlAtt.addTaggedValue(XMIParser2.TV_OWNER_REVIEWED,
-                                reviewed?"1":"0");
-          
+
           reviewed = curatorReviewTracker.get(fullPropName);
-          if(reviewed == null) {
-            continue;
+          if(reviewed != null) {
+            umlAtt = attributeMap.get(fullPropName);
+            umlAtt.removeTaggedValue(XMIParser2.TV_CURATOR_REVIEWED);
+            umlAtt.addTaggedValue(XMIParser2.TV_CURATOR_REVIEWED,
+                                  reviewed?"1":"0");
           }
-          umlAtt = attributeMap.get(fullPropName);
-          umlAtt.removeTaggedValue(XMIParser2.TV_CURATOR_REVIEWED);
-          umlAtt.addTaggedValue(XMIParser2.TV_CURATOR_REVIEWED,
-                                reviewed?"1":"0");
-          
         }
       }
       
