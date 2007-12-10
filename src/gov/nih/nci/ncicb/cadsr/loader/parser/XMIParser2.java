@@ -626,7 +626,12 @@ public class XMIParser2 implements Parser {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
 
-    listener.newValueDomain(event);
+    if(isInPackageFilter(pName)) {
+      listener.newValueDomain(event);
+    } else {
+      logger.info(PropertyAccessor.getProperty("class.filtered", className));
+      return;
+    }
 
     for (UMLAttribute att : clazz.getAttributes()) {
       doValueMeaning(att);
