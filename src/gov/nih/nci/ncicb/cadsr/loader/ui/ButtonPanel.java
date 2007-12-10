@@ -10,6 +10,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueMeaningNode;
 import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 
@@ -181,16 +182,22 @@ public class ButtonPanel extends JPanel implements ActionListener,
   private void initButtonPanel() {  
     Concept[] concepts = conceptEditorPanel.getConcepts();
 
+    UMLNode node = conceptEditorPanel.getNode();
+
     boolean reviewButtonState = false;
-    if(concepts.length == 0)
-      reviewButtonState = false;
-    else 
+    if(concepts.length == 0) {
+      if(node instanceof ValueMeaningNode) {
+        reviewButtonState = true;
+      } else
+        reviewButtonState = false;
+    } else 
       reviewButtonState = true;
   
     switchButton.setVisible(editable instanceof DEPanel);
+
+    
     
     if(editable instanceof DEPanel) {
-      UMLNode node = conceptEditorPanel.getNode();
       DataElement de = (DataElement)node.getUserObject();
       if(conceptEditorPanel.getVDPanel().isMappedToLocalVD(de))
         switchButton.setEnabled(false);
@@ -216,8 +223,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
       }
     } else if(editable == null) {
       addButtonPanel.setVisible(true);
-    }
-
+    } 
+    
     applyButtonPanel.init(reviewButtonState);
     
   }
