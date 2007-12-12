@@ -381,7 +381,7 @@ public class ConceptEditorPanel extends JPanel
       UIUtil.insertInBag(mainPanel, conceptUIs[i].defSource, 1, 3,1, 1);
 
       JButton evsButton = conceptUIs[i].getEvsButton();
-      UIUtil.insertInBag(mainPanel, evsButton, 2, 3);
+      UIUtil.insertInBag(mainPanel, evsButton, 2, 0);
       
       JButton upButton = conceptUIs[i].getUpButton();
       JButton deleteButton = conceptUIs[i].getDeleteButton();
@@ -723,7 +723,7 @@ public class ConceptEditorPanel extends JPanel
     def.setText(concept.getPreferredDefinition());
     defSource.setText(concept.getDefinitionSource());
 
-    this.evsButton = new JButton("Evs Link");
+    this.evsButton = new JButton("Search EVS");
     this.deleteButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("delete-x.gif")));
     this.upButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("up-arrow.gif")));
     this.downButton = new JButton(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("down-arrow.gif")));
