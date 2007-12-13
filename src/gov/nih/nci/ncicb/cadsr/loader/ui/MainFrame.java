@@ -536,15 +536,20 @@ public class MainFrame extends JFrame
     } else if(event.getType() == ViewChangeEvent.VIEW_VALUE_DOMAIN) {
       UMLNode node = (UMLNode)event.getViewObject();
       
-      if(vdViewPanel == null) {
-        vdViewPanel = new ValueDomainViewPanel((ValueDomain)node.getUserObject());
-        viewTabbedPane.addTab("ValueDomain", vdViewPanel);
-        vdViewPanel.setName("ValueDomain");
-        infoLabel.setText("ValueDomain");
-      }
-      else
-        vdViewPanel.update((ValueDomain)node.getUserObject());
+//       if(vdViewPanel == null) {
+// //         vdViewPanel = new ValueDomainViewPanel((ValueDomain)node.getUserObject());
+//         vdViewPanel.update((ValueDomain)node.getUserObject());
+//         viewTabbedPane.addTab("ValueDomain", vdViewPanel);
+//         vdViewPanel.setName("ValueDomain");
+//         infoLabel.setText("ValueDomain");
+//       }
+//       else
       
+      viewTabbedPane.remove(vdViewPanel);
+      viewTabbedPane.addTab("ValueDomain", vdViewPanel);
+      vdViewPanel.update((ValueDomain)node.getUserObject());
+      infoLabel.setText("ValueDomain");      
+
       viewTabbedPane.setSelectedComponent(vdViewPanel);
     } else if(event.getType() == ViewChangeEvent.VIEW_PACKAGE) {
       UMLNode node = (UMLNode)event.getViewObject();
@@ -630,5 +635,9 @@ public class MainFrame extends JFrame
   public void setLogTab(JPanel panel) {
     this.logPanel = panel;
   }
-  
+ 
+  public void setValueDomainViewPanel(ValueDomainViewPanel vdViewPanel) {
+    this.vdViewPanel = vdViewPanel;
+  }
+ 
 }
