@@ -327,6 +327,10 @@
     >
   </bean>
   
+  <bean name="vdViewPanel"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.ValueDomainViewPanel"
+    />
+  
   <bean name="mainFrame"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.MainFrame">
     <property name="logTab">
@@ -334,6 +338,9 @@
     </property>
     <property name="xmiWriter">
       <ref bean="xmiInOutWriter"/>
+    </property>
+    <property name="valueDomainViewPanel">
+      <ref bean="vdViewPanel"/>
     </property>
   </bean>
 
