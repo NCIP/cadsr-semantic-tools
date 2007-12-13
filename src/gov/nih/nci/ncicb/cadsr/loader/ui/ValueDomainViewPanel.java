@@ -26,6 +26,10 @@ public class ValueDomainViewPanel extends JPanel
   
   private ValueDomain vd;
 
+  public ValueDomainViewPanel() {
+    initUI();
+  }
+
   public ValueDomainViewPanel(ValueDomain vd)
   {
     this.vd = vd;
