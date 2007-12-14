@@ -23,11 +23,12 @@ public class ValueDomainViewPanel extends JPanel
     vdCdLongNameValueLabel = new JTextField();
   
   private JScrollPane scrollPane;
+
+  private boolean isInitialized = false;
   
   private ValueDomain vd;
 
   public ValueDomainViewPanel() {
-    initUI();
   }
 
   public ValueDomainViewPanel(ValueDomain vd)
@@ -40,11 +41,15 @@ public class ValueDomainViewPanel extends JPanel
   public void update(ValueDomain vd) 
   {
     this.vd = vd;
+    if(!isInitialized)
+      initUI();
     initValues();
   }
   
   private void initUI() 
   {
+    isInitialized = true;
+
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
     
