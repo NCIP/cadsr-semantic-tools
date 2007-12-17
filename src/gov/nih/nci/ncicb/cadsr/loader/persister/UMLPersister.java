@@ -120,53 +120,53 @@ public class UMLPersister implements Persister {
     }
   }
 
-  protected ValueDomain lookupValueDomain(ValueDomain vd)
-    throws PersisterException {
+//   protected ValueDomain lookupValueDomain(ValueDomain vd)
+//     throws PersisterException {
 
-    if(vd.getLongName().startsWith("enum")) {
-      vd.setLongName("java.lang.String");
-    }
+//     if(vd.getLongName().startsWith("enum")) {
+//       vd.setLongName("java.lang.String");
+//     }
 
-    ValueDomain result = valueDomains.get(vd.getLongName());
+//     ValueDomain result = valueDomains.get(vd.getLongName());
 
-    if (result == null) { // not in cache -- go to db
-      List<ValueDomain> l = valueDomainDAO.find(vd);
+//     if (result == null) { // not in cache -- go to db
+//       List<ValueDomain> l = valueDomainDAO.find(vd);
 
-      if (l.size() == 0) {
-	throw new PersisterException("Value Domain " +
-				     vd.getLongName() + " does not exist.");
-      } else {
-        List<String> excludeContext = Arrays.asList(PropertyAccessor.getProperty("vd.exclude.contexts").split(","));
-        String preferredContext = PropertyAccessor.getProperty("vd.preferred.contexts");
+//       if (l.size() == 0) {
+// 	throw new PersisterException("Value Domain " +
+// 				     vd.getLongName() + " does not exist.");
+//       } else {
+//         List<String> excludeContext = Arrays.asList(PropertyAccessor.getProperty("vd.exclude.contexts").split(","));
+//         String preferredContext = PropertyAccessor.getProperty("vd.preferred.contexts");
 
-        // see if we find a VD in our preferred context
-        for(ValueDomain v : l) {
-          if(v.getContext().getName().equals(preferredContext)) {
-            result = v;
-            // store to cache
-            valueDomains.put(result.getLongName(), result);
-          }
-        }
+//         // see if we find a VD in our preferred context
+//         for(ValueDomain v : l) {
+//           if(v.getContext().getName().equals(preferredContext)) {
+//             result = v;
+//             // store to cache
+//             valueDomains.put(result.getLongName(), result);
+//           }
+//         }
         
-        // no VD in our preferred context, let's find one that's not in the list of banned contexts
-        if(result == null)
-          for(ValueDomain v : l) {
-            if(!excludeContext.contains(v.getContext().getName())) {
-              result = v;
-              // store to cache
-              valueDomains.put(result.getLongName(), result);
-            }
-          }
+//         // no VD in our preferred context, let's find one that's not in the list of banned contexts
+//         if(result == null)
+//           for(ValueDomain v : l) {
+//             if(!excludeContext.contains(v.getContext().getName())) {
+//               result = v;
+//               // store to cache
+//               valueDomains.put(result.getLongName(), result);
+//             }
+//           }
         
-        if(result == null)
-          throw new PersisterException
-            ("Value Domain " +
-             vd.getLongName() + " does not exist.");
-      }
-    }
+//         if(result == null)
+//           throw new PersisterException
+//             ("Value Domain " +
+//              vd.getLongName() + " does not exist.");
+//       }
+//     }
 
-    return result;
-  }
+//     return result;
+//   }
 
   protected void addAlternateName(AdminComponent ac, String newName, String type, String packageName) {
 
@@ -466,24 +466,24 @@ public class UMLPersister implements Persister {
   }
 
 
-  public static void main(String[] args) {
+//   public static void main(String[] args) {
     
-    UMLPersister pers = new UMLPersister();
+//     UMLPersister pers = new UMLPersister();
 
-    valueDomainDAO = DAOAccessor.getValueDomainDAO();
+//     valueDomainDAO = DAOAccessor.getValueDomainDAO();
 
-    ValueDomain vd = DomainObjectFactory.newValueDomain();;
-    vd.setLongName("java.util.Date");
+//     ValueDomain vd = DomainObjectFactory.newValueDomain();;
+//     vd.setLongName("java.util.Date");
 
-    try {
-      vd = pers.lookupValueDomain(vd);
-    } catch (PersisterException e){
-      e.printStackTrace();
-    } // end of try-catch
+//     try {
+//       vd = pers.lookupValueDomain(vd);
+//     } catch (PersisterException e){
+//       e.printStackTrace();
+//     } // end of try-catch
 
-    System.out.println("publicID: " + vd.getPublicId());
-    System.out.println("context: " + vd.getContext().getName());
+//     System.out.println("publicID: " + vd.getPublicId());
+//     System.out.println("context: " + vd.getContext().getName());
 
-  }
+//   }
 
 }
