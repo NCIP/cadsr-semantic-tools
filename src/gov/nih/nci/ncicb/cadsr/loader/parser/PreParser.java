@@ -51,23 +51,46 @@ public class PreParser implements Parser {
       
       listener.beginParsing();
         
-      XmiInOutHandler handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
 
       String s = filename.replaceAll("\\ ", "%20");
+
+      String ext = null;
+      if(filename.indexOf(".") > 0)
+        ext = filename.substring(filename.lastIndexOf(".") + 1);
 
       // Some file systems use absolute URIs that do 
       // not start with '/'. 
       if(!s.startsWith("/"))
         s = "/" + s;    
       java.net.URI uri = new java.net.URI("file://" + s);
+
+
+      HandlerEnum handlerEnum = null;
+      if(ext != null && ext.equals("uml")) 
+        handlerEnum = HandlerEnum.ArgoUMLDefault;
+      else
+        handlerEnum = HandlerEnum.EADefault;
+
+      XmiInOutHandler handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
       logger.debug("pre parsing ...");
       handler.load(uri);
       logger.debug("done pre parsing.");
 
-      UMLModel model = handler.getModel("EA Model");
+
+      UMLModel model = handler.getModel();
+
+      if(model == null) {
+        throw new Exception("Can't open file. Unknown format.");
+      } 
 
       // save in memory for fast-save
-      UserSelections.getInstance().setProperty("XMI_HANDLER", handler);
+      UserSelections userSelections = UserSelections.getInstance();
+      userSelections.getInstance().setProperty("XMI_HANDLER", handler);
+      if(handlerEnum == HandlerEnum.ArgoUMLDefault) {
+        userSelections.setProperty("FILE_TYPE", "ARGO");
+      } else if(handlerEnum == HandlerEnum.EADefault){
+        userSelections.setProperty("FILE_TYPE", "EA");
+      }
 
       for(UMLPackage pkg : model.getPackages()) {
         doPackage(pkg);
