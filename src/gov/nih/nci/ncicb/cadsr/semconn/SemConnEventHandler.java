@@ -1,50 +1,16 @@
 package gov.nih.nci.ncicb.cadsr.semconn;
 
-import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
-import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
-import gov.nih.nci.ncicb.cadsr.domain.ComponentConcept;
-import gov.nih.nci.ncicb.cadsr.domain.Concept;
-import gov.nih.nci.ncicb.cadsr.domain.ConceptDerivationRule;
-import gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain;
-import gov.nih.nci.ncicb.cadsr.domain.DataElement;
-import gov.nih.nci.ncicb.cadsr.domain.DataElementConcept;
-import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
-import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
-import gov.nih.nci.ncicb.cadsr.domain.PermissibleValue;
-import gov.nih.nci.ncicb.cadsr.domain.Property;
-import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
-import gov.nih.nci.ncicb.cadsr.domain.ValueMeaning;
+import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTrackerType;
 import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewAssociationEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewAttributeEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewClassEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewConceptEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewConceptualEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewDataTypeEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewGeneralizationEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewInterfaceEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewOperationEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewPackageEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewStereotypeEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewValueDomainEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.NewValueMeaningEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
-import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
-import gov.nih.nci.ncicb.cadsr.loader.event.UMLHandler;
+import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.apache.log4j.Logger;
 
