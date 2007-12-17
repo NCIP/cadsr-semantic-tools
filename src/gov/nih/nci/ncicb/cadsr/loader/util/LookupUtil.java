@@ -22,11 +22,77 @@ package gov.nih.nci.ncicb.cadsr.loader.util;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
+
 import gov.nih.nci.ncicb.xmiinout.domain.*;
 
 import java.util.*;
 
-public class LookupUtil {
+public class LookupUtil implements CadsrModuleListener {
+
+  private static CadsrModule cadsrModule;
+
+  private static Map<String, ValueDomain> valueDomains = new HashMap<String, ValueDomain>();
+
+  public static ValueDomain lookupValueDomain(ValueDomain vd) {
+
+    if(vd.getLongName().startsWith("enum")) {
+      vd.setLongName("java.lang.String");
+    }
+
+    ValueDomain result = valueDomains.get(vd.getLongName());
+
+    if (result == null) { // not in cache -- go to db
+      Map<String, Object> queryFields = new HashMap<String, Object>();
+      queryFields.put(CadsrModule.LONG_NAME, new String(vd.getLongName()));
+
+
+//       List<ValueDomain> l = valueDomainDAO.find(vd);
+      Collection<ValueDomain> l = null;
+      
+      try {
+        l = cadsrModule.findValueDomain(queryFields);
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
+
+      if (l.size() == 0) {
+	throw new RuntimeException("Value Domain " +
+				     vd.getLongName() + " does not exist.");
+      } else {
+        List<String> excludeContext = Arrays.asList(PropertyAccessor.getProperty("vd.exclude.contexts").split(","));
+        String preferredContext = PropertyAccessor.getProperty("vd.preferred.contexts");
+
+        // see if we find a VD in our preferred context
+        for(ValueDomain v : l) {
+          if(v.getContext().getName().equals(preferredContext)) {
+            result = v;
+            // store to cache
+            valueDomains.put(result.getLongName(), result);
+          }
+        }
+        
+        // no VD in our preferred context, let's find one that's not in the list of banned contexts
+        if(result == null)
+          for(ValueDomain v : l) {
+            if(!excludeContext.contains(v.getContext().getName())) {
+              result = v;
+              // store to cache
+              valueDomains.put(result.getLongName(), result);
+            }
+          }
+        
+        if(result == null)
+          throw new RuntimeException
+            ("Value Domain " +
+             vd.getLongName() + " does not exist.");
+      }
+    }
+
+    return result;
+  }
+
 
   public static Concept lookupConcept(String conceptCode) {
     List<Concept> concepts = 
@@ -178,6 +244,10 @@ public class LookupUtil {
     } while (s != null);
     
     return pack.toString();
+  }
+
+  public void setCadsrModule(CadsrModule module) {
+    cadsrModule = module;
   }
 
 
