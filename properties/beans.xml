@@ -117,6 +117,10 @@
     <property name="mappingURL"><value>--DatatypeMapping URL Here--</value></property>
   </bean>
 
+  <bean name="lookupUtil"
+    class="gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil"
+    />
+
   <!--
   <bean name="xmiParser"
     class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser">
@@ -158,6 +162,7 @@
     </property>
     <property name="cadsrModuleListeners">
       <list>
+        <ref bean="lookupUtil"/>
         <ref bean="umlRoundtrip"/>
         <ref bean="valueDomainValidator"/>
         <ref bean="duplicateValidator"/>
