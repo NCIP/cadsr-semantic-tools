@@ -766,7 +766,6 @@ public class UMLDefaultHandler
               newDef.setType(Definition.TYPE_UML_DE);
               newDef.setDefinition(childOc.getPreferredDefinition() + " " + def.getDefinition());
               newDe.addDefinition(newDef);
-              System.out.println("added alt def for DE: " + newDe.getLongName() + " ------- " + newDef);
             }
           }
 
