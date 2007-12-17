@@ -759,12 +759,14 @@ public class UMLDefaultHandler
             reviewTracker.put(event.getChildClassName() + "." + propName, isReviewed);
           
 
-          for(Definition def : de.getDefinitions()) {
+//           for(Definition def : de.getDefinitions()) {
+          for(Definition def : inheritedAttributes.getTopParent(de).getDefinitions()) {
             if(def.getType().equals(Definition.TYPE_UML_DE)) {
               Definition newDef = DomainObjectFactory.newDefinition();
               newDef.setType(Definition.TYPE_UML_DE);
               newDef.setDefinition(childOc.getPreferredDefinition() + " " + def.getDefinition());
               newDe.addDefinition(newDef);
+              System.out.println("added alt def for DE: " + newDe.getLongName() + " ------- " + newDef);
             }
           }
 
@@ -780,6 +782,7 @@ public class UMLDefaultHandler
           fullName.setName(className + ":" + propName);
           newDe.addAlternateName(fullName);
 
+          
 
 
 //           for(Iterator it2 = de.getAlternateNames().iterator(); it2.hasNext();) {
