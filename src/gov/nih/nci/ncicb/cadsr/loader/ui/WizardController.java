@@ -386,12 +386,22 @@ public class WizardController implements ActionListener {
 
                     Set<ValidationFatal> fatals = ValidationItems.getInstance().getFatals();
                     if(fatals.size() > 0) {
-                      String s = "<html><body><ul>";
+                      String s = "<html><body>";
                       for(ValidationFatal fat : fatals) {
-                        s += "<li>" + fat.getMessage();
+                        s += "<br>" + fat.getMessage();
                       }
-                      s += "</ul><br>Would you still like to continue?</body></html>";
-                      int result = JOptionPane.showConfirmDialog(null, s, "Fatal Error in Model", JOptionPane.YES_NO_OPTION);
+                      s += "<br>Would you still like to continue?</body></html>";
+
+                      JLabel label = new JLabel(s);
+//                       textArea.setFont(new Font("Sans-Serif", Font.PLAIN, 10));
+//                       textArea.setEditable(false);
+//                       textField.setText(s);
+                      
+                      JScrollPane scrollPane = new JScrollPane(label);		
+                      scrollPane.setPreferredSize(new Dimension(350, 150));
+                      
+                      // pass the scrollpane to the joptionpane.				
+                      int result = JOptionPane.showConfirmDialog(null, scrollPane, "Fatal Error in Model", JOptionPane.YES_NO_OPTION);
                       if (result == JOptionPane.NO_OPTION)
                         wizard.close(-1);
                     }
