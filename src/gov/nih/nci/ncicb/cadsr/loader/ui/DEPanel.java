@@ -116,6 +116,7 @@ public class DEPanel extends JPanel
 
             // update dialog with current node
             cd.init(node);
+            cd.setAlwaysOnTop(true);
             cd.setVisible(true);
             
             tempDE = (DataElement)cd.getAdminComponent();
