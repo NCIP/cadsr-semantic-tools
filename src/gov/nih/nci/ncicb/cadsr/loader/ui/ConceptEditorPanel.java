@@ -480,7 +480,8 @@ public class ConceptEditorPanel extends JPanel
               evsDialog = new EvsDialog();
 
             UIUtil.putToCenter(evsDialog);
-            
+            evsDialog.setAlwaysOnTop(true);
+
             if(prefs.getEvsAutoSearch())
               evsDialog.startSearch(conceptUIs[index].name.getText(), EvsDialog.SYNONYMS);
             evsDialog.setVisible(true);
