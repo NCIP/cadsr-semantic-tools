@@ -33,6 +33,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
 
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTrackerType;
+import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationWarning;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationError;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
 
@@ -352,6 +353,7 @@ public class UMLDefaultHandler
     }
 
     dec.setObjectClass(oc);
+    de.setDataElementConcept(dec);
 
     String datatype = event.getType().trim();
     // save the datatype. We will use it if we clear a CDE mapping.
@@ -362,27 +364,25 @@ public class UMLDefaultHandler
     
     if(existingDe != null) {
       mapToExistingDE(oc, de, existingDe, event.getClassName(), event.getName());
-      
-      prop.setPublicId(existingDe.getDataElementConcept().getProperty().getPublicId());
-      prop.setVersion(existingDe.getDataElementConcept().getProperty().getVersion());
 
     } else {
       de.setLongName(dec.getLongName() + " " + event.getType());
+    }
+    
+    if(de.getValueDomain() == null) {
 
       ValueDomain vd = DomainObjectFactory.newValueDomain();
       vd.setLongName(datatype);
-
+      
       if(event.getTypeId() != null) {
         populateExistingVd(vd, event.getTypeId(), event.getTypeVersion(), event.getClassName() + "." + event.getName());
       }
       
       de.setValueDomain(vd);
-
+      
     }
 
     logger.debug("DE LONG_NAME: " + de.getLongName());
-
-    de.setDataElementConcept(dec);
 
     // Store alt Name for DE:
     // packageName.ClassName.PropertyName
@@ -469,6 +469,15 @@ public class UMLDefaultHandler
 
     private void mapToExistingDE(ObjectClass oc, DataElement de, DataElement existingDe, String className, String attributeName) {
 
+      if(existingDe.getDataElementConcept().getObjectClass() == null
+         || existingDe.getDataElementConcept().getProperty() == null) {
+
+        ValidationWarning item = new ValidationWarning(PropertyAccessor.getProperty("de.invalid"),de); 
+        ValidationItems.getInstance()
+          .addItem(item);
+        return;
+      }
+
       if(oc.getPublicId() != null) {
         // Verify conflicts
 
@@ -499,6 +508,9 @@ public class UMLDefaultHandler
           (className, 
            true);
       }
+
+      de.getDataElementConcept().getProperty().setPublicId(existingDe.getDataElementConcept().getProperty().getPublicId());
+      de.getDataElementConcept().getProperty().setVersion(existingDe.getDataElementConcept().getProperty().getVersion());
 
       de.setLongName(existingDe.getLongName());
       de.setContext(existingDe.getContext());
