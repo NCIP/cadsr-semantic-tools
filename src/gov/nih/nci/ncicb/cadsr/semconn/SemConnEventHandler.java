@@ -90,6 +90,9 @@ public class SemConnEventHandler implements UMLHandler {
   }
   public void newValueMeaning(NewValueMeaningEvent event) 
   {
+    if(event.isReviewed())
+      return;
+    
      String vmName = event.getName();
      
      ValueDomain vd = LookupUtil.lookupValueDomain(event.getValueDomainName());
