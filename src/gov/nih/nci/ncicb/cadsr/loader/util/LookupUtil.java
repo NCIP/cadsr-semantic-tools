@@ -34,61 +34,89 @@ public class LookupUtil implements CadsrModuleListener {
   private static CadsrModule cadsrModule;
 
   private static Map<String, ValueDomain> valueDomains = new HashMap<String, ValueDomain>();
+  private static Map<Integer, ValueDomain> valueDomainsById = new HashMap<Integer, ValueDomain>();
 
   public static ValueDomain lookupValueDomain(ValueDomain vd) {
 
-    if(vd.getLongName().startsWith("enum")) {
-      vd.setLongName("java.lang.String");
-    }
-
-    ValueDomain result = valueDomains.get(vd.getLongName());
-
-    if (result == null) { // not in cache -- go to db
-      Map<String, Object> queryFields = new HashMap<String, Object>();
-      queryFields.put(CadsrModule.LONG_NAME, new String(vd.getLongName()));
-
-
-//       List<ValueDomain> l = valueDomainDAO.find(vd);
-      Collection<ValueDomain> l = null;
+    ValueDomain result = null;
+    if(!StringUtil.isEmpty(vd.getPublicId())) {
+      result = valueDomainsById.get(vd.getPublicId());
+    } else {
       
-      try {
-        l = cadsrModule.findValueDomain(queryFields);
-      } catch (Exception ex) {
-        throw new RuntimeException(ex);
+      if(vd.getLongName().startsWith("enum")) {
+        vd.setLongName("java.lang.String");
       }
-
-      if (l.size() == 0) {
-        return null;
-      } else {
-        List<String> excludeContext = Arrays.asList(PropertyAccessor.getProperty("vd.exclude.contexts").split(","));
-        String preferredContext = PropertyAccessor.getProperty("vd.preferred.contexts");
-
-        // see if we find a VD in our preferred context
-        for(ValueDomain v : l) {
-          if(v.getContext().getName().equals(preferredContext)) {
-            result = v;
-            // store to cache
-            valueDomains.put(result.getLongName(), result);
-          }
+      
+      result = valueDomains.get(vd.getLongName());
+    }
+    
+    if (result == null) { // not in cache -- go to db
+      if(!StringUtil.isEmpty(vd.getPublicId())) {
+        Map<String, Object> queryFields = new HashMap<String, Object>();
+        queryFields.put(CadsrModule.PUBLIC_ID, vd.getPublicId());
+        
+        Collection<ValueDomain> l = null;
+        
+        try {
+          l = cadsrModule.findValueDomain(queryFields);
+        } catch (Exception ex) {
+          throw new RuntimeException(ex);
         }
         
-        // no VD in our preferred context, let's find one that's not in the list of banned contexts
-        if(result == null)
+        if (l.size() == 0) {
+          return null;
+        } else {
+          return l.iterator().next();
+        }
+      } else {
+        
+        Map<String, Object> queryFields = new HashMap<String, Object>();
+        queryFields.put(CadsrModule.LONG_NAME, new String(vd.getLongName()));
+        
+        
+        //       List<ValueDomain> l = valueDomainDAO.find(vd);
+        Collection<ValueDomain> l = null;
+      
+        try {
+          l = cadsrModule.findValueDomain(queryFields);
+        } catch (Exception ex) {
+          throw new RuntimeException(ex);
+        }
+        
+        if (l.size() == 0) {
+          return null;
+        } else {
+          List<String> excludeContext = Arrays.asList(PropertyAccessor.getProperty("vd.exclude.contexts").split(","));
+          String preferredContext = PropertyAccessor.getProperty("vd.preferred.contexts");
+          
+          // see if we find a VD in our preferred context
           for(ValueDomain v : l) {
-            if(!excludeContext.contains(v.getContext().getName())) {
+            if(v.getContext().getName().equals(preferredContext)) {
               result = v;
               // store to cache
               valueDomains.put(result.getLongName(), result);
             }
           }
-        
-        if(result == null)
-          throw new RuntimeException
-            ("Value Domain " +
-             vd.getLongName() + " does not exist.");
+          
+          // no VD in our preferred context, let's find one that's not in the list of banned contexts
+          if(result == null)
+            for(ValueDomain v : l) {
+              if(!excludeContext.contains(v.getContext().getName())) {
+                result = v;
+                // store to cache
+                valueDomains.put(result.getLongName(), result);
+              }
+            }
+          
+          if(result == null)
+            throw new RuntimeException
+              ("Value Domain " +
+               vd.getLongName() + " does not exist.");
+        }
       }
     }
-
+    
+    
     return result;
   }
 
