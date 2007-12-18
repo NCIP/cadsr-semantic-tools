@@ -110,9 +110,9 @@ implements ProgressListener {
 
   public boolean getChoosePackage() 
   {
-    return false;
+//     return false;
     // uncomment to get real functionality. Disabled for now.
-//     return chooseClassesCheckBox.isSelected();
+    return chooseClassesCheckBox.isSelected();
   }
 
 
@@ -210,7 +210,7 @@ implements ProgressListener {
 
 
     // uncomment to add functionality. Also check getChoosePanel in this file
-//     insertInBag(browsePanel, chooseClassesCheckBox, 0, y, 2, 1);
+    UIUtil.insertInBag(browsePanel, chooseClassesCheckBox, 0, y, 2, 1);
 
     chooseClassesCheckBox.addItemListener(new ItemListener() {
         public void itemStateChanged(ItemEvent evt) 
