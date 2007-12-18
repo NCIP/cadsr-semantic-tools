@@ -35,5 +35,17 @@ public class InheritedAttributeList
   public Collection<DataElement> getAllInherited() {
     return map.keySet();
   }
+
+  public DataElement getTopParent(DataElement de) {
+    DataElement parent = map.get(de);
+    while (parent != null) {
+      DataElement _de = map.get(parent);
+      if(_de == null)
+        return parent;
+      else 
+        parent = _de;
+    }
+    return de;
+  }
   
 }
