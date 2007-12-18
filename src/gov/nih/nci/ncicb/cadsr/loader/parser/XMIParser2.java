@@ -162,6 +162,7 @@ public class XMIParser2 implements Parser {
    */
   public static final String TV_DOCUMENTATION = "documentation";
   public static final String TV_DESCRIPTION = "description";
+  public static final String TV_CADSR_DESCRIPTION = "CADSR_Description";
 
   // replaced by type specific review tags
   //   public static final String TV_HUMAN_REVIEWED = "HUMAN_REVIEWED";
@@ -463,15 +464,9 @@ public class XMIParser2 implements Parser {
       className = pName + "." + className;
     }
 
-    if(filterClassAndPackages) {
-      boolean found = false;
-      for(FilterPackage pack : filterPackages) {
-        if(pack.getName().equals(pName)) {
-          found = pack.isReviewed();
-        }
-      }
-      if(found == false)
-        return;
+    if(isUserExcluded(pName, clazz.getName())) {
+      logger.info(PropertyAccessor.getProperty("class.filtered", className));
+      return;
     }
 
     currentElementIndex++;
@@ -499,13 +494,18 @@ public class XMIParser2 implements Parser {
       return;
     }
 
-    String description = getDocumentation(clazz, TV_DOCUMENTATION);
+    String description = getDocumentation(clazz, TV_CADSR_DESCRIPTION);
     if(description != null) {
       event.setDescription(description);
     } else {
-      description = getDocumentation(clazz, TV_DESCRIPTION);
+      description = getDocumentation(clazz, TV_DOCUMENTATION);
       if(description != null) {
         event.setDescription(description);
+      } else {
+        description = getDocumentation(clazz, TV_DESCRIPTION);
+        if(description != null) {
+          event.setDescription(description);
+        }
       }
     }
 
@@ -557,6 +557,9 @@ public class XMIParser2 implements Parser {
     String pName = LookupUtil.getPackageName(clazz.getPackage());
     if(pName != null)
       event.setPackageName(pName);
+
+    if(isUserExcluded(pName, clazz.getName()))
+      return;
 
     setConceptInfo(clazz, event, TV_TYPE_VD);
 
@@ -697,13 +700,19 @@ public class XMIParser2 implements Parser {
       event.setType(att.getDatatype().getName());
     }
 
-    String description = getDocumentation(att, TV_DESCRIPTION);
+
+    String description = getDocumentation(att, TV_CADSR_DESCRIPTION);
     if(description != null) {
       event.setDescription(description);
     } else {
-      description = getDocumentation(att, TV_DOCUMENTATION);
+      description = getDocumentation(att, TV_DESCRIPTION);
       if(description != null) {
         event.setDescription(description);
+      } else {
+        description = getDocumentation(att, TV_DOCUMENTATION);
+        if(description != null) {
+          event.setDescription(description);
+        }
       }
     }
 
@@ -764,13 +773,19 @@ public class XMIParser2 implements Parser {
       event.setReviewed(tv.getValue().equals("1")?true:false);
     }
 
-    String description = getDocumentation(att, TV_DESCRIPTION);
+
+    String description = getDocumentation(att, TV_CADSR_DESCRIPTION);
     if(description != null) {
       event.setDescription(description);
     } else {
-      description = getDocumentation(att, TV_DOCUMENTATION);
+      description = getDocumentation(att, TV_DESCRIPTION);
       if(description != null) {
         event.setDescription(description);
+      } else {
+        description = getDocumentation(att, TV_DOCUMENTATION);
+        if(description != null) {
+          event.setDescription(description);
+        }
       }
     }
 
@@ -844,7 +859,7 @@ public class XMIParser2 implements Parser {
       UMLClass endClass = (UMLClass)(end.getUMLElement());
       String pName = LookupUtil.getPackageName(endClass.getPackage());
       
-      if(StringUtil.isEmpty(pName) || !isInPackageFilter(pName)) {
+      if(StringUtil.isEmpty(pName) || !isInPackageFilter(pName) || isUserExcluded(pName, endClass.getName())) {
         logger.info(PropertyAccessor.getProperty("skip.association", endClass.getName() + " " + end.getRoleName()));
         logger.debug("assoc end role name: " + end.getRoleName());
         return null;
@@ -971,18 +986,6 @@ public class XMIParser2 implements Parser {
   }
 
   private boolean isInPackageFilter(String pName) {
-//     if(filterClassAndPackages) {
-//       boolean found = false;
-//       for(FilterPackage pack : filterPackages) {
-//         if(pack.getName().equals(pName)) {
-//           found = pack.isReviewed();
-//         }
-//       }
-//       if(found == false)
-//         return false;
-//     }
-      
-
     Map packageFilter = UMLDefaults.getInstance().getPackageFilter();
     return (packageFilter.size() == 0) || (packageFilter.containsKey(pName) || (UMLDefaults.getInstance().getDefaultPackageAlias() != null));
   }
@@ -1066,6 +1069,8 @@ public class XMIParser2 implements Parser {
       }
     }
 
+
+
     // removed per GF 7027.
 //     // now check that we don't have a misused tagged value.
 //     // tag + 
@@ -1077,5 +1082,27 @@ public class XMIParser2 implements Parser {
 //     }
 
   }
+
+  private boolean isUserExcluded(String pName, String className) {
+    if(filterClassAndPackages) {
+      boolean found = false;
+      for(FilterClass clazz : filterClasses) {
+        if(clazz.getName().equals(className)
+           && clazz.getPackageName().equals(pName)
+           )
+          found = clazz.isReviewed();
+        
+      }
+      
+//       for(FilterPackage pack : filterPackages) {
+//         if(pack.getName().equals(pName)) {
+//           found = pack.isReviewed();
+//         }
+//       }
+      return !found;
+    }
+    return false;
+  }
+
 
 }
