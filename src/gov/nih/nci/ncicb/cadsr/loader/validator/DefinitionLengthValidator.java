@@ -88,11 +88,14 @@ public class DefinitionLengthValidator implements Validator {
           }
 
           ValueDomain vd = LookupUtil.lookupValueDomain(de.getValueDomain());
-          
+          String vdDefinition = "";
+          if(vd != null && vd.getPreferredDefinition() != null)
+            vdDefinition = vd.getPreferredDefinition();
+
           if(propDef.length() > 2000) {
             items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("property.definition.too.long", dec.getProperty().getLongName()), de));
           }
-          if((ocDef + propDef + vd.getPreferredDefinition()).length() > 2000) {
+          if((ocDef + propDef + vdDefinition).length() > 2000) {
             items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("attribute.definition.too.long", dec.getProperty().getLongName()), de));
           }
         }
