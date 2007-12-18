@@ -243,12 +243,12 @@ public class CadsrPrivateApiModule implements CadsrModule
 //       else
 //         System.out.println("no good");
 
-      System.out.println("Test find OC Concepts");
-      gov.nih.nci.ncicb.cadsr.domain.ObjectClass oc = DomainObjectFactory.newObjectClass();
-      oc.setPublicId("2241624");
+      System.out.println("Test find Prop Concepts");
+      gov.nih.nci.ncicb.cadsr.domain.Property prop = DomainObjectFactory.newProperty();
+      prop.setPublicId("2207095");
 //       oc.setPublicId("2557779");
-      oc.setVersion(1f);
-      List<gov.nih.nci.ncicb.cadsr.domain.Concept> concepts = testModule.getConcepts(oc);
+      prop.setVersion(1f);
+      List<gov.nih.nci.ncicb.cadsr.domain.Concept> concepts = testModule.getConcepts(prop);
       for(gov.nih.nci.ncicb.cadsr.domain.Concept con : concepts) {
         System.out.println(con.getLongName());
       }
