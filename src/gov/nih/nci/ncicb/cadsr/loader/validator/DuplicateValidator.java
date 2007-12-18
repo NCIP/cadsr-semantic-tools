@@ -65,19 +65,28 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
       for(ObjectClass oc : ocs) {
         Map<String, DataElement> deList = new HashMap<String, DataElement>();
         for(DataElement de : des) {
-          if(de.getDataElementConcept().getObjectClass() == oc)
-            if(deList.containsKey(de.getDataElementConcept().getProperty().getPreferredName()))
-              items.addItem(new ValidationError
+          if(de.getDataElementConcept().getObjectClass() == oc) {
+            String conceptConcat = null;
+            if(!StringUtil.isEmpty(de.getPublicId())) {
+              List<Concept> concepts = cadsrModule.getConcepts(de.getDataElementConcept().getProperty());
+              conceptConcat = ConceptUtil.preferredNameFromConcepts(concepts);
+            } else {
+              conceptConcat = de.getDataElementConcept().getProperty().getPreferredName();
+            }
+            if(deList.containsKey(conceptConcat)) {
+              ValidationError item = new  ValidationError
                             (PropertyAccessor.getProperty
                              ("de.same.mapping", de.getDataElementConcept().getLongName(),
-                                (deList.get(de.getDataElementConcept().getProperty().getPreferredName())).getDataElementConcept().getLongName()),de));
-            else if (!StringUtil.isEmpty(de.getDataElementConcept().getProperty().getPreferredName())){
+                              (deList.get(conceptConcat)).getDataElementConcept().getLongName()),de);
+              item.setIncludeInInherited(true);
+              items.addItem(item);
+            } else if (!StringUtil.isEmpty(de.getDataElementConcept().getProperty().getPreferredName())){
               deList.put(de.getDataElementConcept().getProperty().getPreferredName(), de);
             }
+          }
         }
       }
     }
-
     return items;
   }
 
