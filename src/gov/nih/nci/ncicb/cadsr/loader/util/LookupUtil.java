@@ -58,8 +58,7 @@ public class LookupUtil implements CadsrModuleListener {
       }
 
       if (l.size() == 0) {
-	throw new RuntimeException("Value Domain " +
-				     vd.getLongName() + " does not exist.");
+        return null;
       } else {
         List<String> excludeContext = Arrays.asList(PropertyAccessor.getProperty("vd.exclude.contexts").split(","));
         String preferredContext = PropertyAccessor.getProperty("vd.preferred.contexts");
