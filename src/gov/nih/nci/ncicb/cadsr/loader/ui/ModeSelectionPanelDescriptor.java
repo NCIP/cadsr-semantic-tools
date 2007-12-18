@@ -50,8 +50,8 @@ public class ModeSelectionPanelDescriptor
   public void actionPerformed(ActionEvent evt) {
     if(evt.getActionCommand().equals(RunMode.Roundtrip.toString())) {
       setNextPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
-    } else if(evt.getActionCommand().equals(RunMode.GenerateReport.toString())) {
-      setNextPanelDescriptor(PackageFilterSelectionPanelDescriptor.IDENTIFIER);
+//     } else if(evt.getActionCommand().equals(RunMode.GenerateReport.toString())) {
+//       setNextPanelDescriptor(PackageFilterSelectionPanelDescriptor.IDENTIFIER);
     } else if(evt.getActionCommand().equals(RunMode.GMEDefaults.toString())) {
       setNextPanelDescriptor(GMEDefaultsPanelDescriptor.IDENTIFIER);
     }
