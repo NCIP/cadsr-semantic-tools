@@ -68,7 +68,13 @@ public class DEPersister extends UMLPersister {
             lookupDec(de.getDataElementConcept().getId()));
           newDe.setDataElementConcept(de.getDataElementConcept());
 
-          de.setValueDomain(LookupUtil.lookupValueDomain(de.getValueDomain()));
+          ValueDomain vd = LookupUtil.lookupValueDomain(de.getValueDomain());
+          if(vd == null) {
+            logger.error("Value Domain " + de.getValueDomain().getLongName() + " does not exist.");
+            logger.error("CDE " + de.getLongName() + " DID NOT GET LOADED");
+            continue;
+          }
+          de.setValueDomain(vd);
           newDe.setValueDomain(de.getValueDomain());
 
           if(!StringUtil.isEmpty(de.getPublicId()) && de.getVersion() != null) {
