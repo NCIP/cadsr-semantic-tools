@@ -118,7 +118,11 @@ public class DEPanel extends JPanel
             cd.init(node);
             cd.setVisible(true);
             
-            tempDE = (DataElement)cd.getAdminComponent();
+            Object o = cd.getAdminComponent();
+            if(o == null)
+              return;
+
+            tempDE = (DataElement)o;
 
             if(tempDE != null){
               // Check for conflict
