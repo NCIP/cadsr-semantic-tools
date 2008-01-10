@@ -258,6 +258,32 @@ public class XMIWriter2 implements ElementWriter {
     for(ValueDomain vd : vds) {
 
       sendProgressEvent(status++, goal, "Value Domain: " + vd.getLongName());
+      String fullClassName = "ValueDomains." + vd.getLongName();
+      UMLClass clazz = classMap.get(fullClassName);
+      clazz.removeTaggedValue(XMIParser2.TV_VD_DATATYPE);
+      if(!vd.getDataType().equals("null"))
+        clazz.addTaggedValue(XMIParser2.TV_VD_DATATYPE, vd.getDataType());
+      
+      clazz.removeTaggedValue(XMIParser2.TV_VD_TYPE);
+      if(!vd.getVdType().equals("null"))
+        clazz.addTaggedValue(XMIParser2.TV_VD_TYPE, vd.getVdType());
+        
+      clazz.removeTaggedValue(XMIParser2.TV_CD_ID);
+      if(!String.valueOf(vd.getConceptualDomain().getPublicId()).equals("null"))
+        clazz.addTaggedValue(XMIParser2.TV_CD_ID, vd.getConceptualDomain().getPublicId());
+        
+      clazz.removeTaggedValue(XMIParser2.TV_CD_VERSION);
+      if(!String.valueOf(vd.getConceptualDomain().getVersion()).equals("null"))
+        clazz.addTaggedValue(XMIParser2.TV_CD_VERSION, vd.getConceptualDomain().getVersion().toString());
+        
+      clazz.removeTaggedValue(XMIParser2.TV_REP_ID);
+      if(!String.valueOf(vd.getRepresentation().getPublicId()).equals("null"))
+        clazz.addTaggedValue(XMIParser2.TV_REP_ID, vd.getRepresentation().getPublicId());
+        
+      clazz.removeTaggedValue(XMIParser2.TV_REP_VERSION);
+      if(!String.valueOf(vd.getRepresentation().getVersion()).equals("null"))
+        clazz.addTaggedValue(XMIParser2.TV_REP_VERSION, String.valueOf(vd.getRepresentation().getVersion().toString()));
+        
 
       for(PermissibleValue pv : vd.getPermissibleValues()) {
         ValueMeaning vm = pv.getValueMeaning();
