@@ -201,7 +201,16 @@ public class GMEAction {
       
       changeTracker.put(csi.getName(), true);
     }
-    
+
+
+    List<ObjectClassRelationship> ocrs = elements.getElements(DomainObjectFactory.newObjectClassRelationship());
+    for(ObjectClassRelationship ocr : ocrs) {
+      OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
+      String fullName = nameBuilder.buildRoleName(ocr);
+
+      ocr.removeAlternateNames();
+      changeTracker.put(fullName, true);
+    }
 
     try {
       writer.setOutput(output);
