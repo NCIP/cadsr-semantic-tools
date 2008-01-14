@@ -500,6 +500,24 @@ public class UMLDefaultHandler
            true);
       }
 
+      // The DE's property was already set, probably by the parent. It must be the same. We don't override here.
+      if(de.getDataElementConcept() != null && de.getDataElementConcept().getProperty().getPublicId() != null) {
+        if(!existingDe.getDataElementConcept().getProperty().getPublicId().equals(de.getDataElementConcept().getProperty().getPublicId())
+           || 
+           !existingDe.getDataElementConcept().getProperty().getVersion().equals(de.getDataElementConcept().getProperty().getVersion())
+           ) {
+          ValidationError item = new ValidationError(PropertyAccessor.getProperty("inherited.and.parent.property.mismatch", new String[] 
+            {className + "." + attributeName,
+             ocMapping.get(ConventionUtil.publicIdVersion(oc)).getLongName()}), de);
+          
+          item.setIncludeInInherited(true);
+          ValidationItems.getInstance()
+            .addItem(item);
+        }
+        return;
+      }
+
+
       de.setLongName(existingDe.getLongName());
       de.setContext(existingDe.getContext());
       de.setPublicId(existingDe.getPublicId());
