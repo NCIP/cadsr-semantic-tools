@@ -19,6 +19,10 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme;
+
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+
 import java.awt.GridLayout;
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -43,19 +47,24 @@ import org.apache.log4j.Logger;
  *
  * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
  */
-public class RoundtripPanel extends JPanel implements KeyListener, CadsrModuleListener
-{
+public class RoundtripPanel extends JPanel implements KeyListener {
 
   private JPanel _this = this;
 
-  private JTextField projectNameField = new JTextField();
-  private JTextField projectVersionField = new JTextField(5);
+  private JLabel projectPrefName = new JLabel("Preferred Name");
+  private JLabel projectVersion = new JLabel("Version");
+  private JLabel projectWorkflowStatus = new JLabel("Workflow Status");
+  private JLabel projectContextName = new JLabel("Context Name");
+  private JLabel selectedProjectPrefName = new JLabel();
+  private JLabel selectedProjectVersion = new JLabel();
+  private JLabel selectedProjectWorkflowStatus = new JLabel();
+  private JLabel selectedProjectContextName = new JLabel();
 
-  private JButton verifyButton = new JButton("Verify");
+  private JButton searchButton = new JButton("Search");
   
   private List<ActionListener> actionListeners = new ArrayList<ActionListener>();
 
-  private CadsrModule cadsrModule;
+  private CadsrDialog cadsrDialog;
 
   private boolean verified = false;
 
@@ -80,7 +89,7 @@ public class RoundtripPanel extends JPanel implements KeyListener, CadsrModuleLi
 
     infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif"))));
 
-    JLabel infoLabel = new JLabel("<html>Please select a project to start from<br> Version must be a number</html>");
+    JLabel infoLabel = new JLabel("<html>Please click the Search button <br>to select project for Roundtrip operation.</html>");
     infoPanel.add(infoLabel);
     
     this.add(infoPanel, BorderLayout.NORTH);
@@ -88,67 +97,69 @@ public class RoundtripPanel extends JPanel implements KeyListener, CadsrModuleLi
     JPanel entryPanel = new JPanel();
     entryPanel.setLayout(null);
 
-    projectNameField.setText("");
-    JLabel projectNameLabel = new JLabel("Project Name");
-    projectNameLabel.setBounds(new Rectangle(30, 80, 135, 20));
-    projectNameField.setBounds(new Rectangle(180, 80, 175, 20));
+    JLabel searchText = new JLabel("<html>Please click the Search button <br>to select project for Roundtrip operation.</html>");
+    searchText.setBounds(new Rectangle(30, 80, 160, 50));
+    searchButton.setBounds(new Rectangle(275, 100, 80, 20));
 
-    JLabel projectVersionLabel = new JLabel("Project Version");
-    projectVersionLabel.setBounds(new Rectangle(30, 125, 135, 20));
-    projectVersionField.setBounds(new Rectangle(180, 125, 175, 20));
-
-    verifyButton.setBounds(new Rectangle(275, 150, 80, 20));
-    verifyButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          Map<String, Object> queryFields = new HashMap<String, Object>();
-          queryFields.put("longName", projectNameField.getText());
-          queryFields.put("version", new Float(projectVersionField.getText()));
-
-          _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-          try {
-            Collection classSchemes = cadsrModule.findClassificationScheme(queryFields);
-
-            verified = (classSchemes.size() == 1);
-
-            if(classSchemes.size() == 0) {
-              JOptionPane.showMessageDialog(null, "Project was not found");
-            } else if(classSchemes.size() > 1) {
-              JOptionPane.showMessageDialog(null, "More than one match !");
-            }
-            fireActionEvent(null);
-          } catch (Exception e){
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Unable to connect to Cadsr public Api");
-            logger.error(e);
-          } finally {
-            _this.setCursor(Cursor.getDefaultCursor());
-          }
-
-        }
-      });
+    projectPrefName.setBounds(new Rectangle(30, 180, 135, 20));
+    projectPrefName.setVisible(false);
+    projectVersion.setBounds(new Rectangle(30, 210, 135, 20));
+    projectVersion.setVisible(false);
+    projectWorkflowStatus.setBounds(new Rectangle(30, 240, 135, 20));
+    projectWorkflowStatus.setVisible(false);
+    projectContextName.setBounds(new Rectangle(30, 270, 135, 20));
+    projectContextName.setVisible(false);
     
-    verifyButton.setEnabled(false);
+    selectedProjectPrefName.setBounds(new Rectangle(180, 180, 500, 20));
+    selectedProjectPrefName.setVisible(false);
+    selectedProjectVersion.setBounds(new Rectangle(180, 210, 500, 20));
+    selectedProjectVersion.setVisible(false);
+    selectedProjectWorkflowStatus.setBounds(new Rectangle(180, 240, 500, 20));
+    selectedProjectWorkflowStatus.setVisible(false);
+    selectedProjectContextName.setBounds(new Rectangle(180, 270, 500, 20));
+    selectedProjectContextName.setVisible(false);
+    
+    searchButton.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent evt) {
+        cadsrDialog.setVisible(true);
+        ClassificationScheme cs = (ClassificationScheme)cadsrDialog.getAdminComponent();
+        if(cs == null) return;
+        
+        UserSelections.getInstance().setProperty("SELECTED_PROJECT", cs);;
+        
+        projectPrefName.setVisible(true);
+        projectVersion.setVisible(true);
+        projectWorkflowStatus.setVisible(true);
+        projectContextName.setVisible(true);
+        
+        selectedProjectPrefName.setText(cs.getPreferredName());
+        selectedProjectPrefName.setVisible(true);
+        selectedProjectVersion.setText(cs.getVersion().toString());
+        selectedProjectVersion.setVisible(true);
+        selectedProjectWorkflowStatus.setText(cs.getWorkflowStatus());
+        selectedProjectWorkflowStatus.setVisible(true);
+        selectedProjectContextName.setText(cs.getContext().getName());
+        selectedProjectContextName.setVisible(true);
+        verified = true;
 
-    entryPanel.add(projectNameLabel, null);
-    entryPanel.add(projectNameField, null);
-    entryPanel.add(projectVersionLabel, null);
-    entryPanel.add(projectVersionField, null);
-    entryPanel.add(verifyButton, null);
+        fireActionEvent(null);
+    }});
+    
+    entryPanel.add(searchText, null);
+    entryPanel.add(searchButton, null);
+    entryPanel.add(projectPrefName, null);
+    entryPanel.add(projectVersion, null);
+    entryPanel.add(projectWorkflowStatus, null);
+    entryPanel.add(projectContextName, null);
+    entryPanel.add(selectedProjectPrefName, null);
+    entryPanel.add(selectedProjectVersion, null);
+    entryPanel.add(selectedProjectWorkflowStatus, null);
+    entryPanel.add(selectedProjectContextName, null);    
     
     this.add(entryPanel, BorderLayout.CENTER);
 
-    projectVersionField.addKeyListener(this);
-    projectNameField.addKeyListener(this);
-    
-    
   }
 
-  public String getProjectName() {
-    return projectNameField.getText();
-  }
-  public String getProjectVersion() {
-    return projectVersionField.getText();
-  }
 
   private void fireActionEvent(ActionEvent evt) {
     for (ActionListener l : actionListeners) {
@@ -163,17 +174,6 @@ public class RoundtripPanel extends JPanel implements KeyListener, CadsrModuleLi
     frame.setVisible(true);
   }
 
-  public void keyReleased(KeyEvent evt) {
-    boolean enable = !StringUtil.isEmpty(getProjectName());
-    try {
-      enable = (new Float(getProjectVersion()) > 0);
-    } catch (NumberFormatException e){
-      enable = false;
-    } // end of try-catch
-
-    verifyButton.setEnabled(enable);
-//     fireActionEvent(null);
-  }
   public void keyPressed(KeyEvent evt) {}
   public void keyTyped(KeyEvent evt) {}
 
@@ -181,8 +181,10 @@ public class RoundtripPanel extends JPanel implements KeyListener, CadsrModuleLi
     return verified;
   }
   
-  public void setCadsrModule(CadsrModule cadsrModule) {
-    this.cadsrModule = cadsrModule;
+  public void setCadsrDialog(CadsrDialog cadsrDialog) {
+    this.cadsrDialog = cadsrDialog;
   }
-  
+
+    public void keyReleased(KeyEvent e) {
+    }
 }
