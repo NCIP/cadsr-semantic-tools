@@ -166,13 +166,16 @@
         <ref bean="umlRoundtrip"/>
         <ref bean="valueDomainValidator"/>
         <ref bean="duplicateValidator"/>
-        <ref bean="roundtripPanel"/>
         <ref bean="gmeDefaultsPanel"/>
         <ref bean="cadsrDEDialog"/>
+        <ref bean="cadsrCSDialog"/>
         <ref bean="cadsrVDDialog"/>
+        <ref bean="cadsrCDDialog"/>
+        <ref bean="cadsrREPDialog"/>
         <ref bean="deReuseDialog"/>
         <ref bean="umlEventHandler"/>
         <ref bean="inheritanceValidator"/>
+        <ref bean="vdViewPanel"/>
       </list>
     </property>
   </bean>
@@ -291,6 +294,9 @@
   <!-- Wizard Panels -->
   <bean name="roundtripPanel"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.RoundtripPanel">
+	<property name="cadsrDialog">
+		<ref bean="cadsrCSDialog"/>
+	</property>
   </bean>
 
   <bean name="gmeDefaultsPanel"
@@ -312,6 +318,18 @@
   <!-- UI Elements -->
   
   <!--  Cadsr Dialog -->
+  <bean name="cadsrCDDialog" class="gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog">
+    <constructor-arg><value>5</value></constructor-arg>
+  </bean>
+  <bean name="cadsrREPDialog" class="gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog">
+    <constructor-arg><value>9</value></constructor-arg>
+  </bean>
+  <bean name="cadsrCSDialog"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog"
+    >
+    <constructor-arg><value>7</value></constructor-arg>
+  </bean>
+
   <bean name="cadsrDEDialog"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog"
     >
@@ -333,9 +351,14 @@
   </bean>
   
   <bean name="vdViewPanel"
-    class="gov.nih.nci.ncicb.cadsr.loader.ui.ValueDomainViewPanel"
-    />
-  
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.ValueDomainViewPanel">
+	<property name="cadsrCDDialog">
+		<ref bean="cadsrCDDialog"/>
+	</property>
+	<property name="cadsrREPDialog">
+		<ref bean="cadsrREPDialog"/>
+	</property>
+</bean>  
   <bean name="mainFrame"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.MainFrame">
     <property name="logTab">
