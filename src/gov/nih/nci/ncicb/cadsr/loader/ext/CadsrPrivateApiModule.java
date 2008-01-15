@@ -26,6 +26,11 @@ public class CadsrPrivateApiModule implements CadsrModule
     return DAOAccessor.getContextDAO().findAll();
 
   }
+  
+  public Collection<String> getAllDatatypes() {
+      
+      return DAOAccessor.getValueDomainDAO().getAllDatatypes();
+  }
 
   public Collection<ClassificationScheme>
     findClassificationScheme(Map<String, Object> queryFields) throws Exception  {
@@ -243,17 +248,21 @@ public class CadsrPrivateApiModule implements CadsrModule
 //       else
 //         System.out.println("no good");
 
-      System.out.println("Test find Prop Concepts");
-      gov.nih.nci.ncicb.cadsr.domain.Property prop = DomainObjectFactory.newProperty();
-      prop.setPublicId("2207095");
-//       oc.setPublicId("2557779");
-      prop.setVersion(1f);
-      List<gov.nih.nci.ncicb.cadsr.domain.Concept> concepts = testModule.getConcepts(prop);
-      for(gov.nih.nci.ncicb.cadsr.domain.Concept con : concepts) {
-        System.out.println(con.getLongName());
-      }
-
-
+//      System.out.println("Test find Prop Concepts");
+//      gov.nih.nci.ncicb.cadsr.domain.Property prop = DomainObjectFactory.newProperty();
+//      prop.setPublicId("2207095");
+////       oc.setPublicId("2557779");
+//      prop.setVersion(1f);
+//      List<gov.nih.nci.ncicb.cadsr.domain.Concept> concepts = testModule.getConcepts(prop);
+//      for(gov.nih.nci.ncicb.cadsr.domain.Concept con : concepts) {
+//        System.out.println(con.getLongName());
+//      }
+//
+//
+//        Collection<String> tmp = testModule.getAllDatatypes();
+//        for(String s: tmp){
+//            System.out.println(" ---- "+s);
+//        }
     } catch (Exception e) {
     } // end of try-catch
 
