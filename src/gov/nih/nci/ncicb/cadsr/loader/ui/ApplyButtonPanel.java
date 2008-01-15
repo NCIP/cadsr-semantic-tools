@@ -68,8 +68,8 @@ public class ApplyButtonPanel extends JPanel implements ActionListener, Property
       reviewButton = new JCheckBox("<html>Not<br>Available</html>");
       reviewButton.setVisible(false);
     }
-
-    reviewButton.setSelected(node.isReviewed());
+    if(node != null)
+        reviewButton.setSelected(node.isReviewed());
 
     reviewButton.setActionCommand(REVIEW);
     applyButton.setActionCommand(SAVE);

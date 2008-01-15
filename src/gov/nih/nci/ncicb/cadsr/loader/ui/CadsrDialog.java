@@ -2,6 +2,9 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.cadsr.freestylesearch.util.SearchResults;
 import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
+import gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme;
+import gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain;
+import gov.nih.nci.ncicb.cadsr.domain.Representation;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 import gov.nih.nci.ncicb.cadsr.domain.Property;
@@ -67,7 +70,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   private JLabel numberOfResultsLabel = new JLabel("Results Per Page");
   private JComboBox searchSourceCombo;
   private JComboBox numberOfResultsCombo;
-  
+
   private JButton searchButton = new JButton("Search");
   
   private AbstractTableModel tableModel = null;
@@ -115,6 +118,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   public static final int MODE_VD = 3;
   public static final int MODE_DE = 4;
   public static final int MODE_CD = 5;
+  public static final int MODE_CS = 7;
+  public static final int MODE_REP = 9;
   
   private int mode;
 
@@ -137,6 +142,9 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     case MODE_PROP:
       this.setTitle("Search for Property");
       break;
+    case MODE_CS:
+      this.setTitle("Search for Classification Schemes");
+      break;
     case MODE_VD:
       this.setTitle("Search for Value Domain");
       break;
@@ -145,6 +153,9 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       break;
     case MODE_CD:
       this.setTitle("Search for Conceptual Domain");
+      break;
+    case MODE_REP:
+      this.setTitle("Search for Rep Term");
       break;
     }
 
@@ -268,7 +279,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
                 } finally {
                   _this.setCursor(Cursor.getDefaultCursor());
                 }
-              } else 
+              } 
+              else 
               {
                 choiceAdminComponent = choiceSearchResultWrapper.getAdminComponent();
               }
@@ -450,6 +462,19 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
               if(!setOfExcluded.contains(sr.getRegistrationStatus()))
                 resultSet.add(new SearchResultWrapper(sr));
           }
+          break;
+        case MODE_CS:
+          for(ClassificationScheme cs : cadsrModule.findClassificationScheme(queryFields))
+          resultSet.add(new SearchResultWrapper(cs));       
+          break;
+        case MODE_CD:
+          for(ConceptualDomain cd : cadsrModule.findConceptualDomain(queryFields))
+          resultSet.add(new SearchResultWrapper(cd));       
+          break;
+        case MODE_REP:
+          queryFields.put(CadsrModule.WORKFLOW_STATUS, Representation.WF_STATUS_RELEASED);
+          for(Representation rep : cadsrModule.findRepresentation(queryFields))
+          resultSet.add(new SearchResultWrapper(rep));       
           break;
         case MODE_VD:
           for(ValueDomain vd : cadsrModule.findValueDomain(queryFields))
