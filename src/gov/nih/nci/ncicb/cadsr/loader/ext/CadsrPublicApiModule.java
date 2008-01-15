@@ -5,6 +5,7 @@ import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.bean.DataElementBean;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 
 import java.lang.reflect.Method;
@@ -16,9 +17,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Projections;
 
 /**
  * Layer to the EVS external API.
@@ -57,6 +61,17 @@ public class CadsrPublicApiModule implements CadsrModule {
     } // end of try-catch
 
   }
+  
+    public Collection<String> getAllDatatypes()  {
+        DetachedCriteria datatypeCriteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.ValueDomain.class, "vd");
+        datatypeCriteria.setProjection( Projections.distinct(Projections.projectionList().add( Projections.property("vd.datatypeName"), "datatypeName" )));
+        try{
+            List listResult = service.query(datatypeCriteria, gov.nih.nci.cadsr.domain.ValueDomain.class.getName());
+            return listResult;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } // end of try-catch
+    }
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme>
     findClassificationScheme(Map<String, Object> queryFields) throws Exception {
@@ -160,6 +175,8 @@ public class CadsrPublicApiModule implements CadsrModule {
         if(field instanceof String)
           field = new Long((String)field);
 //         field = ((Long)field).toString();
+      } else if(s.equals("workflowStatus")) {
+          s = "workflowStatusName";
       }
       if(field instanceof String) {
         String sField = (String)field;
@@ -485,15 +502,17 @@ public class CadsrPublicApiModule implements CadsrModule {
 //         System.out.println("ok");
 //      
 
-      System.out.println("Test find OC Concepts");
-      gov.nih.nci.ncicb.cadsr.domain.ObjectClass oc = DomainObjectFactory.newObjectClass();
-      oc.setPublicId("2241624");
-//       oc.setPublicId("2557779");
-      oc.setVersion(1f);
-      List<gov.nih.nci.ncicb.cadsr.domain.Concept> concepts = testModule.getConcepts(oc);
-      for(gov.nih.nci.ncicb.cadsr.domain.Concept con : concepts) {
-        System.out.println(con.getLongName());
-      }
+//      System.out.println("Test find OC Concepts");
+//      gov.nih.nci.ncicb.cadsr.domain.ObjectClass oc = DomainObjectFactory.newObjectClass();
+//      oc.setPublicId("2241624");
+////       oc.setPublicId("2557779");
+//      oc.setVersion(1f);
+//      List<gov.nih.nci.ncicb.cadsr.domain.Concept> concepts = testModule.getConcepts(oc);
+//      for(gov.nih.nci.ncicb.cadsr.domain.Concept con : concepts) {
+//        System.out.println(con.getLongName());
+//      }
+
+    testModule.getAllDatatypes();
 
     }
     catch (Exception e) {
