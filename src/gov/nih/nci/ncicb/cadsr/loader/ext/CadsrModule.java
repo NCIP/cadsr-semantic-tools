@@ -15,10 +15,13 @@ public interface CadsrModule
   public static final String PUBLIC_ID = "publicId";
   public static final String VERSION = "version";
   public static final String CONTEXT = "context";
+  public static final String WORKFLOW_STATUS = "workflowStatus";
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.Context> 
     getAllContexts();
-  
+  public Collection<String> 
+    getAllDatatypes();
+    
   public Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme>
     findClassificationScheme(Map<String, Object> queryFields) throws Exception;
 
