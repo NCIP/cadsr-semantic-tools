@@ -20,6 +20,8 @@
 
 package gov.nih.nci.ncicb.cadsr.loader;
 
+import gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme;
+
 import java.net.URL;
 
 import gov.nih.nci.ncicb.cadsr.loader.parser.*;
@@ -40,8 +42,7 @@ public class RoundtripAction {
 
   private Parser parser;
   
-  public void doRoundtrip(String projectName, 
-                          float projectVersion, 
+  public void doRoundtrip(ClassificationScheme cs, 
                           String inputFile, 
                           String outputFile) {
 
@@ -58,8 +59,9 @@ public class RoundtripAction {
       defaults.initParams(inputFile);
       parser.parse(inputFile);
 
-      roundtrip.setProjectName(projectName);
-      roundtrip.setProjectVersion(projectVersion);
+      roundtrip.setClassificationScheme(cs);
+//      roundtrip.setProjectName(projectName);
+//      roundtrip.setProjectVersion(projectVersion);
       roundtrip.setProgressListener(progressListener);
       roundtrip.start();
 
@@ -100,21 +102,21 @@ public class RoundtripAction {
     this.parser = parser;
   }
 
-  public static void main(String[] args) {
-    if(args.length != 3) {
-      System.err.println(PropertyAccessor.getProperty("roundtrip.usage"));
-      System.exit(1);
-    }
-
-    java.io.File f = new java.io.File(args[0]);
-
-    String outputFile = f.getParent() + java.io.File.separatorChar + "rountrip_" + f.getName(); 
-
-
-    new RoundtripAction().doRoundtrip(args[1], new Float(args[2]), args[0], outputFile);
-
-    System.exit(0);
-
-  }
+//  public static void main(String[] args) {
+//    if(args.length != 3) {
+//      System.err.println(PropertyAccessor.getProperty("roundtrip.usage"));
+//      System.exit(1);
+//    }
+//
+//    java.io.File f = new java.io.File(args[0]);
+//
+//    String outputFile = f.getParent() + java.io.File.separatorChar + "rountrip_" + f.getName(); 
+//
+//
+//    new RoundtripAction().doRoundtrip(args[1], new Float(args[2]), args[0], outputFile);
+//
+//    System.exit(0);
+//
+//  }
 
 }
