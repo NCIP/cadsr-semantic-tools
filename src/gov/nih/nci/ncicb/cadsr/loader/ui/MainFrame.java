@@ -302,7 +302,6 @@ public class MainFrame extends JFrame
     saveMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
         xmiWriter.setOutput(saveFilename);
-
         try {
           xmiWriter.write(ElementsLists.getInstance());
           
@@ -536,18 +535,17 @@ public class MainFrame extends JFrame
     } else if(event.getType() == ViewChangeEvent.VIEW_VALUE_DOMAIN) {
       UMLNode node = (UMLNode)event.getViewObject();
       
-//       if(vdViewPanel == null) {
-// //         vdViewPanel = new ValueDomainViewPanel((ValueDomain)node.getUserObject());
-//         vdViewPanel.update((ValueDomain)node.getUserObject());
-//         viewTabbedPane.addTab("ValueDomain", vdViewPanel);
-//         vdViewPanel.setName("ValueDomain");
-//         infoLabel.setText("ValueDomain");
-//       }
-//       else
+//      if(vdViewPanel == null) {
+//        vdViewPanel = new ValueDomainViewPanel((ValueDomain)node.getUserObject(), node);
+//        viewTabbedPane.addTab("ValueDomain", vdViewPanel);
+//        vdViewPanel.setName("ValueDomain");
+//        infoLabel.setText("ValueDomain");
+//      }
+//      else
       
       viewTabbedPane.remove(vdViewPanel);
       viewTabbedPane.addTab("ValueDomain", vdViewPanel);
-      vdViewPanel.update((ValueDomain)node.getUserObject());
+      vdViewPanel.update((ValueDomain)node.getUserObject(), node);
       infoLabel.setText("ValueDomain");      
 
       viewTabbedPane.setSelectedComponent(vdViewPanel);
@@ -581,12 +579,12 @@ public class MainFrame extends JFrame
   private void newTab(ViewChangeEvent event, UMLNode node) {
     String tabTitle = node.getDisplay();
     if(node instanceof AttributeNode) {
-      if(event.getType() == ViewChangeEvent.VIEW_INHERITED) 
-        tabTitle = node.getParent().getParent().getDisplay() 
-          + "." + tabTitle;
-      else
-        tabTitle = node.getParent().getDisplay() 
-          + "." + tabTitle;
+        if(event.getType() == ViewChangeEvent.VIEW_INHERITED) 
+            tabTitle = node.getParent().getParent().getDisplay() 
+            + "." + tabTitle;
+        else
+            tabTitle = node.getParent().getDisplay() 
+            + "." + tabTitle;
     }
     
     NodeViewPanel viewPanel = null;
@@ -638,6 +636,8 @@ public class MainFrame extends JFrame
  
   public void setValueDomainViewPanel(ValueDomainViewPanel vdViewPanel) {
     this.vdViewPanel = vdViewPanel;
+    vdViewPanel.addElementChangeListener(ChangeTracker.getInstance());
+    vdViewPanel.addPropertyChangeListener(this);
   }
  
 }
