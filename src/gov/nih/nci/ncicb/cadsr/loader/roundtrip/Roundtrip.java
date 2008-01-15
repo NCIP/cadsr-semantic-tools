@@ -19,6 +19,7 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.roundtrip;
 
+import gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 
@@ -31,8 +32,9 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 public interface Roundtrip {
 
   public void setProgressListener(ProgressListener l);
-  public void setProjectName(String projectName);
-  public void setProjectVersion(Float projectVersion);
+//  public void setProjectName(String projectName);
+//  public void setProjectVersion(Float projectVersion);
+  public void setClassificationScheme(ClassificationScheme cs);
 
   public void start() throws RoundtripException;
 

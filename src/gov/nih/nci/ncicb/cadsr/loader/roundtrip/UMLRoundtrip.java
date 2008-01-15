@@ -52,8 +52,8 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
 
   protected UMLDefaults defaults = UMLDefaults.getInstance();
 
-  private String lastProjectName;
-  private Float lastProjectVersion;
+//  private String lastProjectName;
+//private Float lastProjectVersion;
 
   private ClassificationScheme projectCs = null;
   private ProgressListener progressListener = null;
@@ -68,28 +68,28 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
   }
 
   
-  private void initCs() throws RoundtripException {
-    Map<String, Object> queryFields = new HashMap<String, Object>();
-    queryFields.put("longName", lastProjectName);
-    queryFields.put("version", new Float(lastProjectVersion));
-
-    List<String> eager = new ArrayList<String>();
-    eager.add(EagerConstants.CS_CSI);
-
-    try {
-      Collection<ClassificationScheme> results = cadsrModule.findClassificationScheme(queryFields, eager);
-      
-      if(results.size() == 0)
-        throw new RoundtripException(PropertyAccessor.getProperty("last.project.not.found", new String[]{lastProjectName, lastProjectVersion.toString()}));
-
-      projectCs = results.iterator().next();
-    } catch (Exception e){
-      throw new RoundtripException("Cannot connect to caDSR Public API");
-
-    } // end of try-catch
-      
-
-  }
+//  private void initCs() throws RoundtripException {
+//    Map<String, Object> queryFields = new HashMap<String, Object>();
+//    queryFields.put("longName", lastProjectName);
+//    queryFields.put("version", new Float(lastProjectVersion));
+//
+//    List<String> eager = new ArrayList<String>();
+//    eager.add(EagerConstants.CS_CSI);
+//
+//    try {
+//      Collection<ClassificationScheme> results = cadsrModule.findClassificationScheme(queryFields, eager);
+//      
+//      if(results.size() == 0)
+//        throw new RoundtripException(PropertyAccessor.getProperty("last.project.not.found", new String[]{lastProjectName, lastProjectVersion.toString()}));
+//
+//      projectCs = results.iterator().next();
+//    } catch (Exception e){
+//      throw new RoundtripException("Cannot connect to caDSR Public API");
+//
+//    } // end of try-catch
+//      
+//
+//  }
 
 
   public void start() throws RoundtripException {
@@ -101,7 +101,7 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
     if(progressListener != null) 
       progressListener.newProgressEvent(pEvt);
 
-    initCs();
+//    initCs();
 
     pEvt = new ProgressEvent();
     pEvt.setStatus(1);
@@ -181,6 +181,7 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
            )
           packageCsCsi = csCsi;
       } catch (NullPointerException e){
+        e.printStackTrace();
       } // end of try-catch
     }
     
@@ -188,14 +189,17 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
 
   }
 
-  
-  public void setProjectName(String lastProjectName) {
-    this.lastProjectName = lastProjectName;
-  }
-  
-  public void setProjectVersion(Float lastProjectVersion) {
-    this.lastProjectVersion = lastProjectVersion;
-  }
+public void setClassificationScheme(ClassificationScheme cs) {
+    this.projectCs = cs;
+}
+//  
+//  public void setProjectName(String lastProjectName) {
+//    this.lastProjectName = lastProjectName;
+//  }
+//  
+//  public void setProjectVersion(Float lastProjectVersion) {
+//    this.lastProjectVersion = lastProjectVersion;
+//  }
 
   /**
    * IoC setter
