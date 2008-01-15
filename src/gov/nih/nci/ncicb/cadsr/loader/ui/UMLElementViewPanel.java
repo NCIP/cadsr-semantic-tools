@@ -47,8 +47,8 @@ public class UMLElementViewPanel extends JPanel
     ocPanel = new OCPanel(node);
     gmePanel= new GMEViewPanel(node);
 
-    if(node instanceof AttributeNode)
-      buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);
+    if(node instanceof AttributeNode){
+      buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);}
     else if(node instanceof ValueMeaningNode)
       buttonPanel = new ButtonPanel(conceptEditorPanel, this, null);
     else 
