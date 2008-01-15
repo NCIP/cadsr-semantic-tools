@@ -19,6 +19,7 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme;
 import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
 import java.awt.*;
 import java.awt.event.*;
@@ -191,12 +192,12 @@ public class WizardController implements ActionListener {
         UMLDefaults defaults = UMLDefaults.getInstance();
         defaults.setPackageFilter(temp);
       }
-      if(descriptor.getPanelDescriptorIdentifier().equals(RoundtripPanelDescriptor.IDENTIFIER)) {
-        RoundtripPanel panel = 
-          (RoundtripPanel)descriptor.getPanelComponent();
-        userSelections.setProperty("PROJECT_NAME", panel.getProjectName());
-        userSelections.setProperty("PROJECT_VERSION", new Float(panel.getProjectVersion()));
-      }
+//      if(descriptor.getPanelDescriptorIdentifier().equals(RoundtripPanelDescriptor.IDENTIFIER)) {
+//        RoundtripPanel panel = 
+//          (RoundtripPanel)descriptor.getPanelComponent();
+//        userSelections.setProperty("PROJECT_NAME", panel.getProjectName());
+//        userSelections.setProperty("PROJECT_VERSION", new Float(panel.getProjectVersion()));
+//      }
       if(descriptor.getPanelDescriptorIdentifier().equals(GMEDefaultsPanelDescriptor.IDENTIFIER)) {
         GMEDefaultsPanel panel = 
           (GMEDefaultsPanel)descriptor.getPanelComponent();
@@ -307,14 +308,15 @@ public class WizardController implements ActionListener {
 //                   RoundtripAction roundtripAction = BeansAccessor.getRoundtripAction();
                   
                   roundtripAction.addProgressListener(progressDesc);
-
-                  String projectName = (String)userSelections.getProperty("PROJECT_NAME");
-                  Float projectVersion = (Float)(userSelections.getProperty("PROJECT_VERSION"));
-                  
+//
+//                  String projectName = (String)userSelections.getProperty("PROJECT_NAME");
+//                  Float projectVersion = (Float)(userSelections.getProperty("PROJECT_VERSION"));
+  
+                ClassificationScheme cs = (ClassificationScheme)userSelections.getProperty("SELECTED_PROJECT");                
                   File f = new File(filename);
                   outputFile = f.getParent() + "/roundtrip_" + f.getName();
 
-                  roundtripAction.doRoundtrip(projectName, projectVersion, filename, outputFile);
+                  roundtripAction.doRoundtrip(cs, filename, outputFile);
 
                   reportPanel.setOutputText("Roundtrip was completed. The output file can be found here: <br>" + outputFile);
 

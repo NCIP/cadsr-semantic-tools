@@ -114,7 +114,7 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
              (PropertyAccessor.getProperty
               ("vd.missing.datatype", vd.getLongName()), vd));
         } else {
-          List<String> datatypes = Arrays.asList(PropertyAccessor.getProperty("vd.datatype").split(","));
+          Collection<String> datatypes = cadsrModule.getAllDatatypes();
           if(!datatypes.contains(vd.getDataType()))
             items.addItem
             (new ValidationError
