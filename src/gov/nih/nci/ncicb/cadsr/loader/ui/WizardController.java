@@ -280,10 +280,15 @@ public class WizardController implements ActionListener {
 
                      evt.setMessage("Creating Semantic Connector Report. This may take a minute ...");
                      progressDesc.newProgressEvent(evt);
+
+                     String extension = ".xmi";
+                     if(filename.endsWith("uml"))
+                       extension = ".uml";
+
                      String outputXmi = inputXmi.substring(0, inputXmi.lastIndexOf("/") + 1)
                          + "FirstPass_" 
                          + inputXmi.substring(inputXmi.lastIndexOf("/") + 1, inputXmi.lastIndexOf("."))
-                         + ".xmi";
+                         + extension;
                      sem.firstPass(inputXmi, outputXmi);
              
                      reportPanel.setFiles(inputXmi, outputXmi);
