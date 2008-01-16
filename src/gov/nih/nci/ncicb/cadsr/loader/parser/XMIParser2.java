@@ -192,6 +192,8 @@ public class XMIParser2 implements Parser {
   private List<FilterClass> filterClasses = new ArrayList<FilterClass>();
   private List<FilterPackage> filterPackages = new ArrayList<FilterPackage>();
 
+  private List markedAsIgnored = new ArrayList();
+
   public void setEventHandler(LoaderHandler handler) {
     this.listener = (UMLHandler) handler;
     if (progressListener != null) {
@@ -281,6 +283,8 @@ public class XMIParser2 implements Parser {
       }
 
 //       UMLModel model = handler.getModel("EA Model");
+
+      UserSelections.getInstance().setProperty("MARKED_IGNORED", markedAsIgnored);
 
       UMLModel model = handler.getModel();
       totalNumberOfElements = countNumberOfElements(model);
@@ -780,8 +784,10 @@ public class XMIParser2 implements Parser {
     event.setRoleName(assoc.getRoleName());
 
     List<UMLAssociationEnd> ends = assoc.getAssociationEnds();
-    if(ends.size() != 2)
+    if(ends.size() != 2) {
+      markedAsIgnored.add(assoc);
       return;
+    }
     
     final UMLAssociationEnd aEnd = ends.get(0);
     final UMLAssociationEnd bEnd = ends.get(1);
@@ -801,9 +807,15 @@ public class XMIParser2 implements Parser {
     
     // set tagged values and create subevents
     NewAssociationEndEvent aEvent = doAssociationEnd(aEnd, atype);
-    if (aEvent == null) return;
+    if (aEvent == null) {
+      markedAsIgnored.add(assoc);
+      return;
+    }
     NewAssociationEndEvent bEvent = doAssociationEnd(bEnd, btype);
-    if (bEvent == null) return;
+    if (bEvent == null) { 
+      markedAsIgnored.add(assoc);
+      return;
+    }
     
     event.setAEvent(aEvent);
     event.setBEvent(bEvent);

@@ -139,10 +139,14 @@ public class GMEWriter implements ElementWriter {
 
     List<ObjectClassRelationship> ocrs = cadsrObjects.getElements(DomainObjectFactory.newObjectClassRelationship());
 
+    List markedAsIgnored = (List)UserSelections.getInstance().getProperty("MARKED_IGNORED");
     // we're making the (correct) assumption that OCRs are stored in the same order as UMLAssociation in the XMI
     int xi = 0;
     OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
     for(UMLAssociation assoc : model.getAssociations()) {
+      if(markedAsIgnored.contains(assoc))
+        continue;
+
       ObjectClassRelationship ocr = ocrs.get(xi++);
     
       String fullName = nameBuilder.buildRoleName(ocr);
