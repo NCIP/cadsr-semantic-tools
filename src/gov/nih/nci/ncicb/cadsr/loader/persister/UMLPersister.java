@@ -170,6 +170,11 @@ public class UMLPersister implements Persister {
 
   protected void addAlternateName(AdminComponent ac, String newName, String type, String packageName) {
 
+        // !!! TEMPORARY, Dont load GME alt names yet
+    if(type.startsWith("GME"))
+      return;
+
+
 //     List<String> eager = new ArrayList<String>();
 //     eager.add("csCsis");
 
