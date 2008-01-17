@@ -131,7 +131,7 @@ public class UMLLoader {
     
     String[] filenames = new File(fileDir).list(new FilenameFilter() {
 	public boolean accept(File dir, String name) {
-	  return name.endsWith(".xmi");
+	  return name.endsWith(".xmi") || name.endsWith(".uml");
 	}
       });
 
