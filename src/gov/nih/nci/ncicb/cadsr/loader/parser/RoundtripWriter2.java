@@ -86,7 +86,7 @@ public class RoundtripWriter2 implements ElementWriter {
 
     try {
       XmiInOutHandler handler = (XmiInOutHandler)(UserSelections.getInstance().getProperty("XMI_HANDLER"));
-      model = handler.getModel("EA Model");
+      model = handler.getModel();
       
       this.elementsList = elements;
       
