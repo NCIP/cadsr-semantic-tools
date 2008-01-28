@@ -13,6 +13,7 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
  * Association Concept Editor Panel
@@ -46,7 +47,10 @@ public class AssociationConceptPanel extends JPanel
 
     setLayout(new BorderLayout());
 
-    this.add(conceptEditorPanel, BorderLayout.CENTER);
+    JScrollPane scrollPane = new JScrollPane(conceptEditorPanel);
+    scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+
+    this.add(scrollPane, BorderLayout.CENTER);
     this.add(buttonSpacedPanel, BorderLayout.SOUTH);
 
     conceptEditorPanel.addPropertyChangeListener(buttonPanel);
