@@ -62,6 +62,8 @@ public class UMLLoaderGUI
   private Appender appender;
 
   private List<RunModeListener> runModeListeners = new ArrayList<RunModeListener>();
+
+  private UserPreferences prefs;
   
   public UMLLoaderGUI()
   {
@@ -74,6 +76,10 @@ public class UMLLoaderGUI
     t.start();
 
     logger.getParent().addAppender(appender);
+
+    // !TODO  Disable GME tags viewing for this version
+    logger.debug("%%%Not showing GME Tags%%%");
+    prefs.setShowGMETags(false);
 
     System.setProperty("java.security.auth.login.config", Thread.currentThread().getContextClassLoader().getResource("jaas.config").toExternalForm());
 
@@ -195,12 +201,12 @@ public class UMLLoaderGUI
     this.descriptors = descriptors;
   }
 
-  public void setUserPreferences(UserPreferences preferences) {
-
-  }
-  
   private void putToCenter(Component comp) {
     comp.setLocation((screenSize.width - comp.getSize().width) / 2, (screenSize.height - comp.getSize().height) / 2);
+  }
+
+  public void setUserPreferences(UserPreferences preferences) {
+    prefs = preferences;
   }
 
 }
