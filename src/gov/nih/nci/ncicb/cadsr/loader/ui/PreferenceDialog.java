@@ -71,7 +71,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     centerPanel.add(sortElementsBox);
     centerPanel.add(preTBox);
 //     centerPanel.add(inheritedCDEMappingBox);
-    centerPanel.add(showGMETagsBox);
+//     centerPanel.add(showGMETagsBox);
 
     this.getContentPane().setLayout(new BorderLayout());
     this.getContentPane().add(centerPanel);
