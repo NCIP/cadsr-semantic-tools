@@ -164,8 +164,8 @@ public class ModeSelectionPanel extends JPanel {
     buttonPanel.add(annotateOption);
     buttonPanel.add(curateOption);
     buttonPanel.add(reviewOption);
-    buttonPanel.add(gmeDefaultsOption);
-    buttonPanel.add(gmeCleanupOption);
+//     buttonPanel.add(gmeDefaultsOption);
+//     buttonPanel.add(gmeCleanupOption);
 
     this.setLayout(new BorderLayout());
     this.add(infoPanel, BorderLayout.NORTH);
