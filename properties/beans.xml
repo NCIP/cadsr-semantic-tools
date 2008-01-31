@@ -277,7 +277,9 @@
         <ref bean="duplicateAttributeValidator"/>
         <ref bean="inheritanceValidator"/>
         <ref bean="definitionLengthValidator"/>
+        <!--  removed for this version
         <ref bean="gmeValidator"/>
+        -->
       </list>
     </property>
   </bean>
