@@ -44,7 +44,19 @@ public class PackageFilterHandler
   public void newAssociation(NewAssociationEvent event){}
   public void newGeneralization(NewGeneralizationEvent event){}
   public void addProgressListener(ProgressListener listener) {}
-  public void beginParsing() {}
+  public void beginParsing() {
+    List<FilterClass> filterClasses = new ArrayList<FilterClass>(elements.getElements(new FilterClass("", "")));
+    
+    for(FilterClass o : filterClasses) {
+      elements.removeElement(o);
+    }
+
+    List<FilterPackage> filterPackages = new ArrayList<FilterPackage>(elements.getElements(new FilterPackage("")));
+    for(FilterPackage o : filterPackages) {
+      elements.removeElement(o);
+    }
+    
+  }
   public void endParsing() {}
 
 
