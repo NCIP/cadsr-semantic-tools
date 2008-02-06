@@ -84,7 +84,7 @@
 </alias-list>
 
 <alias-list name="java.lang.Object">
-  <alias name="Object"/>
+  <alias name="object"/>
 </alias-list>
 
 <alias-list name="java.lang.StringArrayArray">
@@ -139,19 +139,19 @@
 
 <!--  HL7 Mappings -->
 <alias-list name="HL7.ConceptDescriptor">
-  <alias name="CD"/>
+  <alias name="cd"/>
 </alias-list>
 
 <alias-list name="HL7.InstanceIdentifier">
-  <alias name="II"/>
+  <alias name="ii"/>
 </alias-list>
 
 <alias-list name="HL7.SET.CD">
-  <alias name="SET CD"/>
+  <alias name="set cd"/>
 </alias-list>
 
 <alias-list name="HL7.PQ">
-  <alias name="PQ"/>
+  <alias name="pq"/>
 </alias-list>
 
 
