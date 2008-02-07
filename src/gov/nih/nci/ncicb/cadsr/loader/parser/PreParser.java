@@ -71,13 +71,24 @@ public class PreParser implements Parser {
       else
         handlerEnum = HandlerEnum.EADefault;
 
-      XmiInOutHandler handler = XmiHandlerFactory.getXmiHandler(HandlerEnum.EADefault);
+      XmiInOutHandler handler = XmiHandlerFactory.getXmiHandler(handlerEnum);
       logger.debug("pre parsing ...");
       handler.load(uri);
       logger.debug("done pre parsing.");
 
-
       UMLModel model = handler.getModel();
+
+      if(model == null) {
+        logger.info("Can't open file with expected parser, will try another");
+        if(handlerEnum.equals(HandlerEnum.EADefault))
+          handlerEnum = HandlerEnum.ArgoUMLDefault;
+        else
+          handlerEnum = HandlerEnum.EADefault;
+        
+        handler = XmiHandlerFactory.getXmiHandler(handlerEnum);
+        handler.load(uri);
+        model = handler.getModel();
+      }
 
       if(model == null) {
         throw new Exception("Can't open file. Unknown format.");
