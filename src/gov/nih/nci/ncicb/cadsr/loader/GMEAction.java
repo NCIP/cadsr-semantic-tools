@@ -78,7 +78,7 @@ public class GMEAction {
         if(!hasAltName(de.getAlternateNames(), AlternateName.TYPE_GME_XML_LOC_REF)) {
           AlternateName altName = DomainObjectFactory.newAlternateName();
           altName.setType(AlternateName.TYPE_GME_XML_LOC_REF);
-          altName.setName(attName.substring(attName.lastIndexOf(".") + 1));
+          altName.setName("@" + attName.substring(attName.lastIndexOf(".") + 1));
           de.addAlternateName(altName);
           
           changeTracker.put(attName, true);
