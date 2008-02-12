@@ -388,7 +388,7 @@ public class MainFrame extends JFrame
             .getSelectedComponent();
           
           try {
-            viewPanel.apply(false);
+            viewPanel.applyPressed();
           } catch (ApplyException e){
             infoLabel.setText("Changes were not applied!");
           } // end of try-catch
