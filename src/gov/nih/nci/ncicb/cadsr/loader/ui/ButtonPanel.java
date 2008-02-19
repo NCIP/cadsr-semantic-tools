@@ -254,6 +254,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
         ((UMLElementViewPanel)viewPanel).switchCards(UMLElementViewPanel.CONCEPT_PANEL_KEY);
         if(editable instanceof DEPanel) {
           switchButton.setText(SWITCH_TO_DE);
+          conceptEditorPanel.getVDPanel().updateNode(conceptEditorPanel.getNode());
         } else if(editable instanceof OCPanel) {
           switchButton.setText(SWITCH_TO_OC);
         } else if(editable == null) {
