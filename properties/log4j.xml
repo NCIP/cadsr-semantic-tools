@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+  <appender name="debugFile" class="org.apache.log4j.FileAppender"> 
+    <param name="File" value="messages.log"/> 
+    <layout class="org.apache.log4j.PatternLayout"> 
+      <param name="ConversionPattern" value="%m%n"/> 
+    </layout> 
+  </appender> 
+
+  <appender name="errorFile" class="org.apache.log4j.FileAppender"> 
+    <param name="File" value="error.log"/> 
+    <layout class="org.apache.log4j.PatternLayout"> 
+      <param name="ConversionPattern" value="%m%n"/> 
+    </layout> 
+	<filter class="org.apache.log4j.varia.LevelRangeFilter">
+		<param name="LevelMin" value="error" />
+		<param name="LevelMax" value="fatal" />
+	</filter>
+  </appender> 
+
+  <appender name="console" class="org.apache.log4j.ConsoleAppender"> 
+    <param name="Target" value="System.out"/> 
+    <layout class="org.apache.log4j.PatternLayout"> 
+      <param name="ConversionPattern" value="%m%n"/> 
+    </layout> 
+	<filter class="org.apache.log4j.varia.LevelRangeFilter">
+		<param name="LevelMin" value="error" />
+		<param name="LevelMax" value="fatal" />
+	</filter>
+  </appender> 
+
+  <appender name="rollingFile" class="org.apache.log4j.RollingFileAppender">
+	<param name="maxFileSize" value="100KB" />
+	<param name="maxBackupIndex" value="0" />
+	<param name="File" value="expressServer.log" />
+	<layout class="org.apache.log4j.PatternLayout">
+		<param name="ConversionPattern" value="%p %t %c - %m%n" />
+	</layout>
+  </appender>
+
+  <!--appender name="mail" class="org.apache.log4j.net.SMTPAppender">
+	<param name="SMTPHost" value="@ERROR-MAILHOST@" />
+	<param name="From" value="@ERROR-SERVER@@raibledesigns.com" />
+	<param name="To" value="@ERROR-MAILTO@" />
+	<param name="Subject" value="Express Server Application Error" />
+	<param name="BufferSize" value="1" />
+	<param name="threshold" value="error" />
+	<layout class="org.apache.log4j.PatternLayout">
+		<param name="ConversionPattern" value="%d  %-5p %c %x - %m%n" />
+	</layout>
+  </appender-->
+  <logger name="org.appfuse">
+	<level value="DEBUG"/>
+  </logger>
+  <logger name="org.appfuse.webapp.listener.UserCounterListener">
+	<level value="WARN"/>
+  </logger>
+  <logger name="org.appfuse.webapp.filter.GZIPFilter">
+	<level value="DEBUG"/>
+  </logger>
+  <logger name="org.apache.commons">
+	<level value="ERROR"/>
+  </logger>
+  <logger name="org.apache.struts">
+	<level value="WARN"/>
+  </logger>
+  <logger name="net.sf.navigator">
+	<level value="ERROR"/>
+  </logger>
+  <logger name="org.displaytag">
+	<level value="ERROR"/>
+  </logger>
+  <logger name="com.opensymphony.oscache">
+	<level value="ERROR"/>
+  </logger>
+  <logger name="org.apache.cactus">
+	<level value="WARN"/>
+  </logger>
+  <logger name="org.apache.commons.httpclient">
+	<level value="ERROR"/>
+  </logger>
+  <logger name="httpclient">
+	<level value="WARN"/>
+  </logger>
+  <logger name="com.canoo.webtest">
+	<level value="WARN"/>
+  </logger>
+  <logger name="net.sf.hibernate.ps.PreparedStatementCache">
+	<level value="ERROR"/>
+  </logger>
+  <logger name="net.sf.hibernate">
+	<level value="ERROR"/>
+  </logger>
+  <logger name="org.springframework">
+	<level value="ERROR"/>
+  </logger>
+  <logger name="org.dbunit">
+	<level value="DEBUG"/>
+  </logger>
+
+  <root> 
+    <priority value ="debug" /> 
+    <appender-ref ref="debugFile" /> 
+    <appender-ref ref="errorFile" /> 
+    <appender-ref ref="console" /> 
+    <appender-ref ref="rollingFile" /> 
+    <!--appender-ref ref="mail" /--> 
+  </root>
+  
+</log4j:configuration>
