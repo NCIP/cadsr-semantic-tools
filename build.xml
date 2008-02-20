@@ -93,6 +93,7 @@
         <include name="*.properties"/>
         <include name="jaas.config"/>
         <include name="beans.xml"/>
+		<include name="log4j.xml"/>
         <!--        <include name="spring-datasources.xml"/> -->
         <include name="ehcache.xml"/>
         <!--        <include name="datatype-mapping.xml"/> -->
@@ -220,10 +221,10 @@
   </target>
 
   <target name="run" depends="prepare">
-    <copy file="${config.dir}/log4j-loader.properties"
+    <!--copy file="${config.dir}/log4j-loader.properties"
       tofile="${class.dir}/log4j.properties" overwrite="true"
       >
-    </copy>
+    </copy -->
     <java classname="gov.nih.nci.ncicb.cadsr.loader.UMLLoader" classpathref="proj.class.path" 
       fork="yes" 
       maxmemory="512m"
