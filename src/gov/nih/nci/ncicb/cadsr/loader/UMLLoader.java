@@ -184,7 +184,12 @@ public class UMLLoader {
       logger.info(PropertyAccessor.getProperty("startingFile", filenames[i]));
 
       UMLDefaults defaults = UMLDefaults.getInstance();
-      defaults.initParams(projectName, projectVersion, username);
+      try {
+        defaults.initParams(projectName, projectVersion, username);
+      } catch (Exception e) {
+        logger.error(e);
+        System.exit(1);
+      } // end of try-catch
 //       defaults.initClassifications();
       defaults.initWithDB();
       defaults.setUsername(username);
