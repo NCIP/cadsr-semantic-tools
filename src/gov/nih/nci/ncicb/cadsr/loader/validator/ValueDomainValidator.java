@@ -69,6 +69,10 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
    * returns a list of Validation errors.
    */
   public ValidationItems validate() {
+
+    Boolean ignoreVD = (Boolean)UserSelections.getInstance().getProperty("ignore-vd");
+    if(ignoreVD == null)
+      ignoreVD = false;
     
     List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
     if(vds != null) {
@@ -83,164 +87,190 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
         evt.setMessage(" Validating " + vd.getLongName());
         evt.setStatus(count++);
         fireProgressEvent(evt);
-        // Search only by long Name
-        ValueDomain newVd = DomainObjectFactory.newValueDomain();
-        newVd.setLongName(vd.getLongName());
-
-        if(StringUtil.isEmpty(vd.getPreferredDefinition())) {
-          items.addItem
-            (new ValidationError
-             (PropertyAccessor.getProperty
-              ("vd.missing.definition", vd.getLongName()), vd));
-        }
-
-        if(StringUtil.isEmpty(vd.getVdType())) {
-          items.addItem
-            (new ValidationError
-             (PropertyAccessor.getProperty
-              ("vd.missing.vdtype", vd.getLongName()), vd));
-        } else if(!vd.getVdType().equals(ValueDomain.VD_TYPE_ENUMERATED) && !vd.getVdType().equals(ValueDomain.VD_TYPE_NON_ENUMERATED)) {
-          items.addItem
-            (new ValidationError
-             (PropertyAccessor.getProperty
-              ("vd.wrong.vdtype", vd.getLongName()), vd));
-        }
         
-        
-        
-        if(StringUtil.isEmpty(vd.getDataType())) {
-          items.addItem
-            (new ValidationError
-             (PropertyAccessor.getProperty
-              ("vd.missing.datatype", vd.getLongName()), vd));
-        } else {
-          Collection<String> datatypes = cadsrModule.getAllDatatypes();
-          if(!datatypes.contains(vd.getDataType()))
-            items.addItem
-            (new ValidationError
-             (PropertyAccessor.getProperty
-              ("vd.invalid.datatype", vd.getLongName()), vd));
-        }
-        
-        if(StringUtil.isEmpty(vd.getConceptualDomain().getPublicId())) {
-          items.addItem
-            (new ValidationError
-             (PropertyAccessor.getProperty
-              ("vd.missing.cdId", vd.getLongName()), vd));
-        }
-        if(vd.getConceptualDomain().getVersion() == null) {
-          items.addItem
-            (new ValidationError
-             (PropertyAccessor.getProperty
-              ("vd.missing.cdVersion", vd.getLongName()), vd));
-        }
-
-        if(StringUtil.isEmpty(vd.getRepresentation().getPublicId())) {
-          items.addItem
-            (new ValidationError
-             (PropertyAccessor.getProperty
-              ("vd.missing.repTermId", vd.getLongName()), vd));
-        }
-        if(vd.getRepresentation().getVersion() == null) {
-          items.addItem
-            (new ValidationError
-             (PropertyAccessor.getProperty
-              ("vd.missing.repTermVersion", vd.getLongName()), vd));
-        }
-        
-
-
-        if(vd.getConceptualDomain().getVersion() != null && 
-           vd.getConceptualDomain().getPublicId() != null) {
-          
-          Map<String, Object> queryFields = 
-            new HashMap<String, Object>();
-          queryFields.put(CadsrModule.PUBLIC_ID, vd.getConceptualDomain().getPublicId());
+        if(!StringUtil.isEmpty(vd.getPublicId()) && vd.getVersion() != null) {
           try {
-            queryFields.put(CadsrModule.VERSION, vd.getConceptualDomain().getVersion());
-            Collection<ConceptualDomain> cds = cadsrModule.findConceptualDomain(queryFields);
-            if(cds.size() != 1) {
-              items.addItem
-                (new ValidationError
-                 (PropertyAccessor.getProperty
-                  ("vd.cd.match.incorrect", vd.getLongName()), vd));
-            } else {
-              vd.setConceptualDomain(cds.iterator().next());
-            }
-          } catch (NumberFormatException e) {
-            items.addItem
-              (new ValidationError
-               (PropertyAccessor.getProperty
-                ("vd.missing.cdId", vd.getLongName()), vd));
-          } catch (Exception e){
-            logger.error("Cannot query cadsr for CD " + e);
-          } // end of try-catch
-        }
-
-        if(vd.getRepresentation().getVersion() != null && 
-           vd.getRepresentation().getPublicId() != null) {
-          
-          Map<String, Object> queryFields = 
-            new HashMap<String, Object>();
-          queryFields.put(CadsrModule.PUBLIC_ID, vd.getRepresentation().getPublicId());
-          try {
-            queryFields.put(CadsrModule.VERSION, vd.getRepresentation().getVersion());
-            Collection<Representation> repTerms = cadsrModule.findRepresentation(queryFields);
-            if(repTerms.size() != 1) {
-              items.addItem
-                (new ValidationError
-                 (PropertyAccessor.getProperty
-                  ("vd.repTerm.match.incorrect", vd.getLongName()), vd));
-            } else {
-              vd.setRepresentation(repTerms.iterator().next());
-            }
-          } catch (NumberFormatException e) {
-            items.addItem
-              (new ValidationError
-               (PropertyAccessor.getProperty
-                ("vd.missing.repVersionId", vd.getLongName()), vd));
-          } catch (Exception e){
-            logger.error("Cannot query cadsr for Representation " + e);
-          } 
-        }
-
-
-        Map<String, Object> queryFields = 
-          new HashMap<String, Object>();
-        queryFields.put(CadsrModule.LONG_NAME, vd.getLongName());
-        queryFields.put("context.name", UMLDefaults.getInstance().getContext().getName());
-
-        try {
-          Collection<ValueDomain> result =  cadsrModule.findValueDomain(queryFields);
-          
-          Boolean ignoreVD = (Boolean)UserSelections.getInstance().getProperty("ignore-vd");
-          if(ignoreVD == null)
-            ignoreVD = false;
-
-          if(result.size() > 0) {
-            // Check if VD in caDSR is the same by comparing it's permissible values
-            
-            ValueDomain cadsrVD = result.iterator().next();
-            List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(cadsrVD);
+            List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(vd);
             List<PermissibleValue> localPVs = vd.getPermissibleValues();
             
             if(!comparePVLists(cadsrPVs, localPVs)) {
               if(ignoreVD)
                 items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
-              else
+              else {
+                String[] options = PropertyAccessor.getProperty("local.vd.reuse.options").split("<-->");
+                
+
+                ValidationQuestion question = 
+                  new ValidationQuestion(
+                    PropertyAccessor.getProperty("local.vd.reuse.message"),
+                    vd,
+                    options);
                 items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
-            } else {
-              // same VD, update field in the localVD
-//               vd.setPermissibleValues(cadsrPVs);
-              vd.setPublicId(cadsrVD.getPublicId());
-              vd.setVersion(cadsrVD.getVersion());
+              }
             }
+          } catch (Exception e) {
+            logger.error(e);
+          } // end of try-catch
+        } else {
+          // Search only by long Name
+          ValueDomain newVd = DomainObjectFactory.newValueDomain();
+          newVd.setLongName(vd.getLongName());
+          
+          if(StringUtil.isEmpty(vd.getPreferredDefinition())) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.missing.definition", vd.getLongName()), vd));
           }
-        } catch (Exception e){
-          logger.error(e);
-        } // end of try-catch
+          
+          if(StringUtil.isEmpty(vd.getVdType())) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.missing.vdtype", vd.getLongName()), vd));
+          } else if(!vd.getVdType().equals(ValueDomain.VD_TYPE_ENUMERATED) && !vd.getVdType().equals(ValueDomain.VD_TYPE_NON_ENUMERATED)) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.wrong.vdtype", vd.getLongName()), vd));
+          }
+        
+        
+        
+          if(StringUtil.isEmpty(vd.getDataType())) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.missing.datatype", vd.getLongName()), vd));
+          } else {
+            Collection<String> datatypes = cadsrModule.getAllDatatypes();
+            if(!datatypes.contains(vd.getDataType()))
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.invalid.datatype", vd.getLongName()), vd));
+          }
+        
+          if(StringUtil.isEmpty(vd.getConceptualDomain().getPublicId())) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.missing.cdId", vd.getLongName()), vd));
+          }
+          if(vd.getConceptualDomain().getVersion() == null) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.missing.cdVersion", vd.getLongName()), vd));
+          }
+
+          if(StringUtil.isEmpty(vd.getRepresentation().getPublicId())) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.missing.repTermId", vd.getLongName()), vd));
+          }
+          if(vd.getRepresentation().getVersion() == null) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.missing.repTermVersion", vd.getLongName()), vd));
+          }
+        
+
+
+          if(vd.getConceptualDomain().getVersion() != null && 
+             vd.getConceptualDomain().getPublicId() != null) {
+          
+            Map<String, Object> queryFields = 
+              new HashMap<String, Object>();
+            queryFields.put(CadsrModule.PUBLIC_ID, vd.getConceptualDomain().getPublicId());
+            try {
+              queryFields.put(CadsrModule.VERSION, vd.getConceptualDomain().getVersion());
+              Collection<ConceptualDomain> cds = cadsrModule.findConceptualDomain(queryFields);
+              if(cds.size() != 1) {
+                items.addItem
+                  (new ValidationError
+                   (PropertyAccessor.getProperty
+                    ("vd.cd.match.incorrect", vd.getLongName()), vd));
+              } else {
+                vd.setConceptualDomain(cds.iterator().next());
+              }
+            } catch (NumberFormatException e) {
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.missing.cdId", vd.getLongName()), vd));
+            } catch (Exception e){
+              logger.error("Cannot query cadsr for CD " + e);
+            } // end of try-catch
+          }
+
+          if(vd.getRepresentation().getVersion() != null && 
+             vd.getRepresentation().getPublicId() != null) {
+          
+            Map<String, Object> queryFields = 
+              new HashMap<String, Object>();
+            queryFields.put(CadsrModule.PUBLIC_ID, vd.getRepresentation().getPublicId());
+            try {
+              queryFields.put(CadsrModule.VERSION, vd.getRepresentation().getVersion());
+              Collection<Representation> repTerms = cadsrModule.findRepresentation(queryFields);
+              if(repTerms.size() != 1) {
+                items.addItem
+                  (new ValidationError
+                   (PropertyAccessor.getProperty
+                    ("vd.repTerm.match.incorrect", vd.getLongName()), vd));
+              } else {
+                vd.setRepresentation(repTerms.iterator().next());
+              }
+            } catch (NumberFormatException e) {
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.missing.repVersionId", vd.getLongName()), vd));
+            } catch (Exception e){
+              logger.error("Cannot query cadsr for Representation " + e);
+            } 
+          }
+
+
+          Map<String, Object> queryFields = 
+            new HashMap<String, Object>();
+          queryFields.put(CadsrModule.LONG_NAME, vd.getLongName());
+          queryFields.put("context.name", UMLDefaults.getInstance().getContext().getName());
+
+          try {
+            Collection<ValueDomain> result =  cadsrModule.findValueDomain(queryFields);
+          
+//             Boolean ignoreVD = (Boolean)UserSelections.getInstance().getProperty("ignore-vd");
+//             if(ignoreVD == null)
+//               ignoreVD = false;
+
+            if(result.size() > 0) {
+              // Check if VD in caDSR is the same by comparing it's permissible values
+            
+              ValueDomain cadsrVD = result.iterator().next();
+              List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(cadsrVD);
+              List<PermissibleValue> localPVs = vd.getPermissibleValues();
+            
+              if(!comparePVLists(cadsrPVs, localPVs)) {
+                if(ignoreVD)
+                  items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
+                else
+                  items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
+              } else {
+                // same VD, update field in the localVD
+                //               vd.setPermissibleValues(cadsrPVs);
+                vd.setPublicId(cadsrVD.getPublicId());
+                vd.setVersion(cadsrVD.getVersion());
+              }
+            }
+          } catch (Exception e){
+            logger.error(e);
+          } // end of try-catch
+        }
       }    
-    
+        
     List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());
     boolean match = false;
     
