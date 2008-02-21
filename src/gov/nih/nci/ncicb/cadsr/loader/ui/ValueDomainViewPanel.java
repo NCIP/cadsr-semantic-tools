@@ -200,8 +200,11 @@ public class ValueDomainViewPanel extends JPanel
 
     UIUtil.insertInBag(mainPanel, vdRepIdTitleLabel, 0, 7);
     UIUtil.insertInBag(mainPanel, vdCDRepPanel, 1, 7);
-    
-    this.add(mainPanel, BorderLayout.CENTER);
+
+    JScrollPane scrollPane = new JScrollPane(mainPanel);
+    scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+
+    this.add(scrollPane, BorderLayout.CENTER);
     
     JPanel newPanel = new JPanel();
     newPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); 
