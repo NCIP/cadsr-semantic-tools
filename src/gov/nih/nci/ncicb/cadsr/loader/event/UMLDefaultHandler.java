@@ -109,39 +109,88 @@ public class UMLDefaultHandler
 
     ValueDomain vd = DomainObjectFactory.newValueDomain();
 
-    vd.setLongName(event.getName());
-    vd.setPreferredDefinition(event.getDescription());
-    vd.setVdType(event.getType());
-    vd.setDataType(event.getDatatype());
 
-    ConceptualDomain cd = DomainObjectFactory.newConceptualDomain();
-    cd.setPublicId(event.getCdId());
-    cd.setVersion(event.getCdVersion());
+    if(!StringUtil.isEmpty(event.getVdId()) && event.getVdVersion() != null) {
+      ValueDomain existingVd = null;
+      Map<String, Object> queryFields =
+        new HashMap<String, Object>();
+      queryFields.put(CadsrModule.PUBLIC_ID, event.getVdId());
+      queryFields.put(CadsrModule.VERSION, event.getVdVersion());
+      
+      List<ValueDomain> result = null;
 
-    // un comment the following to lookup CD. 
-//     Map<String, Object> queryFields = 
-//         new HashMap<String, Object>();
-//     queryFields.put(CadsrModule.PUBLIC_ID, event.getPersistenceId());
-//     queryFields.put(CadsrModule.VERSION, event.getPersistenceVersion());
-//     List<ConceptualDomain> result = null;
+      try {
+        result =  new ArrayList<ValueDomain>(cadsrModule.findValueDomain(queryFields));
+      } catch (Exception e){
+        logger.error("Could not query cadsr module ", e);
+      } // end of try-catch
+      
+      if(result.size() == 0) {
+//         ChangeTracker changeTracker = ChangeTracker.getInstance();
+
+        ValidationError item = new ValidationError
+          (PropertyAccessor.getProperty("local.vd.doesnt.exist", event.getName(),
+                                        event.getVdId() + "v" + event.getVdVersion()), vd);
+
+        ValidationItems.getInstance()
+          .addItem(item);
+        
+        vd.setPublicId(null);
+        vd.setVersion(null);
+//         changeTracker.put
+//           (className + "." + attributeName, 
+//            true);
+      } else {
+        existingVd = result.get(0);
+        vd.setLongName(existingVd.getLongName());
+        vd.setPreferredDefinition(existingVd.getPreferredDefinition());
+        vd.setVdType(existingVd.getVdType());
+        vd.setDataType(existingVd.getDataType());
+
+        vd.setConceptualDomain(existingVd.getConceptualDomain());
+        vd.setRepresentation(existingVd.getRepresentation());
+
+        vd.setConceptDerivationRule(existingVd.getConceptDerivationRule());
+      }
+    } else {
+      vd.setLongName(event.getName());
+      vd.setPreferredDefinition(event.getDescription());
+      vd.setVdType(event.getType());
+      vd.setDataType(event.getDatatype());
+
+      ConceptualDomain cd = DomainObjectFactory.newConceptualDomain();
+      cd.setPublicId(event.getCdId());
+      cd.setVersion(event.getCdVersion());
+      
+      // un comment the following to lookup CD. 
+      //     Map<String, Object> queryFields = 
+      //         new HashMap<String, Object>();
+      //     queryFields.put(CadsrModule.PUBLIC_ID, event.getPersistenceId());
+      //     queryFields.put(CadsrModule.VERSION, event.getPersistenceVersion());
+      //     List<ConceptualDomain> result = null;
+      
+      //     try {
+      //       result =  new ArrayList<ConceptualDomain>(cadsrModule.findConceptualDomain(queryFields));
+      //     } catch (Exception e){
+      //       logger.error("Could not query cadsr module ", e);
+      //     } // end of try-catch
+      
+      //     if(result.size() > 0) {
+      //       cd = result.get(0);
+      //     }
+      
+      vd.setConceptualDomain(cd);
+
+      Representation repTerm = DomainObjectFactory.newRepresentation();
+      repTerm.setPublicId(event.getRepTermId());
+      repTerm.setVersion(event.getRepTermVersion());
+      vd.setRepresentation(repTerm);
+
+      //     if(concepts.size() > 0)
+      vd.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, false));
+
+    }      
     
-//     try {
-//       result =  new ArrayList<ConceptualDomain>(cadsrModule.findConceptualDomain(queryFields));
-//     } catch (Exception e){
-//       logger.error("Could not query cadsr module ", e);
-//     } // end of try-catch
-    
-//     if(result.size() > 0) {
-//       cd = result.get(0);
-//     }
-
-    vd.setConceptualDomain(cd);
-
-    Representation repTerm = DomainObjectFactory.newRepresentation();
-    repTerm.setPublicId(event.getRepTermId());
-    repTerm.setVersion(event.getRepTermVersion());
-    vd.setRepresentation(repTerm);
-
     // create CSI for package (since 3.2)
     ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
     String pName = event.getPackageName();
@@ -158,10 +207,6 @@ public class UMLDefaultHandler
     List<AdminComponentClassSchemeClassSchemeItem> l = new ArrayList<AdminComponentClassSchemeClassSchemeItem>();
     l.add(acCsCsi);
     vd.setAcCsCsis(l);
-
-    
-//     if(concepts.size() > 0)
-    vd.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(concepts, false));
 
     elements.addElement(vd);
     reviewTracker.put(event.getName(), event.isReviewed());
