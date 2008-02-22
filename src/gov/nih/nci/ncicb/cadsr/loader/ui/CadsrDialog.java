@@ -1,14 +1,12 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.cadsr.freestylesearch.util.SearchResults;
-import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
-import gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme;
-import gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain;
-import gov.nih.nci.ncicb.cadsr.domain.Representation;
-import gov.nih.nci.ncicb.cadsr.domain.DataElement;
-import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
-import gov.nih.nci.ncicb.cadsr.domain.Property;
-import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
+import gov.nih.nci.ncicb.cadsr.domain.*;
+
+// Bad import. Need to break this:
+import gov.nih.nci.ncicb.cadsr.dao.EagerConstants;
+
+
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
@@ -464,7 +462,11 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
           }
           break;
         case MODE_CS:
-          for(ClassificationScheme cs : cadsrModule.findClassificationScheme(queryFields))
+          List<String> eager = new ArrayList<String>();
+          eager.add(EagerConstants.CS_CSI);
+          eager.add(EagerConstants.CS_CSI + ".csi");
+    
+          for(ClassificationScheme cs : cadsrModule.findClassificationScheme(queryFields, eager))
           resultSet.add(new SearchResultWrapper(cs));       
           break;
         case MODE_CD:
