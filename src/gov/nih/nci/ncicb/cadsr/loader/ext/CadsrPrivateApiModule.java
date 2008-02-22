@@ -44,10 +44,13 @@ public class CadsrPrivateApiModule implements CadsrModule
     ClassificationScheme cs = DomainObjectFactory.newClassificationScheme();
     buildExample(cs, queryFields);
 
-    if(eager == null)
-      return DAOAccessor.getClassificationSchemeDAO().find(cs);
-    else
-      return DAOAccessor.getClassificationSchemeDAO().find(cs, eager);
+    // look at all WF status
+    cs.setWorkflowStatus(AdminComponent.WF_STATUS_ALL);
+
+    // set to something else than YES. Should better better solution for this
+    cs.setLatestVersionIndicator("..");
+
+    return new HashSet(DAOAccessor.getClassificationSchemeDAO().find(cs, eager));
 
   }
 

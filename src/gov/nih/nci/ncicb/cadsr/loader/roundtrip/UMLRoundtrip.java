@@ -94,6 +94,7 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
 
   public void start() throws RoundtripException {
     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
+    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
 
     ProgressEvent pEvt = new ProgressEvent();
     pEvt.setGoal(des.size() + 2);
@@ -124,6 +125,7 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
 
 //       String className = oc.getLongName();
       String className = LookupUtil.lookupFullName(oc);
+
       int ind = className.lastIndexOf(".");
       if(ind < 0)
         continue;
@@ -161,6 +163,10 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
       }
     }
 
+    for(ValueDomain vd : vds) {
+
+    }
+
     // Do the classes that don't have an attribute
     // Next Version
 //     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
@@ -177,7 +183,7 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
     for(ClassSchemeClassSchemeItem csCsi : csCsis) {
       try {
         if(csCsi.getCsi().getName().equals(packageName)
-           || csCsi.getCsi().getComments().equals(packageName)
+           || (csCsi.getCsi().getComments() != null && csCsi.getCsi().getComments().equals(packageName))
            )
           packageCsCsi = csCsi;
       } catch (NullPointerException e){
