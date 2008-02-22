@@ -19,10 +19,8 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.roundtrip;
 
-import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
-import gov.nih.nci.ncicb.cadsr.spring.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
@@ -177,7 +175,7 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
     for(ClassSchemeClassSchemeItem csCsi : csCsis) {
       try {
         if(csCsi.getCsi().getName().equals(packageName)
-           || csCsi.getCsi().getComments().equals(packageName)
+           || (csCsi.getCsi().getComments() != null && csCsi.getCsi().getComments().equals(packageName))
            )
           packageCsCsi = csCsi;
       } catch (NullPointerException e){
