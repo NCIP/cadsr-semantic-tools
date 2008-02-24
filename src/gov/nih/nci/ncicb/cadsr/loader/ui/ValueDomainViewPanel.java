@@ -154,7 +154,8 @@ public class ValueDomainViewPanel extends JPanel
             ConceptualDomain cd = (ConceptualDomain)cadsrCDDialog.getAdminComponent();
             if(cd == null) return;
             tempVD.setConceptualDomain(cd);
-            initValues();
+            //initValues();
+            setVdCdSearchedValues();
             firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
           }});
     
@@ -165,7 +166,8 @@ public class ValueDomainViewPanel extends JPanel
              Representation rep = (Representation)cadsrREPDialog.getAdminComponent();
              if(rep == null) return;
              tempVD.setRepresentation(rep);
-             initValues();
+             //initValues();
+             setRepSearchedValues();
              firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
            }});
     vdCdLongNameValueJLabel = new JLabel();
@@ -267,6 +269,22 @@ public class ValueDomainViewPanel extends JPanel
     vdTypeNRadioButton.addItemListener(this);
     vdDatatypeValueCombobox.addItemListener(this);
 
+  }
+  
+  private void setVdCdSearchedValues(){
+      vdCDPublicIdJLabel.setText(tempVD.getConceptualDomain().getPublicId() +
+        " / " + tempVD.getConceptualDomain().getVersion());
+
+      if(tempVD.getConceptualDomain().getLongName() != null
+          && !tempVD.getConceptualDomain().getLongName().equals(""))
+        vdCdLongNameValueJLabel.setText(tempVD.getConceptualDomain().getLongName());
+      else
+        vdCdLongNameValueJLabel.setText("Unable to lookup CD Long Name");
+  }
+  
+  private void setRepSearchedValues(){
+      vdRepIdValueJLabel.setText(tempVD.getRepresentation().getPublicId() +
+        " / " + tempVD.getRepresentation().getVersion());
   }
   
   public static void main(String args[]) 
