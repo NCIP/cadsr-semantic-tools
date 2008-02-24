@@ -4,13 +4,19 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
   <appender name="debugFile" class="org.apache.log4j.FileAppender"> 
     <param name="File" value="messages.log"/> 
+	<param name="Append" value="false"/> 
     <layout class="org.apache.log4j.PatternLayout"> 
       <param name="ConversionPattern" value="%m%n"/> 
     </layout> 
+	<filter class="org.apache.log4j.varia.LevelRangeFilter">
+		<param name="LevelMin" value="info" />
+		<param name="LevelMax" value="fatal" />
+	</filter>
   </appender> 
 
   <appender name="errorFile" class="org.apache.log4j.FileAppender"> 
     <param name="File" value="error.log"/> 
+	<param name="Append" value="false"/> 
     <layout class="org.apache.log4j.PatternLayout"> 
       <param name="ConversionPattern" value="%m%n"/> 
     </layout> 
@@ -52,19 +58,19 @@
 	</layout>
   </appender-->
   <logger name="org.appfuse">
-	<level value="DEBUG"/>
+	<level value="ERROR"/>
   </logger>
   <logger name="org.appfuse.webapp.listener.UserCounterListener">
-	<level value="WARN"/>
+	<level value="ERROR"/>
   </logger>
   <logger name="org.appfuse.webapp.filter.GZIPFilter">
-	<level value="DEBUG"/>
+	<level value="ERROR"/>
   </logger>
   <logger name="org.apache.commons">
 	<level value="ERROR"/>
   </logger>
   <logger name="org.apache.struts">
-	<level value="WARN"/>
+	<level value="ERROR"/>
   </logger>
   <logger name="net.sf.navigator">
 	<level value="ERROR"/>
@@ -76,16 +82,16 @@
 	<level value="ERROR"/>
   </logger>
   <logger name="org.apache.cactus">
-	<level value="WARN"/>
+	<level value="ERROR"/>
   </logger>
   <logger name="org.apache.commons.httpclient">
 	<level value="ERROR"/>
   </logger>
   <logger name="httpclient">
-	<level value="WARN"/>
+	<level value="ERROR"/>
   </logger>
   <logger name="com.canoo.webtest">
-	<level value="WARN"/>
+	<level value="ERROR"/>
   </logger>
   <logger name="net.sf.hibernate.ps.PreparedStatementCache">
 	<level value="ERROR"/>
