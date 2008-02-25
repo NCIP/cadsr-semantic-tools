@@ -43,9 +43,14 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
           else {
             listed.put(oc.getPublicId(), oc);
 
-            // we also need to add the concept lists so it can be validated against OC that are mapped to concepts
             List<Concept> concepts = cadsrModule.getConcepts(oc);
-            prefNameList.put(ConceptUtil.preferredNameFromConcepts(concepts), oc);
+            String prefname = ConceptUtil.preferredNameFromConcepts(concepts);
+
+            if(prefNameList.containsKey(prefname))
+              items.addItem(new ValidationError
+                            (PropertyAccessor.getProperty
+                             ("class.same.mapping", oc.getLongName(),(prefNameList.get(prefname)).getLongName()),oc));
+
           }
         }
         else if(!StringUtil.isEmpty(oc.getPreferredName())) {
