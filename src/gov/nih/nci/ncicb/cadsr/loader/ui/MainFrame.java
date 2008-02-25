@@ -617,8 +617,8 @@ public class MainFrame extends JFrame
     Component c = viewTabbedPane.getComponentAt(index);
     if(c.equals(associationViewPanel))
       associationViewPanel = null;
-    if(c.equals(vdViewPanel))
-      vdViewPanel = null;
+//     if(c.equals(vdViewPanel))
+//       vdViewPanel = null;
     if(c.equals(packageViewPanel))
       packageViewPanel = null;
     viewPanels.remove(c.getName());
