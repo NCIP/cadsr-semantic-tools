@@ -111,6 +111,14 @@ public class AsyncConceptQuery implements Callable<String> {
         cache.put(word.toLowerCase(), result);
         //for(Concept c : result)
         //  System.out.println("Concept found: "  + c.getLongName());
+
+        for(Concept con : result) {
+          if(StringUtil.isEmpty(con.getPreferredDefinition()))
+            con.setPreferredDefinition(PropertyAccessor.getProperty("default.evs.definition"));
+          if(StringUtil.isEmpty(con.getDefinitionSource()))
+            con.setDefinitionSource(PropertyAccessor.getProperty("default.evs.definition.source"));
+        }
+
         return result;
     }
 }
