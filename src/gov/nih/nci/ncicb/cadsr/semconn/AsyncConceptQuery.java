@@ -5,6 +5,9 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
 import gov.nih.nci.ncicb.cadsr.loader.util.ConceptUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -111,6 +114,15 @@ public class AsyncConceptQuery implements Callable<String> {
         cache.put(word.toLowerCase(), result);
         //for(Concept c : result)
         //  System.out.println("Concept found: "  + c.getLongName());
+
+        // if concept definition or source is empty, use default.
+        for(Concept con : result) {
+          if(StringUtil.isEmpty(con.getPreferredDefinition()))
+            con.setPreferredDefinition(PropertyAccessor.getProperty("default.evs.definition"));
+          if(StringUtil.isEmpty(con.getDefinitionSource()))
+            con.setDefinitionSource(PropertyAccessor.getProperty("default.evs.definition.source"));
+        }
+
         return result;
     }
 }
