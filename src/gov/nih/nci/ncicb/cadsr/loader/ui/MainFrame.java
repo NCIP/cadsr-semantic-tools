@@ -104,7 +104,10 @@ public class MainFrame extends JFrame
 //   private Map<String, UMLElementViewPanel> viewPanels = new HashMap();
   private Map<String, NodeViewPanel> viewPanels = new HashMap();
   private AssociationViewPanel associationViewPanel = null;
-  private ValueDomainViewPanel vdViewPanel = null;
+//   private ValueDomainViewPanel vdViewPanel = null;
+
+  private LVDPanel lvdPanel = null;
+
   private PackageViewPanel packageViewPanel = null;
 
   private ReviewTracker ownerTracker, curatorTracker;
@@ -543,12 +546,20 @@ public class MainFrame extends JFrame
 //      }
 //      else
       
-      viewTabbedPane.remove(vdViewPanel);
-      viewTabbedPane.addTab("ValueDomain", vdViewPanel);
-      vdViewPanel.update((ValueDomain)node.getUserObject(), node);
-      infoLabel.setText("ValueDomain");      
+//       viewTabbedPane.remove(vdViewPanel);
+//       viewTabbedPane.addTab("ValueDomain", vdViewPanel);
+//       vdViewPanel.update((ValueDomain)node.getUserObject(), node);
+//       infoLabel.setText("ValueDomain");      
 
-      viewTabbedPane.setSelectedComponent(vdViewPanel);
+//       viewTabbedPane.setSelectedComponent(vdViewPanel);
+
+         viewTabbedPane.remove(lvdPanel);
+         viewTabbedPane.addTab("ValueDomain", lvdPanel);
+         lvdPanel.update((ValueDomain)node.getUserObject(), node);
+         infoLabel.setText("ValueDomain");      
+
+//    
+
     } else if(event.getType() == ViewChangeEvent.VIEW_PACKAGE) {
       UMLNode node = (UMLNode)event.getViewObject();
       
@@ -617,8 +628,11 @@ public class MainFrame extends JFrame
     Component c = viewTabbedPane.getComponentAt(index);
     if(c.equals(associationViewPanel))
       associationViewPanel = null;
-    if(c.equals(vdViewPanel))
-      vdViewPanel = null;
+//     if(c.equals(vdViewPanel))
+//       vdViewPanel = null;
+//     if(c.equals(lvdPanel))
+//       lvdPanel = null;
+    
     if(c.equals(packageViewPanel))
       packageViewPanel = null;
     viewPanels.remove(c.getName());
@@ -633,11 +647,19 @@ public class MainFrame extends JFrame
   public void setLogTab(JPanel panel) {
     this.logPanel = panel;
   }
- 
-  public void setValueDomainViewPanel(ValueDomainViewPanel vdViewPanel) {
-    this.vdViewPanel = vdViewPanel;
-    vdViewPanel.addElementChangeListener(ChangeTracker.getInstance());
-    vdViewPanel.addPropertyChangeListener(this);
+
+  public void setLvdPanel(LVDPanel lvdPanel) {
+    this.lvdPanel = lvdPanel;
+
+    lvdPanel.addElementChangeListener(ChangeTracker.getInstance());
+    lvdPanel.addPropertyChangeListener(this);
+
   }
+ 
+//   public void setValueDomainViewPanel(ValueDomainViewPanel vdViewPanel) {
+//     this.vdViewPanel = vdViewPanel;
+//     vdViewPanel.addElementChangeListener(ChangeTracker.getInstance());
+//     vdViewPanel.addPropertyChangeListener(this);
+//   }
  
 }
