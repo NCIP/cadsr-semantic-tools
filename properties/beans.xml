@@ -206,8 +206,9 @@
 
   <bean name="publicCadsrModule"
     class="gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule" 
-    singleton="true">
-    <property name="serviceURL"> <value>--Public API URL Here--</value></property>
+    singleton="true"
+    >
+    <property name="serviceURL"><value>--Public API URL Here--</value></property>
   </bean>
 
   <bean name="privateCadsrModule"
@@ -350,15 +351,24 @@
     >
   </bean>
   
+  <bean name="lvdPanel"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.LVDPanel">
+    <property name="vdViewPanel">
+      <ref bean="vdViewPanel"/>
+    </property>
+  </bean>
+
   <bean name="vdViewPanel"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.ValueDomainViewPanel">
-	<property name="cadsrCDDialog">
-		<ref bean="cadsrCDDialog"/>
-	</property>
-	<property name="cadsrREPDialog">
-		<ref bean="cadsrREPDialog"/>
-	</property>
-</bean>  
+    <property name="cadsrCDDialog">
+      <ref bean="cadsrCDDialog"/>
+    </property>
+    <property name="cadsrREPDialog">
+      <ref bean="cadsrREPDialog"/>
+    </property>
+  </bean>  
+
+
   <bean name="mainFrame"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.MainFrame">
     <property name="logTab">
@@ -367,8 +377,8 @@
     <property name="xmiWriter">
       <ref bean="xmiInOutWriter"/>
     </property>
-    <property name="valueDomainViewPanel">
-      <ref bean="vdViewPanel"/>
+    <property name="lvdPanel">
+      <ref bean="lvdPanel"/>
     </property>
   </bean>
 
