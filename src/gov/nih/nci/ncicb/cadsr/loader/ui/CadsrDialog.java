@@ -19,6 +19,10 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 
+// bad bad import. Fix me!
+import gov.nih.nci.ncicb.cadsr.dao.EagerConstants;
+
+
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 import java.awt.BorderLayout;
@@ -464,6 +468,10 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
           }
           break;
         case MODE_CS:
+          List<String> eager = new ArrayList<String>();
+          eager.add(EagerConstants.CS_CSI);
+          eager.add(EagerConstants.CS_CSI + ".csi");
+
           for(ClassificationScheme cs : cadsrModule.findClassificationScheme(queryFields))
           resultSet.add(new SearchResultWrapper(cs));       
           break;
