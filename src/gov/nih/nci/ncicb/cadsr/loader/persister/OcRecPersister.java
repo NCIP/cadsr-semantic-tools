@@ -51,7 +51,7 @@ public class OcRecPersister extends UMLPersister {
 	ocr = (ObjectClassRelationship) it.next();
 	ocr.setContext(defaults.getContext());
 	ocr.setAudit(defaults.getAudit());
-	ocr.setVersion(defaults.getVersion());
+	ocr.setVersion(1.0f);
 	ocr.setWorkflowStatus(defaults.getWorkflowStatus());
 
         String sourcePackage = getPackageName(ocr.getSource());
