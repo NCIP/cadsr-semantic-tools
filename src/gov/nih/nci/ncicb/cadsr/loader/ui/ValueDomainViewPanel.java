@@ -21,6 +21,8 @@ import javax.swing.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.ConventionUtil;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -154,7 +156,8 @@ public class ValueDomainViewPanel extends JPanel
             ConceptualDomain cd = (ConceptualDomain)cadsrCDDialog.getAdminComponent();
             if(cd == null) return;
             tempVD.setConceptualDomain(cd);
-            initValues();
+            //initValues();
+            setVdCdSearchedValues();
             firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
           }});
     
@@ -165,7 +168,8 @@ public class ValueDomainViewPanel extends JPanel
              Representation rep = (Representation)cadsrREPDialog.getAdminComponent();
              if(rep == null) return;
              tempVD.setRepresentation(rep);
-             initValues();
+             //initValues();
+             setRepSearchedValues();
              firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
            }});
     vdCdLongNameValueJLabel = new JLabel();
@@ -200,7 +204,7 @@ public class ValueDomainViewPanel extends JPanel
 
     UIUtil.insertInBag(mainPanel, vdRepIdTitleLabel, 0, 7);
     UIUtil.insertInBag(mainPanel, vdCDRepPanel, 1, 7);
-    
+
     JScrollPane scrollPane = new JScrollPane(mainPanel);
     scrollPane.getVerticalScrollBar().setUnitIncrement(30);
 
@@ -249,8 +253,7 @@ public class ValueDomainViewPanel extends JPanel
           vdTypeNRadioButton.setSelected(false);
         }
 
-    vdCDPublicIdJLabel.setText(tempVD.getConceptualDomain().getPublicId() +
-      " / " + tempVD.getConceptualDomain().getVersion());
+    vdCDPublicIdJLabel.setText(ConventionUtil.publicIdVersion(tempVD.getConceptualDomain()));
 
     if(tempVD.getConceptualDomain().getLongName() != null
         && !tempVD.getConceptualDomain().getLongName().equals(""))
@@ -258,8 +261,7 @@ public class ValueDomainViewPanel extends JPanel
     else
       vdCdLongNameValueJLabel.setText("Unable to lookup CD Long Name");
 
-    vdRepIdValueJLabel.setText(tempVD.getRepresentation().getPublicId() +
-      " / " + tempVD.getRepresentation().getVersion());
+    vdRepIdValueJLabel.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
 
     firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
     vdPrefDefValueTextField.getDocument().addDocumentListener(this);
@@ -267,6 +269,20 @@ public class ValueDomainViewPanel extends JPanel
     vdTypeNRadioButton.addItemListener(this);
     vdDatatypeValueCombobox.addItemListener(this);
 
+  }
+  
+  private void setVdCdSearchedValues(){
+      vdCDPublicIdJLabel.setText(ConventionUtil.publicIdVersion(tempVD.getConceptualDomain()));
+
+      if(tempVD.getConceptualDomain().getLongName() != null
+          && !tempVD.getConceptualDomain().getLongName().equals(""))
+        vdCdLongNameValueJLabel.setText(tempVD.getConceptualDomain().getLongName());
+      else
+        vdCdLongNameValueJLabel.setText("Unable to lookup CD Long Name");
+  }
+  
+  private void setRepSearchedValues(){
+      vdRepIdValueJLabel.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
   }
   
   public static void main(String args[]) 
@@ -281,30 +297,11 @@ public class ValueDomainViewPanel extends JPanel
 
     public void applyPressed() {   
         
-        conceptualDomain = tempVD.getConceptualDomain();
-        String tmpCDPublicId = vdCDPublicIdJLabel.getText().substring(0, (vdCDPublicIdJLabel.getText().indexOf(" / ")));
-        String tmpCDVersion = vdCDPublicIdJLabel.getText().substring(vdCDPublicIdJLabel.getText().indexOf(" / ")+3, vdCDPublicIdJLabel.getText().length());
-        String tmpCDLongName = vdCdLongNameValueJLabel.getText();
-        if(!tmpCDPublicId.equals("null"))
-            conceptualDomain.setPublicId(tmpCDPublicId);
-        if(!tmpCDVersion.equals("null"))
-            conceptualDomain.setVersion(new Float(tmpCDVersion));
-        if(!tmpCDVersion.equals("null"))       
-            conceptualDomain.setLongName(tmpCDLongName);
-
-        representation = tempVD.getRepresentation();
-        String tmpRepPublicId = String.valueOf(vdRepIdValueJLabel.getText().substring(0, (vdRepIdValueJLabel.getText().indexOf(" / "))));
-        String tmpRepVersion = String.valueOf(vdRepIdValueJLabel.getText().substring((vdRepIdValueJLabel.getText().indexOf(" / ")+3), vdRepIdValueJLabel.getText().length()));
-        if(!tmpRepPublicId.equals("null"))
-            representation.setPublicId(tmpRepPublicId);
-        if(!tmpRepVersion.equals("null"))
-            representation.setVersion(new Float(tmpRepVersion));
-        
-        vd.setConceptualDomain(conceptualDomain);
-        vd.setRepresentation(representation);
+        vd.setConceptualDomain(tempVD.getConceptualDomain());
+        vd.setRepresentation(tempVD.getRepresentation());
         if(vdDatatypeValueCombobox.getSelectedIndex() != 0){
             vd.setDataType(String.valueOf(vdDatatypeValueCombobox.getSelectedItem()));}
-        if(vdPrefDefValueTextField.getText() != null && !vdPrefDefValueTextField.getText().equals("null") && vdPrefDefValueTextField.getText().length() > 0)
+        if(vdPrefDefValueTextField.getText() != null || !vdPrefDefValueTextField.getText().equals("null") || vdPrefDefValueTextField.getText().length() > 0)
             vd.setPreferredDefinition(vdPrefDefValueTextField.getText());
         if(vdTypeERadioButton.isSelected())
             vd.setVdType("E");
@@ -312,7 +309,6 @@ public class ValueDomainViewPanel extends JPanel
             vd.setVdType("N");
         vdTypeERadioButton.addItemListener(this);
         vdTypeNRadioButton.addItemListener(this);
-                
         
         firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
         fireElementChangeEvent(new ElementChangeEvent(umlNode));
