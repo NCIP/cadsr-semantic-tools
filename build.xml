@@ -224,7 +224,11 @@
     <!--copy file="${config.dir}/log4j-loader.properties"
       tofile="${class.dir}/log4j.properties" overwrite="true"
       >
-    </copy -->
+    </copy-->
+    <copy file="${config.dir}/log4j-loader.xml"
+      tofile="${class.dir}/log4j.xml" overwrite="true"
+      >
+    </copy>
     <java classname="gov.nih.nci.ncicb.cadsr.loader.UMLLoader" classpathref="proj.class.path" 
       fork="yes" 
       maxmemory="512m"
