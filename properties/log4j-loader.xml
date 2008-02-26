@@ -10,6 +10,18 @@
     </layout> 
   </appender> 
 
+  <appender name="errorFile" class="org.apache.log4j.FileAppender"> 
+    <param name="File" value="error.log"/> 
+	<param name="Append" value="false"/> 
+    <layout class="org.apache.log4j.PatternLayout"> 
+      <param name="ConversionPattern" value="%p %C{1}.%M(%L) | %m%n"/> 
+    </layout> 
+	<filter class="org.apache.log4j.varia.LevelRangeFilter">
+		<param name="LevelMin" value="error" />
+		<param name="LevelMax" value="fatal" />
+	</filter>
+  </appender> 
+
   <logger name="org.apache.commons">
 	<level value="ERROR"/>
     <appender-ref ref="console" /> 
@@ -46,5 +58,6 @@
   <root> 
     <priority value ="debug" /> 
     <appender-ref ref="console" /> 
+    <appender-ref ref="errorFile" /> 
   </root>
 </log4j:configuration>
