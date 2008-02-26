@@ -472,7 +472,7 @@ public class UMLDefaultHandler
       if(existingDe.getDataElementConcept().getObjectClass() == null
          || existingDe.getDataElementConcept().getProperty() == null) {
 
-        ValidationWarning item = new ValidationWarning(PropertyAccessor.getProperty("de.invalid"),de); 
+        ValidationError item = new ValidationError(PropertyAccessor.getProperty("de.invalid"),de); 
         ValidationItems.getInstance()
           .addItem(item);
         return;
