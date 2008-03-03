@@ -485,6 +485,15 @@ public class XMIParser2 implements Parser {
 
     setConceptInfo(clazz, event, TV_TYPE_CLASS);
 
+    if(className.length() != className.trim().length()) {
+        ValidationItems.getInstance()
+          .addItem(new ValidationFatal
+                   (PropertyAccessor
+                    .getProperty
+                    ("class.Name.spaces" , event.getName()),
+                    null));
+        return;
+    }
     logger.debug("CLASS: " + className);
     logger.debug("CLASS PACKAGE: " + LookupUtil.getPackageName(clazz.getPackage()));
 
