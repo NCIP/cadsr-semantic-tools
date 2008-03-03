@@ -110,6 +110,18 @@ public class DefinitionLengthValidator implements Validator {
         }
       }
 
+      if(des != null)
+        for(DataElement de : des) {
+            List<AlternateName> ans = de.getAlternateNames();
+                for(AlternateName an : ans)
+                    if(an.getName().length() > 255)
+                        items.addItem(new ValidationError(PropertyAccessor.getProperty("alt.name.too.long", an.getName()), an));
+            List<Definition> def = de.getDefinitions();
+                for(Definition dfn : def)
+                    if(dfn.getDefinition().length() > 2000)
+                        items.addItem(new ValidationError(PropertyAccessor.getProperty("alt.definition.too.long", dfn.getDefinition()), dfn));
+        }
+
     return items;
 
   }

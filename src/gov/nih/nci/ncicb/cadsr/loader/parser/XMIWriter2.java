@@ -269,8 +269,8 @@ public class XMIWriter2 implements ElementWriter {
               !String.valueOf(vd.getPreferredDefinition()).equals(null)  && 
               (vd.getPreferredDefinition().length() != 0))
             clazz.addTaggedValue(XMIParser2.TV_VD_DEFINITION, vd.getPreferredDefinition());
-
-		  clazz.removeTaggedValue(XMIParser2.TV_VD_DATATYPE);
+            
+          clazz.removeTaggedValue(XMIParser2.TV_VD_DATATYPE); 
           if(!vd.getDataType().equals("null"))
             clazz.addTaggedValue(XMIParser2.TV_VD_DATATYPE, vd.getDataType());
           
