@@ -150,8 +150,8 @@ public class ModeSelectionPanel extends JPanel {
     group.add(annotateOption);
     group.add(curateOption);
     group.add(reviewOption);
-    group.add(gmeDefaultsOption);
-    group.add(gmeCleanupOption);
+//     group.add(gmeDefaultsOption);
+//     group.add(gmeCleanupOption);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new GridLayout(0, 1));
