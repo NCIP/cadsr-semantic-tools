@@ -490,7 +490,7 @@ public class XMIParser2 implements Parser {
           .addItem(new ValidationFatal
                    (PropertyAccessor
                     .getProperty
-                    ("class.Name.spaces" , event.getName()),
+                    ("class.name.spaces" , event.getName()),
                     null));
         return;
     }
