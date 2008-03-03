@@ -62,6 +62,8 @@ public class UMLLoaderGUI
   private Appender appender;
 
   private List<RunModeListener> runModeListeners = new ArrayList<RunModeListener>();
+
+  private UserPreferences prefs;
   
   public UMLLoaderGUI()
   {
@@ -196,7 +198,7 @@ public class UMLLoaderGUI
   }
 
   public void setUserPreferences(UserPreferences preferences) {
-
+    prefs = preferences;
   }
   
   private void putToCenter(Component comp) {
