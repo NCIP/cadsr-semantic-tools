@@ -264,52 +264,48 @@ public class XMIWriter2 implements ElementWriter {
       boolean vdChanged = changeTracker.get(vd.getLongName());
       
       if(vdChanged){
-          clazz.removeTaggedValue(XMIParser2.TV_VD_DEFINITION);
-          clazz.removeTaggedValue(XMIParser2.TV_VD_DATATYPE); 
-          clazz.removeTaggedValue(XMIParser2.TV_VD_TYPE);
-          clazz.removeTaggedValue(XMIParser2.TV_CD_ID);
-          clazz.removeTaggedValue(XMIParser2.TV_CD_VERSION);
-          clazz.removeTaggedValue(XMIParser2.TV_REP_ID);
-          clazz.removeTaggedValue(XMIParser2.TV_REP_VERSION);
-
-//           if(!String.valueOf(vd.getPreferredDefinition()).equals("null") && 
-//               !String.valueOf(vd.getPreferredDefinition()).equals(null)  && 
-//               (vd.getPreferredDefinition().length() != 0))
-
+        clazz.removeTaggedValue(XMIParser2.TV_VD_DEFINITION);
+        clazz.removeTaggedValue(XMIParser2.TV_VD_DATATYPE); 
+        clazz.removeTaggedValue(XMIParser2.TV_VD_TYPE);
+        clazz.removeTaggedValue(XMIParser2.TV_CD_ID);
+        clazz.removeTaggedValue(XMIParser2.TV_CD_VERSION);
+        clazz.removeTaggedValue(XMIParser2.TV_REP_ID);
+        clazz.removeTaggedValue(XMIParser2.TV_REP_VERSION);
+        clazz.removeTaggedValue(XMIParser2.TV_VD_ID);
+        clazz.removeTaggedValue(XMIParser2.TV_VD_VERSION);
+        
+        if(!StringUtil.isEmpty(vd.getPublicId()) && vd.getVersion() != null) {
+          clazz.addTaggedValue(XMIParser2.TV_VD_ID, vd.getPublicId());
+          clazz.addTaggedValue(XMIParser2.TV_VD_VERSION, vd.getVersion().toString());
+        } else {
           if(!StringUtil.isEmpty(vd.getPreferredDefinition()))
             clazz.addTaggedValue(XMIParser2.TV_VD_DEFINITION, vd.getPreferredDefinition());
-            
-//           if(!vd.getDataType().equals("null"))
+          
           if(!StringUtil.isEmpty(vd.getDataType()))
             clazz.addTaggedValue(XMIParser2.TV_VD_DATATYPE, vd.getDataType());
           
-//           if(vd.getVdType() != null)
           if(!StringUtil.isEmpty(vd.getVdType()))
             if(!vd.getVdType().equals("null"))
               if(!vd.getVdType().equals(null)){
                 clazz.addTaggedValue(XMIParser2.TV_VD_TYPE, vd.getVdType());
               }
-
-//           if(!String.valueOf(vd.getConceptualDomain().getPublicId()).equals("null"))
+            
           if(vd.getConceptualDomain() != null) {
             if(!StringUtil.isEmpty(vd.getConceptualDomain().getPublicId()))
               clazz.addTaggedValue(XMIParser2.TV_CD_ID, vd.getConceptualDomain().getPublicId());
-            
-            //           if(!String.valueOf(vd.getConceptualDomain().getVersion()).equals("null"))
+              
             if(vd.getConceptualDomain().getVersion() != null)
               clazz.addTaggedValue(XMIParser2.TV_CD_VERSION, vd.getConceptualDomain().getVersion().toString());
           }            
-
-//           if(!String.valueOf(vd.getRepresentation().getPublicId()).equals("null"))
-
+            
           if(vd.getRepresentation() != null) {
             if(!StringUtil.isEmpty(vd.getRepresentation().getPublicId()))
               clazz.addTaggedValue(XMIParser2.TV_REP_ID, vd.getRepresentation().getPublicId());
-            
-            //           if(!String.valueOf(vd.getRepresentation().getVersion()).equals("null"))
+              
             if(vd.getRepresentation().getVersion() != null)
               clazz.addTaggedValue(XMIParser2.TV_REP_VERSION, String.valueOf(vd.getRepresentation().getVersion().toString()));
           }
+        }
       }        
 
       for(PermissibleValue pv : vd.getPermissibleValues()) {
