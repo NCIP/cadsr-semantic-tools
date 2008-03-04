@@ -27,9 +27,11 @@ import java.util.*;
 public class ConventionUtil {
 
   public static String publicIdVersion(AdminComponent ac) {
-    if(StringUtil.isEmpty(ac.getPublicId())) return "";
-    if(ac == null || ac.getPublicId() == null)
+
+    if(ac == null)
       return "";
+
+    if(StringUtil.isEmpty(ac.getPublicId())) return "";
 
     StringBuilder sb = new StringBuilder(ac.getPublicId());
     sb.append("v");
