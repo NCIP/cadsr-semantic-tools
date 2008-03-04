@@ -701,6 +701,12 @@ public class UMLDefaultHandler
     ocr.setLongName(event.getRoleName());
     ocr.setType(ObjectClassRelationship.TYPE_HAS);
 
+    if(sEvent == null || tEvent == null) {
+      logger.warn("Skipping association because parent or child can't be found. Did you filter out some classes?");
+      return;
+    }
+
+
     if(event.getConcepts() != null && event.getConcepts().size() > 0)
       ocr.setConceptDerivationRule(
         ConceptUtil.createConceptDerivationRule(createConcepts(event), true));
