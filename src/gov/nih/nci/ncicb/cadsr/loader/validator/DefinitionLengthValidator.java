@@ -95,7 +95,8 @@ public class DefinitionLengthValidator implements Validator {
           if(propDef.length() > 2000) {
             items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("property.definition.too.long", dec.getProperty().getLongName()), de));
           }
-          if((ocDef + propDef + vdDefinition).length() > 2000) {
+          // the +2 is for the underscores between OC / ProP and VD
+          if((ocDef + propDef + vdDefinition).length() + 2 > 2000) {
             items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("attribute.definition.too.long", dec.getProperty().getLongName()), de));
           }
         }
