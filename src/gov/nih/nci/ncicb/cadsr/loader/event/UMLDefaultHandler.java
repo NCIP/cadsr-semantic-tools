@@ -568,6 +568,14 @@ public class UMLDefaultHandler
           ValidationItems.getInstance()
             .addItem(item);
         }
+        
+        de.setLongName(existingDe.getLongName());
+        de.setContext(existingDe.getContext());
+        de.setPublicId(existingDe.getPublicId());
+        de.setVersion(existingDe.getVersion());
+        de.setLatestVersionIndicator(existingDe.getLatestVersionIndicator());
+        de.setValueDomain(existingDe.getValueDomain());
+        
         return;
       }
 
