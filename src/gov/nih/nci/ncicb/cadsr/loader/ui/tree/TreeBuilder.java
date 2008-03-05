@@ -95,6 +95,10 @@ public class TreeBuilder implements UserPreferencesListener {
     return rootNode;
   }
 
+  /**
+   *
+   * @return the root node
+   */
   public UMLNode getRootNode() {
     return rootNode;
   }
@@ -191,7 +195,7 @@ public class TreeBuilder implements UserPreferencesListener {
     DataElement o = DomainObjectFactory.newDataElement();
     List<DataElement> des = elements.getElements(o);
     List<AttributeNode> inherited = new ArrayList<AttributeNode>();
-    PackageNode inheritedPackage = new PackageNode("Inherited Attributes", "Inherited Attributes");
+    PackageNode inheritedPackage = new PackageNode("Inherited Attributes", "Inherited Attributes", true);
 
     InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
     
@@ -243,17 +247,28 @@ public class TreeBuilder implements UserPreferencesListener {
       } // end of try-catch
     }
 
-    if((inherited.size() > 0) && showInheritedAttributes)
+    if((inherited.size() > 0))
       parentNode.addChild(inheritedPackage);
 
-    if(showInheritedAttributes) {
-      for(AttributeNode inherit : inherited) {
-        inheritedPackage.addChild(inherit);
-        Boolean reviewed = reviewTracker.get(inherit.getFullPath());
-        if(reviewed != null)
-          inherit.setReviewed(reviewed);
-      }
+
+    for(AttributeNode inherit : inherited) {
+      inheritedPackage.addChild(inherit);
+      Boolean reviewed = reviewTracker.get(inherit.getFullPath());
+      if(reviewed != null)
+        inherit.setReviewed(reviewed);
     }
+    
+//     if((inherited.size() > 0) && showInheritedAttributes)
+//       parentNode.addChild(inheritedPackage);
+
+//     if(showInheritedAttributes) {
+//       for(AttributeNode inherit : inherited) {
+//         inheritedPackage.addChild(inherit);
+//         Boolean reviewed = reviewTracker.get(inherit.getFullPath());
+//         if(reviewed != null)
+//           inherit.setReviewed(reviewed);
+//       }
+//     }
     
     
     

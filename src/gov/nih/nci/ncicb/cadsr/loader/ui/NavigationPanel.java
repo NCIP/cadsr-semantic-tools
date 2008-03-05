@@ -86,28 +86,25 @@ public class NavigationPanel extends JPanel
   private TreePath selectedPath;
 
   private ReviewTracker reviewTracker;
+
+  private boolean showInherited;
   
   public NavigationPanel()
   {
-    try
-      {
-        initUI();
-        TreeBuilder.getInstance().addTreeListener(this);
-        UserPreferences prefs = UserPreferences.getInstance();
-        prefs.addUserPreferencesListener(this);
+    UserPreferences prefs = UserPreferences.getInstance();
+    showInherited = prefs.getShowInheritedAttributes();
 
-	RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
-	if(runMode.equals(RunMode.Curator)) {
-	  reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
-	} else {
-	  reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner);
-	}
-      
-      }
-    catch(Exception e)
-      {
-        e.printStackTrace();
-      }
+    initUI();
+    TreeBuilder.getInstance().addTreeListener(this);
+    prefs.addUserPreferencesListener(this);
+    
+    RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
+    if(runMode.equals(RunMode.Curator)) {
+      reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
+    } else {
+      reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner);
+    }
+    
   }
 
   public void addViewChangeListener(ViewChangeListener l) {
@@ -125,7 +122,7 @@ public class NavigationPanel extends JPanel
     tree.repaint();
   }
   
-  private void initUI() throws Exception
+  private void initUI() 
   {
     rootTreeNode = buildTree();
     rootUnsortedTreeNode = rootTreeNode;
@@ -508,8 +505,14 @@ public class NavigationPanel extends JPanel
       DefaultMutableTreeNode newNode = 
         new DefaultMutableTreeNode(child);
 
+      if(child instanceof PackageNode) {
+        if(((PackageNode)child).isInherited() && !showInherited)
+          continue;
+      }
+
       if(!(child instanceof ValidationNode) && !(child instanceof AssociationEndNode))
         node.add(newNode);  
+      
       doNode(newNode, child);
     }
 
