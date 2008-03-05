@@ -335,7 +335,9 @@ public class XMIParser2 implements Parser {
       LookupUtil.getPackageName(subClass.getPackage()) + "." + subClass.getName());
     
     // find all inherited mappings 
-    for(UMLAttribute parentAtt : parentClass.getAttributes()) {
+    List<UMLAttribute> allAttributes = findAllInheritedAttributes(subClass);
+
+    for(UMLAttribute parentAtt : allAttributes) {
       String attName = parentAtt.getName();
 
       // get inherited Local VD mapping
@@ -1126,5 +1128,19 @@ public class XMIParser2 implements Parser {
     return false;
   }
 
+  private List<UMLAttribute> findAllInheritedAttributes(UMLClass umlClass) {
+    List<UMLAttribute> atts = new ArrayList<UMLAttribute>();
+
+    return findAllInheritedAttributes(umlClass, atts);
+  }
+
+  private List<UMLAttribute> findAllInheritedAttributes(UMLClass umlClass, List<UMLAttribute> attributes) {
+    UMLClass[] parentClasses = ModelUtil.getSuperclasses(umlClass);
+    if(parentClasses.length == 1) {
+      attributes.addAll(parentClasses[0].getAttributes());
+      findAllInheritedAttributes(parentClasses[0], attributes);
+    } 
+    return attributes;
+  }
 
 }
