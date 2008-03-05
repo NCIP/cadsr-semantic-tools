@@ -34,7 +34,8 @@ public class PackageNode extends AbstractUMLNode<UMLNode>
   static final Icon DEFAULT_ICON = 
     new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-package.gif"));
 
-  private boolean reviewed = true;
+  private boolean reviewed = true, 
+    isInherited = false;
 
   public PackageNode(ClassificationSchemeItem csi, String display) {
     fullPath = csi.getName();
@@ -46,12 +47,18 @@ public class PackageNode extends AbstractUMLNode<UMLNode>
   }
   
   public PackageNode(String fullName, String display) {
+    this(fullName, display, false);
+  }
+
+  public PackageNode(String fullName, String display, boolean isInherited) {
     fullPath = fullName;
     
     this.display = display != null?
       display:fullName;
     
     icon = DEFAULT_ICON;
+    
+    this.isInherited = isInherited;
   }
 
   public void setReviewed(boolean currentStatus) 
@@ -88,6 +95,10 @@ public class PackageNode extends AbstractUMLNode<UMLNode>
   public boolean isReviewed() 
   {
     return reviewed;
+  }
+
+  public boolean isInherited() {
+    return isInherited;
   }
 
 }
