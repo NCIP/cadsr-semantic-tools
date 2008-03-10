@@ -186,7 +186,7 @@ public class InheritedAttributeViewPanel extends JPanel
     // if de is already mapped
     if(parentDE != null) {
       dePanel.setVisible(
-        !vdPanel.isMappedToLocalVD(de) 
+        !DEMappingUtil.isMappedToLocalVD(de) 
         &&
         ( !StringUtil.isEmpty(parentDE.getPublicId())
           || !StringUtil.isEmpty(de.getPublicId())
@@ -206,7 +206,7 @@ public class InheritedAttributeViewPanel extends JPanel
                                   "any Value Domain mapping for this attribute will be cleared.<br>" + 
                                   "Your CDE queries will be filtered to CDEs that match existing<br>" + 
                                   "Object Class or Property mappings</html>");
-    } else if(!dePanel.isVisible() && !vdPanel.isMappedToLocalVD(de)){
+    } else if(!dePanel.isVisible() && !DEMappingUtil.isMappedToLocalVD(de)){
       explainLabel.setToolTipText("<html> You may only map this inherited attribute to a Value Domain.<br>" + 
                                   "If you need to map this inherited attribute to an existing CDE,<br>" + 
                                   " you will need to remove the concept mapping of the parent attribute.</html>");
