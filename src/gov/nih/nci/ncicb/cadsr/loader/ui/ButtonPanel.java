@@ -13,6 +13,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueMeaningNode;
 import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.DEMappingUtil;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -199,7 +200,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     
     if(editable instanceof DEPanel) {
       DataElement de = (DataElement)node.getUserObject();
-      if(conceptEditorPanel.getVDPanel().isMappedToLocalVD(de))
+      if(DEMappingUtil.isMappedToLocalVD(de))
         switchButton.setEnabled(false);
     }
     
