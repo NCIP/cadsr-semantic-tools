@@ -103,4 +103,28 @@ public class DEMappingUtil {
   
     return null;
   }
+  
+  public static boolean isMappedToLocalVD(DataElement de) {
+    InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
+
+    ValueDomain _vd = de.getValueDomain();
+    ElementsLists elements = ElementsLists.getInstance();
+    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+    if(_vd.getPublicId() != null)
+      return false;
+    
+    if(vds != null) {
+      for(ValueDomain currentVd : vds) 
+        if(currentVd.getLongName().equals(_vd.getLongName())) {
+          if(inheritedAttributes.isInherited(de)) { 
+            DataElement parentDE = inheritedAttributes.getParent(de);
+            return !de.getValueDomain().getLongName().equals(parentDE.getValueDomain().getLongName());
+          } else
+            return true;
+        }
+      
+    }
+    return false;
+  }
+
 }

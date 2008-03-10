@@ -47,8 +47,6 @@ public class VDPanel extends JPanel
   private UMLNode node;
   private boolean modified = false;
 
-  private InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
-
   public VDPanel(UMLNode node)
   {
     this.node = node;
@@ -84,7 +82,7 @@ public class VDPanel extends JPanel
     
     searchVdButton.setActionCommand(SEARCH);
     if(de != null)
-      searchVdButton.setVisible(!isMappedToLocalVD(de));
+      searchVdButton.setVisible(!DEMappingUtil.isMappedToLocalVD(de));
       
     searchVdButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
@@ -155,7 +153,7 @@ public class VDPanel extends JPanel
     if(node.getUserObject() instanceof DataElement) {
       DataElement de = (DataElement)node.getUserObject();
       vd = de.getValueDomain();
-      searchVdButton.setVisible(!isMappedToLocalVD(de));
+      searchVdButton.setVisible(!DEMappingUtil.isMappedToLocalVD(de));
       
       vdLongNameValueLabel.setText(vd.getLongName()); 
       
@@ -209,25 +207,6 @@ public class VDPanel extends JPanel
       l.elementChanged(event);
   }
   
-  public boolean isMappedToLocalVD(DataElement de) {
-    ValueDomain _vd = de.getValueDomain();
-    ElementsLists elements = ElementsLists.getInstance();
-    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
-    if(_vd.getPublicId() != null)
-      return false;
-    
-    if(vds != null) {
-      for(ValueDomain currentVd : vds) 
-        if(currentVd.getLongName().equals(_vd.getLongName())) {
-          if(inheritedAttributes.isInherited(de)) { 
-            DataElement parentDE = inheritedAttributes.getParent(de);
-            return !de.getValueDomain().getLongName().equals(parentDE.getValueDomain().getLongName());
-          } else
-            return true;
-        }
-      
-    }
-    return false;
-  }
+
   
 }
