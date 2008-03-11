@@ -688,10 +688,10 @@ public class ConceptEditorPanel extends JPanel
   }
 
   JLabel[] labels = new JLabel[] {
-    new JLabel("Concept Code"),
-    new JLabel("Concept Preferred Name"),
-    new JLabel("Concept Definition"),
-    new JLabel("Concept Definition Source")
+    new JLabel("Concept Code:"),
+    new JLabel("Concept Preferred Name:"),
+    new JLabel("Concept Definition:"),
+    new JLabel("Concept Definition Source:")
   };
 
   JTextField code = new JTextField(10);
