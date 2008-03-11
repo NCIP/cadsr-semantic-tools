@@ -254,6 +254,15 @@ public class LookupUtil implements CadsrModuleListener {
     return null;
   }
 
+  public static String lookupFullName(ValueDomain vd) {
+    if(vd.getAlternateNames() != null)
+      for(AlternateName altName : vd.getAlternateNames()) {
+        if(altName.getType().equals(AlternateName.TYPE_FULL_NAME))
+          return altName.getName();
+      }
+    return null;
+  }
+
   public static String getPackageName(UMLPackage pkg) {
     StringBuffer pack = new StringBuffer();
     String s = null;
