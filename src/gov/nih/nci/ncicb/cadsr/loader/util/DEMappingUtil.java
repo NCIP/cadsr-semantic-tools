@@ -104,27 +104,32 @@ public class DEMappingUtil {
     return null;
   }
   
-  public static boolean isMappedToLocalVD(DataElement de) {
+  /**
+   * @return the LVD if mapped to one, null otherwise
+   */
+  public static ValueDomain isMappedToLocalVD(DataElement de) {
     InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
 
     ValueDomain _vd = de.getValueDomain();
     ElementsLists elements = ElementsLists.getInstance();
     List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
     if(_vd.getPublicId() != null)
-      return false;
+      return null;
     
     if(vds != null) {
       for(ValueDomain currentVd : vds) 
         if(currentVd.getLongName().equals(_vd.getLongName())) {
+          // inherited att might be indirectly mapped to LVD. (thru the parent)
           if(inheritedAttributes.isInherited(de)) { 
             DataElement parentDE = inheritedAttributes.getParent(de);
-            return !de.getValueDomain().getLongName().equals(parentDE.getValueDomain().getLongName());
+            if(!de.getValueDomain().getLongName().equals(parentDE.getValueDomain().getLongName()))
+              return currentVd;
+            else return null;
           } else
-            return true;
+            return currentVd;
         }
-      
     }
-    return false;
+    return null;
   }
 
 }
