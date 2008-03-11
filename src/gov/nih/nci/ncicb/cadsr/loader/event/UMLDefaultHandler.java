@@ -62,6 +62,9 @@ public class UMLDefaultHandler
   private Map<String, DataElement> ocMapping = new HashMap<String, DataElement>();
 
   private InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
+
+  // this list will keep the ValueDomains that may be called something in XMI but are called something else in UML. Since LVD are referred by name from attributes.
+  private Map<String, ValueDomain> listOfVDsWithChangedNames = new HashMap<String, ValueDomain>();
   
   public UMLDefaultHandler() {
     this.elements = ElementsLists.getInstance();
@@ -123,6 +126,11 @@ public class UMLDefaultHandler
         result =  new ArrayList<ValueDomain>(cadsrModule.findValueDomain(queryFields));
       } catch (Exception e){
         logger.error("Could not query cadsr module ", e);
+
+        ValidationError item = new ValidationError
+          (PropertyAccessor.getProperty("system.unavailable.api"), vd);
+        ValidationItems.getInstance()
+          .addItem(item);
       } // end of try-catch
       
       if(result.size() == 0) {
@@ -142,6 +150,12 @@ public class UMLDefaultHandler
 //            true);
       } else {
         existingVd = result.get(0);
+        
+//         // change of VD name
+//         if(!event.getName().equals(existingVd.getLongName())) {
+          
+//         }
+
         vd.setLongName(existingVd.getLongName());
         vd.setPreferredDefinition(existingVd.getPreferredDefinition());
         vd.setVdType(existingVd.getVdType());
@@ -207,6 +221,13 @@ public class UMLDefaultHandler
     List<AdminComponentClassSchemeClassSchemeItem> l = new ArrayList<AdminComponentClassSchemeClassSchemeItem>();
     l.add(acCsCsi);
     vd.setAcCsCsis(l);
+
+    // Store Alt Name for VD:
+    // The UML given name
+    AlternateName fullName = DomainObjectFactory.newAlternateName();
+    fullName.setType(AlternateName.TYPE_FULL_NAME);
+    fullName.setName(event.getName());
+    vd.addAlternateName(fullName);
 
     elements.addElement(vd);
     reviewTracker.put(event.getName(), event.isReviewed());
@@ -958,6 +979,20 @@ public class UMLDefaultHandler
   }
 
   public void beginParsing() {}
-  public void endParsing() {}
+
+  public void endParsing() {
+    // update all DE that are mapped to LVD with their actual LVD objects
+    {
+      List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
+      for(DataElement de : des) {
+        if(StringUtil.isEmpty(de.getPublicId())) {
+          ValueDomain lvd = DEMappingUtil.isMappedToLocalVD(de);
+          if(lvd != null)
+            de.setValueDomain(lvd);
+        }
+      }
+    }
+  }
+  
   public void addProgressListener(ProgressListener listener) {}
 }
