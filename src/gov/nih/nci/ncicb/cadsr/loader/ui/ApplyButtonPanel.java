@@ -79,7 +79,11 @@ public class ApplyButtonPanel extends JPanel implements ActionListener, Property
     this.add(applyButton);
     this.add(reviewButton);
 
-
+  }
+  
+  void update(ReviewableUMLNode node) {
+    this.node = node;
+    update();
   }
 
   void update() {

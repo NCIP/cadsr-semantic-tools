@@ -27,7 +27,6 @@ import java.util.*;
 public class ConventionUtil {
 
   public static String publicIdVersion(AdminComponent ac) {
-
     if(ac == null)
       return "";
 

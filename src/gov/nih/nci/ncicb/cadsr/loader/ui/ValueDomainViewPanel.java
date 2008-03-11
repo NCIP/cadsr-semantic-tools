@@ -71,11 +71,8 @@ public class ValueDomainViewPanel extends JPanel
 
   private ValueDomain vd, tempVD;
   private ApplyButtonPanel applyButtonPanel;
-  private NavigationButtonPanel navigationPanel;
   private UMLNode umlNode;
   private CadsrModule cadsrModule;
-  private ConceptualDomain conceptualDomain = null;
-  private Representation representation = null;
 
   private boolean isInitialized = false;
   private List<ElementChangeListener> changeListeners = new ArrayList<ElementChangeListener>();
@@ -129,10 +126,7 @@ public class ValueDomainViewPanel extends JPanel
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
     applyButtonPanel = new ApplyButtonPanel(this, (ValueDomainNode)umlNode);
-    navigationPanel = new NavigationButtonPanel();
     addPropertyChangeListener(applyButtonPanel);
-    
-    //vdPrefDefValueTextField.setEditable(false);
     
     populateDatatypeCombobox();
      
@@ -210,13 +204,6 @@ public class ValueDomainViewPanel extends JPanel
 
     this.add(scrollPane, BorderLayout.CENTER);
     
-    JPanel newPanel = new JPanel();
-    newPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); 
-    JLabel space = new JLabel("      ");
-    newPanel.add(space);
-    newPanel.add(applyButtonPanel);
-
-    this.add(newPanel, BorderLayout.SOUTH);
   }
   
   private void initValues() 
@@ -296,7 +283,6 @@ public class ValueDomainViewPanel extends JPanel
   }
 
     public void applyPressed() {   
-        
         vd.setConceptualDomain(tempVD.getConceptualDomain());
         vd.setRepresentation(tempVD.getRepresentation());
         if(vdDatatypeValueCombobox.getSelectedIndex() != 0){
@@ -374,4 +360,9 @@ public class ValueDomainViewPanel extends JPanel
     public void changedUpdate(DocumentEvent e) {
         firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
     }
+    public UMLNode getNode() 
+    {
+      return umlNode;
+    }
+    
 }

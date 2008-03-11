@@ -470,14 +470,13 @@ public class MainFrame extends JFrame
   }
 
   public void viewChanged(ViewChangeEvent event) {
-      
+      UMLNode node = (UMLNode)event.getViewObject();
+    
     previewReuseMenuItem.setEnabled(false);
 
     if(event.getType() == ViewChangeEvent.VIEW_CONCEPTS
        || event.getType() == ViewChangeEvent.VIEW_VALUE_MEANING
        || event.getType() == ViewChangeEvent.VIEW_INHERITED) {
-
-      UMLNode node = (UMLNode)event.getViewObject();
       
       // If concept is already showing, just bring it up front
       if(viewPanels.containsKey(node.getFullPath())) {
@@ -513,7 +512,6 @@ public class MainFrame extends JFrame
       }
 
     } else if(event.getType() == ViewChangeEvent.VIEW_ASSOCIATION) {
-      UMLNode node = (UMLNode)event.getViewObject();
 
       if(associationViewPanel == null) {
         associationViewPanel = new AssociationViewPanel(node);
@@ -536,7 +534,6 @@ public class MainFrame extends JFrame
       viewTabbedPane.setSelectedComponent(associationViewPanel);
 
     } else if(event.getType() == ViewChangeEvent.VIEW_VALUE_DOMAIN) {
-      UMLNode node = (UMLNode)event.getViewObject();
       
 //      if(vdViewPanel == null) {
 //        vdViewPanel = new ValueDomainViewPanel((ValueDomain)node.getUserObject(), node);
@@ -556,12 +553,13 @@ public class MainFrame extends JFrame
          viewTabbedPane.remove(lvdPanel);
          viewTabbedPane.addTab("ValueDomain", lvdPanel);
          lvdPanel.update((ValueDomain)node.getUserObject(), node);
+         lvdPanel.addNavigationListener(navigationPanel);
          infoLabel.setText("ValueDomain");      
+         viewTabbedPane.setSelectedComponent(lvdPanel);
 
 //    
 
     } else if(event.getType() == ViewChangeEvent.VIEW_PACKAGE) {
-      UMLNode node = (UMLNode)event.getViewObject();
       
       if(!viewPanels.containsValue(packageViewPanel))
         packageViewPanel = null;

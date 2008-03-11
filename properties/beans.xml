@@ -176,6 +176,7 @@
         <ref bean="umlEventHandler"/>
         <ref bean="inheritanceValidator"/>
         <ref bean="vdViewPanel"/>
+        <ref bean="mteVDPanel"/>
       </list>
     </property>
   </bean>
@@ -356,6 +357,9 @@
     <property name="vdViewPanel">
       <ref bean="vdViewPanel"/>
     </property>
+    <property name="mteVDPanel">
+      <ref bean="mteVDPanel"/>
+    </property>
   </bean>
 
   <bean name="vdViewPanel"
@@ -368,6 +372,13 @@
     </property>
   </bean>  
 
+
+  <bean name="mteVDPanel"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.MapToExistingVDPanel">
+    <property name="cadsrVDDialog">
+      <ref bean="cadsrVDDialog"/>
+    </property>
+  </bean>  
 
   <bean name="mainFrame"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.MainFrame">
