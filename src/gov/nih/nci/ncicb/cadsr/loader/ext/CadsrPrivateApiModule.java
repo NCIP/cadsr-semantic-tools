@@ -69,7 +69,11 @@ public class CadsrPrivateApiModule implements CadsrModule
     ValueDomain vd = DomainObjectFactory.newValueDomain();
     buildExample(vd, queryFields);
 
-    return DAOAccessor.getValueDomainDAO().find(vd);
+    List<String> eager = new ArrayList<String>();
+    eager.add("conceptualDomain");
+    eager.add("representation");
+
+    return DAOAccessor.getValueDomainDAO().find(vd, eager);
 
   }
 
