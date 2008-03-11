@@ -167,7 +167,7 @@ public class MapToExistingVDPanel extends JPanel
   }
   
   private void setSearchedValues(){
-    vdPrefDefValueTextField.setText(tempVD.getConceptualDomain().getPreferredDefinition());
+    vdPrefDefValueTextField.setText(tempVD.getPreferredDefinition());
     vdDatatypeTitleLabelValue.setText(tempVD.getDataType());
     vdTypeTitleLabelValue.setText(tempVD.getVdType());
     vdCdIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getConceptualDomain()));
