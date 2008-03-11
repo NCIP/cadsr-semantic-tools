@@ -200,7 +200,7 @@ public class ButtonPanel extends JPanel implements ActionListener,
     
     if(editable instanceof DEPanel) {
       DataElement de = (DataElement)node.getUserObject();
-      if(DEMappingUtil.isMappedToLocalVD(de))
+      if(DEMappingUtil.isMappedToLocalVD(de) != null)
         switchButton.setEnabled(false);
     }
     
