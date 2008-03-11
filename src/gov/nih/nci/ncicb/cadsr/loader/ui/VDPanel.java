@@ -25,15 +25,18 @@ public class VDPanel extends JPanel
   private JButton searchVdButton = new JButton("Search Value Domain");
   
   private JLabel vdLongNameTitleLabel = new JLabel("Long Name"),
-  vdLongNameValueLabel = new JLabel(""),
-  vdPublicIdTitleLabel = new JLabel("Public Id"),
-  vdPublicIdValueLabel = new JLabel(""),
-  vdContextNameTitleLabel = new JLabel("Context Name"),
-  vdContextNameValueLabel = new JLabel(""),
-  vdVersionTitleLabel = new JLabel("Version"),
-  vdVersionValueLabel = new JLabel(""),
-  vdDatatypeTitleLabel = new JLabel("Datatype"),
-  vdDatatypeValueLabel = new JLabel("");
+    vdLongNameValueLabel = new JLabel(""),
+    vdPublicIdTitleLabel = new JLabel("Public Id"),
+    vdPublicIdValueLabel = new JLabel(""),
+    vdContextNameTitleLabel = new JLabel("Context Name"),
+    vdContextNameValueLabel = new JLabel(""),
+    vdVersionTitleLabel = new JLabel("Version"),
+    vdVersionValueLabel = new JLabel(""),
+    vdDatatypeTitleLabel = new JLabel("Datatype"),
+    vdDatatypeValueLabel = new JLabel(""),
+    lvdTitleLabel = new JLabel("Local Value Domain"),
+    lvdValueLabel = new JLabel("");
+
 
   private static final String SEARCH = "SEARCH";
   
@@ -59,30 +62,31 @@ public class VDPanel extends JPanel
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
     
-    UIUtil.insertInBag(mainPanel, vdLongNameTitleLabel, 0, 0);
-    UIUtil.insertInBag(mainPanel, vdLongNameValueLabel, 1, 0);
-    UIUtil.insertInBag(mainPanel, vdPublicIdTitleLabel, 0, 1);
-    UIUtil.insertInBag(mainPanel, vdPublicIdValueLabel, 1, 1);
-    UIUtil.insertInBag(mainPanel, vdContextNameTitleLabel, 0, 2);
-    UIUtil.insertInBag(mainPanel, vdContextNameValueLabel, 1, 2);
-    UIUtil.insertInBag(mainPanel, vdVersionTitleLabel, 0, 3);
-    UIUtil.insertInBag(mainPanel, vdVersionValueLabel, 1, 3);
-    UIUtil.insertInBag(mainPanel, vdDatatypeTitleLabel, 0, 4);
-    UIUtil.insertInBag(mainPanel, vdDatatypeValueLabel, 1, 4);
+    UIUtil.insertInBag(mainPanel, lvdTitleLabel, 0, 0);
+    UIUtil.insertInBag(mainPanel, lvdValueLabel, 1, 0);
+    UIUtil.insertInBag(mainPanel, vdLongNameTitleLabel, 0, 1);
+    UIUtil.insertInBag(mainPanel, vdLongNameValueLabel, 1, 1);
+    UIUtil.insertInBag(mainPanel, vdPublicIdTitleLabel, 0, 2);
+    UIUtil.insertInBag(mainPanel, vdPublicIdValueLabel, 1, 2);
+    UIUtil.insertInBag(mainPanel, vdContextNameTitleLabel, 0, 3);
+    UIUtil.insertInBag(mainPanel, vdContextNameValueLabel, 1, 3);
+    UIUtil.insertInBag(mainPanel, vdVersionTitleLabel, 0, 4);
+    UIUtil.insertInBag(mainPanel, vdVersionValueLabel, 1, 4);
+    UIUtil.insertInBag(mainPanel, vdDatatypeTitleLabel, 0, 5);
+    UIUtil.insertInBag(mainPanel, vdDatatypeValueLabel, 1, 5);
     
     UIUtil.insertInBag(mainPanel, searchVdButton, 1, 5, 2, 1);
 
     mainPanel.setBorder
         (BorderFactory.createTitledBorder("Value Domain"));
-
     
     this.add(mainPanel);
     this.setSize(300, 300);
 
     
     searchVdButton.setActionCommand(SEARCH);
-    if(de != null)
-      searchVdButton.setVisible(!DEMappingUtil.isMappedToLocalVD(de));
+//     if(de != null)
+//       searchVdButton.setVisible(!DEMappingUtil.isMappedToLocalVD(de));
       
     searchVdButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent event) {
@@ -153,8 +157,15 @@ public class VDPanel extends JPanel
     if(node.getUserObject() instanceof DataElement) {
       DataElement de = (DataElement)node.getUserObject();
       vd = de.getValueDomain();
-      searchVdButton.setVisible(!DEMappingUtil.isMappedToLocalVD(de));
-      
+      searchVdButton.setVisible(DEMappingUtil.isMappedToLocalVD(de) == null);
+
+      if(DEMappingUtil.isMappedToLocalVD(de) != null) {
+        lvdTitleLabel.setVisible(true);
+        lvdValueLabel.setText(LookupUtil.lookupFullName(vd));
+      } else {
+        lvdTitleLabel.setVisible(false);
+      }
+
       vdLongNameValueLabel.setText(vd.getLongName()); 
       
       if(vd != null && !StringUtil.isEmpty(vd.getPublicId())) {
