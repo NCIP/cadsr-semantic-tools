@@ -20,6 +20,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui.tree;
 
 import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
+import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -38,7 +39,13 @@ public class ValueDomainNode
   private boolean reviewed = false;
 
   public ValueDomainNode(ValueDomain vd) {
-    fullPath = vd.getLongName();
+    for(AlternateName an : vd.getAlternateNames()) {
+      if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
+        fullPath = an.getName();
+    }
+    if(fullPath == null)
+      fullPath = vd.getLongName();
+
     int ind = fullPath.lastIndexOf(".");
     display = fullPath.substring(ind + 1);
     
