@@ -24,17 +24,17 @@ public class VDPanel extends JPanel
 {
   private JButton searchVdButton = new JButton("Search Value Domain");
   
-  private JLabel vdLongNameTitleLabel = new JLabel("Long Name"),
+  private JLabel vdLongNameTitleLabel = new JLabel("Long Name: "),
     vdLongNameValueLabel = new JLabel(""),
-    vdPublicIdTitleLabel = new JLabel("Public Id"),
+    vdPublicIdTitleLabel = new JLabel("Public Id: "),
     vdPublicIdValueLabel = new JLabel(""),
-    vdContextNameTitleLabel = new JLabel("Context Name"),
+    vdContextNameTitleLabel = new JLabel("Context Name: "),
     vdContextNameValueLabel = new JLabel(""),
-    vdVersionTitleLabel = new JLabel("Version"),
+    vdVersionTitleLabel = new JLabel("Version: "),
     vdVersionValueLabel = new JLabel(""),
-    vdDatatypeTitleLabel = new JLabel("Datatype"),
+    vdDatatypeTitleLabel = new JLabel("Datatype: "),
     vdDatatypeValueLabel = new JLabel(""),
-    lvdTitleLabel = new JLabel("Local Value Domain"),
+    lvdTitleLabel = new JLabel("Local Value Domain: "),
     lvdValueLabel = new JLabel("");
 
 
@@ -75,7 +75,7 @@ public class VDPanel extends JPanel
     UIUtil.insertInBag(mainPanel, vdDatatypeTitleLabel, 0, 5);
     UIUtil.insertInBag(mainPanel, vdDatatypeValueLabel, 1, 5);
     
-    UIUtil.insertInBag(mainPanel, searchVdButton, 1, 5, 2, 1);
+    UIUtil.insertInBag(mainPanel, searchVdButton, 1, 6, 2, 1);
 
     mainPanel.setBorder
         (BorderFactory.createTitledBorder("Value Domain"));
@@ -159,12 +159,6 @@ public class VDPanel extends JPanel
       vd = de.getValueDomain();
       searchVdButton.setVisible(DEMappingUtil.isMappedToLocalVD(de) == null);
 
-      if(DEMappingUtil.isMappedToLocalVD(de) != null) {
-        lvdTitleLabel.setVisible(true);
-        lvdValueLabel.setText(LookupUtil.lookupFullName(vd));
-      } else {
-        lvdTitleLabel.setVisible(false);
-      }
 
       vdLongNameValueLabel.setText(vd.getLongName()); 
       
@@ -198,6 +192,16 @@ public class VDPanel extends JPanel
         vdDatatypeTitleLabel.setVisible(false);
       if(vdContextNameValueLabel.getText().equals(""))
         vdContextNameTitleLabel.setVisible(false);
+
+      if(DEMappingUtil.isMappedToLocalVD(de) != null) {
+        lvdTitleLabel.setVisible(true);
+        lvdValueLabel.setText(LookupUtil.lookupFullName(vd));
+        vdLongNameTitleLabel.setVisible(false);
+        vdLongNameValueLabel.setVisible(false);
+      } else {
+        lvdTitleLabel.setVisible(false);
+      }
+
     }
   }
 
