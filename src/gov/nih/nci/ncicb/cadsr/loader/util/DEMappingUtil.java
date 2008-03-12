@@ -113,12 +113,13 @@ public class DEMappingUtil {
     ValueDomain _vd = de.getValueDomain();
     ElementsLists elements = ElementsLists.getInstance();
     List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
-    if(_vd.getPublicId() != null)
-      return null;
+//     if(_vd.getPublicId() != null)
+//       return null;
     
     if(vds != null) {
       for(ValueDomain currentVd : vds) 
-        if(currentVd.getLongName().equals(_vd.getLongName())) {
+//         if(currentVd.getLongName().equals(_vd.getLongName())) {
+        if(currentVd == _vd) {
           // inherited att might be indirectly mapped to LVD. (thru the parent)
           if(inheritedAttributes.isInherited(de)) { 
             DataElement parentDE = inheritedAttributes.getParent(de);
