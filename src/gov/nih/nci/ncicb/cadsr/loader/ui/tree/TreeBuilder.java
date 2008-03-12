@@ -36,7 +36,7 @@ public class TreeBuilder implements UserPreferencesListener {
 
   private UMLNode rootNode;
 
-  private List<TreeListener> treeListeners = new ArrayList();
+  private List<TreeListener> treeListeners = new ArrayList<TreeListener>();
   private boolean inClassAssociations = false,
     showAssociations = true, showValueDomains = true,
     showInheritedAttributes = false;
@@ -275,8 +275,7 @@ public class TreeBuilder implements UserPreferencesListener {
   }
 
   private void doValueDomains(UMLNode parentNode) {
-    UMLNode vdNode = new PackageNode("Value Domains", "Value Domains");
-    
+   
     List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
     
     for(ValueDomain vd : vds) {
