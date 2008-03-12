@@ -26,7 +26,7 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 /**
- * List of cadsr objects to be persisted.<br/>
+ * List of cadsr objects to be persisted.<br>
  *
  * The UMLListener feeds this list. The UMLPersister consumes this list.
  *
@@ -39,8 +39,6 @@ public class ElementsLists {
   private Logger logger = Logger.getLogger(ElementsLists.class.getName());
 
   private static ElementsLists instance = new ElementsLists();
-
-  private Map<Object, Map<String, String>> userValues = new HashMap<Object, Map<String, String>>();
 
   private ElementsLists() {}
 
@@ -80,7 +78,7 @@ public class ElementsLists {
    * Get the list of elements with for a particular class type.
    *
    * @param obj Object which class type is returned.
-   * @return a <code>List</code> of objects of class <code>obj.getClass()<code>
+   * @return a <code>List</code> of objects of class <code>obj.getClass()</code>
    */
   public <T> List<T> getElements(T obj) {
     return (List<T>) getElements(obj.getClass());
@@ -90,7 +88,7 @@ public class ElementsLists {
    * Get the list of elements with for a particular class type.
    *
    * @param type The class of the list of objects to return.
-   * @return a <code>List</code> of objects of class <code>type<code>
+   * @return a <code>List</code> of objects of class <code>type</code>
    * @deprecated use <T> List<T> getElements(T obj) instead
    */
   public List getElements(Class type) {
@@ -99,26 +97,6 @@ public class ElementsLists {
       return l;
     else 
       return new ArrayList();
-  }
-
-  
-  public String getUserValues(Object o, String key) {
-    Map<String, String> map = userValues.get(o);
-    if(map == null)
-      return null;
-
-    return map.get(key);
-  }
-
-  public void addUserValue(Object o, String key, String value) {
-    Map map = userValues.get(o);
-    if(map == null) {
-      map = new HashMap<String, String>();
-      userValues.put(o, map);
-    }    
-
-    map.put(key, value);
-
   }
 
 }
