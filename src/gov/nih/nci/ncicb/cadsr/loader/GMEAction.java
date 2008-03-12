@@ -117,14 +117,14 @@ public class GMEAction {
         if(!StringUtil.isEmpty(ocr.getTargetRole())) {
           AlternateName altName = DomainObjectFactory.newAlternateName();
           altName.setType(AlternateName.TYPE_GME_TARGET_XML_LOC_REF);
-          altName.setName(ocr.getTargetRole());
+          altName.setName(ocr.getTargetRole() + "/" + LookupUtil.lookupXMLElementName(ocr.getTarget()));
           ocr.addAlternateName(altName);
         }          
 
         if(!StringUtil.isEmpty(ocr.getSourceRole())) {
           AlternateName altName = DomainObjectFactory.newAlternateName();
           altName.setType(AlternateName.TYPE_GME_SRC_XML_LOC_REF);
-          altName.setName(ocr.getSourceRole());
+          altName.setName(ocr.getSourceRole() + "/" + LookupUtil.lookupXMLElementName(ocr.getSource()));
           ocr.addAlternateName(altName);
         }
         
