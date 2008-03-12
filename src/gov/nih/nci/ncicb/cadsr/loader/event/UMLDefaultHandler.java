@@ -63,9 +63,6 @@ public class UMLDefaultHandler
 
   private InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
 
-  // this list will keep the ValueDomains that may be called something in XMI but are called something else in UML. Since LVD are referred by name from attributes.
-  private Map<String, ValueDomain> listOfVDsWithChangedNames = new HashMap<String, ValueDomain>();
-  
   public UMLDefaultHandler() {
     this.elements = ElementsLists.getInstance();
   }
@@ -151,11 +148,6 @@ public class UMLDefaultHandler
       } else {
         existingVd = result.get(0);
         
-//         // change of VD name
-//         if(!event.getName().equals(existingVd.getLongName())) {
-          
-//         }
-
         vd.setLongName(existingVd.getLongName());
         vd.setPreferredDefinition(existingVd.getPreferredDefinition());
         vd.setVdType(existingVd.getVdType());
@@ -164,7 +156,19 @@ public class UMLDefaultHandler
         vd.setConceptualDomain(existingVd.getConceptualDomain());
         vd.setRepresentation(existingVd.getRepresentation());
 
-        vd.setConceptDerivationRule(existingVd.getConceptDerivationRule());
+        if(existingVd.getConceptDerivationRule() != null)
+          vd.setConceptDerivationRule(existingVd.getConceptDerivationRule());
+        else {
+          vd.setConceptDerivationRule(ConceptUtil.createConceptDerivationRule(new ArrayList<Concept>(), false));
+        }
+
+        vd.setPublicId(existingVd.getPublicId());
+        vd.setVersion(existingVd.getVersion());
+
+        vd.setContext(existingVd.getContext());
+
+        vd.setId(existingVd.getId());
+
       }
     } else {
       vd.setLongName(event.getName());
@@ -984,11 +988,14 @@ public class UMLDefaultHandler
     // update all DE that are mapped to LVD with their actual LVD objects
     {
       List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
+      List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
       for(DataElement de : des) {
         if(StringUtil.isEmpty(de.getPublicId())) {
-          ValueDomain lvd = DEMappingUtil.isMappedToLocalVD(de);
-          if(lvd != null)
-            de.setValueDomain(lvd);
+          for(ValueDomain vd : vds) {
+            String vdName = LookupUtil.lookupFullName(vd);
+            if(vdName.equals(de.getValueDomain().getLongName()))
+              de.setValueDomain(vd);
+          }
         }
       }
     }
