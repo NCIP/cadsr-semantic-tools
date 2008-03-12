@@ -88,7 +88,14 @@ public class CadsrTransformer {
     gov.nih.nci.ncicb.cadsr.domain.ValueDomain outVD = DomainObjectFactory.newValueDomain();    
 
     acPublicToPrivate(outVD, inVD);
-
+    
+    if(inVD.getConceptualDomain() != null)
+      outVD.setConceptualDomain(cdPublicToPrivate(inVD.getConceptualDomain()));
+    if(inVD.getRepresention() != null)
+      outVD.setRepresentation(repPublicToPrivate(inVD.getRepresention()));
+    
+    outVD.setDataType(inVD.getDatatypeName());
+    
     return outVD;
 
   }
