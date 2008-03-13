@@ -181,7 +181,7 @@ public class MapToExistingVDPanel extends JPanel
   private void setSearchedValues(){
     if(tempVD != null){
         if(tempVD.getConceptualDomain() != null){
-            vdPrefDefValueTextField.setText(tempVD.getConceptualDomain().getPreferredDefinition());
+            vdPrefDefValueTextField.setText(tempVD.getPreferredDefinition());
             vdCdIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getConceptualDomain()));
             vdCdLongNameTitleLabelValue.setText(tempVD.getConceptualDomain().getLongName());
         }
@@ -207,7 +207,7 @@ public class MapToExistingVDPanel extends JPanel
         vd.setConceptualDomain(tempVD.getConceptualDomain());
         vd.setRepresentation(tempVD.getRepresentation());
         vd.setDataType(tempVD.getDataType());
-        vd.setPreferredDefinition(tempVD.getConceptualDomain().getPreferredDefinition());
+        vd.setPreferredDefinition(tempVD.getPreferredDefinition());
         vd.setVdType(tempVD.getVdType());
         vd.setPublicId(tempVD.getPublicId());
         vd.setVersion(tempVD.getVersion());
