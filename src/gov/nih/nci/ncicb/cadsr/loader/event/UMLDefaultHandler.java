@@ -167,6 +167,8 @@ public class UMLDefaultHandler
 
         vd.setContext(existingVd.getContext());
 
+        vd.setAudit(existingVd.getAudit());
+
         vd.setId(existingVd.getId());
 
       }
