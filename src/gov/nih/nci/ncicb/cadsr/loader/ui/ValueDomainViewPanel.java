@@ -283,6 +283,7 @@ public class ValueDomainViewPanel extends JPanel
   }
 
     public void applyPressed() {   
+        vd.setPublicId(null);
         vd.setConceptualDomain(tempVD.getConceptualDomain());
         vd.setRepresentation(tempVD.getRepresentation());
         if(vdDatatypeValueCombobox.getSelectedIndex() != 0){

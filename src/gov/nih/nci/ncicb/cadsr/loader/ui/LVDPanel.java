@@ -1,5 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
@@ -18,7 +20,7 @@ import java.beans.PropertyChangeListener;
 /**
  * Wraps the various LVD view Panels and button Panel
  */
-public class LVDPanel extends JPanel implements Editable{
+public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
 
   private ValueDomainViewPanel vdViewPanel;
   private MapToExistingVDPanel mteVDPanel;
@@ -119,8 +121,17 @@ public class LVDPanel extends JPanel implements Editable{
        ((Editable)displayedPanel).applyPressed();
   }
 
-    public void addNavigationListener(NavigationListener listener) 
-    {
+  public void addNavigationListener(NavigationListener listener) {
       vdButtonPanel.addNavigationListener(listener);
-    }
+  }
+
+  public void addReviewListener(ReviewListener listener) {
+  }
+
+  public void updateNode(UMLNode node) {
+  }
+
+  public void navigate(NavigationEvent event) {
+      vdButtonPanel.navigate(event);
+  } 
 }

@@ -502,8 +502,7 @@ public class MainFrame extends JFrame
         newTab(event, node);
 
       } else { // if not, update current tab.
-        NodeViewPanel viewPanel = (NodeViewPanel)
-          viewTabbedPane.getSelectedComponent();
+        NodeViewPanel viewPanel = (NodeViewPanel)viewTabbedPane.getSelectedComponent();
 
         viewTabbedPane.remove(viewTabbedPane.getSelectedIndex());
         viewPanels.remove(viewPanel.getName());
@@ -554,6 +553,7 @@ public class MainFrame extends JFrame
          viewTabbedPane.addTab("ValueDomain", lvdPanel);
          lvdPanel.update((ValueDomain)node.getUserObject(), node);
          lvdPanel.addNavigationListener(navigationPanel);
+         navigationPanel.addNavigationListener(lvdPanel);
          infoLabel.setText("ValueDomain");      
          viewTabbedPane.setSelectedComponent(lvdPanel);
 

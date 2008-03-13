@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
 
@@ -94,4 +95,8 @@ public class VDButtonPanel extends JPanel implements ActionListener,
   {
     applyButtonPanel.addNavigationListener(listener);
   }
+    public void navigate(NavigationEvent evt) {  
+      applyButtonPanel.navigate(evt);
+    }
+    
 }

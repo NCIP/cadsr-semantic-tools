@@ -1,7 +1,5 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
-import gov.nih.nci.ncicb.cadsr.domain.Representation;
-import gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeEvent;
@@ -29,6 +27,8 @@ import java.beans.PropertyChangeEvent;
 
 import java.beans.PropertyChangeListener;
 
+import java.text.DateFormat;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,15 +37,18 @@ public class MapToExistingVDPanel extends JPanel
 {
   private JLabel vdPrefDefTitleLabel = new JLabel("VD Preferred Definition"),
     vdDatatypeTitleLabel = new JLabel("VD Datatype"),
-    vdTypeTitleLabel = new JLabel("VD Type"),
     vdCdIdTitleLabel = new JLabel("VD CD PublicId / Version"),
-    vdRepIdTitleLabel = new JLabel("Representation PublicId / Version"),
-    vdCdLongNameTitleLabel = new JLabel("VD CD Long Name");
+    vdRepIdTitleLabel = new JLabel("Representation Term"),
+    vdCdLongNameTitleLabel = new JLabel("VD CD Long Name"),
+    vdCreatedByLabel = new JLabel("Created By"),
+    vdCreatedDateLabel = new JLabel("Created Date");
   private JLabel vdDatatypeTitleLabelValue = new JLabel(),
     vdTypeTitleLabelValue = new JLabel(),
     vdCdIdTitleLabelValue = new JLabel(),
     vdRepIdTitleLabelValue = new JLabel(),
-    vdCdLongNameTitleLabelValue = new JLabel();
+    vdCdLongNameTitleLabelValue = new JLabel(),
+    vdCreatedByLabelValue = new JLabel(),
+    vdCreatedDateLabelValue = new JLabel();
   private JTextArea vdPrefDefValueTextField = new JTextArea();
   
   private CadsrDialog cadsrVDDialog;
@@ -86,6 +89,7 @@ public class MapToExistingVDPanel extends JPanel
     tempVD.setVdType(vd.getVdType());
     tempVD.setPublicId(vd.getPublicId());
     tempVD.setVersion(vd.getVersion());
+    tempVD.setAudit(vd.getAudit());
 
     if(!isInitialized)
       initUI();
@@ -113,9 +117,6 @@ public class MapToExistingVDPanel extends JPanel
     UIUtil.insertInBag(mainPanel, vdDatatypeTitleLabel, 0, 3);
     UIUtil.insertInBag(mainPanel, vdDatatypeTitleLabelValue, 1, 3);
     
-//    UIUtil.insertInBag(mainPanel, vdTypeTitleLabel, 0, 4);
-//    UIUtil.insertInBag(mainPanel, vdTypeTitleLabelValue, 1, 4);
-    
     UIUtil.insertInBag(mainPanel, vdCdIdTitleLabel, 0, 5);
     UIUtil.insertInBag(mainPanel, vdCdIdTitleLabelValue, 1, 5);
     
@@ -124,6 +125,13 @@ public class MapToExistingVDPanel extends JPanel
 
     UIUtil.insertInBag(mainPanel, vdRepIdTitleLabel, 0, 7);
     UIUtil.insertInBag(mainPanel, vdRepIdTitleLabelValue, 1, 7);
+
+
+    UIUtil.insertInBag(mainPanel, vdCreatedByLabel, 0, 8);
+    UIUtil.insertInBag(mainPanel, vdCreatedByLabelValue, 1, 8);
+
+    UIUtil.insertInBag(mainPanel, vdCreatedDateLabel, 0, 9);
+    UIUtil.insertInBag(mainPanel, vdCreatedDateLabelValue, 1, 9);
 
     JScrollPane scrollPane = new JScrollPane(mainPanel);
     scrollPane.getVerticalScrollBar().setUnitIncrement(30);
@@ -156,23 +164,34 @@ public class MapToExistingVDPanel extends JPanel
         vdCdIdTitleLabelValue.setText("");
         vdCdLongNameTitleLabelValue.setText("");
         vdRepIdTitleLabelValue.setText("");
+        vdCreatedByLabelValue.setText("");
+        vdCreatedDateLabelValue.setText("");
     } else {
-    vdPrefDefValueTextField.setText(tempVD.getConceptualDomain().getPreferredDefinition());
-    vdDatatypeTitleLabelValue.setText(tempVD.getDataType());
-    vdTypeTitleLabelValue.setText(tempVD.getVdType());
-    vdCdIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getConceptualDomain()));
-    vdCdLongNameTitleLabelValue.setText(tempVD.getConceptualDomain().getLongName());
-    vdRepIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
+        vdPrefDefValueTextField.setText(tempVD.getConceptualDomain().getPreferredDefinition());
+        vdDatatypeTitleLabelValue.setText(tempVD.getDataType());
+        vdTypeTitleLabelValue.setText(tempVD.getVdType());
+        vdCdIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getConceptualDomain()));
+        vdCdLongNameTitleLabelValue.setText(tempVD.getConceptualDomain().getLongName());
+        vdRepIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
+        vdCreatedByLabelValue.setText(tempVD.getAudit().getCreatedBy());
+        vdCreatedDateLabelValue.setText(getFormatedDate(tempVD.getAudit().getCreationDate()));
     }
   }
   
   private void setSearchedValues(){
-    vdPrefDefValueTextField.setText(tempVD.getPreferredDefinition());
-    vdDatatypeTitleLabelValue.setText(tempVD.getDataType());
-    vdTypeTitleLabelValue.setText(tempVD.getVdType());
-    vdCdIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getConceptualDomain()));
-    vdCdLongNameTitleLabelValue.setText(tempVD.getConceptualDomain().getLongName());
-    vdRepIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
+    if(tempVD != null){
+        if(tempVD.getConceptualDomain() != null){
+            vdPrefDefValueTextField.setText(tempVD.getConceptualDomain().getPreferredDefinition());
+            vdCdIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getConceptualDomain()));
+            vdCdLongNameTitleLabelValue.setText(tempVD.getConceptualDomain().getLongName());
+        }
+        if(tempVD.getRepresentation() != null)
+            vdRepIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
+        vdDatatypeTitleLabelValue.setText(tempVD.getDataType());
+        vdTypeTitleLabelValue.setText(tempVD.getVdType());
+        vdCreatedByLabelValue.setText(tempVD.getAudit().getCreatedBy());
+        vdCreatedDateLabelValue.setText(getFormatedDate(tempVD.getAudit().getCreationDate()));
+    }
   }  
   public static void main(String args[]) 
   {
@@ -192,6 +211,7 @@ public class MapToExistingVDPanel extends JPanel
         vd.setVdType(tempVD.getVdType());
         vd.setPublicId(tempVD.getPublicId());
         vd.setVersion(tempVD.getVersion());
+        vd.setAudit(tempVD.getAudit());
         
         firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
         fireElementChangeEvent(new ElementChangeEvent(umlNode));
@@ -215,5 +235,9 @@ public class MapToExistingVDPanel extends JPanel
     private void firePropertyChangeEvent(PropertyChangeEvent evt) {
       for(PropertyChangeListener l : propChangeListeners) 
         l.propertyChange(evt);
+    }
+    private String getFormatedDate(java.util.Date date){
+        return DateFormat.getDateTimeInstance().format(date);
+
     }
 }
