@@ -8,10 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 
 public class FreestyleModule {
 
   Search search = new Search();
+
+  private static Logger logger = Logger.getLogger(FreestyleModule.class.getName());
 
   public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDataElements(String searchString) {
     search.restrictResultsByType(SearchAC.DE);
@@ -31,6 +35,8 @@ public class FreestyleModule {
 
   public List<SearchResults> findSearchResults(String searchString, boolean excludeRetired) 
   {
+    long l = new java.util.Date().getTime();
+
     if(excludeRetired) {
       System.out.println("excluding WF Retired");
       search.restrictResultsByWorkflowNotRetired();
@@ -43,6 +49,10 @@ public class FreestyleModule {
     search.setResultsLimit(2000);
 
     Vector<SearchResults> srResult = search.findReturningSearchResults(searchString);
+    
+    int t = (int)((new java.util.Date().getTime() - l)/1000);
+    if(t > 20)
+      logger.debug("It took " + t + "s to run this query: " + searchString);
     
     return srResult;
   }
