@@ -303,7 +303,6 @@ public class CadsrPublicApiModule implements CadsrModule {
       .add(Expression.eq("id", vd.getId()));
     
     Collection<gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue> vdPvs = service.query(criteria, gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue.class.getName());
-    System.out.println("*********************** 2");
     for(gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue vdPv : vdPvs) {
       result.add(vdPv.getPermissibleValue());
     }
