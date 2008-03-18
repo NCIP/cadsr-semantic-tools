@@ -3,21 +3,16 @@ package gov.nih.nci.ncicb.cadsr.loader.ext;
 import gov.nih.nci.cadsr.domain.ComponentConcept;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
-import gov.nih.nci.ncicb.cadsr.domain.bean.DataElementBean;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
-import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
@@ -66,7 +61,7 @@ public class CadsrPublicApiModule implements CadsrModule {
         DetachedCriteria datatypeCriteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.ValueDomain.class, "vd");
         datatypeCriteria.setProjection( Projections.distinct(Projections.projectionList().add( Projections.property("vd.datatypeName"), "datatypeName" )));
         try{
-            List listResult = service.query(datatypeCriteria, gov.nih.nci.cadsr.domain.ValueDomain.class.getName());
+            List<String> listResult = service.query(datatypeCriteria, gov.nih.nci.cadsr.domain.ValueDomain.class.getName());
             return listResult;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -174,7 +169,6 @@ public class CadsrPublicApiModule implements CadsrModule {
         s = "publicID";
         if(field instanceof String)
           field = new Long((String)field);
-//         field = ((Long)field).toString();
       } else if(s.equals("workflowStatus")) {
           s = "workflowStatusName";
       }
@@ -208,7 +202,6 @@ public class CadsrPublicApiModule implements CadsrModule {
     DetachedCriteria deCriteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.DataElement.class, "de");
     
     DetachedCriteria subCriteria = deCriteria.createCriteria("designationCollection");
-//     subCriteria.add(Example.create(CadsrTransformer.altNamePrivateToPublic(altName)));
     subCriteria.add(Expression.eq("name", altName.getName()));
     subCriteria.add(Expression.eq("type", altName.getType()));
 
@@ -300,7 +293,22 @@ public class CadsrPublicApiModule implements CadsrModule {
   public List<gov.nih.nci.ncicb.cadsr.domain.PermissibleValue> getPermissibleValues(gov.nih.nci.ncicb.cadsr.domain.ValueDomain vd)
     throws Exception 
   {
-    throw new RuntimeException("not implemented");
+
+    List<gov.nih.nci.cadsr.domain.PermissibleValue> result = new ArrayList<gov.nih.nci.cadsr.domain.PermissibleValue>();
+    
+    DetachedCriteria criteria = DetachedCriteria.forClass(
+      gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue.class, "vdPv");
+    
+    criteria.createCriteria("enumeratedValueDomain")
+      .add(Expression.eq("id", vd.getId()));
+    
+    Collection<gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue> vdPvs = service.query(criteria, gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue.class.getName());
+    System.out.println("*********************** 2");
+    for(gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue vdPv : vdPvs) {
+      result.add(vdPv.getPermissibleValue());
+    }
+
+    return new ArrayList(CadsrTransformer.pvListPublicToPrivate(result));
   }
 
   public List<gov.nih.nci.ncicb.cadsr.domain.Concept> getConcepts(gov.nih.nci.ncicb.cadsr.domain.ObjectClass oc) {
