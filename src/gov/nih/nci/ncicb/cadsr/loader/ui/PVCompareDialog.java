@@ -5,6 +5,9 @@ import gov.nih.nci.ncicb.cadsr.domain.PermissibleValue;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.Component;
 
 import javax.swing.*;
 
@@ -45,10 +48,10 @@ public class PVCompareDialog extends JDialog {
       caDSRValueDomainsRightList.setSelectedIndex(0);
       rightScrollPane = new JScrollPane(caDSRValueDomainsRightList);
 
-      UIUtil.insertInBag(mainPanel, lvdLabel, 0, 0);
-      UIUtil.insertInBag(mainPanel, leftScrollPane, 0, 1);
-      UIUtil.insertInBag(mainPanel, cadsrLabel, 1, 0);
-      UIUtil.insertInBag(mainPanel, rightScrollPane, 1, 1);
+      mainPanel.add(lvdLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+      mainPanel.add(leftScrollPane, new GridBagConstraints(0, 1, 1, 1, 0.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+      mainPanel.add(cadsrLabel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+      mainPanel.add(rightScrollPane, new GridBagConstraints(1, 1, 1, 1, 0.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
       
       this.add(mainPanel);
       this.setSize(450, 350);
