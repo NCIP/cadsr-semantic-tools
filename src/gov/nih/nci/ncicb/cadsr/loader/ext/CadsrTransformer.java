@@ -341,5 +341,35 @@ public class CadsrTransformer {
 
   }
 
+  public static gov.nih.nci.ncicb.cadsr.domain.PermissibleValue pvPublicToPrivate(gov.nih.nci.cadsr.domain.PermissibleValue inPv) {
+    gov.nih.nci.ncicb.cadsr.domain.PermissibleValue outPv = DomainObjectFactory.newPermissibleValue();
+    
+    outPv.setValue(inPv.getValue());
+    outPv.setValueMeaning(vmPublicToPrivate(inPv.getValueMeaning()));
+
+    return outPv;
+  }
+
+
+  public static gov.nih.nci.ncicb.cadsr.domain.ValueMeaning vmPublicToPrivate(gov.nih.nci.cadsr.domain.ValueMeaning inVm) {
+    gov.nih.nci.ncicb.cadsr.domain.ValueMeaning outVm = DomainObjectFactory.newValueMeaning();
+    
+//    outVm.setValue(inVm.getShortMeaning());
+
+    return outVm;
+  }
+
+  public static Collection<gov.nih.nci.ncicb.cadsr.domain.PermissibleValue> pvListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.PermissibleValue> inPvs) {
+
+    List<gov.nih.nci.ncicb.cadsr.domain.PermissibleValue> outPvs = 
+      new ArrayList<gov.nih.nci.ncicb.cadsr.domain.PermissibleValue>();
+
+    for(gov.nih.nci.cadsr.domain.PermissibleValue privatePv : inPvs) {
+      outPvs.add(pvPublicToPrivate(privatePv));
+    }
+    return outPvs;
+
+  }
+
 
 }
