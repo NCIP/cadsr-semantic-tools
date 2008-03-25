@@ -131,7 +131,7 @@ public class MapToExistingVDPanel extends JPanel
     lvdCadsrButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
           try {
-            List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(vd);
+            List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(tempVD);
             List<PermissibleValue> localPVs = vd.getPermissibleValues();
             PVCompareDialog pvCompareDialog = new PVCompareDialog(localPVs, cadsrPVs);
             pvCompareDialog.setVisible(true);
@@ -212,19 +212,24 @@ public class MapToExistingVDPanel extends JPanel
   
   private void setSearchedValues(){
     if(tempVD != null){
-        if(tempVD.getConceptualDomain() != null){
-            vdPrefDefValueTextField.setText(tempVD.getPreferredDefinition());
-            vdCdIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getConceptualDomain()));
-            vdCdLongNameTitleLabelValue.setText(tempVD.getConceptualDomain().getLongName());
-        }
-        if(tempVD.getRepresentation() != null)
-            vdRepIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
-        vdLongNameLabelValue.setText(tempVD.getLongName());
-        vdDatatypeTitleLabelValue.setText(tempVD.getDataType());
-        vdTypeTitleLabelValue.setText(tempVD.getVdType());
-        vdCreatedByLabelValue.setText(tempVD.getAudit().getCreatedBy());
-        vdCreatedDateLabelValue.setText(getFormatedDate(tempVD.getAudit().getCreationDate()));
-    }
+      if(tempVD.getConceptualDomain() != null){
+        vdPrefDefValueTextField.setText(tempVD.getPreferredDefinition());
+        vdCdIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getConceptualDomain()));
+        vdCdLongNameTitleLabelValue.setText(tempVD.getConceptualDomain().getLongName());
+      }
+      if(tempVD.getRepresentation() != null)
+        vdRepIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
+      vdLongNameLabelValue.setText(tempVD.getLongName());
+      vdDatatypeTitleLabelValue.setText(tempVD.getDataType());
+      vdTypeTitleLabelValue.setText(tempVD.getVdType());
+      vdCreatedByLabelValue.setText(tempVD.getAudit().getCreatedBy());
+      vdCreatedDateLabelValue.setText(getFormatedDate(tempVD.getAudit().getCreationDate()));
+
+      lvdCadsrButton.setVisible(true);
+    } else
+      lvdCadsrButton.setVisible(false);
+      
+    
   }  
   public static void main(String args[]) 
   {
