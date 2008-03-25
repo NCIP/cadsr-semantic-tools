@@ -77,10 +77,6 @@ public class DEPanel extends JPanel
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
 
-    scrollPane = new JScrollPane(mainPanel);
-    
-    // scrollPane.getVerticalScrollBar().setUnitIncrement(30);
-
     UIUtil.insertInBag(mainPanel, clearButton, 0, 5, 2 ,1);
     UIUtil.insertInBag(mainPanel, searchDeButton, 1, 5);
     
@@ -101,9 +97,8 @@ public class DEPanel extends JPanel
     JLabel title = new JLabel("Map to CDE");
     titlePanel.add(title);
 
-    this.add(scrollPane);
+    this.add(mainPanel);
     this.add(titlePanel, BorderLayout.NORTH);
-    this.setSize(300, 300);
     
     searchDeButton.setActionCommand(SEARCH);
     clearButton.setActionCommand(CLEAR);
