@@ -16,6 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -75,6 +76,9 @@ public class DEPanel extends JPanel
   private void initUI() {
     
     this.setLayout(new BorderLayout());
+
+    JPanel flowPanel = new JPanel(new FlowLayout());
+
     JPanel mainPanel = new JPanel(new GridBagLayout());
 
     UIUtil.insertInBag(mainPanel, clearButton, 0, 5, 2 ,1);
@@ -97,7 +101,9 @@ public class DEPanel extends JPanel
     JLabel title = new JLabel("Map to CDE");
     titlePanel.add(title);
 
-    this.add(mainPanel);
+    flowPanel.add(mainPanel);
+
+    this.add(flowPanel);
     this.add(titlePanel, BorderLayout.NORTH);
     
     searchDeButton.setActionCommand(SEARCH);
