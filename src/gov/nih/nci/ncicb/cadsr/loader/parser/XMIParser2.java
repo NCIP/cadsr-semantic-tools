@@ -321,6 +321,7 @@ public class XMIParser2 implements Parser {
     
     UMLClass subClass = g.getSubtype();
     // Check if the parent is not explicitely excluded.
+
     String ppName = LookupUtil.getPackageName(parentClass.getPackage());
     if(StringUtil.isEmpty(ppName) || !isInPackageFilter(ppName)) {
       logger.info(PropertyAccessor.getProperty("skip.inheritance", ppName + "." + parentClass.getName(), LookupUtil.getPackageName(subClass.getPackage()) + "." + subClass.getName()));
@@ -390,6 +391,15 @@ public class XMIParser2 implements Parser {
     for(UMLPackage pkg : model.getPackages()) {
       count = countPackage(pkg, count);
     } 
+    
+    for(UMLAssociation assoc : model.getAssociations()) {
+      count++;
+    }
+
+    for(UMLGeneralization gen : model.getGeneralizations()) {
+      count++;
+    }
+
     return count;
   }
   private int countPackage(UMLPackage pkg, int count) {
@@ -815,6 +825,13 @@ public class XMIParser2 implements Parser {
     NewAssociationEvent event = new NewAssociationEvent();
     event.setRoleName(assoc.getRoleName());
 
+    currentElementIndex++;
+    ProgressEvent evt = new ProgressEvent();
+    evt.setMessage("Parsing Association");
+    evt.setStatus(currentElementIndex);
+    fireProgressEvent(evt);
+
+
     List<UMLAssociationEnd> ends = assoc.getAssociationEnds();
     if(ends.size() != 2) {
       markedAsIgnored.add(assoc);
@@ -912,13 +929,23 @@ public class XMIParser2 implements Parser {
   }
   
   private void fireLastEvents() throws ParserException {
-    for (Iterator<NewAssociationEvent> it = associationEvents.iterator(); it.hasNext();) {
-      listener.newAssociation(it.next());
+//     for (Iterator<NewAssociationEvent> it = associationEvents.iterator(); it.hasNext();) {
+    for(NewAssociationEvent assocEvt : associationEvents) {
+      listener.newAssociation(assocEvt);
     }
 
 
     for(Iterator<String> it = childGeneralizationMap.keySet().iterator(); it.hasNext(); ) {
       String childClass = it.next();
+
+      currentElementIndex++;
+      ProgressEvent evt = new ProgressEvent();
+      evt.setMessage("Parsing Generalization from " + childClass);
+      evt.setStatus(currentElementIndex);
+      fireProgressEvent(evt);
+
+
+
       recursionSet.add(childClass);
       recurseInheritance(childClass);
       
