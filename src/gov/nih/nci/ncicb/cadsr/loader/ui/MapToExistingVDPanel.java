@@ -60,6 +60,7 @@ public class MapToExistingVDPanel extends JPanel
 
   private ValueDomain vd, tempVD;
   private JButton searchButton;
+  private JButton clearButton;
   private JButton lvdCadsrButton;
   private UMLNode umlNode;
   private CadsrModule cadsrModule;
@@ -127,6 +128,10 @@ public class MapToExistingVDPanel extends JPanel
         firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
     }});
 
+    JPanel searchButtonPanel = new JPanel();
+    searchButtonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT)); 
+    searchButtonPanel.add(searchButton);
+
     lvdCadsrButton = new JButton("<html>Compare<br>Values</html>");
     lvdCadsrButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
@@ -141,6 +146,19 @@ public class MapToExistingVDPanel extends JPanel
           } 
         }});
     
+    clearButton = new JButton("Clear");
+    clearButton.setEnabled(false);
+    clearButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          tempVD.setPublicId(null);
+          clearButton.setEnabled(false);
+          initValues();
+      }});
+      
+    JPanel clearButtonPanel = new JPanel();
+    clearButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); 
+    clearButtonPanel.add(clearButton);
+
     UIUtil.insertInBag(mainPanel, vdPrefDefTitleLabel, 0, 1);
     UIUtil.insertInBag(mainPanel, defScrollPane, 1, 1, 3, 2); 
     
@@ -167,17 +185,13 @@ public class MapToExistingVDPanel extends JPanel
     UIUtil.insertInBag(mainPanel, vdCreatedDateLabel, 0, 10);
     UIUtil.insertInBag(mainPanel, vdCreatedDateLabelValue, 1, 10);
 
+    UIUtil.insertInBag(mainPanel, clearButtonPanel, 0, 11);
+    UIUtil.insertInBag(mainPanel, searchButtonPanel, 2, 11);
+
     JScrollPane mainScrollPane = new JScrollPane(mainPanel);
     mainScrollPane.getVerticalScrollBar().setUnitIncrement(30);
 
-    JPanel searchButtonPanel = new JPanel();
-    searchButtonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT)); 
-    searchButtonPanel.add(searchButton);
-//     searchButtonPanel.add(lvdCadsrButton);
-
     this.add(mainScrollPane, BorderLayout.CENTER);
-    this.add(searchButtonPanel, BorderLayout.SOUTH);
-    
   }
   
   private void initValues() 
@@ -226,6 +240,7 @@ public class MapToExistingVDPanel extends JPanel
       vdCreatedDateLabelValue.setText(getFormatedDate(tempVD.getAudit().getCreationDate()));
 
       lvdCadsrButton.setVisible(true);
+      clearButton.setEnabled(true);
     } else
       lvdCadsrButton.setVisible(false);
       
