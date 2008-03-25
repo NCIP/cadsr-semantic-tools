@@ -8,15 +8,28 @@ import java.util.List;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
+import javax.swing.ToolTipManager;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 public class PVCompareDialog extends JDialog implements ActionListener{
 
@@ -35,7 +48,7 @@ public class PVCompareDialog extends JDialog implements ActionListener{
   private List<PermissibleValue> localPermVals = null;
   private List<PermissibleValue> cadsrPermVals = null;
 
-  private Logger logger = Logger.getLogger(PVCompareDialog.class.getName());
+  //private Logger logger = Logger.getLogger(PVCompareDialog.class.getName());
   
   public PVCompareDialog(List<PermissibleValue> localPVs, List<PermissibleValue> cadsrPVs) {
     
@@ -49,8 +62,14 @@ public class PVCompareDialog extends JDialog implements ActionListener{
     mainPanel = new JPanel();
     mainPanel.setLayout(new GridBagLayout());
 
-    lvdScrollPane = new JScrollPane(getLVDPermissibleValuesList(localPVs));
-    cadsrScrollPane = new JScrollPane(getCadsrPermissibleValuesList(cadsrPVs));
+    if((localPVs != null) && (localPVs.size() > 0))
+        lvdScrollPane = new JScrollPane(getLVDPermissibleValuesList(localPVs));
+    else    
+        lvdScrollPane = new JScrollPane(new JLabel("<HTML><B color=RED>&nbsp;&nbsp;No Data Found  </B></HTML>"));
+    if((cadsrPVs != null) && (cadsrPVs.size() > 0))
+        cadsrScrollPane = new JScrollPane(getCadsrPermissibleValuesList(cadsrPVs));
+    else    
+        cadsrScrollPane = new JScrollPane(new JLabel("<HTML><B color=RED>&nbsp;&nbsp;No Data Found  </B></HTML>"));
 
     closeButton = new JButton(" Close ");
     closeButton.addActionListener(this);
@@ -154,6 +173,10 @@ public class PVCompareDialog extends JDialog implements ActionListener{
     public MyCellRenderer() {
       setOpaque(true);
       lbl = new JLabel();
+      FlowLayout fl = new FlowLayout();
+      fl.setAlignment(FlowLayout.TRAILING);
+      setLayout(fl);
+      setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
       add(lbl);
     }
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean iss, boolean chf) {
