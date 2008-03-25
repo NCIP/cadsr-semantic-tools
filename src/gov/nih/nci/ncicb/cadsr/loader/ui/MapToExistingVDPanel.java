@@ -56,7 +56,7 @@ public class MapToExistingVDPanel extends JPanel
   
   private CadsrDialog cadsrVDDialog;
 
-  private JScrollPane scrollPane;
+//   private JScrollPane scrollPane;
 
   private ValueDomain vd, tempVD;
   private JButton searchButton;
@@ -71,14 +71,14 @@ public class MapToExistingVDPanel extends JPanel
 
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
-      super.addPropertyChangeListener(l);;
-      propChangeListeners.add(l);
+    super.addPropertyChangeListener(l);;
+    propChangeListeners.add(l);
   }
-
-
+  
+  
   public MapToExistingVDPanel() {
-      if(!isInitialized)
-        initUI();
+    if(!isInitialized)
+      initUI();
   }
   
   public void update(ValueDomain vd, UMLNode umlNode) 
@@ -113,13 +113,39 @@ public class MapToExistingVDPanel extends JPanel
     vdPrefDefValueTextField.setLineWrap(true);
     vdPrefDefValueTextField.setEnabled(false);
     vdPrefDefValueTextField.setWrapStyleWord(true);
-    scrollPane = new JScrollPane(vdPrefDefValueTextField);
-    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-    scrollPane.setPreferredSize(new Dimension(200, 100));
+    JScrollPane defScrollPane = new JScrollPane(vdPrefDefValueTextField);
+    defScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    defScrollPane.setPreferredSize(new Dimension(200, 100));
       
-    UIUtil.insertInBag(mainPanel, vdPrefDefTitleLabel, 0, 1);
-    UIUtil.insertInBag(mainPanel, scrollPane, 1, 1, 3, 1); 
+    searchButton = new JButton("Search Value Domains");
+    searchButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+        cadsrVDDialog.setAlwaysOnTop(true);
+        cadsrVDDialog.setVisible(true);
+        tempVD = (ValueDomain)cadsrVDDialog.getAdminComponent();
+        setSearchedValues();
+        firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
+    }});
+
+    lvdCadsrButton = new JButton("<html>Compare<br>Values</html>");
+    lvdCadsrButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          try {
+            List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(vd);
+            List<PermissibleValue> localPVs = vd.getPermissibleValues();
+            PVCompareDialog pvCompareDialog = new PVCompareDialog(localPVs, cadsrPVs);
+            pvCompareDialog.setVisible(true);
+            pvCompareDialog.setAlwaysOnTop(true);
+          } catch (Exception e) {
+            logger.error(e);
+          } 
+        }});
     
+    UIUtil.insertInBag(mainPanel, vdPrefDefTitleLabel, 0, 1);
+    UIUtil.insertInBag(mainPanel, defScrollPane, 1, 1, 3, 2); 
+    
+    UIUtil.insertInBag(mainPanel, lvdCadsrButton, 2, 1, 1, 10);
+
     UIUtil.insertInBag(mainPanel, vdLongNameLabel, 0, 3);
     UIUtil.insertInBag(mainPanel, vdLongNameLabelValue, 1, 3);
 
@@ -141,38 +167,15 @@ public class MapToExistingVDPanel extends JPanel
     UIUtil.insertInBag(mainPanel, vdCreatedDateLabel, 0, 10);
     UIUtil.insertInBag(mainPanel, vdCreatedDateLabelValue, 1, 10);
 
-    JScrollPane scrollPane = new JScrollPane(mainPanel);
-    scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+    JScrollPane mainScrollPane = new JScrollPane(mainPanel);
+    mainScrollPane.getVerticalScrollBar().setUnitIncrement(30);
 
-    searchButton = new JButton("Search Value Domains");
-    searchButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-        cadsrVDDialog.setAlwaysOnTop(true);
-        cadsrVDDialog.setVisible(true);
-        tempVD = (ValueDomain)cadsrVDDialog.getAdminComponent();
-        setSearchedValues();
-        firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
-    }});
-
-    lvdCadsrButton = new JButton("Display Permissible Values");
-    lvdCadsrButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-            try {
-                List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(vd);
-                List<PermissibleValue> localPVs = vd.getPermissibleValues();
-                PVCompareDialog pvCompareDialog = new PVCompareDialog(localPVs, cadsrPVs);
-                pvCompareDialog.setVisible(true);
-                pvCompareDialog.setAlwaysOnTop(true);
-            } catch (Exception e) {
-                logger.error(e);
-            } 
-    }});
     JPanel searchButtonPanel = new JPanel();
-    searchButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); 
+    searchButtonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT)); 
     searchButtonPanel.add(searchButton);
-    searchButtonPanel.add(lvdCadsrButton);
+//     searchButtonPanel.add(lvdCadsrButton);
 
-    this.add(scrollPane, BorderLayout.CENTER);
+    this.add(mainScrollPane, BorderLayout.CENTER);
     this.add(searchButtonPanel, BorderLayout.SOUTH);
     
   }
@@ -190,6 +193,8 @@ public class MapToExistingVDPanel extends JPanel
         vdRepIdTitleLabelValue.setText("");
         vdCreatedByLabelValue.setText("");
         vdCreatedDateLabelValue.setText("");
+
+        lvdCadsrButton.setVisible(false);
     } else {
         vdPrefDefValueTextField.setText(tempVD.getPreferredDefinition());
         vdLongNameLabelValue.setText(tempVD.getLongName());
@@ -200,6 +205,8 @@ public class MapToExistingVDPanel extends JPanel
         vdRepIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
         vdCreatedByLabelValue.setText(tempVD.getAudit().getCreatedBy());
         vdCreatedDateLabelValue.setText(getFormatedDate(tempVD.getAudit().getCreationDate()));
+
+        lvdCadsrButton.setVisible(true);
     }
   }
   
