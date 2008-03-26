@@ -66,6 +66,7 @@ public class MapToExistingVDPanel extends JPanel
   private CadsrModule cadsrModule;
 
   private boolean isInitialized = false;
+  private boolean isSearched = false;
   private List<ElementChangeListener> changeListeners = new ArrayList<ElementChangeListener>();
   private List<PropertyChangeListener> propChangeListeners = new ArrayList<PropertyChangeListener>();  
   private Logger logger = Logger.getLogger(MapToExistingVDPanel.class.getName());
@@ -125,6 +126,7 @@ public class MapToExistingVDPanel extends JPanel
         cadsrVDDialog.setVisible(true);
         tempVD = (ValueDomain)cadsrVDDialog.getAdminComponent();
         setSearchedValues();
+        isSearched = true;
         firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
     }});
 
@@ -147,12 +149,27 @@ public class MapToExistingVDPanel extends JPanel
         }});
     
     clearButton = new JButton("Clear");
-    clearButton.setEnabled(false);
     clearButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
-          tempVD.setPublicId(null);
-          clearButton.setEnabled(false);
-          initValues();
+//            if(tempVD != null && tempVD.getPublicId() != null)
+//                tempVD.setPublicId(null);
+             vdPrefDefValueTextField.setText("");
+             vdLongNameLabelValue.setText("");
+             vdDatatypeTitleLabelValue.setText("");
+             vdTypeTitleLabelValue.setText("");
+             vdCdIdTitleLabelValue.setText("");
+             vdCdLongNameTitleLabelValue.setText("");
+             vdRepIdTitleLabelValue.setText("");
+             vdCreatedByLabelValue.setText("");
+             vdCreatedDateLabelValue.setText("");
+             //tempVD.setPublicId(null);
+             lvdCadsrButton.setVisible(false);
+//            initValues();
+             if(isSearched) {
+                 firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
+                 fireElementChangeEvent(new ElementChangeEvent(umlNode));
+             }
+             isSearched = false;
       }});
       
     JPanel clearButtonPanel = new JPanel();
@@ -196,7 +213,6 @@ public class MapToExistingVDPanel extends JPanel
   
   private void initValues() 
   {
-  
     if(StringUtil.isEmpty(tempVD.getPublicId())) {
         vdPrefDefValueTextField.setText("");
         vdLongNameLabelValue.setText("");
@@ -240,9 +256,8 @@ public class MapToExistingVDPanel extends JPanel
       vdCreatedDateLabelValue.setText(getFormatedDate(tempVD.getAudit().getCreationDate()));
 
       lvdCadsrButton.setVisible(true);
-      clearButton.setEnabled(true);
-    } else
-      lvdCadsrButton.setVisible(false);
+    } //else
+//      lvdCadsrButton.setVisible(false);
       
     
   }  
