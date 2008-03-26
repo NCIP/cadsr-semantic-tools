@@ -82,14 +82,15 @@ public class ConceptCodeValidator implements Validator {
     List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
     if(vds != null)
       for(ValueDomain vd: vds) {
-        if(vd.getConceptDerivationRule().getComponentConcepts().size() == 0)
-          items.addItem
-            (new ValidationConceptWarning
-             (PropertyAccessor.getProperty
-              ("vd.missing.concept", vd.getLongName()), vd));
-        else {
-          checkConcepts(vd);
-        }
+        if(vd.getConceptDerivationRule() != null)
+          if(vd.getConceptDerivationRule().getComponentConcepts().size() == 0)
+            items.addItem
+              (new ValidationConceptWarning
+               (PropertyAccessor.getProperty
+                ("vd.missing.concept", vd.getLongName()), vd));
+          else {
+            checkConcepts(vd);
+          }
       }
 
 
