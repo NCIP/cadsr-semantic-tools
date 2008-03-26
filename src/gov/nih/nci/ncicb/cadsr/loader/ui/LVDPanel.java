@@ -17,6 +17,8 @@ import java.awt.*;
 
 import java.beans.PropertyChangeListener;
 
+import org.apache.log4j.Logger;
+
 /**
  * Wraps the various LVD view Panels and button Panel
  */
@@ -35,6 +37,8 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   private boolean isInitialized = false;
   
   private JPanel displayedPanel;
+
+  private static Logger logger = Logger.getLogger(LVDPanel.class.getName());
     
   public LVDPanel() {
   }
@@ -129,6 +133,7 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   }
 
   public void updateNode(UMLNode node) {
+    logger.warn("updateNode not implemented");
   }
 
   public void navigate(NavigationEvent event) {
