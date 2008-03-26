@@ -89,15 +89,6 @@ public class ValueDomainViewPanel extends JPanel
 
   }
   
-//  public ValueDomainViewPanel(ValueDomain vd, UMLNode umlNode)
-//  {
-//
-//    this.umlNode = umlNode;
-//    this.vd = vd;
-//    initUI();
-//    initValues();
-//  }
-  
   public void update(ValueDomain vd, UMLNode umlNode) 
   {
     this.vd = vd;
@@ -127,9 +118,11 @@ public class ValueDomainViewPanel extends JPanel
     JPanel mainPanel = new JPanel(new GridBagLayout());
     applyButtonPanel = new ApplyButtonPanel(this, (ValueDomainNode)umlNode);
     addPropertyChangeListener(applyButtonPanel);
-    
+
+    this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     populateDatatypeCombobox();
-     
+    this.setCursor(Cursor.getDefaultCursor());
+ 
     JPanel vdTypeRadioButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     vdTypeRadioButtonGroup.add(vdTypeERadioButton);
     vdTypeRadioButtonGroup.add(vdTypeNRadioButton);
