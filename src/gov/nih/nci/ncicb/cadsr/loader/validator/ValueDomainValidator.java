@@ -94,33 +94,56 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
             List<PermissibleValue> localPVs = vd.getPermissibleValues();
             
             if(!comparePVLists(cadsrPVs, localPVs)) {
-              if(ignoreVD)
-                items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
-              else {
-                String[] options = PropertyAccessor.getProperty("local.vd.reuse.options").split("<-->");
-                
+//               if(ignoreVD)
+              items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
+//               else {
 
-                ValidationQuestion question = 
-                  new ValidationQuestion(
-                    PropertyAccessor.getProperty("local.vd.reuse.message"),
-                    vd,
-                    options);
-                items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
-              }
+                
+                // not doing theoption thing for now
+//                 String[] options = PropertyAccessor.getProperty("local.vd.reuse.options").split("<-->");
+//                 ValidationQuestion question = 
+//                   new ValidationQuestion(
+//                     PropertyAccessor.getProperty("local.vd.reuse.message"),
+//                     vd,
+//                     options);
+//                 items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
             }
           } catch (Exception e) {
             logger.error(e);
+            e.printStackTrace();
           } // end of try-catch
         } else {
-          // Search only by long Name
-          ValueDomain newVd = DomainObjectFactory.newValueDomain();
-          newVd.setLongName(vd.getLongName());
+          ValueDomain cadsrVD = null;          
+          
+          {
+            Map<String, Object> queryFields = 
+              new HashMap<String, Object>();
+            queryFields.put(CadsrModule.LONG_NAME, vd.getLongName());
+            queryFields.put("context.name", UMLDefaults.getInstance().getContext().getName());
+            
+            try {
+              Collection<ValueDomain> result =  cadsrModule.findValueDomain(queryFields);
+              
+              if(result.size() > 0) 
+                cadsrVD = result.iterator().next();
+              
+            } catch (Exception e){
+              logger.error(e);
+            } 
+          }
           
           if(StringUtil.isEmpty(vd.getPreferredDefinition())) {
             items.addItem
               (new ValidationError
                (PropertyAccessor.getProperty
                 ("vd.missing.definition", vd.getLongName()), vd));
+          } else if (cadsrVD != null ) {
+            if(!cadsrVD.getPreferredDefinition().equals(vd.getPreferredDefinition())) {
+              if(ignoreVD)
+                items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.definition.mismatch", vd.getLongName()), vd));
+              else
+                items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.definition.mismatch", vd.getLongName()), vd));
+            }
           }
           
           if(StringUtil.isEmpty(vd.getVdType())) {
@@ -133,6 +156,13 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
               (new ValidationError
                (PropertyAccessor.getProperty
                 ("vd.wrong.vdtype", vd.getLongName()), vd));
+          } else if (cadsrVD != null ) {
+            if(!cadsrVD.getVdType().equals(vd.getVdType())) {
+              if(ignoreVD)
+                items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.type.mismatch", vd.getLongName()), vd));
+              else
+                items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.type.mismatch", vd.getLongName()), vd));
+            }
           }
         
         
@@ -149,19 +179,44 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
                 (new ValidationError
                  (PropertyAccessor.getProperty
                   ("vd.invalid.datatype", vd.getLongName()), vd));
+            else if (cadsrVD != null ) {
+              if(!cadsrVD.getDataType().equals(vd.getDataType())) {
+                if(ignoreVD)
+                  items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.datatype.mismatch", vd.getLongName()), vd));
+                else
+                  items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.datatype.mismatch", vd.getLongName()), vd));
+              }
+            }
           }
-        
+          
           if(StringUtil.isEmpty(vd.getConceptualDomain().getPublicId())) {
             items.addItem
               (new ValidationError
                (PropertyAccessor.getProperty
                 ("vd.missing.cdId", vd.getLongName()), vd));
+          } else if (cadsrVD != null ) {
+            if(!cadsrVD.getConceptualDomain().getPublicId().equals(vd.getConceptualDomain().getPublicId())
+               ) {
+              if(ignoreVD)
+                items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.cd.id.mismatch", vd.getLongName()), vd));
+              else
+                items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.cd.id.mismatch", vd.getLongName()), vd));
+            }
           }
+
           if(vd.getConceptualDomain().getVersion() == null) {
             items.addItem
               (new ValidationError
                (PropertyAccessor.getProperty
                 ("vd.missing.cdVersion", vd.getLongName()), vd));
+          } else if (cadsrVD != null ) {
+            if(!cadsrVD.getConceptualDomain().getVersion().equals(vd.getConceptualDomain().getVersion())
+               ) {
+              if(ignoreVD)
+                items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.cd.version.mismatch", vd.getLongName()), vd));
+              else
+                items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.cd.version.mismatch", vd.getLongName()), vd));
+            }
           }
 
           if(StringUtil.isEmpty(vd.getRepresentation().getPublicId())) {
@@ -169,12 +224,30 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
               (new ValidationError
                (PropertyAccessor.getProperty
                 ("vd.missing.repTermId", vd.getLongName()), vd));
+          } else if (cadsrVD != null ) {
+            if(!cadsrVD.getRepresentation().getPublicId().equals(vd.getRepresentation().getPublicId())
+               ) {
+              if(ignoreVD)
+                items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.repterm.id.mismatch", vd.getLongName()), vd));
+              else
+                items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.repterm.id.mismatch", vd.getLongName()), vd));
+            }
           }
+
+
           if(vd.getRepresentation().getVersion() == null) {
             items.addItem
               (new ValidationError
                (PropertyAccessor.getProperty
                 ("vd.missing.repTermVersion", vd.getLongName()), vd));
+          } else if (cadsrVD != null ) {
+            if(!cadsrVD.getRepresentation().getVersion().equals(vd.getRepresentation().getVersion())
+               ) {
+              if(ignoreVD)
+                items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.repterm.version.mismatch", vd.getLongName()), vd));
+              else
+                items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.repterm.version.mismatch", vd.getLongName()), vd));
+            }
           }
         
 
@@ -234,25 +307,13 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
           }
 
 
-          Map<String, Object> queryFields = 
-            new HashMap<String, Object>();
-          queryFields.put(CadsrModule.LONG_NAME, vd.getLongName());
-          queryFields.put("context.name", UMLDefaults.getInstance().getContext().getName());
-
-          try {
-            Collection<ValueDomain> result =  cadsrModule.findValueDomain(queryFields);
-          
-//             Boolean ignoreVD = (Boolean)UserSelections.getInstance().getProperty("ignore-vd");
-//             if(ignoreVD == null)
-//               ignoreVD = false;
-
-            if(result.size() > 0) {
-              // Check if VD in caDSR is the same by comparing it's permissible values
+          if(cadsrVD != null) {
+            // Check if VD in caDSR is the same by comparing it's permissible values
             
-              ValueDomain cadsrVD = result.iterator().next();
+            try {
               List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(cadsrVD);
               List<PermissibleValue> localPVs = vd.getPermissibleValues();
-            
+              
               if(!comparePVLists(cadsrPVs, localPVs)) {
                 if(ignoreVD)
                   items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
@@ -264,10 +325,10 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
                 vd.setPublicId(cadsrVD.getPublicId());
                 vd.setVersion(cadsrVD.getVersion());
               }
-            }
-          } catch (Exception e){
-            logger.error(e);
-          } // end of try-catch
+            } catch (Exception e) {
+              logger.error(e);
+            } // end of try-catch
+          }
         }
       }    
         
@@ -291,26 +352,28 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
     }
     
     for(ValueDomain vd : vds) {
-      List<ComponentConcept> vdList = vd.getConceptDerivationRule().getComponentConcepts();
-      List<Concept> vdConceptList = new ArrayList<Concept>();
-      for(ComponentConcept cc : vdList)
-            vdConceptList.add(cc.getConcept());
-      if(vdConceptList.isEmpty())
-        break;
-      for(ValueDomain currentVd : vds)     
-        if(vd != currentVd) {
-         List<ComponentConcept> currentVdList = currentVd.getConceptDerivationRule().getComponentConcepts();
-         List<Concept> currentVdConceptList = new ArrayList<Concept>();
-         for(ComponentConcept cc : currentVdList)
-          currentVdConceptList.add(cc.getConcept());
-        if(currentVdConceptList.isEmpty())
+      if(vd.getConceptDerivationRule() != null) {
+        List<ComponentConcept> vdList = vd.getConceptDerivationRule().getComponentConcepts();
+        List<Concept> vdConceptList = new ArrayList<Concept>();
+        for(ComponentConcept cc : vdList)
+          vdConceptList.add(cc.getConcept());
+        if(vdConceptList.isEmpty())
           break;
-        if(vdConceptList.size() == currentVdConceptList.size()
-          && vdConceptList.containsAll(currentVdConceptList)) 
-          items.addItem(new ValidationError
-                        (PropertyAccessor.getProperty
-                        ("vd.same.concepts", vd.getLongName(), currentVd.getLongName()),vd));         
-        }
+        for(ValueDomain currentVd : vds)     
+          if(vd != currentVd && currentVd.getConceptDerivationRule() != null) {
+            List<ComponentConcept> currentVdList = currentVd.getConceptDerivationRule().getComponentConcepts();
+            List<Concept> currentVdConceptList = new ArrayList<Concept>();
+            for(ComponentConcept cc : currentVdList)
+              currentVdConceptList.add(cc.getConcept());
+            if(currentVdConceptList.isEmpty())
+              break;
+            if(vdConceptList.size() == currentVdConceptList.size()
+               && vdConceptList.containsAll(currentVdConceptList)) 
+              items.addItem(new ValidationError
+                            (PropertyAccessor.getProperty
+                             ("vd.same.concepts", vd.getLongName(), currentVd.getLongName()),vd));         
+          }
+      }
     }
     }
     return items;
