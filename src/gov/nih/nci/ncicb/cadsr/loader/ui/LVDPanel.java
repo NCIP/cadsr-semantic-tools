@@ -4,18 +4,24 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
-
 import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeListener;
-
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 
-import java.util.*;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 
 import java.beans.PropertyChangeListener;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
  * Wraps the various LVD view Panels and button Panel
@@ -96,8 +102,9 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
     CardLayout layout = (CardLayout)cardPanel.getLayout();
     layout.show(cardPanel, key);
     displayedPanel = panelKeyMap.get(key);
-    if((Editable)displayedPanel instanceof ValueDomainViewPanel)
+    if((Editable)displayedPanel instanceof ValueDomainViewPanel){
         vdButtonPanel.switchButton.setEnabled(true);
+    }
     else
         if(mteVDPanel.getPubId() != null)
             vdButtonPanel.switchButton.setEnabled(false);
@@ -126,10 +133,17 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
 
   public void applyPressed() throws ApplyException {
     if((Editable)displayedPanel instanceof MapToExistingVDPanel)
-      if(mteVDPanel.getPubId() != null)
+      if(mteVDPanel.getPubId() != null) //Apply Button clicked after search
           vdButtonPanel.switchButton.setEnabled(false);
-      else
+      else {// Apply Button clicked after clear, set all values to null for ValueDomainViewPanel
           vdButtonPanel.switchButton.setEnabled(true);
+          vdViewPanel.vdPrefDefValueTextField.setText("");
+          vdViewPanel.vdDatatypeValueCombobox.setSelectedIndex(0);
+          vdViewPanel.tmpInvisible.setSelected(true);
+          vdViewPanel.vdCDPublicIdJLabel.setText("");
+          vdViewPanel.vdCdLongNameValueJLabel.setText("Unable to lookup CD Long Name");
+          vdViewPanel.vdRepIdValueJLabel.setText("");
+      }
     else
         vdButtonPanel.switchButton.setEnabled(true);
     

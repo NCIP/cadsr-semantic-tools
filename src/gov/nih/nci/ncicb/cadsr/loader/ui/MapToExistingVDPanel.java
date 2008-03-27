@@ -121,19 +121,20 @@ public class MapToExistingVDPanel extends JPanel
         cadsrVDDialog.setAlwaysOnTop(true);
         cadsrVDDialog.setVisible(true);
         ValueDomain _vd = (ValueDomain)cadsrVDDialog.getAdminComponent();
-        tempVD.setPublicId(_vd.getPublicId());
-        tempVD.setConceptualDomain(_vd.getConceptualDomain());
-        tempVD.setPreferredDefinition(_vd.getPreferredDefinition());
-        tempVD.setRepresentation(_vd.getRepresentation());
-        tempVD.setLongName(_vd.getLongName());
-        tempVD.setDataType(_vd.getDataType());
-        tempVD.setVdType(_vd.getVdType());
-        tempVD.setVersion(_vd.getVersion());
-        tempVD.setAudit(_vd.getAudit());
-        
-        setSearchedValues();
-        isSearched = true;
-        firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
+        if(_vd != null){
+            tempVD.setPublicId(_vd.getPublicId());
+            tempVD.setConceptualDomain(_vd.getConceptualDomain());
+            tempVD.setPreferredDefinition(_vd.getPreferredDefinition());
+            tempVD.setRepresentation(_vd.getRepresentation());
+            tempVD.setLongName(_vd.getLongName());
+            tempVD.setDataType(_vd.getDataType());
+            tempVD.setVdType(_vd.getVdType());
+            tempVD.setVersion(_vd.getVersion());
+            tempVD.setAudit(_vd.getAudit());
+            setSearchedValues();
+            isSearched = true;
+            firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
+        }
     }});
 
     JPanel searchButtonPanel = new JPanel();
@@ -175,9 +176,8 @@ public class MapToExistingVDPanel extends JPanel
              tempVD.setDataType("");
              tempVD.setVdType(null);
              tempVD.setPublicId(null);
-             if(isSearched) {
+             if(isSearched) 
                  firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
-             }
              isSearched = false;
       }});
       

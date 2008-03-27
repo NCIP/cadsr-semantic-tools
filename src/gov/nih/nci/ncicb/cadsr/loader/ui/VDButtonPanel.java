@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 public class VDButtonPanel extends JPanel implements ActionListener, 
   PropertyChangeListener
 {
-  private JButton switchButton;
+  public JButton switchButton;
 
   private ApplyButtonPanel applyButtonPanel;
 
