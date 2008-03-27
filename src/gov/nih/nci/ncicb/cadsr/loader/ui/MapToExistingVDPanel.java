@@ -53,15 +53,12 @@ public class MapToExistingVDPanel extends JPanel
     vdCreatedByLabelValue = new JLabel(),
     vdCreatedDateLabelValue = new JLabel();
   private JTextArea vdPrefDefValueTextField = new JTextArea();
-  
-  private CadsrDialog cadsrVDDialog;
-
-//   private JScrollPane scrollPane;
-
-  private ValueDomain vd, tempVD;
   private JButton searchButton;
   private JButton clearButton;
   private JButton lvdCadsrButton;
+  
+  private CadsrDialog cadsrVDDialog;
+  private ValueDomain vd, tempVD;
   private UMLNode umlNode;
   private CadsrModule cadsrModule;
 
@@ -71,7 +68,6 @@ public class MapToExistingVDPanel extends JPanel
   private List<PropertyChangeListener> propChangeListeners = new ArrayList<PropertyChangeListener>();  
   private Logger logger = Logger.getLogger(MapToExistingVDPanel.class.getName());
 
-  
   public void addPropertyChangeListener(PropertyChangeListener l) {
     super.addPropertyChangeListener(l);;
     propChangeListeners.add(l);
@@ -124,7 +120,17 @@ public class MapToExistingVDPanel extends JPanel
         public void actionPerformed(ActionEvent evt) {
         cadsrVDDialog.setAlwaysOnTop(true);
         cadsrVDDialog.setVisible(true);
-        tempVD = (ValueDomain)cadsrVDDialog.getAdminComponent();
+        ValueDomain _vd = (ValueDomain)cadsrVDDialog.getAdminComponent();
+        tempVD.setPublicId(_vd.getPublicId());
+        tempVD.setConceptualDomain(_vd.getConceptualDomain());
+        tempVD.setPreferredDefinition(_vd.getPreferredDefinition());
+        tempVD.setRepresentation(_vd.getRepresentation());
+        tempVD.setLongName(_vd.getLongName());
+        tempVD.setDataType(_vd.getDataType());
+        tempVD.setVdType(_vd.getVdType());
+        tempVD.setVersion(_vd.getVersion());
+        tempVD.setAudit(_vd.getAudit());
+        
         setSearchedValues();
         isSearched = true;
         firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
@@ -145,14 +151,13 @@ public class MapToExistingVDPanel extends JPanel
             pvCompareDialog.setAlwaysOnTop(true);
           } catch (Exception e) {
             logger.error(e);
+            e.printStackTrace();
           } 
         }});
     
     clearButton = new JButton("Clear");
     clearButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
-//            if(tempVD != null && tempVD.getPublicId() != null)
-//                tempVD.setPublicId(null);
              vdPrefDefValueTextField.setText("");
              vdLongNameLabelValue.setText("");
              vdDatatypeTitleLabelValue.setText("");
@@ -162,12 +167,16 @@ public class MapToExistingVDPanel extends JPanel
              vdRepIdTitleLabelValue.setText("");
              vdCreatedByLabelValue.setText("");
              vdCreatedDateLabelValue.setText("");
-             //tempVD.setPublicId(null);
              lvdCadsrButton.setVisible(false);
-//            initValues();
+             tempVD.setConceptualDomain(null);
+             tempVD.setPreferredDefinition("");
+             tempVD.setRepresentation(null);
+             tempVD.setLongName("");
+             tempVD.setDataType("");
+             tempVD.setVdType(null);
+             tempVD.setPublicId(null);
              if(isSearched) {
                  firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
-                 fireElementChangeEvent(new ElementChangeEvent(umlNode));
              }
              isSearched = false;
       }});
@@ -249,18 +258,23 @@ public class MapToExistingVDPanel extends JPanel
       }
       if(tempVD.getRepresentation() != null)
         vdRepIdTitleLabelValue.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
-      vdLongNameLabelValue.setText(tempVD.getLongName());
-      vdDatatypeTitleLabelValue.setText(tempVD.getDataType());
-      vdTypeTitleLabelValue.setText(tempVD.getVdType());
-      vdCreatedByLabelValue.setText(tempVD.getAudit().getCreatedBy());
-      vdCreatedDateLabelValue.setText(getFormatedDate(tempVD.getAudit().getCreationDate()));
+
+      if(tempVD.getLongName() != null &&
+        !tempVD.getLongName().equals("Unable to lookup CD Long Name"))
+            vdLongNameLabelValue.setText(tempVD.getLongName());
+      if(tempVD.getDataType() != null)
+        vdDatatypeTitleLabelValue.setText(tempVD.getDataType());
+      if(tempVD.getVdType() != null)
+        vdTypeTitleLabelValue.setText(tempVD.getVdType());
+      if(tempVD.getAudit() != null){
+        vdCreatedByLabelValue.setText(tempVD.getAudit().getCreatedBy());
+        vdCreatedDateLabelValue.setText(getFormatedDate(tempVD.getAudit().getCreationDate()));
+      }
 
       lvdCadsrButton.setVisible(true);
-    } //else
-//      lvdCadsrButton.setVisible(false);
-      
-    
+    }
   }  
+
   public static void main(String args[]) 
   {
 //    JFrame frame = new JFrame();
@@ -284,7 +298,7 @@ public class MapToExistingVDPanel extends JPanel
         vd.setId(tempVD.getId());
         
         firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
-        fireElementChangeEvent(new ElementChangeEvent(umlNode));
+        fireElementChangeEvent(new ElementChangeEvent((Object)umlNode));
     }
 
     public void setCadsrVDDialog(CadsrDialog cadsrVDDialog) {
@@ -309,5 +323,9 @@ public class MapToExistingVDPanel extends JPanel
     private String getFormatedDate(java.util.Date date){
         return DateFormat.getDateTimeInstance().format(date);
 
+    }
+
+    public String getPubId() {
+        return tempVD.getPublicId();
     }
 }

@@ -17,8 +17,6 @@ import java.awt.*;
 
 import java.beans.PropertyChangeListener;
 
-import org.apache.log4j.Logger;
-
 /**
  * Wraps the various LVD view Panels and button Panel
  */
@@ -37,8 +35,6 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   private boolean isInitialized = false;
   
   private JPanel displayedPanel;
-
-  private static Logger logger = Logger.getLogger(LVDPanel.class.getName());
     
   public LVDPanel() {
   }
@@ -100,6 +96,13 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
     CardLayout layout = (CardLayout)cardPanel.getLayout();
     layout.show(cardPanel, key);
     displayedPanel = panelKeyMap.get(key);
+    if((Editable)displayedPanel instanceof ValueDomainViewPanel)
+        vdButtonPanel.switchButton.setEnabled(true);
+    else
+        if(mteVDPanel.getPubId() != null)
+            vdButtonPanel.switchButton.setEnabled(false);
+        else
+            vdButtonPanel.switchButton.setEnabled(true);
   }
 
   public void setVdViewPanel(ValueDomainViewPanel vdViewPanel) {
@@ -122,7 +125,15 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   }
 
   public void applyPressed() throws ApplyException {
-       ((Editable)displayedPanel).applyPressed();
+    if((Editable)displayedPanel instanceof MapToExistingVDPanel)
+      if(mteVDPanel.getPubId() != null)
+          vdButtonPanel.switchButton.setEnabled(false);
+      else
+          vdButtonPanel.switchButton.setEnabled(true);
+    else
+        vdButtonPanel.switchButton.setEnabled(true);
+    
+    ((Editable)displayedPanel).applyPressed();
   }
 
   public void addNavigationListener(NavigationListener listener) {
@@ -133,7 +144,6 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   }
 
   public void updateNode(UMLNode node) {
-    logger.warn("updateNode not implemented");
   }
 
   public void navigate(NavigationEvent event) {
