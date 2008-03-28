@@ -106,8 +106,9 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
         vdButtonPanel.switchButton.setEnabled(true);
     }
     else
-        if(mteVDPanel.getPubId() != null)
+        if(mteVDPanel.getPubId() != null && mteVDPanel.isApplied()){
             vdButtonPanel.switchButton.setEnabled(false);
+        }
         else
             vdButtonPanel.switchButton.setEnabled(true);
   }
@@ -133,8 +134,10 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
 
   public void applyPressed() throws ApplyException {
     if((Editable)displayedPanel instanceof MapToExistingVDPanel)
-      if(mteVDPanel.getPubId() != null) //Apply Button clicked after search
+      if(mteVDPanel.getPubId() != null) {//Apply Button clicked after search
           vdButtonPanel.switchButton.setEnabled(false);
+          mteVDPanel.setApplied(false);
+      }
       else {// Apply Button clicked after clear, set all values to null for ValueDomainViewPanel
           vdButtonPanel.switchButton.setEnabled(true);
           vdViewPanel.vdPrefDefValueTextField.setText("");
@@ -143,6 +146,7 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
           vdViewPanel.vdCDPublicIdJLabel.setText("");
           vdViewPanel.vdCdLongNameValueJLabel.setText("Unable to lookup CD Long Name");
           vdViewPanel.vdRepIdValueJLabel.setText("");
+          mteVDPanel.setApplied(true);
       }
     else
         vdButtonPanel.switchButton.setEnabled(true);
