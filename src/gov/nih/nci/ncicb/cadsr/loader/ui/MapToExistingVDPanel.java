@@ -62,18 +62,14 @@ public class MapToExistingVDPanel extends JPanel
   private UMLNode umlNode;
   private CadsrModule cadsrModule;
 
+  public boolean applied = false;
   private boolean isInitialized = false;
   private boolean isSearched = false;
+
   private List<ElementChangeListener> changeListeners = new ArrayList<ElementChangeListener>();
   private List<PropertyChangeListener> propChangeListeners = new ArrayList<PropertyChangeListener>();  
   private Logger logger = Logger.getLogger(MapToExistingVDPanel.class.getName());
 
-  public void addPropertyChangeListener(PropertyChangeListener l) {
-    super.addPropertyChangeListener(l);;
-    propChangeListeners.add(l);
-  }
-  
-  
   public MapToExistingVDPanel() {
     if(!isInitialized)
       initUI();
@@ -104,7 +100,8 @@ public class MapToExistingVDPanel extends JPanel
   private void initUI() 
   {
     isInitialized = true;
-
+    applied = false;
+    
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
 
@@ -286,6 +283,7 @@ public class MapToExistingVDPanel extends JPanel
   }
 
     public void applyPressed() {   
+        applied = true;
         vd.setConceptualDomain(tempVD.getConceptualDomain());
         vd.setRepresentation(tempVD.getRepresentation());
         vd.setLongName(tempVD.getLongName());
@@ -327,5 +325,17 @@ public class MapToExistingVDPanel extends JPanel
 
     public String getPubId() {
         return tempVD.getPublicId();
+    }
+
+    public boolean isApplied() {
+        return applied;
+    }
+
+    public void setApplied(boolean applied) {
+        this.applied = applied;
+    }
+    public void addPropertyChangeListener(PropertyChangeListener l) {
+      super.addPropertyChangeListener(l);;
+      propChangeListeners.add(l);
     }
 }
