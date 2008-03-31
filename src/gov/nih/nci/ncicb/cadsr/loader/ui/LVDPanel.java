@@ -102,15 +102,16 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
     CardLayout layout = (CardLayout)cardPanel.getLayout();
     layout.show(cardPanel, key);
     displayedPanel = panelKeyMap.get(key);
-    if((Editable)displayedPanel instanceof ValueDomainViewPanel){
+    if((Editable)displayedPanel instanceof ValueDomainViewPanel)
         vdButtonPanel.switchButton.setEnabled(true);
-    }
     else
-        if(mteVDPanel.getPubId() != null && mteVDPanel.isApplied()){
+        if(mteVDPanel.getPubId() != null && mteVDPanel.isApplied())
             vdButtonPanel.switchButton.setEnabled(false);
-        }
         else
-            vdButtonPanel.switchButton.setEnabled(true);
+            if(mteVDPanel.getPubId() != null)
+                vdButtonPanel.switchButton.setEnabled(false);
+            else
+                vdButtonPanel.switchButton.setEnabled(true);
   }
 
   public void setVdViewPanel(ValueDomainViewPanel vdViewPanel) {
@@ -140,13 +141,13 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
       }
       else {// Apply Button clicked after clear, set all values to null for ValueDomainViewPanel
           vdButtonPanel.switchButton.setEnabled(true);
+          mteVDPanel.setApplied(true);
           vdViewPanel.vdPrefDefValueTextField.setText("");
           vdViewPanel.vdDatatypeValueCombobox.setSelectedIndex(0);
           vdViewPanel.tmpInvisible.setSelected(true);
           vdViewPanel.vdCDPublicIdJLabel.setText("");
           vdViewPanel.vdCdLongNameValueJLabel.setText("Unable to lookup CD Long Name");
           vdViewPanel.vdRepIdValueJLabel.setText("");
-          mteVDPanel.setApplied(true);
       }
     else
         vdButtonPanel.switchButton.setEnabled(true);
