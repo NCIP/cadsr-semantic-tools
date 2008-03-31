@@ -250,7 +250,6 @@ public class ValueDomainViewPanel extends JPanel
     vdTypeERadioButton.addItemListener(this);
     vdTypeNRadioButton.addItemListener(this);
     vdDatatypeValueCombobox.addItemListener(this);
-
   }
   
   private void setVdCdSearchedValues(){
