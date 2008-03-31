@@ -90,6 +90,7 @@ public class MapToExistingVDPanel extends JPanel
     tempVD.setPublicId(vd.getPublicId());
     tempVD.setVersion(vd.getVersion());
     tempVD.setAudit(vd.getAudit());
+    tempVD.setId(vd.getId());
 
     if(!isInitialized)
       initUI();
@@ -128,6 +129,7 @@ public class MapToExistingVDPanel extends JPanel
             tempVD.setVdType(_vd.getVdType());
             tempVD.setVersion(_vd.getVersion());
             tempVD.setAudit(_vd.getAudit());
+            tempVD.setId(_vd.getId());
             setSearchedValues();
             isSearched = true;
             firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
@@ -173,6 +175,7 @@ public class MapToExistingVDPanel extends JPanel
              tempVD.setDataType("");
              tempVD.setVdType(null);
              tempVD.setPublicId(null);
+             tempVD.setId(null);
              if(isSearched) 
                  firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
              isSearched = false;
