@@ -91,6 +91,7 @@ public class MapToExistingVDPanel extends JPanel
     tempVD.setVersion(vd.getVersion());
     tempVD.setAudit(vd.getAudit());
     tempVD.setId(vd.getId());
+    tempVD.setContext(vd.getContext());
 
     if(!isInitialized)
       initUI();
@@ -130,6 +131,7 @@ public class MapToExistingVDPanel extends JPanel
             tempVD.setVersion(_vd.getVersion());
             tempVD.setAudit(_vd.getAudit());
             tempVD.setId(_vd.getId());
+            tempVD.setContext(_vd.getContext());
             setSearchedValues();
             isSearched = true;
             firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
@@ -297,7 +299,8 @@ public class MapToExistingVDPanel extends JPanel
         vd.setVersion(tempVD.getVersion());
         vd.setAudit(tempVD.getAudit());
         vd.setId(tempVD.getId());
-        
+        vd.setContext(tempVD.getContext());
+
         firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
         fireElementChangeEvent(new ElementChangeEvent((Object)umlNode));
     }
