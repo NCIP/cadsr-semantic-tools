@@ -160,28 +160,30 @@ public class MapToExistingVDPanel extends JPanel
     clearButton = new JButton("Clear");
     clearButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
-             vdPrefDefValueTextField.setText("");
-             vdLongNameLabelValue.setText("");
-             vdDatatypeTitleLabelValue.setText("");
-             vdTypeTitleLabelValue.setText("");
-             vdCdIdTitleLabelValue.setText("");
-             vdCdLongNameTitleLabelValue.setText("");
-             vdRepIdTitleLabelValue.setText("");
-             vdCreatedByLabelValue.setText("");
-             vdCreatedDateLabelValue.setText("");
-             lvdCadsrButton.setVisible(false);
-             tempVD.setConceptualDomain(null);
-             tempVD.setPreferredDefinition("");
-             tempVD.setRepresentation(null);
-             tempVD.setLongName("");
-             tempVD.setDataType("");
-             tempVD.setVdType(null);
-             tempVD.setPublicId(null);
-             tempVD.setId(null);
-             if(isSearched) 
-                 firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
-             isSearched = false;
-      }});
+          vdPrefDefValueTextField.setText("");
+          vdLongNameLabelValue.setText("");
+          vdDatatypeTitleLabelValue.setText("");
+          vdTypeTitleLabelValue.setText("");
+          vdCdIdTitleLabelValue.setText("");
+          vdCdLongNameTitleLabelValue.setText("");
+          vdRepIdTitleLabelValue.setText("");
+          vdCreatedByLabelValue.setText("");
+          vdCreatedDateLabelValue.setText("");
+          lvdCadsrButton.setVisible(false);
+          tempVD.setConceptualDomain(null);
+          tempVD.setPreferredDefinition("");
+          tempVD.setRepresentation(null);
+          tempVD.setLongName("");
+          tempVD.setDataType("");
+          tempVD.setVdType(null);
+          tempVD.setPublicId(null);
+          tempVD.setId(null);
+          //              if(isSearched) 
+
+          firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
+
+          isSearched = false;
+        }});
       
     JPanel clearButtonPanel = new JPanel();
     clearButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); 
@@ -288,7 +290,7 @@ public class MapToExistingVDPanel extends JPanel
   }
 
     public void applyPressed() {   
-        applied = true;
+
         vd.setConceptualDomain(tempVD.getConceptualDomain());
         vd.setRepresentation(tempVD.getRepresentation());
         vd.setLongName(tempVD.getLongName());
