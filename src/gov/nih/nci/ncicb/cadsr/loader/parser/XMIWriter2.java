@@ -258,10 +258,12 @@ public class XMIWriter2 implements ElementWriter {
     for(ValueDomain vd : vds) {
 
       sendProgressEvent(status++, goal, "Value Domain: " + vd.getLongName());
-      String fullClassName = "ValueDomains." + vd.getLongName();
+      String fullClassName = "ValueDomains." + LookupUtil.lookupFullName(vd);
+
       UMLClass clazz = classMap.get(fullClassName);
       
-      boolean vdChanged = changeTracker.get(vd.getLongName());
+//       boolean vdChanged = changeTracker.get(vd.getLongName());
+      boolean vdChanged = changeTracker.get(LookupUtil.lookupFullName(vd));
       
       if(vdChanged){
         clazz.removeTaggedValue(XMIParser2.TV_VD_DEFINITION);
