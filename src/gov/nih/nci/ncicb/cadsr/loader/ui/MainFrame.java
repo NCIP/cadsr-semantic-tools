@@ -190,7 +190,7 @@ public class MainFrame extends JFrame
 
   private void jbInit() {
     this.getContentPane().setLayout(new BorderLayout());
-    this.setSize(new Dimension(830, 650));
+    this.setSize(new Dimension(930, 700));
     this.setJMenuBar(mainMenuBar);
     
     this.setIconImage(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif")).getImage());
@@ -199,7 +199,7 @@ public class MainFrame extends JFrame
 
     jSplitPane2.setOrientation(JSplitPane.VERTICAL_SPLIT);
     jSplitPane1.setDividerLocation(160);
-    jSplitPane2.setDividerLocation(400);
+    jSplitPane2.setDividerLocation(450);
 
     jSplitPane1.setOneTouchExpandable(true);
     jSplitPane2.setOneTouchExpandable(true);
