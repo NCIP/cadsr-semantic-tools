@@ -53,7 +53,13 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
 
   private Logger logger = Logger.getLogger(ValueDomainValidator.class.getName());
 
-  public ValueDomainValidator() {
+  private static int SIW_MODE = 1, 
+    UMLLOADER_MODE = 2;
+
+  private int mode;
+
+  public ValueDomainValidator(int mode) {
+    this.mode = mode;
   }
 
   public void addProgressListener(ProgressListener l) {
@@ -119,7 +125,8 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
             Map<String, Object> queryFields = 
               new HashMap<String, Object>();
             queryFields.put(CadsrModule.LONG_NAME, vd.getLongName());
-            queryFields.put("context.name", UMLDefaults.getInstance().getContext().getName());
+            if(mode == UMLLOADER_MODE)
+              queryFields.put("context.name", UMLDefaults.getInstance().getContext().getName());
             
             try {
               Collection<ValueDomain> result =  cadsrModule.findValueDomain(queryFields);
@@ -157,12 +164,13 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
                (PropertyAccessor.getProperty
                 ("vd.wrong.vdtype", vd.getLongName()), vd));
           } else if (cadsrVD != null ) {
-            if(!cadsrVD.getVdType().equals(vd.getVdType())) {
-              if(ignoreVD)
-                items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.type.mismatch", vd.getLongName()), vd));
-              else
-                items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.type.mismatch", vd.getLongName()), vd));
-            }
+            if(cadsrVD.getVdType() != null)
+              if(!cadsrVD.getVdType().equals(vd.getVdType())) {
+                if(ignoreVD)
+                  items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.type.mismatch", vd.getLongName()), vd));
+                else
+                  items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.type.mismatch", vd.getLongName()), vd));
+              }
           }
         
         
@@ -322,8 +330,11 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
               } else {
                 // same VD, update field in the localVD
                 //               vd.setPermissibleValues(cadsrPVs);
-                vd.setPublicId(cadsrVD.getPublicId());
-                vd.setVersion(cadsrVD.getVersion());
+
+                if(mode == UMLLOADER_MODE) {
+                  vd.setPublicId(cadsrVD.getPublicId());
+                  vd.setVersion(cadsrVD.getVersion());
+                }
               }
             } catch (Exception e) {
               logger.error(e);
