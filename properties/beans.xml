@@ -31,7 +31,7 @@
   <bean name="umlLoader"
     class="gov.nih.nci.ncicb.cadsr.loader.UMLLoader"
     >
-    <property name="validator"><ref bean="mainValidator"/></property>
+    <property name="validator"><ref bean="loaderValidator"/></property>
     <property name="parser"><ref bean="xmiParser2"/></property>
     <property name="persister"><ref bean="mainPersister"/></property>
     <property name="userPreferences"><ref bean="usersPreferences"/></property>
@@ -71,7 +71,7 @@
       <ref bean="preParser"/>
     </property>
     <property name="validator">
-      <ref bean="mainValidator"/>
+      <ref bean="siwValidator"/>
     </property>
     <property name="roundtripAction">
       <ref bean="roundtripAction"/>
@@ -164,7 +164,8 @@
       <list>
         <ref bean="lookupUtil"/>
         <ref bean="umlRoundtrip"/>
-        <ref bean="valueDomainValidator"/>
+        <ref bean="loaderValueDomainValidator"/>
+        <ref bean="siwValueDomainValidator"/> 
         <ref bean="duplicateValidator"/>
         <ref bean="gmeDefaultsPanel"/>
         <ref bean="cadsrDEDialog"/>
@@ -246,8 +247,13 @@
   <bean name="gmeValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.GMEValidator">
   </bean>
-  <bean name="valueDomainValidator"
+  <bean name="loaderValueDomainValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.ValueDomainValidator">
+    <constructor-arg><value>2</value></constructor-arg>
+  </bean>
+  <bean name="siwValueDomainValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.ValueDomainValidator">
+    <constructor-arg><value>1</value></constructor-arg>
   </bean>
   <bean name="conceptCodeValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.ConceptCodeValidator"/>
@@ -274,14 +280,35 @@
   <bean name="definitionLengthValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.DefinitionLengthValidator"/>
 
-  <bean name="mainValidator"
+  <bean name="siwValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.UMLValidator">
     <property name="validators">
       <list>
         <ref bean="descriptionValidator"/>
         <ref bean="conceptCodeValidator"/>
         <ref bean="datatypeValidator"/>
-        <ref bean="valueDomainValidator"/>
+        <ref bean="siwValueDomainValidator"/>
+        <ref bean="associationValidator"/>
+        <ref bean="duplicateValidator"/>
+        <ref bean="latestVersionValidator"/>
+        <ref bean="duplicateAttributeValidator"/>
+        <ref bean="inheritanceValidator"/>
+        <ref bean="definitionLengthValidator"/>
+        <!--
+        <ref bean="gmeValidator"/>
+        -->
+      </list>
+    </property>
+  </bean>
+
+  <bean name="loaderValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.UMLValidator">
+    <property name="validators">
+      <list>
+        <ref bean="descriptionValidator"/>
+        <ref bean="conceptCodeValidator"/>
+        <ref bean="datatypeValidator"/>
+        <ref bean="loaderValueDomainValidator"/>
         <ref bean="associationValidator"/>
         <ref bean="duplicateValidator"/>
         <ref bean="latestVersionValidator"/>
