@@ -403,7 +403,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     if(button.getActionCommand().equals(SEARCH)) {
       
       String selection = (String) searchSourceCombo.getSelectedItem();
-      String text = searchField.getText();
+      String text = searchField.getText() == null ? "" : searchField.getText().trim();
 
       resultSet = new ArrayList<SearchResultWrapper>();
       

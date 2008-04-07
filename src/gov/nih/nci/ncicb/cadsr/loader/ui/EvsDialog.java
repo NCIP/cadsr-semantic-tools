@@ -269,8 +269,7 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
     JButton button = (JButton)event.getSource();
     if(button.getActionCommand().equals(SEARCH)) {
       String selection = (String) searchSourceCombo.getSelectedItem();
-      String text = searchField.getText();
-
+      String text = searchField.getText() == null ? "" : searchField.getText().trim();
       EvsModule module = new EvsModule();
 
       resultSet = new ArrayList();

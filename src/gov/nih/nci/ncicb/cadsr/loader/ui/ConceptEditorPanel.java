@@ -488,7 +488,7 @@ public class ConceptEditorPanel extends JPanel
 
             Concept c = evsDialog.getConcept();
 
-            if(c.getPreferredDefinition().length() > 2000) {
+            if(c != null && c.getPreferredDefinition().length() > 2000) {
               JOptionPane.showMessageDialog
                 (null, PropertyAccessor.getProperty("ui.concept.definition.too.long"), "Definition Too Long", JOptionPane.ERROR_MESSAGE);
               return;
