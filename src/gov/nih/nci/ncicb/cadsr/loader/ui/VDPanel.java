@@ -196,8 +196,8 @@ public class VDPanel extends JPanel
       if(DEMappingUtil.isMappedToLocalVD(de) != null) {
         lvdTitleLabel.setVisible(true);
         lvdValueLabel.setText(LookupUtil.lookupFullName(vd));
-        vdLongNameTitleLabel.setVisible(false);
-        vdLongNameValueLabel.setVisible(false);
+//         vdLongNameTitleLabel.setVisible(false);
+//         vdLongNameValueLabel.setVisible(false);
       } else {
         lvdTitleLabel.setVisible(false);
       }
