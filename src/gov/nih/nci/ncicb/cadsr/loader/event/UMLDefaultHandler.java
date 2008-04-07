@@ -540,7 +540,6 @@ public class UMLDefaultHandler
     }
 
     private void mapToExistingDE(ObjectClass oc, DataElement de, DataElement existingDe, String className, String attributeName) {
-
       if(existingDe.getDataElementConcept().getObjectClass() == null
          || existingDe.getDataElementConcept().getProperty() == null) {
 
@@ -584,16 +583,18 @@ public class UMLDefaultHandler
       // The DE's property was already set, probably by the parent. It must be the same. We don't override here.
       if(de.getDataElementConcept().getProperty().getPublicId() != null) {
         if(!existingDe.getDataElementConcept().getProperty().getPublicId().equals(de.getDataElementConcept().getProperty().getPublicId())
-           || 
-           !existingDe.getDataElementConcept().getProperty().getVersion().equals(de.getDataElementConcept().getProperty().getVersion())
-           ) {
-          ValidationError item = new ValidationError(PropertyAccessor.getProperty("inherited.and.parent.property.mismatch", new String[] 
-            {className + "." + attributeName,
-             ocMapping.get(ConventionUtil.publicIdVersion(oc)).getLongName()}), de);
-          
+           || !existingDe.getDataElementConcept().getProperty().getVersion().equals(de.getDataElementConcept().getProperty().getVersion()) ) {
+
+            ObjectClass parentOc = null;
+            if(inheritedAttributes.isInherited(de)) 
+                parentOc = inheritedAttributes.getParent(de).getDataElementConcept().getObjectClass();
+            else
+                parentOc = oc;
+            
+            ValidationError item = new ValidationError(PropertyAccessor.getProperty("inherited.and.parent.property.mismatch", new String[] 
+                {className + "." + attributeName, LookupUtil.lookupFullName(ocMapping.get(ConventionUtil.publicIdVersion(parentOc)))}), de);
           item.setIncludeInInherited(true);
-          ValidationItems.getInstance()
-            .addItem(item);
+          ValidationItems.getInstance().addItem(item);
         }
         
         de.setLongName(existingDe.getLongName());
@@ -800,7 +801,6 @@ public class UMLDefaultHandler
     // Find all DECs:
     ObjectClass parentOc = ocr.getTarget(),
       childOc = ocr.getSource();
-
     if(childOc == null || parentOc == null) {
       logger.warn("Skipping generalization because parent or child can't be found. Did you filter out some classes?");
       return;
@@ -832,7 +832,8 @@ public class UMLDefaultHandler
           DataElement newDe = DomainObjectFactory.newDataElement();
           newDe.setDataElementConcept(newDec);
           newDe.setLongName(newDec.getLongName() + " " + de.getValueDomain().getLongName());
-
+          
+          inheritedAttributes.add(newDe, de);
           // check existing de mapping
           IdVersionPair deIdVersionPair = event.getPersistenceMapping(propName);
           if(deIdVersionPair != null) {
@@ -866,9 +867,7 @@ public class UMLDefaultHandler
               }
             }
           }
-        
-        
-          
+
           Boolean isReviewed = event.getReview(propName);
           if(isReviewed != null)
             reviewTracker.put(event.getChildClassName() + "." + propName, isReviewed);
@@ -896,9 +895,6 @@ public class UMLDefaultHandler
           fullName.setName(className + ":" + propName);
           newDe.addAlternateName(fullName);
 
-          
-
-
 //           for(Iterator it2 = de.getAlternateNames().iterator(); it2.hasNext();) {
 //             AlternateName an = (AlternateName)it2.next();
 //             newDe.addAlternateName(an);
@@ -917,14 +913,11 @@ public class UMLDefaultHandler
           newElts.add(newDe);
           newElts.add(newDec);
 
-          inheritedAttributes.add(newDe, de);
-
         }
       }
     
     for(Iterator it = newElts.iterator(); it.hasNext();
         elements.addElement(it.next()));
-    
     
     elements.addElement(ocr);
 
@@ -938,8 +931,6 @@ public class UMLDefaultHandler
       logger.error("Target does not exist: ");
       logger.error("Parent: " + event.getParentClassName());
     }
-
-      
   }
 
   private Concept newConcept(NewConceptEvent event) {
@@ -1002,6 +993,6 @@ public class UMLDefaultHandler
       }
     }
   }
-  
+
   public void addProgressListener(ProgressListener listener) {}
 }
