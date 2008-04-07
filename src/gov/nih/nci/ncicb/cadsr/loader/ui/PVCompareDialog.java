@@ -16,18 +16,9 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
-import javax.swing.ToolTipManager;
+import javax.swing.*;
+
+import java.util.*;
 
 //import org.apache.log4j.Logger;
 
@@ -96,13 +87,19 @@ public class PVCompareDialog extends JDialog implements ActionListener{
       DefaultListModel permissibleValueListModel = new DefaultListModel();
       lvdPermissibleValueJList = new JList(permissibleValueListModel);
       lvdPermissibleValueJList.setCellRenderer(new MyCellRenderer());
-      for(PermissibleValue pm : lvdPermissibleValueList){
+
+      Set<String> values = new TreeSet(new StringComparator());
+      for(PermissibleValue pm : lvdPermissibleValueList) {
+        values.add(pm.getValue());
+      }
+ 
+      for(String value : values){
         ListItem li = null;
-        if(containsLvd(pm.getValue())) // It exists in other list, show it in white
-          li = new ListItem(Color.white, pm.getValue());
+        if(containsLvd(value)) // It exists in other list, show it in white
+          li = new ListItem(Color.white, value);
         else // It doesn't exist in other list, show it in yellow
-          li = new ListItem(Color.yellow, pm.getValue());
-        permissibleValueListModel.addElement(li);
+          li = new ListItem(Color.yellow, value);
+         permissibleValueListModel.addElement(li);
       }
       lvdPermissibleValueJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
       lvdPermissibleValueJList.setSelectedIndex(0);
@@ -125,12 +122,18 @@ public class PVCompareDialog extends JDialog implements ActionListener{
       DefaultListModel permissibleValueListModel = new DefaultListModel();
       cadsrPermissibleValueJList = new JList(permissibleValueListModel);
       cadsrPermissibleValueJList.setCellRenderer(new MyCellRenderer());
-      for(PermissibleValue pm : cadsrPermissibleValueList){
+
+      Set<String> values = new TreeSet(new StringComparator());
+      for(PermissibleValue pm : cadsrPermissibleValueList) {
+        values.add(pm.getValue());
+      }
+
+      for(String value : values){
         ListItem li = null;
-        if(containsCadsr(pm.getValue())) // It exists in other list, show it in white
-          li = new ListItem(Color.white, pm.getValue());
+        if(containsCadsr(value)) // It exists in other list, show it in white
+          li = new ListItem(Color.white, value);
         else // It doesn't exist in other list, show it in yellow
-          li = new ListItem(Color.yellow, pm.getValue());
+          li = new ListItem(Color.yellow, value);
         permissibleValueListModel.addElement(li);
       }
       cadsrPermissibleValueJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -168,6 +171,7 @@ public class PVCompareDialog extends JDialog implements ActionListener{
       return value;
     }
   }
+
   private static class MyCellRenderer extends JPanel implements ListCellRenderer {
     private JLabel lbl;
     public MyCellRenderer() {
@@ -190,6 +194,17 @@ public class PVCompareDialog extends JDialog implements ActionListener{
       return this;
     }
   }
+
+  private class StringComparator implements Comparator<String> {
+    public int compare(String s1, String s2) {
+      return (s1.toLowerCase()).compareTo(s2.toLowerCase());
+    }
+    
+    public boolean equals(Object o) {
+      return this.equals(o);
+    }
+  }
+
   //    public static void main(String[] args) {
   //      PVCompareDialog pvPanel = new PVCompareDialog(null, null);
   //      pvPanel.setVisible(true);
