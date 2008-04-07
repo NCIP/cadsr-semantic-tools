@@ -47,7 +47,7 @@ public class ConceptEditorPanel extends JPanel
   
   private JPanel gridPanel;
   private JScrollPane scrollPane;
-  
+   
   private JLabel conceptLabel = new JLabel();
   private JLabel nameLabel = new JLabel();
   
