@@ -215,18 +215,22 @@ public class XMIWriter2 implements ElementWriter {
             att.removeTaggedValue(XMIParser2.TV_DE_ID);
             att.removeTaggedValue(XMIParser2.TV_DE_VERSION);
             
+            att.removeTaggedValue(XMIParser2.TV_VALUE_DOMAIN);
+            att.removeTaggedValue(XMIParser2.TV_VD_ID);
+            att.removeTaggedValue(XMIParser2.TV_VD_VERSION);
+            
             if(!StringUtil.isEmpty(de.getValueDomain().getPublicId()) && de.getValueDomain().getVersion() != null) {
-              att.removeTaggedValue(XMIParser2.TV_VD_ID);
-              att.removeTaggedValue(XMIParser2.TV_VD_VERSION);
               att.addTaggedValue(XMIParser2.TV_VD_ID,
                                  de.getValueDomain().getPublicId());
               att.addTaggedValue(XMIParser2.TV_VD_VERSION,
                                  de.getValueDomain().getVersion().toString());
             }
             else {
-              att.removeTaggedValue(XMIParser2.TV_VD_ID);
-              att.removeTaggedValue(XMIParser2.TV_VD_VERSION);
+              if(DEMappingUtil.isMappedToLocalVD(de) != null) {
+                att.addTaggedValue(XMIParser2.TV_VALUE_DOMAIN, LookupUtil.lookupFullName(de.getValueDomain()));
+              }
             }
+
             addConceptTvs(att, conceptCodes, XMIParser2.TV_TYPE_PROPERTY);
           }
         } else { // in case of inherited attribute
