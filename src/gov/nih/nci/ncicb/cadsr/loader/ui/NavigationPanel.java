@@ -92,7 +92,6 @@ public class NavigationPanel extends JPanel
   public NavigationPanel()
   {
     UserPreferences prefs = UserPreferences.getInstance();
-    showInherited = prefs.getShowInheritedAttributes();
 
     initUI();
     TreeBuilder.getInstance().addTreeListener(this);
@@ -124,6 +123,10 @@ public class NavigationPanel extends JPanel
   
   private void initUI() 
   {
+      UserPreferences prefs = UserPreferences.getInstance();
+
+      showInherited = prefs.getShowInheritedAttributes();
+  
     rootTreeNode = buildTree();
     rootUnsortedTreeNode = rootTreeNode;
 
@@ -132,7 +135,6 @@ public class NavigationPanel extends JPanel
     tree.setShowsRootHandles(true);
     tree.addKeyListener(this);
     
-    UserPreferences prefs = UserPreferences.getInstance();
     if (prefs.getSortElements()) {
         showSortedTree(true);
     }
@@ -457,6 +459,7 @@ public class NavigationPanel extends JPanel
     
     UserPreferences prefs = UserPreferences.getInstance();
     inheritedAttItem.setSelected(prefs.getShowInheritedAttributes());
+
     inheritedAttItem.addActionListener(this);
 
     assocItem.setSelected(prefs.getViewAssociationType().equalsIgnoreCase("true"));
