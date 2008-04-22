@@ -500,10 +500,7 @@ public class XMIParser2 implements Parser {
     if(className.length() != className.trim().length()) {
         ValidationItems.getInstance()
           .addItem(new ValidationFatal
-                   (PropertyAccessor
-                    .getProperty
-                    ("class.name.spaces" , event.getName()),
-                    null));
+                (PropertyAccessor.getProperty("class.name.spaces" , event.getName()),null));
         return;
     }
     logger.debug("CLASS: " + className);
@@ -699,13 +696,19 @@ public class XMIParser2 implements Parser {
   private void doAttribute(UMLAttribute att) throws ParserException {
     NewAttributeEvent event = new NewAttributeEvent(att.getName().trim());
     event.setClassName(className);
-
     currentElementIndex++;
     ProgressEvent evt = new ProgressEvent();
     evt.setMessage("Parsing " + att.getName());
     evt.setStatus(currentElementIndex);
     fireProgressEvent(evt);
+    
+    String attributeName = att.getName();
 
+    if(attributeName.length() != attributeName.trim().length()) {
+        ValidationItems.getInstance()
+            .addItem(new ValidationFatal(PropertyAccessor.getProperty("attribute.name.spaces" , event.getName()), null));
+        return;
+    }
 
     if(att.getDatatype() == null || att.getDatatype().getName() == null) {
       ValidationItems.getInstance()
