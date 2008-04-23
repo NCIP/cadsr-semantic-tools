@@ -24,6 +24,7 @@ import gov.nih.nci.evs.query.*;
 import gov.nih.nci.ncicb.cadsr.evs.EVSConcept;
 import gov.nih.nci.system.applicationservice.*;
 import gov.nih.nci.system.applicationservice.ApplicationService;
+import gov.nih.nci.system.client.*;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
@@ -39,18 +40,15 @@ public class EVSQueryService {
   private static String PREFERRED_NAME_PROP = "PREFERRED_NAME";
   private static String DEFINITION_PROPERTY_NAME = "DEFINITION";
   private static String ALT_DEFINITION_PROPERTY_NAME = "ALT_DEFINITION";
-  private ApplicationService evsService;
-  private String cacoreServiceURL;
+  private EVSApplicationService evsService;
 
-  public EVSQueryService(String cacoreServiceURL) {
-    this.cacoreServiceURL = cacoreServiceURL;
-    evsService = ApplicationService.getRemoteInstance(cacoreServiceURL);
+  public EVSQueryService() {
+    try {
+      evsService = (EVSApplicationService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
+    } catch (Exception e) {
+      System.err.println("Unable to get EVSApplicationService. Contact Support");
+    }
   }
-
-  public void setCacoreServiceURL(String cacoreServiceURL) {
-    this.cacoreServiceURL = cacoreServiceURL;
-  }
-
 
   /**
    * returns by list of concepts by preferredName
@@ -100,26 +98,58 @@ public class EVSQueryService {
     boolean includeRetiredConcepts,
     int rowCount, 
     String vocabName) throws Exception {
-    if (cacoreServiceURL == null) {
-      throw new Exception("Please specify a valid caCORE Service URL");
-    }
 
     EVSQuery query = new EVSQueryImpl();
     query.getConceptWithPropertyMatching(
       vocabName, SYNONYM_PROPERTY_NAME, searchTerm, rowCount);
 
+//     query.getConceptWithPropertyMatching(
+//         "NCI_Thesaurus", "Synonym", "name", 100);
+
     List conceptNames = evsService.evsSearch(query);
 
-    return this.findConceptDetailsByName(conceptNames, includeRetiredConcepts, vocabName);
+    return this.descConceptToEVSConcept(conceptNames, includeRetiredConcepts);
 
   }
 
   public List<EVSConcept> findConceptDetailsByName(
-    List<String> conceptNames,
+    List conceptNames,
     boolean includeRetiredConcepts) throws Exception {
 
     return findConceptDetailsByName(conceptNames, includeRetiredConcepts, NCI_THESAURUS_VOCAB_NAME);
 
+  }
+
+  public List<EVSConcept> descConceptToEVSConcept(
+    List<DescLogicConcept> concepts,
+    boolean includeRetiredConcepts) {
+    
+    List<EVSConcept> results = new ArrayList<EVSConcept>();
+    
+    for (DescLogicConcept concept : concepts) {
+      System.out.println("Code: " + concept.getCode());
+      System.out.println("Name: " + concept.getName());
+      System.out.println("isRetired: " + concept.getIsRetired());
+
+      if (
+        (includeRetiredConcepts) ||
+        (!includeRetiredConcepts && !concept.getIsRetired().booleanValue())) {
+        List synonyms = this.retrieveSynonyms(concept);
+        List defs = this.retrieveDefinitions(concept);
+        
+        EVSConcept c = new EVSConcept();
+        c.setCode(concept.getCode());
+        c.setPreferredName(retrievePreferredName(concept));
+        c.setName(concept.getName());
+        c.setDefinitions(defs);
+        c.setSynonyms(synonyms);
+        
+        results.add(c);
+       }
+    }
+    
+    return results; 
+    
   }
 
   public List<EVSConcept> findConceptDetailsByName(
@@ -134,7 +164,7 @@ public class EVSQueryService {
 
       if (
         (includeRetiredConcepts) ||
-            (!includeRetiredConcepts && !concept.isRetired().booleanValue())) {
+            (!includeRetiredConcepts && !concept.getIsRetired().booleanValue())) {
         List synonyms = this.retrieveSynonyms(concept);
         List defs = this.retrieveDefinitions(concept);
 
@@ -158,7 +188,6 @@ public class EVSQueryService {
     int rowCount) throws Exception {
 
     return findConceptsByCode(conceptCode, includeRetiredConcepts, rowCount, NCI_THESAURUS_VOCAB_NAME);
-
   }
 
   public List findConceptsByCode(
@@ -166,9 +195,6 @@ public class EVSQueryService {
     boolean includeRetiredConcepts,
     int rowCount, 
     String vocabName) throws Exception {
-    if (cacoreServiceURL == null) {
-      throw new Exception("Please specify a valid caCORE Service URL");
-    }
 
     List results = new ArrayList();
     EVSQuery query = new EVSQueryImpl();
@@ -297,24 +323,26 @@ public class EVSQueryService {
    * @param args
    */
   public static void main(String[] args) {
-    EVSQueryService testAction = new EVSQueryService("http://cabio.nci.nih.gov/cacore31/http/remoteService");
+    EVSQueryService testAction = new EVSQueryService();
     try {
-      //testAction.findConceptsBySynonym("gene", 100);
-//       testAction.findConceptsByCode("C41095", true, 100);
 
-      String searchTerm = "Dental Bonding Agent";
+      EVSApplicationService service = (EVSApplicationService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
+//       String genUrl = "http://evsapi-dev.nci.nih.gov:19080/evsapi41";
+//       EVSApplicationService service = (EVSApplicationService) ApplicationServiceProvider.getApplicationServiceFromUrl(genUrl);
 
-      List<EVSConcept> cons = testAction.findConceptsByPreferredName(searchTerm, false, "PRE_NCI_Thesaurus");
+      EVSQuery query = new EVSQueryImpl();
+      query.getConceptWithPropertyMatching(
+        "NCI_Thesaurus", "Synonym", "name", 100);
+      
+      List concepts = service.evsSearch(query);
 
-      System.out.println("Search for " + searchTerm);
-
-      for(EVSConcept con : cons) {
-        System.out.println(con.getPreferredName());
-        for(Definition def : (List<Definition>)con.getDefinitions()) {
-          System.out.println("def: " + def.getDefinition());
-          System.out.println("def source: " + def.getSource().getAbbreviation());
-        }
+      for(Object o : concepts) {
+        DescLogicConcept desc = (DescLogicConcept)o;
+        System.out.println(desc.getName());
+        System.out.println(desc.getIsRetired());
       }
+
+      
 
     }
     catch (Exception e) {

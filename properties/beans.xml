@@ -210,7 +210,6 @@
     class="gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule" 
     singleton="true"
     >
-    <property name="serviceURL"><value>--Public API URL Here--</value></property>
   </bean>
 
   <bean name="privateCadsrModule"

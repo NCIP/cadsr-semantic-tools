@@ -42,6 +42,10 @@
 	<level value="INFO"/>
     <appender-ref ref="console" /> 
   </logger>
+  <logger name="org.acegisecurity">
+	<level value="INFO"/>
+    <appender-ref ref="console" /> 
+  </logger>
 
   <root> 
     <priority value ="debug" /> 
