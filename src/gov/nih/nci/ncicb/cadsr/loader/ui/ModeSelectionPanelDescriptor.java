@@ -44,9 +44,13 @@ public class ModeSelectionPanelDescriptor
       nextPanelDescriptor = FileSelectionPanelDescriptor.IDENTIFIER;
     backPanelDescriptor = ModeSelectionPanelDescriptor.IDENTIFIER;
 
-
   }
   
+    public void aboutToDisplayPanel() 
+    {
+        getWizardModel().setBackButtonEnabled(false);
+    }
+
   public void actionPerformed(ActionEvent evt) {
     if(evt.getActionCommand().equals(RunMode.Roundtrip.toString())) {
       setNextPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
