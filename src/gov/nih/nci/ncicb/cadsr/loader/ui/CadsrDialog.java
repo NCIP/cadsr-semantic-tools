@@ -472,21 +472,21 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
           eager.add(EagerConstants.CS_CSI);
           eager.add(EagerConstants.CS_CSI + ".csi");
 
-          for(ClassificationScheme cs : cadsrModule.findClassificationScheme(queryFields))
-          resultSet.add(new SearchResultWrapper(cs));       
+          for(ClassificationScheme cs : cadsrModule.findClassificationScheme(queryFields, eager))
+            resultSet.add(new SearchResultWrapper(cs));       
           break;
         case MODE_CD:
           for(ConceptualDomain cd : cadsrModule.findConceptualDomain(queryFields))
-          resultSet.add(new SearchResultWrapper(cd));       
+            resultSet.add(new SearchResultWrapper(cd));       
           break;
         case MODE_REP:
           queryFields.put(CadsrModule.WORKFLOW_STATUS, Representation.WF_STATUS_RELEASED);
           for(Representation rep : cadsrModule.findRepresentation(queryFields))
-          resultSet.add(new SearchResultWrapper(rep));       
+            resultSet.add(new SearchResultWrapper(rep));       
           break;
         case MODE_VD:
           for(ValueDomain vd : cadsrModule.findValueDomain(queryFields))
-          resultSet.add(new SearchResultWrapper(vd));       
+            resultSet.add(new SearchResultWrapper(vd));
         }
       } catch (Exception e){
         logger.error("Error querying Cadsr " + e);
