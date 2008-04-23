@@ -101,10 +101,10 @@ public class GMEAction {
       if(!hasAltName(csi.getAlternateNames(), AlternateName.TYPE_GME_NAMESPACE)) {
         AlternateName altName = DomainObjectFactory.newAlternateName();
         altName.setType(AlternateName.TYPE_GME_NAMESPACE);
-        altName.setName(namespace + "/" + csi.getName());
+        altName.setName(namespace + "/" + csi.getLongName());
         csi.addAlternateName(altName);
         
-        changeTracker.put(csi.getName(), true);
+        changeTracker.put(csi.getLongName(), true);
       }
     }
 
@@ -199,7 +199,7 @@ public class GMEAction {
     for(ClassificationSchemeItem csi : csis) {
       csi.removeAlternateNames();
       
-      changeTracker.put(csi.getName(), true);
+      changeTracker.put(csi.getLongName(), true);
     }
 
 
