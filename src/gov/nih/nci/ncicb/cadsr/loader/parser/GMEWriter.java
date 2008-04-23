@@ -83,7 +83,7 @@ public class GMEWriter implements ElementWriter {
       pkg.removeTaggedValue(XMIParser2.TV_GME_NAMESPACE);
       List<ClassificationSchemeItem> packages = cadsrObjects.getElements(DomainObjectFactory.newClassificationSchemeItem());
       for(ClassificationSchemeItem csi : packages) {
-        if(csi.getName().equals(pkgName)) {
+        if(csi.getLongName().equals(pkgName)) {
           for(AlternateName an : csi.getAlternateNames()) {
             if(an.getType().equals(AlternateName.TYPE_GME_NAMESPACE)) {
               pkg.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, an.getName());

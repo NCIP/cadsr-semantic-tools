@@ -38,7 +38,7 @@ public class PackageNode extends AbstractUMLNode<UMLNode>
     isInherited = false;
 
   public PackageNode(ClassificationSchemeItem csi, String display) {
-    fullPath = csi.getName();
+    fullPath = csi.getLongName();
     
     this.display = display != null?
       display:fullPath;

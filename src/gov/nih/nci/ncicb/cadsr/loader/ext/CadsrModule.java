@@ -81,6 +81,4 @@ public interface CadsrModule
    */
   public boolean matchDEToPropertyConcepts(gov.nih.nci.ncicb.cadsr.domain.DataElement de, String[] conceptCodes) throws Exception;
   
-  public void setServiceURL(String url);
-
 }

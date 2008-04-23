@@ -122,7 +122,7 @@ public class ValueDomainPersister extends UMLPersister {
             // check
             PermissibleValue originalPv = isPvIncluded(pv, thesePvs);
             if(originalPv != null) {
-              String packName = acCsCsi.getCsCsi().getCsi().getName();
+              String packName = acCsCsi.getCsCsi().getCsi().getLongName();
               addPackageClassification(pv.getValueMeaning(), packName);
               for(AlternateName altName : originalPv.getValueMeaning().getAlternateNames())
                 addAlternateName(pv.getValueMeaning(), altName.getName(), altName.getType(), packName);

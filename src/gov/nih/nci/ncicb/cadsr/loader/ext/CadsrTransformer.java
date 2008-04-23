@@ -334,7 +334,7 @@ public class CadsrTransformer {
   
   private static gov.nih.nci.ncicb.cadsr.domain.ClassificationSchemeItem csiPublicToPrivate(gov.nih.nci.cadsr.domain.ClassificationSchemeItem inCsi) {
     gov.nih.nci.ncicb.cadsr.domain.ClassificationSchemeItem outCsi = DomainObjectFactory.newClassificationSchemeItem();
-    outCsi.setName(inCsi.getName());
+    outCsi.setLongName(inCsi.getLongName());
     outCsi.setType(inCsi.getType());
 
     return outCsi;

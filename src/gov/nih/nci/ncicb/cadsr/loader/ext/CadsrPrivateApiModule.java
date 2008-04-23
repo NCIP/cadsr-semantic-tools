@@ -200,9 +200,6 @@ public class CadsrPrivateApiModule implements CadsrModule
     return false;
   }
   
-  public void setServiceURL(String url){ 
-  }
-
   private void buildExample(Object o, Map<String, Object> queryFields) {
     for(String s : queryFields.keySet()) {
       Object field = queryFields.get(s);

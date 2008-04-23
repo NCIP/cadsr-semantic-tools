@@ -182,7 +182,7 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
 
     for(ClassSchemeClassSchemeItem csCsi : csCsis) {
       try {
-        if(csCsi.getCsi().getName().equals(packageName)
+        if(csCsi.getCsi().getLongName().equals(packageName)
            || (csCsi.getCsi().getComments() != null && csCsi.getCsi().getComments().equals(packageName))
            )
           packageCsCsi = csCsi;

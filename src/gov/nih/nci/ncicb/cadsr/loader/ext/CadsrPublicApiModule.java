@@ -5,6 +5,7 @@ import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import gov.nih.nci.system.applicationservice.ApplicationService;
+import gov.nih.nci.system.client.*;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -33,14 +34,26 @@ public class CadsrPublicApiModule implements CadsrModule {
   private Logger logger = Logger.getLogger(CadsrPrivateApiModule.class.getName());
 
   public CadsrPublicApiModule() {
-
+    try {
+      service = ApplicationServiceProvider.getApplicationService("CadsrServiceInfo");
+    } catch (Exception e) {
+      logger.error("Can't get cadsr publicAPI, contact support");
+      e.printStackTrace();
+    } catch (Throwable t) {
+      t.printStackTrace();
+    }
   }
 
   public CadsrPublicApiModule(String serviceURL) {
     if(serviceURL == null) {
       logger.error("caDSR Public API not initialized, please initialize it first.");
     }
-    service = ApplicationService.getRemoteInstance(serviceURL);
+    try {
+      service = ApplicationServiceProvider.getApplicationService("CadsrServiceInfo");
+    } catch (Exception e) {
+      logger.error("Can't get cadsr publicAPI, contact support");
+      e.printStackTrace();
+    } // end of try-catch
   }
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.Context> 
@@ -61,8 +74,9 @@ public class CadsrPublicApiModule implements CadsrModule {
         DetachedCriteria datatypeCriteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.ValueDomain.class, "vd");
         datatypeCriteria.setProjection( Projections.distinct(Projections.projectionList().add( Projections.property("vd.datatypeName"), "datatypeName" )));
         try{
-            List<String> listResult = service.query(datatypeCriteria, gov.nih.nci.cadsr.domain.ValueDomain.class.getName());
-            return listResult;
+          List listResult = service.query(datatypeCriteria);
+
+          return listResult;
         } catch (Exception e) {
             throw new RuntimeException(e);
         } // end of try-catch
@@ -263,8 +277,8 @@ public class CadsrPublicApiModule implements CadsrModule {
             .createCriteria("conceptDerivationRule")
             .add(Expression.eq("name", propNames.toString()));
 
-    Collection<gov.nih.nci.cadsr.domain.DataElement> results = 
-        service.query(deCriteria, gov.nih.nci.cadsr.domain.DataElement.class.getName());
+    Collection results = 
+      service.query(deCriteria);
 
     return CadsrTransformer.deListPublicToPrivate(results);
   }
@@ -285,8 +299,8 @@ public class CadsrPublicApiModule implements CadsrModule {
       DetachedCriteria deCriteria = criteria.createCriteria("designationCollection").
               add(Expression.eq("name", altName));
 
-      Collection<gov.nih.nci.cadsr.domain.DataElement> results =  
-          service.query(criteria, gov.nih.nci.cadsr.domain.DataElement.class.getName());
+      Collection results =  
+        service.query(criteria);
       return CadsrTransformer.deListPublicToPrivate(results);
   }
 
@@ -302,8 +316,13 @@ public class CadsrPublicApiModule implements CadsrModule {
     criteria.createCriteria("enumeratedValueDomain")
       .add(Expression.eq("id", vd.getId()));
     
-    Collection<gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue> vdPvs = service.query(criteria, gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue.class.getName());
-    for(gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue vdPv : vdPvs) {
+    Collection vdPvs =
+      service.query(criteria);
+
+    for(Object o : vdPvs) {
+      
+      gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue vdPv = 
+        (gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue)o;
       result.add(vdPv.getPermissibleValue());
     }
 
@@ -322,13 +341,13 @@ public class CadsrPublicApiModule implements CadsrModule {
       searchOC.setPublicID(new Long(oc.getPublicId()));
       searchOC.setVersion(oc.getVersion());
       
-      List<gov.nih.nci.cadsr.domain.ObjectClass> ocs =  
+      List ocs =  
         service.search(gov.nih.nci.cadsr.domain.ObjectClass.class.getName(), searchOC);
 
       if(ocs.size() != 1)
         return result;
 
-      gov.nih.nci.cadsr.domain.ObjectClass resOc = ocs.iterator().next();
+      gov.nih.nci.cadsr.domain.ObjectClass resOc = (gov.nih.nci.cadsr.domain.ObjectClass)ocs.iterator().next();
       Collection<gov.nih.nci.cadsr.domain.ComponentConcept> comps = resOc.getConceptDerivationRule().getComponentConceptCollection();
 
       for(gov.nih.nci.cadsr.domain.ComponentConcept comp : comps) {
@@ -357,13 +376,13 @@ public class CadsrPublicApiModule implements CadsrModule {
       searchProp.setPublicID(new Long(prop.getPublicId()));
       searchProp.setVersion(prop.getVersion());
       
-      List<gov.nih.nci.cadsr.domain.Property> props =  
+      List props =  
         service.search(gov.nih.nci.cadsr.domain.Property.class.getName(), searchProp);
 
       if(props.size() != 1)
         return result;
 
-      gov.nih.nci.cadsr.domain.Property resProp = props.iterator().next();
+      gov.nih.nci.cadsr.domain.Property resProp = (gov.nih.nci.cadsr.domain.Property)props.iterator().next();
       Collection<gov.nih.nci.cadsr.domain.ComponentConcept> comps = resProp.getConceptDerivationRule().getComponentConceptCollection();
 
       for(gov.nih.nci.cadsr.domain.ComponentConcept comp : comps) {
@@ -389,7 +408,7 @@ public class CadsrPublicApiModule implements CadsrModule {
     searchDE.setPublicID(new Long(de.getPublicId()));
     searchDE.setVersion(de.getVersion());
     
-    List<gov.nih.nci.cadsr.domain.DataElement> results =  
+    List results =  
       service.search(gov.nih.nci.cadsr.domain.DataElement.class.getName(), searchDE);
 
     if(results.size() == 0) {
@@ -397,7 +416,7 @@ public class CadsrPublicApiModule implements CadsrModule {
       return false;
     }
 
-    gov.nih.nci.cadsr.domain.DataElement resultDE = results.get(0);
+    gov.nih.nci.cadsr.domain.DataElement resultDE = (gov.nih.nci.cadsr.domain.DataElement)results.get(0);
 
     gov.nih.nci.cadsr.domain.ConceptDerivationRule conDR = 
       resultDE.getDataElementConcept().getProperty().getConceptDerivationRule();
@@ -418,10 +437,17 @@ public class CadsrPublicApiModule implements CadsrModule {
   }
 
   
-  public void setServiceURL(String url) {
-    this.serviceURL = url;
-    service = ApplicationService.getRemoteInstance(serviceURL);
-  }
+//   public void setServiceURL(String url) {
+//     this.serviceURL = url;
+// //     service = ApplicationService.getRemoteInstance(serviceURL);
+//     try {
+//       service = ApplicationServiceProvider.getApplicationService("CadsrServiceInfo");
+//     } catch (Exception e) {
+//       logger.error("Can't get cadsr publicAPI, contact support");
+//       e.printStackTrace();
+// //       throw new RuntimeException(e);
+//     } // end of try-catch
+//   }
 
 //  private void prepareCriteria(DetachedCriteria criteria, Map<String, Object> queryFields, List<String> eager) {
 //    for(String field : queryFields.keySet()) {

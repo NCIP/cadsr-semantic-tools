@@ -83,7 +83,7 @@ public class UMLDefaultHandler
     if(!StringUtil.isEmpty(event.getGmeNamespace())) {
       ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
       String pName = event.getName();
-      csi.setName(pName);
+      csi.setLongName(pName);
       if (!packageList.contains(pName)) {
         elements.addElement(csi);
         packageList.add(pName);
@@ -214,7 +214,7 @@ public class UMLDefaultHandler
     // create CSI for package (since 3.2)
     ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
     String pName = event.getPackageName();
-    csi.setName(pName);
+    csi.setLongName(pName);
     if (!packageList.contains(pName)) {
       elements.addElement(csi);
       packageList.add(pName);
@@ -333,7 +333,7 @@ public class UMLDefaultHandler
 
     String pName = event.getPackageName();
 
-    csi.setName(pName);
+    csi.setLongName(pName);
     
     if (!packageList.contains(pName)) {
       elements.addElement(csi);

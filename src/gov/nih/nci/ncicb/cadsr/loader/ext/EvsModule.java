@@ -38,7 +38,7 @@ public class EvsModule
 
   private Logger logger = Logger.getLogger(EvsModule.class.getName());
 
-  private static EVSQueryService evsService = new EVSQueryService(PropertyAccessor.getProperty("dts.url"));
+  private static EVSQueryService evsService = new EVSQueryService();
 
   private String vocabName = null;
 

@@ -128,7 +128,7 @@ public class TreeBuilder implements UserPreferencesListener {
     List<ClassificationSchemeItem> packages = elements.getElements(pkg);
     
     for(ClassificationSchemeItem pack : packages) {
-      String alias = defaults.getPackageDisplay(pack.getName()); 
+      String alias = defaults.getPackageDisplay(pack.getLongName()); 
       UMLNode node = new PackageNode(pack, alias);
       parentNode.addChild(node);
 

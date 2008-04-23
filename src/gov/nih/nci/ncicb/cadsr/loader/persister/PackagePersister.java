@@ -55,10 +55,10 @@ public class PackagePersister extends UMLPersister {
 	pkg.setType(ClassificationSchemeItem.TYPE_UML_PACKAGE);
 
         ClassificationSchemeItem subProject = DomainObjectFactory.newClassificationSchemeItem();
-        subProject.setName(defaults.getPackageDisplay(pkg.getName()));
+        subProject.setLongName(defaults.getPackageDisplay(pkg.getLongName()));
         subProject.setType(ClassificationSchemeItem.TYPE_UML_PROJECT);
         // Verify is there is a sub project
-        if(!subProject.getName().equals(pkg.getName())) {
+        if(!subProject.getLongName().equals(pkg.getLongName())) {
           subProject.setAudit(defaults.getAudit());
 
           // See if it already exist in DB
@@ -91,7 +91,7 @@ public class PackagePersister extends UMLPersister {
         ClassSchemeClassSchemeItem packageCsCsi = linkCsiToCs(pkg, defaults.getProjectCs(), subCsCsi);
 
 	// Put CS_CSI in cache so OCs can use it
-	packageCsCsis.put(pkg.getName(), packageCsCsi);
+	packageCsCsis.put(pkg.getLongName(), packageCsCsi);
 
         
       }
@@ -109,7 +109,7 @@ public class PackagePersister extends UMLPersister {
             ClassSchemeClassSchemeItem csCsi = (ClassSchemeClassSchemeItem) it.next();
             
             if (csCsi.getCsi().getType().equals(csi.getType()) &&
-                csCsi.getCsi().getName().equals(csi.getName())) {
+                csCsi.getCsi().getLongName().equals(csi.getLongName())) {
               // There's already a CS_CSI. 
               // Does it have the same parent?
               
@@ -134,11 +134,11 @@ public class PackagePersister extends UMLPersister {
 	if (!found) {
 	  logger.info(
             PropertyAccessor
-            .getProperty("link.package.to.project", csi.getName()));
+            .getProperty("link.package.to.project", csi.getLongName()));
           newCsCsi = DomainObjectFactory.newClassSchemeClassSchemeItem();
 	  newCsCsi.setCs(cs);
 	  newCsCsi.setCsi(csi);
-	  newCsCsi.setLabel(csi.getName());
+	  newCsCsi.setLabel(csi.getLongName());
           if(newCsCsi.getLabel().length() > 30)
             newCsCsi.setLabel(
               newCsCsi.getLabel().substring(0, 29));
