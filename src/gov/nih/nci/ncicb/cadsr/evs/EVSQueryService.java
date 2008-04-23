@@ -100,6 +100,11 @@ public class EVSQueryService {
     String vocabName) throws Exception {
 
     EVSQuery query = new EVSQueryImpl();
+    
+    query.searchDescLogicConcepts
+      (vocabName, searchTerm, rowCount, matchOption, matchType, ASDIndex);
+
+
     query.getConceptWithPropertyMatching(
       vocabName, SYNONYM_PROPERTY_NAME, searchTerm, rowCount);
 
