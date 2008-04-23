@@ -1,10 +1,10 @@
 package gov.nih.nci.ncicb.cadsr.semconn;
 
-import gov.nih.nci.common.net.*;
 import gov.nih.nci.evs.domain.*;
 import gov.nih.nci.evs.query.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.system.applicationservice.*;
+import gov.nih.nci.system.client.*;
 
 import org.apache.log4j.*;
 
@@ -26,13 +26,20 @@ public class EVSImpl extends SubjectClass{
   private String serverURL;
   private ArrayList possibleOptions;
   private ArrayList separateWords;
-  ApplicationService appService;
+  private EVSApplicationService appService;
 
   //private Configuration properties;
   public EVSImpl() {
     vocabularyName = Configuration.getVocabularyName();
     serverURL = Configuration.getServerURL();
-    appService = ApplicationService.getRemoteInstance(serverURL);
+//     appService = ApplicationService.getRemoteInstance(serverURL);
+    try {
+      appService = (EVSApplicationService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
+    } catch (Exception e) {
+      log.error("Can't get cadsr publicAPI, contact support");
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    } // end of try-catch
   }
 
   /**
@@ -978,7 +985,7 @@ public class EVSImpl extends SubjectClass{
       }
 
       if (appService == null) {
-        appService = ApplicationService.getRemoteInstance(serverURL);
+        appService = (EVSApplicationService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
       }
 
       //System.out.println("calling appService.eveSearch()");

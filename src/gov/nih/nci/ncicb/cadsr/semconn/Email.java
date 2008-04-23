@@ -1,7 +1,5 @@
 package gov.nih.nci.ncicb.cadsr.semconn;
 
-import gov.nih.nci.common.util.ListProxy;
-
 import java.util.*;
 import java.lang.Integer;
 import javax.mail.*;
