@@ -101,12 +101,14 @@ public class EVSQueryService {
 
     EVSQuery query = new EVSQueryImpl();
     
+    // 2 means "by property"
+    // 1 means ? (some kind of index)
     query.searchDescLogicConcepts
-      (vocabName, searchTerm, rowCount, matchOption, matchType, ASDIndex);
+      (vocabName, searchTerm, rowCount, 2, SYNONYM_PROPERTY_NAME, 1);
 
 
-    query.getConceptWithPropertyMatching(
-      vocabName, SYNONYM_PROPERTY_NAME, searchTerm, rowCount);
+//     query.getConceptWithPropertyMatching(
+//       vocabName, SYNONYM_PROPERTY_NAME, searchTerm, rowCount);
 
 //     query.getConceptWithPropertyMatching(
 //         "NCI_Thesaurus", "Synonym", "name", 100);
@@ -132,10 +134,6 @@ public class EVSQueryService {
     List<EVSConcept> results = new ArrayList<EVSConcept>();
     
     for (DescLogicConcept concept : concepts) {
-      System.out.println("Code: " + concept.getCode());
-      System.out.println("Name: " + concept.getName());
-      System.out.println("isRetired: " + concept.getIsRetired());
-
       if (
         (includeRetiredConcepts) ||
         (!includeRetiredConcepts && !concept.getIsRetired().booleanValue())) {
