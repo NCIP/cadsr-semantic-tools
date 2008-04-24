@@ -111,6 +111,10 @@
       tofile="${class.dir}/spring-datasources.xml" overwrite="true"
       >
     </copy>
+    <copy file="${config.dir}/application-config-client-${target.env}.xml"
+      tofile="${class.dir}/application-config-client.xml" overwrite="true"
+      >
+    </copy>
     <replace file="${class.dir}/beans.xml" 
       propertyFile="deploy.properties">
       <replacefilter token="--Public API URL Here--" property="publicAPI.${target.env}"/>
