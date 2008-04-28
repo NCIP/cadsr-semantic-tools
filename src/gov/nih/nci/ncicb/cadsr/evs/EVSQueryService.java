@@ -107,12 +107,6 @@ public class EVSQueryService {
       (vocabName, searchTerm, rowCount, 2, SYNONYM_PROPERTY_NAME, 1);
 
 
-//     query.getConceptWithPropertyMatching(
-//       vocabName, SYNONYM_PROPERTY_NAME, searchTerm, rowCount);
-
-//     query.getConceptWithPropertyMatching(
-//         "NCI_Thesaurus", "Synonym", "name", 100);
-
     List conceptNames = evsService.evsSearch(query);
 
     return this.descConceptToEVSConcept(conceptNames, includeRetiredConcepts);
@@ -253,7 +247,7 @@ public class EVSQueryService {
       if (p.getName().equalsIgnoreCase(DEFINITION_PROPERTY_NAME)) {
         //definitions.add(p.getValue());
         String definition = this.retrieveDefinitionValue(p.getValue());
-        String definitionSource = this.retrieveDefinitionSource(p.getValue());
+        String definitionSource = this.retrieveDefinitionSource(p);
         Definition def = new Definition();
         Source src = new Source();
         def.setDefinition(definition);
@@ -267,7 +261,7 @@ public class EVSQueryService {
         Property p = (Property) propVect.get(x);
         if (p.getName().equalsIgnoreCase(ALT_DEFINITION_PROPERTY_NAME)) {
           String definition = this.retrieveDefinitionValue(p.getValue());
-          String definitionSource = this.retrieveDefinitionSource(p.getValue());
+          String definitionSource = this.retrieveDefinitionSource(p);
           Definition def = new Definition();
           Source src = new Source();
           def.setDefinition(definition);
@@ -281,45 +275,22 @@ public class EVSQueryService {
     return definitions;
   }
 
-  private String retrieveDefinitionSource(String termStr) {
-    String source = "";
-
-    int length = 0; //<def-source>,  <def-definition>
-    length = termStr.length();
-    int iStartDefSource = 0;
-    int iEndDefSource = 0;
-
-    if (length > 0) {
-      iStartDefSource = termStr.lastIndexOf("<def-source>");
-      iStartDefSource = iStartDefSource + ("<def-source>").length();
-      iEndDefSource = termStr.indexOf("</def-source>");
-      if ((iStartDefSource > 1) && (iEndDefSource > 1)) {
-        source = termStr.substring(iStartDefSource, iEndDefSource);
-      }
+  private String retrieveDefinitionSource(Property property) {
+    List qList = property.getQualifierCollection();
+    for(int q=0;q<qList.size(); q++){
+      Qualifier qualifier = (Qualifier)qList.get(q);
+      if(qualifier.getName().equals("Source"))
+        return qualifier.getValue();
     }
-
-    return source;
+    return "";
   }
 
+//   private String retrieveDefinitionSource(String termStr) {
+//     return termStr;
+//   }
+
   private String retrieveDefinitionValue(String termStr) {
-    String definition = "";
-
-    int length = 0; //<def-source>,  <def-definition>
-    length = termStr.length();
-    int iStartDef = 0;
-    int iEndDef = 0;
-
-    if (length > 0) {
-      iStartDef = termStr.lastIndexOf("<def-definition>");
-      iStartDef = iStartDef + ("<def-definition>").length();
-      iEndDef = termStr.indexOf("</def-definition>");
-
-      if ((iStartDef > 1) && (iEndDef > 1)) {
-        definition = termStr.substring(iStartDef, iEndDef);
-      }
-    }
-
-    return definition;
+    return termStr;
   }
 
   /**
@@ -329,23 +300,29 @@ public class EVSQueryService {
     EVSQueryService testAction = new EVSQueryService();
     try {
 
-      EVSApplicationService service = (EVSApplicationService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
-//       String genUrl = "http://evsapi-dev.nci.nih.gov:19080/evsapi41";
-//       EVSApplicationService service = (EVSApplicationService) ApplicationServiceProvider.getApplicationServiceFromUrl(genUrl);
+//      EVSApplicationService service = (EVSApplicationService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
+////       String genUrl = "http://evsapi-dev.nci.nih.gov:19080/evsapi41";
+////       EVSApplicationService service = (EVSApplicationService) ApplicationServiceProvider.getApplicationServiceFromUrl(genUrl);
+//
+//      EVSQuery query = new EVSQueryImpl();
+//
+//      query.searchDescLogicConcepts
+//        ("NCI_Thesaurus", name, rowCount, 2, "Synonym", 1);
+//
+////       query.getConceptWithPropertyMatching(
+////         "NCI_Thesaurus", "Synonym", "name", 100);
+//      
+//      List concepts = service.evsSearch(query);
+//
+//      for(Object o : concepts) {
+//        DescLogicConcept desc = (DescLogicConcept)o;
+//        System.out.println(desc.getName());
+//        System.out.println(desc.getIsRetired());
+//      }
+//
+//      
 
-      EVSQuery query = new EVSQueryImpl();
-      query.getConceptWithPropertyMatching(
-        "NCI_Thesaurus", "Synonym", "name", 100);
-      
-      List concepts = service.evsSearch(query);
-
-      for(Object o : concepts) {
-        DescLogicConcept desc = (DescLogicConcept)o;
-        System.out.println(desc.getName());
-        System.out.println(desc.getIsRetired());
-      }
-
-      
+    testAction.findConceptsBySynonym("name", false, 5);
 
     }
     catch (Exception e) {
