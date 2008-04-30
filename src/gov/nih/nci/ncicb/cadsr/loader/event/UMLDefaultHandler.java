@@ -130,7 +130,7 @@ public class UMLDefaultHandler
           .addItem(item);
       } // end of try-catch
       
-      if(result.size() == 0) {
+      if(result == null | result.size() == 0) {
 //         ChangeTracker changeTracker = ChangeTracker.getInstance();
 
         ValidationError item = new ValidationError
