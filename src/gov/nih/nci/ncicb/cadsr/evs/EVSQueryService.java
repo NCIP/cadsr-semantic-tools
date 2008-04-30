@@ -195,13 +195,32 @@ public class EVSQueryService {
 
     List results = new ArrayList();
     EVSQuery query = new EVSQueryImpl();
-    query.getConceptNameByCode(vocabName, conceptCode);
-    List conceptNames = evsService.evsSearch(query);
 
-    results =
-      this.findConceptDetailsByName(conceptNames, includeRetiredConcepts, vocabName);
+    boolean inputFlag = true; // is a code, not name
+    query.getDescLogicConcept(vocabName, conceptCode, inputFlag);
+    List evsResults = evsService.evsSearch(query);
 
-    return results;
+    if (evsResults != null) {
+      return descConceptToEVSConcept(evsResults, includeRetiredConcepts);
+    }
+    
+    return null;
+
+//     query.getDescLogicConceptNameByCode(vocabName, conceptCode);
+
+//     List conceptNames = evsService.evsSearch(query);
+
+//     return this.descConceptToEVSConcept(conceptNames, includeRetiredConcepts);
+
+    
+//     query.getConceptNameByCode(vocabName, conceptCode);
+//     List conceptNames = evsService.evsSearch(query);
+
+//     results =
+//       this.findConceptDetailsByName(conceptNames, includeRetiredConcepts, vocabName);
+
+//     return results;
+
   }
 
   private DescLogicConcept findDescLogicConceptByName(
