@@ -25,9 +25,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.border.*;
-
-import javax.security.auth.login.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
@@ -38,12 +35,13 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.TreeBuilder;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
-import gov.nih.nci.ncicb.cadsr.semconn.SemanticConnectorException;
 import gov.nih.nci.ncicb.cadsr.semconn.*;
 
 import gov.nih.nci.ncicb.cadsr.domain.Context;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -59,7 +57,6 @@ import org.apache.log4j.Logger;
 public class WizardController implements ActionListener {
     
   private Wizard wizard;
-  private String username;
   private String filename;
   private String outputFile;
 
@@ -432,13 +429,21 @@ public class WizardController implements ActionListener {
 
                     if(JOptionPane.showConfirmDialog((Frame)null,  msg, "Fatal Parsing Error", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                       JFileChooser chooser = new JFileChooser();
-                      int returnVal = chooser.showOpenDialog(null);
-                      if(returnVal == JFileChooser.SAVE_DIALOG) {
+                      int returnVal = chooser.showSaveDialog(null);
+                      if(returnVal == JFileChooser.APPROVE_OPTION) {
                         try {
-                          File file = chooser.getSelectedFile();
-                          PrintWriter pw = new PrintWriter(file);
-                          e.printStackTrace(pw);
-                          pw.close();
+                            File file = chooser.getSelectedFile();
+                            String errorMsg = e.toString();
+                            file.createNewFile();
+                            FileOutputStream fos = new FileOutputStream(file);
+                            DataOutputStream dos = new DataOutputStream(fos);
+                            dos.writeChars(errorMsg);
+                            dos.close();
+                            fos.close();
+                            
+                            PrintWriter pw = new PrintWriter(file);
+                            e.printStackTrace(pw);
+                            pw.close();
                         } catch (IOException e2) {
                           logger.error(e2, e2);
                         } // end of try-catch
