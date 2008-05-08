@@ -100,11 +100,12 @@ public class EVSQueryService {
     String vocabName) throws Exception {
 
     EVSQuery query = new EVSQueryImpl();
-    
-    // 2 means "by property"
-    // 1 means ? (some kind of index)
+    int matchOption = 0;   // by all presentation including synonym
+    int ASDIndex = 1;
+    String matchType = null;
+
     query.searchDescLogicConcepts
-      (vocabName, searchTerm, rowCount, 2, SYNONYM_PROPERTY_NAME, 1);
+      (vocabName, searchTerm, rowCount, matchOption, matchType, ASDIndex);
 
 
     List conceptNames = evsService.evsSearch(query);
@@ -341,7 +342,12 @@ public class EVSQueryService {
 //
 //      
 
-    testAction.findConceptsBySynonym("name", false, 5);
+//       testAction.findConceptsBySynonym("name", false, 5);
+
+      for(EVSConcept concept :       testAction.findConceptsBySynonym("name", false, 100)) {
+        System.out.println(concept.getName());
+      }
+
 
     }
     catch (Exception e) {
