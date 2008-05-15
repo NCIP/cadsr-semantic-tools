@@ -32,7 +32,8 @@ import gov.nih.nci.ncicb.cadsr.semconn.SemanticConnector;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.*;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 
 public class BeansAccessor {
   
@@ -104,8 +105,20 @@ public class BeansAccessor {
       if(factory != null) {
         return factory;
       }
-      factory = new ClassPathXmlApplicationContext(new String[]{"beans.xml", "spring-datasources.xml"});
+      ClassPathXmlApplicationContext cpCtx = new ClassPathXmlApplicationContext(new String[]{"beans.xml", "spring-datasources.xml"});
+
+//       GenericApplicationContext genCtx = new GenericApplicationContext();
+//       XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(genCtx);
+
+//       cpCtx.initBeanDefinitionReader(xmlReader);
+
+//       cpCtx.refresh();
+      
+      factory = cpCtx;
+
+
 //       factory = new XmlBeanFactory(new InputStreamResource(Thread.currentThread().getContextClassLoader().getResourceAsStream("beans.xml")));
+
       return factory;
     } catch (Exception e){
       logger.error(e.getMessage());
