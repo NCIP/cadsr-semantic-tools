@@ -152,7 +152,27 @@
     </copy>
     <copy todir="${dist.dir}/lib">
       <fileset dir="${lib.dir}/cacore">
-        <include name="cacore32-client.jar"/>
+        <include name="caDSR-beans.jar"/>
+        <include name="castor-1.0.2.jar"/>
+        <include name="dlbadapter.jar"/>
+        <include name="evsapi41-beans.jar"/>
+        <include name="evsapi41-framework.jar"/>
+        <include name="lbAdmin.jar"/>
+        <include name="lbImpl.jar"/>
+        <include name="lbInterfaces.jar"/>
+        <include name="lbModel.jar"/>
+        <include name="lgConverter.jar"/>
+        <include name="lgIndexer.jar"/>
+        <include name="lgModel.emf.jar"/>
+        <include name="lgModel.jar"/>
+        <include name="lgRDFConverter.jar"/>
+        <include name="lgResourceReader.jar"/>
+        <include name="lgUtility.jar"/>
+        <include name="lucene-core-2.0.0.jar"/>
+        <include name="lucene-regex-10-9-06-nightly.jar"/>
+        <include name="lucene-snowball-9-26-06-nightly.jar"/>
+        <include name="MSSOUserValidator.jar"/>
+        <include name="sdk-client-framework.jar"/>
       </fileset>
     </copy>
     <copy file="${config.dir}/datatype-mapping.xml"
@@ -160,7 +180,6 @@
     </copy>
     <copy todir="${dist.dir}/lib">
       <fileset dir="${lib.dir}">
-        <include name="uml-loader.jar"/>
         <include name="acegi-security-1.0.4.jar"/>
         <include name="activation.jar"/>
         <include name="antlr-2.7.6.jar"/>
