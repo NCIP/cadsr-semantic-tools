@@ -87,6 +87,10 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   private CadsrModule cadsrModule;
   private FreestyleModule freestyleModule;
 
+  private Collection<Representation> preferredRepTerms;
+
+  private boolean showRepTermWarning = false;
+
   private static String SEARCH = "SEARCH",
     PREVIOUS = "PREVIOUS",
     NEXT = "NEXT",
@@ -389,6 +393,24 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     } 
   }
 
+  public void startSearchPreferredRepTerms() {
+    if(preferredRepTerms == null) {
+      try {
+        preferredRepTerms = cadsrModule.findPreferredRepTerms();
+      } catch (Exception e) {
+        logger.error("Error querying Cadsr " + e);
+      } finally {
+        _this.setCursor(Cursor.getDefaultCursor());
+      }
+    }
+    
+    if(preferredRepTerms != null) {
+      resultSet = new ArrayList<SearchResultWrapper>();
+      for(Representation rep : preferredRepTerms)
+        resultSet.add(new SearchResultWrapper(rep));
+    }
+  }
+
   public void startSearchCDEByOCConcept(Concept concept) {
     resultSet = new ArrayList<SearchResultWrapper>();
     
@@ -404,6 +426,15 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     JButton button = (JButton)event.getSource();
 
     if(button.getActionCommand().equals(SEARCH)) {
+
+      if(mode == MODE_REP) {
+        if(!showRepTermWarning) {
+          int result = JOptionPane.showConfirmDialog(_this, PropertyAccessor.getProperty("search.nonPreferred.repTerms"), "Warning", JOptionPane.YES_NO_OPTION);
+          if (result == JOptionPane.NO_OPTION)
+            return;
+          showRepTermWarning = true;
+        }
+      }
       
       String selection = (String) searchSourceCombo.getSelectedItem();
       String text = searchField.getText() == null ? "" : searchField.getText().trim();
@@ -610,15 +641,16 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   
   public static void main(String[] args) 
   {
-        CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_DE);
+        CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_REP);
 
         dialog.setCadsrModule(new CadsrPublicApiModule());
 
-        Concept con = DomainObjectFactory.newConcept();
-        con.setPreferredName("C16612");
+//         Concept con = DomainObjectFactory.newConcept();
+//         con.setPreferredName("C16612");
         
-        dialog.startSearchCDEByOCConcept(con);
+//         dialog.startSearchCDEByOCConcept(con);
 
+        dialog.startSearchPreferredRepTerms();
         dialog.setVisible(true);
 
         
