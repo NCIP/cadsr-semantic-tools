@@ -1,14 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.cadsr.freestylesearch.util.SearchResults;
-import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
-import gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme;
-import gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain;
-import gov.nih.nci.ncicb.cadsr.domain.Representation;
-import gov.nih.nci.ncicb.cadsr.domain.DataElement;
-import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
-import gov.nih.nci.ncicb.cadsr.domain.Property;
-import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
+import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
@@ -395,6 +388,16 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       choiceAdminComponent = null;
     } 
   }
+
+  public void startSearchCDEByOCConcept(Concept concept) {
+    resultSet = new ArrayList<SearchResultWrapper>();
+    
+    for(DataElement de : cadsrModule.findDEByOCConcept(concept))
+      resultSet.add(new SearchResultWrapper(de));
+    
+    pageIndex = 0;
+    updateTable();
+  }
   
   public void actionPerformed(ActionEvent event) 
   {
@@ -607,10 +610,18 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   
   public static void main(String[] args) 
   {
-        CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_VD);
+        CadsrDialog dialog = new CadsrDialog(CadsrDialog.MODE_DE);
 
-    dialog.setCadsrModule(new CadsrPublicApiModule("http://cabio.nci.nih.gov/cacore31/http/remoteService"));
-    dialog.setVisible(true);
+        dialog.setCadsrModule(new CadsrPublicApiModule());
+
+        Concept con = DomainObjectFactory.newConcept();
+        con.setPreferredName("C16612");
+        
+        dialog.startSearchCDEByOCConcept(con);
+
+        dialog.setVisible(true);
+
+        
   }
 }
 
