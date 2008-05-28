@@ -151,16 +151,17 @@ public class ValueDomainViewPanel extends JPanel
           }});
     
     repSearchButton.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent evt) {
-             cadsrREPDialog.setAlwaysOnTop(true);
-             cadsrREPDialog.setVisible(true);
-             Representation rep = (Representation)cadsrREPDialog.getAdminComponent();
-             if(rep == null) return;
-             tempVD.setRepresentation(rep);
-             //initValues();
-             setRepSearchedValues();
-             firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
-           }});
+        public void actionPerformed(ActionEvent evt) {
+          cadsrREPDialog.setAlwaysOnTop(true);
+          cadsrREPDialog.startSearchPreferredRepTerms();
+          cadsrREPDialog.setVisible(true);
+          Representation rep = (Representation)cadsrREPDialog.getAdminComponent();
+          if(rep == null) return;
+          tempVD.setRepresentation(rep);
+          //initValues();
+          setRepSearchedValues();
+          firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
+        }});
     vdCdLongNameValueJLabel = new JLabel();
 
     JPanel vdCDRepPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
