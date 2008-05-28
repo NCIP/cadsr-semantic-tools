@@ -173,11 +173,11 @@ public class XMIParser2 implements Parser {
   public static final String TV_INHERITED_CURATOR_REVIEWED = "CADSR_Inherited.{1}.CURATOR_REVIEWED";
 
   // GME Tagged Values
-  public static final String TV_GME_NAMESPACE = "GME_XMLNamespace";
-  public static final String TV_GME_XML_ELEMENT = "GME_XMLElement";
-  public static final String TV_GME_XML_LOC_REFERENCE = "GME_XMLLocReference";
-  public static final String TV_GME_SOURCE_XML_LOC_REFERENCE = "GME_SourceXMLLocRef";
-  public static final String TV_GME_TARGET_XML_LOC_REFERENCE = "GME_TargetXMLLocRef";
+  public static final String TV_GME_NAMESPACE = "NCI_GME_XML_NAMESPACE";
+  public static final String TV_GME_XML_ELEMENT = "NCI_GME_XML_ELEMENT";
+  public static final String TV_GME_XML_LOC_REFERENCE = "NCI_GME_XML_LOC_REF";
+  public static final String TV_GME_SOURCE_XML_LOC_REFERENCE = "NCI_GME_SOURCE_XML_LOC_REF";
+  public static final String TV_GME_TARGET_XML_LOC_REFERENCE = "NCI_GME_TARGET_XML_LOC_REF";
   
   
   private int totalNumberOfElements = 0, currentElementIndex = 0;
