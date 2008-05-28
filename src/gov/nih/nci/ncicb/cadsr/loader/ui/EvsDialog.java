@@ -22,8 +22,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
-import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -63,11 +62,15 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
 
   static final String SYNONYMS = "Synonyms";
   static final String CONCEPT_CODE = "Concept Code";
+  static final String AUTO_SEARCH = "Auto";
 
   private JButton previousButton = new JButton("Previous"),
     nextButton = new JButton("Next"), 
     closeButton = new JButton("Close");
-  
+
+  private CardLayout cardLayout = new CardLayout();
+  private JPanel cardPanel;
+
   private JLabel indexLabel = new JLabel("");
 
   private static String SEARCH = "SEARCH",
@@ -91,6 +94,10 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
 
   private Concept choiceConcept = null;
 
+  private String autoRegexp = PropertyAccessor.getProperty("evs.autoSearch.regexp");
+
+  private static final String RESULT_TABLE = "RESULT_TABLE", NO_RESULT = "NO_RESULT";
+
   public EvsDialog()
   {
     super((Frame)null, true);
@@ -98,7 +105,7 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
 
     this.getContentPane().setLayout(new BorderLayout());
 
-    String values[] = {SYNONYMS, CONCEPT_CODE};
+    String values[] = {AUTO_SEARCH, SYNONYMS, CONCEPT_CODE};
     searchSourceCombo = new JComboBox(values);
     JPanel searchPanel = new JPanel(new GridBagLayout());
 
@@ -242,8 +249,15 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
     nextButton.addActionListener(this);
     closeButton.addActionListener(this);
 
+    JPanel noResultPanel = new JPanel();
+    noResultPanel.add(new JLabel("No Results Found"), BorderLayout.CENTER);
+
+    cardPanel = new JPanel(cardLayout);
+    cardPanel.add(scrollPane, RESULT_TABLE);
+    cardPanel.add(noResultPanel, NO_RESULT);
+
     this.getContentPane().add(searchPanel, BorderLayout.NORTH);
-    this.getContentPane().add(scrollPane, BorderLayout.CENTER);
+    this.getContentPane().add(cardPanel, BorderLayout.CENTER);
     this.getContentPane().add(browsePanel, BorderLayout.SOUTH);
 
     this.setSize(600,425);
@@ -268,6 +282,8 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
   {
     JButton button = (JButton)event.getSource();
     if(button.getActionCommand().equals(SEARCH)) {
+      cardLayout.show(cardPanel, RESULT_TABLE);
+      
       String selection = (String) searchSourceCombo.getSelectedItem();
       String text = searchField.getText() == null ? "" : searchField.getText().trim();
       EvsModule module = new EvsModule();
@@ -277,14 +293,26 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
       _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
       if(!StringUtil.isEmpty(text)) {
-        if(selection.equals(CONCEPT_CODE)) {
+        if(selection.equals(AUTO_SEARCH)) {
+          if(text.matches(autoRegexp)) {
+            EvsResult evsResult = null;
+            evsResult = module.findByConceptCode(text, includeRetiredCB.isSelected());
+            if(evsResult != null)
+              resultSet.add(evsResult);
+          }
+          else 
+            resultSet.addAll(module.findBySynonym(text, includeRetiredCB.isSelected()));
+        } else if(selection.equals(CONCEPT_CODE)) {
           EvsResult evsResult = module.findByConceptCode(text, includeRetiredCB.isSelected());
           if(evsResult != null)
             resultSet.add(evsResult);
-        }
-        if(selection.equals(SYNONYMS)) {
+        } else if(selection.equals(SYNONYMS)) {
           resultSet.addAll(module.findBySynonym(text, includeRetiredCB.isSelected()));
         }
+      }
+
+      if(resultSet.size() == 0) {
+        cardLayout.show(cardPanel, NO_RESULT);
       }
 
       _this.setCursor(Cursor.getDefaultCursor());
