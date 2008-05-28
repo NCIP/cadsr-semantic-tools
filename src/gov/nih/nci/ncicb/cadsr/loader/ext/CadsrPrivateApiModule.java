@@ -170,6 +170,20 @@ public class CadsrPrivateApiModule implements CadsrModule
   }
 
 
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.Representation> findPreferredRepTerms() {
+    
+    return null;
+    
+  }
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByOCConcept(gov.nih.nci.ncicb.cadsr.domain.Concept concept) {
+    
+    List<DataElement> result = DAOAccessor.getDataElementDAO().findByOCConcept(concept);
+    return result;
+
+  }
+
+
   public boolean matchDEToPropertyConcepts(gov.nih.nci.ncicb.cadsr.domain.DataElement de, String[] conceptCodes) throws Exception {
     
     Map<String, Object> queryFields = new HashMap<String, Object>();
@@ -267,10 +281,35 @@ public class CadsrPrivateApiModule implements CadsrModule
 //        for(String s: tmp){
 //            System.out.println(" ---- "+s);
 //        }
+
+      gov.nih.nci.ncicb.cadsr.domain.Concept concept = DomainObjectFactory.newConcept();
+      concept.setPreferredName("C16612");
+      
+      Collection<DataElement> des = testModule.findDEByOCConcept(concept);
+      for(DataElement de : des) {
+        System.out.println(de.getLongName());
+      }
+
+
+
     } catch (Exception e) {
-    } // end of try-catch
+      e.printStackTrace();
+   } // end of try-catch
 
-  }      
+  }
 
 
+    public List<DataElement> findDEByOCConcepts(Concept[] concepts) {
+        return null;
+    }
+
+    public List<DataElement> findDEByConcepts(Concept ocPrimaryConcept,
+                                              Concept[] propConcepts) {
+        return null;
+    }
+
+    public List<DataElement> findDEByConcepts(Concept[] ocConcepts,
+                                              Concept[] propConcepts) {
+        return null;
+    }
 }

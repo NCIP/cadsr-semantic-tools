@@ -3,6 +3,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ext;
 import gov.nih.nci.cadsr.domain.ComponentConcept;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
+import gov.nih.nci.ncicb.cadsr.domain.Representation;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 import gov.nih.nci.system.client.*;
@@ -436,6 +437,89 @@ public class CadsrPublicApiModule implements CadsrModule {
 
   }
 
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.Representation> findPreferredRepTerms() {
+
+    try {
+      DetachedCriteria repTermCriteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.Representation.class, "repTerm");
+      
+      repTermCriteria.add(Expression.eq("workflowStatusName", "RELEASED"));
+      repTermCriteria.add(Expression.eq("registrationStatus", "Standard"));
+      
+      List listResult = service.query(repTermCriteria, gov.nih.nci.cadsr.domain.Representation.class.getName());
+      
+      if(listResult.size() > 0) {
+        return CadsrTransformer.repListPublicToPrivate(listResult);
+      } else
+        return new ArrayList();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    } // end of try-catch
+    
+  }
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByOCConcept(gov.nih.nci.ncicb.cadsr.domain.Concept concept) {
+
+    try {
+      DetachedCriteria criteria = DetachedCriteria.forClass(
+        gov.nih.nci.cadsr.domain.DataElement.class, "de");
+      
+      criteria.createCriteria("dataElementConcept")
+        .createCriteria("objectClass")
+        .createCriteria("conceptDerivationRule")
+        .createCriteria("componentConceptCollection")
+        .add(Expression.eq("primaryFlag", "Yes"))
+        .createCriteria("concept")
+        .add(Expression.eq("preferredName", concept.getPreferredName()));
+      
+      Collection results = 
+        service.query(criteria);
+      
+      System.out.println("SIZE: " + results.size());
+
+      return new ArrayList<gov.nih.nci.ncicb.cadsr.domain.DataElement>(CadsrTransformer.deListPublicToPrivate(results));
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    } // end of try-catch
+  }
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByOCConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept[] concepts) {
+
+    try {
+      int i = 0;
+      StringBuffer ocNames = new StringBuffer();
+      for(Concept concept : concepts) {
+        if (i++ > 0)  ocNames.append(":");
+        ocNames.append(concept.getPreferredName());
+      }
+
+      DetachedCriteria criteria = DetachedCriteria.forClass(
+        gov.nih.nci.cadsr.domain.DataElement.class, "de");
+      
+      criteria.createCriteria("dataElementConcept")
+        .createCriteria("objectClass")
+        .createCriteria("conceptDerivationRule")
+        .add(Expression.eq("name", ocNames.toString()));
+
+      Collection results = 
+        service.query(criteria);
+      
+      return new ArrayList<gov.nih.nci.ncicb.cadsr.domain.DataElement>(CadsrTransformer.deListPublicToPrivate(results));
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    } // end of try-catch
+
+    
+  }
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept ocPrimaryConcept, gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts) {
+    return null;
+  }
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept[] ocConcepts, gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts) {
+    return null;
+  }
+
+  
   
 //   public void setServiceURL(String url) {
 //     this.serviceURL = url;
@@ -545,7 +629,22 @@ public class CadsrPublicApiModule implements CadsrModule {
 //        System.out.println(con.getLongName());
 //      }
 
-    testModule.getAllDatatypes();
+//    testModule.getAllDatatypes();
+
+//       Collection<Representation> reps = testModule.findPreferredRepTerms();
+//       for(Representation rep : reps) {
+//         System.out.println(rep.getLongName());
+//       }
+
+      gov.nih.nci.ncicb.cadsr.domain.Concept concept = DomainObjectFactory.newConcept();
+      concept.setPreferredName("C16612");
+
+      System.out.println("find " + concept.getPreferredName());
+      Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> des = testModule.findDEByOCConcept(concept);
+      for(gov.nih.nci.ncicb.cadsr.domain.DataElement de : des) {
+        System.out.println(de.getLongName());
+      }
+
 
     }
     catch (Exception e) {

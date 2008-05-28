@@ -23,7 +23,14 @@ public class CadsrTransformer {
     gov.nih.nci.ncicb.cadsr.domain.DataElement outDE = DomainObjectFactory.newDataElement();    
 
     acPublicToPrivate(outDE, inDE);
-    outDE.setDataElementConcept(decPublicToPrivate(inDE.getDataElementConcept()));
+    
+    gov.nih.nci.cadsr.domain.DataElement otherDE = inDE;
+    
+    gov.nih.nci.cadsr.domain.DataElementConcept dec = inDE.getDataElementConcept();
+
+    gov.nih.nci.cadsr.domain.Context ctx = dec.getContext();
+
+    outDE.setDataElementConcept(decPublicToPrivate(dec));
     outDE.setValueDomain(vdPublicToPrivate(inDE.getValueDomain()));
 
 

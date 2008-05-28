@@ -22,6 +22,9 @@ public interface CadsrModule
   public Collection<String> 
     getAllDatatypes();
     
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.Representation>
+    findPreferredRepTerms() throws Exception;
+
   public Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme>
     findClassificationScheme(Map<String, Object> queryFields) throws Exception;
 
@@ -80,5 +83,13 @@ public interface CadsrModule
    * DE must have publicID and version
    */
   public boolean matchDEToPropertyConcepts(gov.nih.nci.ncicb.cadsr.domain.DataElement de, String[] conceptCodes) throws Exception;
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByOCConcept(gov.nih.nci.ncicb.cadsr.domain.Concept concept);
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByOCConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept[] concepts);
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept ocPrimaryConcept, gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts);
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept[] ocConcepts, gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts);
   
 }
