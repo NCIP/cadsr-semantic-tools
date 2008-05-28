@@ -183,7 +183,24 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   }
 
-
+  
+  public List<DataElement> findDEByOCConcepts(Concept[] concepts) {
+    List<DataElement> result = DAOAccessor.getDataElementDAO().findByOCConcepts(concepts);
+    return result;
+  }
+  
+  public List<DataElement> findDEByConcepts(Concept ocPrimaryConcept,
+                                            Concept[] propConcepts) {
+    List<DataElement> result = DAOAccessor.getDataElementDAO().findByConcepts(ocPrimaryConcept, propConcepts);
+    return result;
+  }
+  
+  public List<DataElement> findDEByConcepts(Concept[] ocConcepts,
+                                            Concept[] propConcepts) {
+    List<DataElement> result = DAOAccessor.getDataElementDAO().findByConcepts(ocConcepts, propConcepts);
+    return result;
+  }
+  
   public boolean matchDEToPropertyConcepts(gov.nih.nci.ncicb.cadsr.domain.DataElement de, String[] conceptCodes) throws Exception {
     
     Map<String, Object> queryFields = new HashMap<String, Object>();
@@ -282,15 +299,64 @@ public class CadsrPrivateApiModule implements CadsrModule
 //            System.out.println(" ---- "+s);
 //        }
 
-      gov.nih.nci.ncicb.cadsr.domain.Concept concept = DomainObjectFactory.newConcept();
-      concept.setPreferredName("C16612");
+
+
       
-      Collection<DataElement> des = testModule.findDEByOCConcept(concept);
+//       gov.nih.nci.ncicb.cadsr.domain.Concept concept = DomainObjectFactory.newConcept();
+//       concept.setPreferredName("C42613");
+      
+//       Collection<DataElement> des = testModule.findDEByOCConcept(concept);
+//       for(DataElement de : des) {
+//         System.out.println(de.getLongName());
+//       }
+
+
+//       gov.nih.nci.ncicb.cadsr.domain.Concept[] concepts = new gov.nih.nci.ncicb.cadsr.domain.Concept[2];
+//       concepts[0] = DomainObjectFactory.newConcept();
+//       concepts[0].setPreferredName("C41079");
+      
+//       concepts[1] = DomainObjectFactory.newConcept();
+//       concepts[1].setPreferredName("C42613");
+      
+//       Collection<DataElement> des = testModule.findDEByOCConcepts(concepts);
+//       for(DataElement de : des) {
+//         System.out.println(de.getLongName());
+//       }
+
+
+//       gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts = new gov.nih.nci.ncicb.cadsr.domain.Concept[1];
+//       propConcepts[0] = DomainObjectFactory.newConcept();
+//       propConcepts[0].setPreferredName("C42614");
+
+//       gov.nih.nci.ncicb.cadsr.domain.Concept ocConcept = DomainObjectFactory.newConcept();
+//       ocConcept.setPreferredName("C42613");
+
+      
+//       Collection<DataElement> des = testModule.findDEByConcepts(ocConcept, propConcepts);
+//       for(DataElement de : des) {
+//         System.out.println(de.getLongName());
+//       }
+
+      
+      gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts = new gov.nih.nci.ncicb.cadsr.domain.Concept[2];
+      propConcepts[0] = DomainObjectFactory.newConcept();
+      propConcepts[0].setPreferredName("C15426");
+      propConcepts[1] = DomainObjectFactory.newConcept();
+      propConcepts[1].setPreferredName("C25364");
+
+      gov.nih.nci.ncicb.cadsr.domain.Concept[] ocConcepts = new gov.nih.nci.ncicb.cadsr.domain.Concept[2];
+      ocConcepts[0] = DomainObjectFactory.newConcept();
+      ocConcepts[0].setPreferredName("C41079");
+      ocConcepts[1] = DomainObjectFactory.newConcept();
+      ocConcepts[1].setPreferredName("C42613");
+
+      
+      Collection<DataElement> des = testModule.findDEByConcepts(ocConcepts, propConcepts);
       for(DataElement de : des) {
         System.out.println(de.getLongName());
       }
-
-
+      
+      
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -299,17 +365,4 @@ public class CadsrPrivateApiModule implements CadsrModule
   }
 
 
-    public List<DataElement> findDEByOCConcepts(Concept[] concepts) {
-        return null;
-    }
-
-    public List<DataElement> findDEByConcepts(Concept ocPrimaryConcept,
-                                              Concept[] propConcepts) {
-        return null;
-    }
-
-    public List<DataElement> findDEByConcepts(Concept[] ocConcepts,
-                                              Concept[] propConcepts) {
-        return null;
-    }
 }
