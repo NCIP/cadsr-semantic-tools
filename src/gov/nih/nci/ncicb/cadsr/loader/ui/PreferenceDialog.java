@@ -143,7 +143,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
       prefs.setEvsAutoSeatch(evsAutoSearchBox.isSelected());
 
       prefs.setUsePrivateApi(privateApiSearchBox.isSelected());
-
+      
       prefs.setShowInheritedAttributes(showInheritedAttributesBox.isSelected());
 
       prefs.setSortElements(sortElementsBox.isSelected());

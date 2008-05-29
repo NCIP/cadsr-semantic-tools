@@ -117,8 +117,10 @@ public class OCPanel extends JPanel
   
   public void apply() 
   {
-    oc.setPublicId(tempOC.getPublicId());
-    oc.setVersion(tempOC.getVersion());
+    if(tempOC != null){
+        oc.setPublicId(tempOC.getPublicId());
+        oc.setVersion(tempOC.getVersion());
+    }
   }
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
