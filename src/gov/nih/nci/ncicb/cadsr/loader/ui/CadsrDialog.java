@@ -19,11 +19,8 @@ import gov.nih.nci.ncicb.cadsr.dao.EagerConstants;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -42,6 +39,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -67,6 +65,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   private JLabel numberOfResultsLabel = new JLabel("Results Per Page");
   private JComboBox searchSourceCombo;
   private JComboBox numberOfResultsCombo;
+  private JCheckBox includeRetiredCB = new JCheckBox("Include Retired?");
 
   private JButton searchButton = new JButton("Search");
   
@@ -219,7 +218,6 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     
    resultTable = new JTable(tableModel) {
         public String getToolTipText(java.awt.event.MouseEvent e) {
-          String tip = null;
           java.awt.Point p = e.getPoint();
           int rowIndex = rowAtPoint(p);
           int colIndex = columnAtPoint(p);
@@ -308,7 +306,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       UIUtil.insertInBag(searchPanel, searchLabel, 0, 0);
       UIUtil.insertInBag(searchPanel, searchField, 1, 0);
       UIUtil.insertInBag(searchPanel, searchButton, 4, 0);
-      UIUtil.insertInBag(searchPanel, suggestButton, 5, 0);
+      UIUtil.insertInBag(searchPanel, includeRetiredCB, 5, 0);
+      UIUtil.insertInBag(searchPanel, suggestButton, 6, 0);
     }
     
     else {
@@ -316,7 +315,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       UIUtil.insertInBag(searchPanel, searchField, 1, 0);
       UIUtil.insertInBag(searchPanel, whereToSearchLabel, 2, 0);
       UIUtil.insertInBag(searchPanel, searchSourceCombo, 3, 0);
-      UIUtil.insertInBag(searchPanel, searchButton, 4, 0);
+      UIUtil.insertInBag(searchPanel, includeRetiredCB, 4, 0);
+      UIUtil.insertInBag(searchPanel, searchButton, 5, 0);
     }
     
     searchField.addKeyListener(this);
@@ -424,7 +424,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   public void actionPerformed(ActionEvent event) 
   {
     JButton button = (JButton)event.getSource();
-
+    boolean cbStatus = includeRetiredCB.isSelected();
     if(button.getActionCommand().equals(SEARCH)) {
 
       if(mode == MODE_REP) {
@@ -498,7 +498,12 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
             
             if(sr != null)
               if(!setOfExcluded.contains(sr.getRegistrationStatus()))
-                resultSet.add(new SearchResultWrapper(sr));
+                  if(cbStatus)
+                      resultSet.add(new SearchResultWrapper(sr));
+                  else
+                    if(sr.getWorkflowStatus() != null 
+                      && (sr.getWorkflowStatus().toUpperCase().indexOf("RETIRED") == -1))
+                        resultSet.add(new SearchResultWrapper(sr));
           }
           break;
         case MODE_CS:
@@ -519,8 +524,14 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
             resultSet.add(new SearchResultWrapper(rep));       
           break;
         case MODE_VD:
-          for(ValueDomain vd : cadsrModule.findValueDomain(queryFields))
-            resultSet.add(new SearchResultWrapper(vd));
+          for(ValueDomain vd : cadsrModule.findValueDomain(queryFields)){
+            if(cbStatus)
+                resultSet.add(new SearchResultWrapper(vd));
+            else
+                if(vd.getWorkflowStatus() != null 
+                    && (vd.getWorkflowStatus().toUpperCase().indexOf("RETIRED") == -1))
+                        resultSet.add(new SearchResultWrapper(vd));
+          }
         }
       } catch (Exception e){
         logger.error("Error querying Cadsr " + e);
