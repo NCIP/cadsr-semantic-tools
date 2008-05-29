@@ -106,7 +106,6 @@ public class ApplyButtonPanel extends JPanel implements ActionListener, Property
 
   public void actionPerformed(ActionEvent evt) {
     AbstractButton button = (AbstractButton)evt.getSource();
-
     if(button.getActionCommand().equals(SAVE)) {
       try {
         viewPanel.applyPressed();

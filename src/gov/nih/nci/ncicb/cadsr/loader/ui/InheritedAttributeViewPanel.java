@@ -30,11 +30,11 @@ public class InheritedAttributeViewPanel extends JPanel
 
   private DEPanel dePanel;
   private VDPanel vdPanel;
-
+  private DescriptionPanel dsp;
   private ApplyButtonPanel applyButtonPanel;
   private NavigationButtonPanel navButtonPanel;
 
-  private JLabel explainLabel;
+  private JLabel explainLabel, whyLabel;
 
   private UMLNode node;
 
@@ -55,12 +55,14 @@ public class InheritedAttributeViewPanel extends JPanel
   
     dePanel = new DEPanel(node);
     vdPanel = new VDPanel(node);
+    dsp = new DescriptionPanel(node);
 
     applyButtonPanel = new ApplyButtonPanel(this, (ReviewableUMLNode)node);
     navButtonPanel = new NavigationButtonPanel();    
 
     dePanel.addPropertyChangeListener(applyButtonPanel);
     vdPanel.addPropertyChangeListener(applyButtonPanel);
+    dsp.addPropertyChangeListener(applyButtonPanel);
 
     initUI();
     updateNode(node);
@@ -84,11 +86,28 @@ public class InheritedAttributeViewPanel extends JPanel
     ToolTipManager.sharedInstance().registerComponent(explainLabel);
     ToolTipManager.sharedInstance().setDismissDelay(3600000);
     
-    if(prefs.getUmlDescriptionOrder().equals("first"))
-      UIUtil.insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 1, 2, 1);
-    else
-      UIUtil.insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 4, 2, 1); 
+    String tooltipText = "<html>Description Area is disbled because this is Inherited Attribute <br>" +
+        "and it should take its value from its parent. <br>" +
+        "Modify the parent if you want to modify its value.</html>";
 
+//    
+//    whyLabel = new JLabel("<html><u color=BLUE>Why Disabled</u></html>");
+//    ToolTipManager.sharedInstance().registerComponent(whyLabel);
+//    ToolTipManager.sharedInstance().setDismissDelay(3600000);
+//    whyLabel.setToolTipText("<html>Description Area is disbled because this is Inherited Attribute <br>" +
+//        "and it should take its value from its parent. <br>" +
+//        "Modify the parent if you want to modify its value.</html>");
+        
+    //UIUtil.insertInBag(editPanel, whyLabel, 0, 0);
+    
+    if(prefs.getUmlDescriptionOrder().equals("first"))
+      UIUtil.insertInBag(editPanel, dsp.getDescriptionPanel(), 0, 1, 2, 1);
+    else
+      UIUtil.insertInBag(editPanel, dsp.getDescriptionPanel(), 0, 4, 2, 1); 
+
+    dsp.disableInheritedAttDescArea();
+    dsp.setAttDescToolTip(tooltipText);
+    
     UIUtil.insertInBag(editPanel, dePanel, 0, 2);
     UIUtil.insertInBag(editPanel, vdPanel, 0, 3);
 
@@ -122,11 +141,13 @@ public class InheritedAttributeViewPanel extends JPanel
   public void addElementChangeListener(ElementChangeListener listener) {
     dePanel.addElementChangeListener(listener);
     vdPanel.addElementChangeListener(listener);
+    dsp.addElementChangeListener(listener);
   }
 
   public void addPropertyChangeListener(PropertyChangeListener l) {
     applyButtonPanel.addPropertyChangeListener(l);
     dePanel.addPropertyChangeListener(l);
+    dsp.addPropertyChangeListener(l);
   }
 
   public void navigate(NavigationEvent evt) {  
@@ -138,6 +159,7 @@ public class InheritedAttributeViewPanel extends JPanel
   
     dePanel.applyPressed();
     vdPanel.applyPressed();
+    dsp.applyPressed();
 
     updateView();
 

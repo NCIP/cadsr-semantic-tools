@@ -21,19 +21,15 @@ package gov.nih.nci.ncicb.cadsr.loader.ui.util;
 
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.Definition;
+import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 import gov.nih.nci.ncicb.cadsr.domain.ValueMeaning;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 
-import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
-
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Component;
-import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
-import java.awt.Component;
 import java.awt.Insets;
 
 import java.util.List;
@@ -44,59 +40,63 @@ import javax.swing.*;
 public class UIUtil {
 
   private static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+  private static String panelTitle = null;
   
   public static void putToCenter(Component comp) {
     comp.setLocation((screenSize.width - comp.getSize().width) / 2, (screenSize.height - comp.getSize().height) / 2);
   }
   
-  public static JPanel createDescriptionPanel(UMLNode node) {
-    JPanel umlPanel = new JPanel();
-    
-    String s = "UML Class Documentation";
-    Object o = node.getUserObject();
-    if(node instanceof AttributeNode) {
-      s = "UML Attribute Description";
-    } else if(node instanceof ValueMeaningNode) {
-      s = "UML ValueMeaning Description";
-    }
-    
-    umlPanel.setBorder
-      (BorderFactory.createTitledBorder(s));   
-    umlPanel.setLayout(new BorderLayout());
-
+  public static JTextArea createDescription(UMLNode node) {
+    setPanelTitle(node);
     JTextArea descriptionArea = new JTextArea(5, 54);
-    JScrollPane descScrollPane = new JScrollPane(descriptionArea);
 
     if(node instanceof ClassNode) {
       ObjectClass oc = (ObjectClass) node.getUserObject();
       descriptionArea.setText(oc.getPreferredDefinition());
     } else if(node instanceof AttributeNode) {
-      DataElement de = (DataElement) node.getUserObject();
-
-      for(Definition def : (List<Definition>) de.getDefinitions()) {
-        descriptionArea.setText(def.getDefinition());
-        break;
-      }
+        DataElement de = (DataElement) node.getUserObject();
+        for(Definition def : (List<Definition>) de.getDefinitions()) {
+            descriptionArea.setText(def.getDefinition());
+            break;
+        }
+        if(de.getDefinitions().size() == 0){
+            Definition altDef = DomainObjectFactory.newDefinition();
+            altDef.setType(Definition.TYPE_UML_DE);
+            altDef.setDefinition("");
+            de.addDefinition(altDef);
+        }
     } else if(node instanceof ValueMeaningNode) {
-      ValueMeaning vm = (ValueMeaning)node.getUserObject();
-      for(Definition def :  vm.getDefinitions()) {
-        descriptionArea.setText(def.getDefinition());
-        break;
-      }
+        ValueMeaning vm = (ValueMeaning)node.getUserObject();
+        for(Definition def :  vm.getDefinitions()) {
+            descriptionArea.setText(def.getDefinition());
+            break;
+        }
+        if(vm.getDefinitions().size() == 0){
+            Definition altDef = DomainObjectFactory.newDefinition();
+            altDef.setType(Definition.TYPE_UML_VM);
+            altDef.setDefinition("");
+            vm.addDefinition(altDef);
+        }
     }
 
     descriptionArea.setLineWrap(true);
-    descriptionArea.setEditable(false);
+    descriptionArea.setEditable(true);
     
-    if(StringUtil.isEmpty(descriptionArea.getText())) 
-    {
-      umlPanel.setVisible(false);
-    }
-
-    umlPanel.add(descScrollPane, BorderLayout.CENTER);
-    
-    return umlPanel;
+    return descriptionArea;
  
+  }
+  
+  private static void setPanelTitle(UMLNode node){
+    panelTitle = "UML Class Documentation";
+    if(node instanceof AttributeNode) {
+        panelTitle = "UML Attribute Description";
+    } else if(node instanceof ValueMeaningNode) {
+        panelTitle = "UML ValueMeaning Description";
+    }
+  }
+  
+  public static String getPanelTitle(){
+      return panelTitle;
   }
 
   public static void insertInBag(JPanel bagComp, Component comp, int x, int y) {
@@ -109,6 +109,4 @@ public class UIUtil {
 
     bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
-
-
 }

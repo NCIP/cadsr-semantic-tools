@@ -25,7 +25,7 @@ public class UMLElementViewPanel extends JPanel
   private OCPanel ocPanel;
   private ButtonPanel buttonPanel;
   private GMEViewPanel gmePanel;
-
+  private DescriptionPanel dsp;
   private UMLNode node;
 
   private JPanel cardPanel;
@@ -46,6 +46,7 @@ public class UMLElementViewPanel extends JPanel
     dePanel = new DEPanel(node);
     ocPanel = new OCPanel(node);
     gmePanel= new GMEViewPanel(node);
+    dsp = new DescriptionPanel(node);
 
     if(node instanceof AttributeNode){
       buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);}
@@ -58,6 +59,7 @@ public class UMLElementViewPanel extends JPanel
     dePanel.addPropertyChangeListener(buttonPanel);
     ocPanel.addPropertyChangeListener(buttonPanel);
     gmePanel.addPropertyChangeListener(buttonPanel);
+    dsp.addPropertyChangeListener(buttonPanel);
 
     cardPanel = new JPanel();
     initUI();
@@ -90,9 +92,9 @@ public class UMLElementViewPanel extends JPanel
 
     UserPreferences prefs = UserPreferences.getInstance();
     if(prefs.getUmlDescriptionOrder().equals("first"))
-      UIUtil.insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 0);
+      UIUtil.insertInBag(editPanel, dsp.getDescriptionPanel(), 0, 0);
     else 
-      UIUtil.insertInBag(editPanel, UIUtil.createDescriptionPanel(node), 0, 3);
+      UIUtil.insertInBag(editPanel, dsp.getDescriptionPanel(), 0, 3);
 
     UIUtil.insertInBag(editPanel, cardPanel, 0, 1);
     UIUtil.insertInBag(editPanel, gmePanel, 0, 2);
@@ -196,9 +198,11 @@ public class UMLElementViewPanel extends JPanel
   public void addElementChangeListener(ElementChangeListener listener) {
     conceptEditorPanel.addElementChangeListener(listener);
     dePanel.addElementChangeListener(listener);
+    dsp.addElementChangeListener(listener);
   }
 
   public void addPropertyChangeListener(PropertyChangeListener l) {
+    dsp.addPropertyChangeListener(l);
     conceptEditorPanel.addPropertyChangeListener(l);
     buttonPanel.addPropertyChangeListener(l);
     dePanel.addPropertyChangeListener(l);
@@ -211,6 +215,7 @@ public class UMLElementViewPanel extends JPanel
     {
      ((Editable)displayedPanel).applyPressed();
     }
+    dsp.applyPressed();
   }
     
   public ConceptEditorPanel getConceptEditorPanel() {
