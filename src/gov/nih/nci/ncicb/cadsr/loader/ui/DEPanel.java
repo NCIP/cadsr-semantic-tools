@@ -13,6 +13,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.DEMappingUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -20,6 +21,11 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.lang.reflect.Method;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.*;
@@ -40,10 +46,13 @@ public class DEPanel extends JPanel
     deIdValueLabel = new JLabel(),
     deContextNameTitleLabel = new JLabel("Data Element Context"),
     deContextNameValueLabel = new JLabel(),
-    vdLongNameTitleLabel = new JLabel("Value Domain Long Name"), vdLongNameValueLabel = new JLabel();
+    vdLongNameTitleLabel = new JLabel("Value Domain Long Name"), 
+    vdLongNameValueLabel = new JLabel(),
+    cdeBrowserLinkLabel = new JLabel("CDE Details"),
+    cdeBrowserLinkValueLabel = new JLabel();
   
   private JScrollPane scrollPane;
-
+  private String cdeURL = null;
 
   private DataElement tempDE, de;
   private UMLNode node;
@@ -74,16 +83,12 @@ public class DEPanel extends JPanel
   }
 
   private void initUI() {
-    
     this.setLayout(new BorderLayout());
 
     JPanel flowPanel = new JPanel(new FlowLayout());
 
     JPanel mainPanel = new JPanel(new GridBagLayout());
 
-    UIUtil.insertInBag(mainPanel, clearButton, 0, 5, 2 ,1);
-    UIUtil.insertInBag(mainPanel, searchDeButton, 1, 5);
-    
     
     UIUtil.insertInBag(mainPanel, deLongNameTitleLabel, 0, 1);
     UIUtil.insertInBag(mainPanel, deLongNameValueLabel, 1, 1);
@@ -96,6 +101,49 @@ public class DEPanel extends JPanel
 
     UIUtil.insertInBag(mainPanel, vdLongNameTitleLabel, 0, 4);
     UIUtil.insertInBag(mainPanel, vdLongNameValueLabel, 1, 4);
+
+    // Un-Comment if CDEBrowserLink can be directed to CDEBrowser application.
+//    UIUtil.insertInBag(mainPanel, cdeBrowserLinkLabel, 0, 5);
+//    UIUtil.insertInBag(mainPanel, cdeBrowserLinkValueLabel, 1, 5);
+
+    UIUtil.insertInBag(mainPanel, clearButton, 0, 6, 2 ,1);
+    UIUtil.insertInBag(mainPanel, searchDeButton, 1, 6);
+      
+    cdeBrowserLinkValueLabel.addMouseListener(new MouseListener() {
+        public void mouseClicked(MouseEvent mouseEvent) {
+            String errMsg = "Error attempting to launch web browser";
+            String osName = System.getProperty("os.name");
+            String url = getCDEBrowserURL();
+            try {
+                if (osName.startsWith("Mac OS")) {
+                    Class fileMgr = Class.forName("com.apple.eio.FileManager");
+                    Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] {String.class});
+                    openURL.invoke(null, new Object[] {url});
+                }
+                else if (osName.startsWith("Windows"))
+                    Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+                else { //assume Unix or Linux
+                    String[] browsers = {"firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
+                    String browser = null;
+                    for (int count = 0; count < browsers.length && browser == null; count++)
+                        if (Runtime.getRuntime().exec(new String[] {"which", browsers[count]}).waitFor() == 0)
+                            browser = browsers[count];
+                            if (browser == null)
+                                throw new Exception("Could not find web browser");
+                            else
+                                Runtime.getRuntime().exec(new String[] {browser, url});
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, errMsg + ":\n" + e.getLocalizedMessage());
+            }
+        }
+
+        public void mousePressed(MouseEvent e) {}
+        public void mouseReleased(MouseEvent e) {}
+        public void mouseEntered(MouseEvent e) {}
+        public void mouseExited(MouseEvent e) {}
+    });      
+    disableCDELinks();
 
     JPanel titlePanel = new JPanel();
     JLabel title = new JLabel("Map to CDE");
@@ -196,6 +244,7 @@ public class DEPanel extends JPanel
         deIdValueLabel.setText(de.getPublicId() + " v" + de.getVersion());
         deContextNameValueLabel.setText(de.getContext().getName());
         vdLongNameValueLabel.setText(de.getValueDomain().getLongName());
+        enableCDELinks();
       }
       else {
         clear();
@@ -221,6 +270,7 @@ public class DEPanel extends JPanel
   }
 
   private void clear() {
+    disableCDELinks();
     tempDE = DomainObjectFactory.newDataElement();
 
     ValueDomain vd = DomainObjectFactory.newValueDomain();
@@ -270,6 +320,7 @@ public class DEPanel extends JPanel
     else 
       vdLongNameValueLabel.setText("");
 
+    enableCDELinks();
   }
   
   public void applyPressed() 
@@ -380,7 +431,24 @@ public class DEPanel extends JPanel
       l.elementChanged(event);
   }
 
+  private void enableCDELinks(){
+    cdeBrowserLinkValueLabel.setVisible(true);
+    cdeBrowserLinkValueLabel.setText(getCDEBrowserURL());
+    cdeBrowserLinkValueLabel.setForeground(Color.BLUE);
+  }
 
+  private void disableCDELinks(){
+    cdeBrowserLinkValueLabel.setVisible(false);
+    cdeBrowserLinkValueLabel.setText("");
+  }
+  
+  private String getCDEBrowserURL(){
+    cdeURL = "http://cdebrowser.nci.nih.gov/CDEBrowser/";  
+  
+    // Add code to construst URL for CDE.
+   
+    return cdeURL;
+  }
 //  public static void main(String[] args)
 //  {
 ////    JFrame frame = new JFrame();
