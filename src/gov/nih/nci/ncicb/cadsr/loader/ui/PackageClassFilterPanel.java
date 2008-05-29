@@ -41,7 +41,6 @@ public class PackageClassFilterPanel extends JPanel
 
   private void initUI() 
   { 
-
     tree.setModel(null);
     tree.setRootVisible(false);
     this.setLayout(new BorderLayout());
