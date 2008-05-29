@@ -157,6 +157,7 @@ public class XMIWriter2 implements ElementWriter {
         changed = changed | changeTracker.get(s);
 
       if(changed) {
+
         // drop all current concept tagged values
         Collection<UMLTaggedValue> allTvs = clazz.getTaggedValues();
         for(UMLTaggedValue tv : allTvs) {
@@ -164,7 +165,8 @@ public class XMIWriter2 implements ElementWriter {
              tv.getName().startsWith("ObjectQualifier"))
             clazz.removeTaggedValue(tv.getName());
         }
-
+        clazz.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
+        clazz.addTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION, oc.getPreferredDefinition());
         addConceptTvs(clazz, conceptCodes, XMIParser2.TV_TYPE_CLASS);
       }
         
@@ -191,6 +193,16 @@ public class XMIWriter2 implements ElementWriter {
         changed = changed | changeTracker.get(s);
 
       if(changed) {
+        if((att != null)){
+            att.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
+            for(Definition def : (List<Definition>) de.getDefinitions()) {
+                if(def.getType().equals(Definition.TYPE_UML_DE)) {
+                    att.addTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition());
+                    break;
+                }
+            }
+        }
+
         if(!inheritedList.isInherited(de)) {
           // drop all current concept tagged values
           Collection<UMLTaggedValue> allTvs = att.getTaggedValues();
@@ -326,7 +338,16 @@ public class XMIWriter2 implements ElementWriter {
           changed = changed | changeTracker.get(s);
 
         if(changed) {
-          // drop all current concept tagged values
+            if((att != null)){
+                att.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
+                for(Definition def : (List<Definition>) vm.getDefinitions()) {
+                    if(def.getType().equals(Definition.TYPE_UML_VM)) {
+                        att.addTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition());
+                        break;
+                    }
+                }
+            }
+         // drop all current concept tagged values
           Collection<UMLTaggedValue> allTvs = att.getTaggedValues();
           for(UMLTaggedValue tv : allTvs) {
             if(tv.getName().startsWith(XMIParser2.TV_TYPE_VM) ||
