@@ -100,11 +100,13 @@ public class AssociationDetailViewPanel extends JPanel {
     dirLbl.setText(ocr.getDirection());
     srcClassLbl.setText(ocr.getSource().getLongName());
     srcRoleLbl.setText(ocr.getSourceRole());
-    srcMultLbl.setText(ocr.getSourceLowCardinality() + ".." + ocr.getSourceHighCardinality());
+    srcMultLbl.setText(ocr.getSourceLowCardinality() + ".." + 
+        (ocr.getSourceHighCardinality() == -1 ? "*" : Integer.valueOf(ocr.getSourceHighCardinality()).toString()));
 
     tgtClassLbl.setText(ocr.getTarget().getLongName());
     tgtRoleLbl.setText(ocr.getTargetRole());
-    tgtMultLbl.setText(ocr.getTargetLowCardinality() + ".." + ocr.getTargetHighCardinality());
+    tgtMultLbl.setText(ocr.getTargetLowCardinality() + ".." + 
+      (ocr.getTargetHighCardinality() == -1 ? "*" : Integer.valueOf(ocr.getTargetHighCardinality()).toString()));
     
   }
 
