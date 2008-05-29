@@ -149,13 +149,16 @@ public class UMLLoaderGUI
     mainFrame.init();
     putToCenter(mainFrame);
     mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-    mainFrame.addWindowListener(new WindowAdapter()
-      {
-        public void windowClosing(WindowEvent e)
-        {
-          mainFrame.exit();
+    mainFrame.addWindowListener(new WindowAdapter(){
+        public void windowClosing(WindowEvent e){
+         mainFrame.exit();
         }
       });
+    mainFrame.addWindowStateListener(new WindowAdapter(){
+        public void windowStateChanged(WindowEvent e) {
+          mainFrame.stateChanged(e);
+        }
+    });
 
     mainFrame.setWorkingTitle(null);
 
