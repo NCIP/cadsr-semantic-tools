@@ -58,6 +58,7 @@ public class ConceptEditorPanel extends JPanel
   private VDPanel vdPanel;
     
   private static boolean editable = false;
+  private boolean verify;
   static {
     UserSelections selections = UserSelections.getInstance();
     editable = selections.getProperty("MODE").equals(RunMode.Curator);
@@ -210,6 +211,22 @@ public class ConceptEditorPanel extends JPanel
   }
   
   public void apply(boolean toAll) throws ApplyException {
+    verify = true;
+    for(int i = 0; i<conceptUIs.length; i++) {
+        String conceptDef = conceptUIs[i].def.getText();
+        String newConceptDef = conceptDef.replaceAll("[\\x00-\\x08\\x0b-\\x0c\\x0e-\\x1f]", "");
+        if(!conceptDef.equalsIgnoreCase(newConceptDef)){
+            verify = false;
+            conceptUIs[i].def.setText(newConceptDef);
+            break;
+        }
+    }
+    if(!verify){
+        JOptionPane.showMessageDialog
+          (null, PropertyAccessor.getProperty("ui.concept.definition.invalid.characters"), 
+          "Invalid Characters", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
     boolean update = remove;
     remove = false;
     Concept[] newConcepts = new Concept[concepts.length];
@@ -237,11 +254,9 @@ public class ConceptEditorPanel extends JPanel
       if(conceptUIs[i].code.getText().equals(concepts[i].getPreferredName())) {
         if(!concepts[i].getLongName().equals(conceptUIs[i].name.getText())
            || !concepts[i].getPreferredDefinition().equals(conceptUIs[i].def.getText())
-           || !concepts[i].getDefinitionSource().equals(conceptUIs[i].defSource.getText())
-           )
-          
-          // if a field has changed, mark this concept as changed.
-          fireElementChangeEvent(new ElementChangeEvent(concepts[i]));
+           || !concepts[i].getDefinitionSource().equals(conceptUIs[i].defSource.getText()))
+            // if a field has changed, mark this concept as changed.
+            fireElementChangeEvent(new ElementChangeEvent(concepts[i]));
 
         concepts[i].setLongName(conceptUIs[i].name.getText());
         concepts[i].setPreferredDefinition(conceptUIs[i].def.getText());
@@ -305,8 +320,6 @@ public class ConceptEditorPanel extends JPanel
       new PropertyChangeEvent(this, AddButtonPanel.ADD, null, true));
     firePropertyChangeEvent(
       new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, true));
-//    firePropertyChangeEvent(
-//      new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, false));
 
 
     // update the element that we just changed:
@@ -321,9 +334,9 @@ public class ConceptEditorPanel extends JPanel
     this.setLayout(new BorderLayout());
     
     JPanel summaryPanel = new JPanel(new GridBagLayout());
-    JLabel summaryTitle = new JLabel("UML Concept Code Summary: ");
+    JLabel summaryTitle = new JLabel("Concept Code Summary: ");
     
-    JLabel summaryNameTitle = new JLabel("UML Concept Name Summary: ");
+    JLabel summaryNameTitle = new JLabel("Concept Name Summary: ");
     
     UIUtil.insertInBag(summaryPanel, summaryTitle, 0, 0);
     UIUtil.insertInBag(summaryPanel, conceptLabel, 1, 0);
@@ -560,7 +573,7 @@ public class ConceptEditorPanel extends JPanel
     updateHeaderLabels();
     apply(false);
     if(node.getUserObject() instanceof DataElement)
-      vdPanel.applyPressed();
+        vdPanel.applyPressed();
   }
   
   public void addPressed() 
