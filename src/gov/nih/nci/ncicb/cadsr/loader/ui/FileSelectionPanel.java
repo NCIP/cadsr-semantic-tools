@@ -227,9 +227,13 @@ implements ProgressListener {
         public void actionPerformed(ActionEvent evt) {
           String xmiDir = UserPreferences.getInstance().getRecentDir();
           JFileChooser chooser = new JFileChooser(xmiDir);
-
-          chooser.addChoosableFileFilter(new InputFileFilter("uml"));
-          chooser.addChoosableFileFilter(new InputFileFilter("xmi"));
+          ExampleFileFilter filter = new ExampleFileFilter();
+          filter.addExtension("xmi");
+          filter.addExtension("uml");
+          filter.setDescription(".xmi AND .uml");
+          chooser.setFileFilter(filter);
+          //chooser.addChoosableFileFilter(new InputFileFilter("uml"));
+          //chooser.addChoosableFileFilter(new InputFileFilter("xmi"));
           int returnVal = chooser.showOpenDialog(null);
           if(returnVal == JFileChooser.APPROVE_OPTION) {
             String filePath = chooser.getSelectedFile().getAbsolutePath();
