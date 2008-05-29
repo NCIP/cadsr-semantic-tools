@@ -45,6 +45,9 @@ public class PackageFilterHandler
   public void newGeneralization(NewGeneralizationEvent event){}
   public void addProgressListener(ProgressListener listener) {}
   public void beginParsing() {
+    
+    packageList = new ArrayList<String>();
+
     List<FilterClass> filterClasses = new ArrayList<FilterClass>(elements.getElements(new FilterClass("", "")));
     
     for(FilterClass o : filterClasses) {
