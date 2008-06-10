@@ -343,7 +343,7 @@
      prefs.put("HorizontalSplit", new Integer(horizontalSplit).toString());
    }
 
-   public boolean getWindowState(){
+   public boolean isMainFrameMaximized(){
        return prefs.getBoolean("MAXIMIZED", false);
    }
    
