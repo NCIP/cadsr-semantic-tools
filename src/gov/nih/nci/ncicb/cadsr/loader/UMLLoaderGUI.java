@@ -77,10 +77,6 @@ public class UMLLoaderGUI
 
     logger.getParent().addAppender(appender);
 
-    // !TODO  Disable GME tags viewing for this version
-    logger.debug("%%%Not showing GME Tags%%%");
-    prefs.setShowGMETags(false);
-
     System.setProperty("java.security.auth.login.config", Thread.currentThread().getContextClassLoader().getResource("jaas.config").toExternalForm());
 
     Frame f = new Frame();
