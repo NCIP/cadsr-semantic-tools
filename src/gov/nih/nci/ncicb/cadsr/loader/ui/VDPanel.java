@@ -116,6 +116,7 @@ public class VDPanel extends JPanel implements MouseListener
         ddb.addComponent(cadsrVDPanel);
         ddb.addComponent(lvdPanel);
         toolbar.add(ddb);
+        toolbar.setFloatable(false);
 
         UIUtil.insertInBag(mainPanel, toolbar, 1, 8, 2, 1);
         mainPanel.setBorder(BorderFactory.createTitledBorder("Value Domain"));
