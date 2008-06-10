@@ -123,9 +123,9 @@ public class NavigationPanel extends JPanel
   
   private void initUI() 
   {
-      UserPreferences prefs = UserPreferences.getInstance();
+    UserPreferences prefs = UserPreferences.getInstance();
 
-      showInherited = prefs.getShowInheritedAttributes();
+    showInherited = prefs.getShowInheritedAttributes();
   
     rootTreeNode = buildTree();
     rootUnsortedTreeNode = rootTreeNode;
@@ -343,7 +343,14 @@ public class NavigationPanel extends JPanel
   }
 
   public void mousePressed(MouseEvent e) {
-    showPopup(e);
+      DefaultMutableTreeNode selected = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+      TreePath treePath =  new TreePath(selected.getPath());
+
+      NavigationEvent goTo = new NavigationEvent(NavigationEvent.TO);
+      goTo.setDestination(treePath);
+      fireNavigationEvent(goTo);
+
+      showPopup(e);
   }
   
   public void mouseExited(MouseEvent e) {
@@ -356,9 +363,11 @@ public class NavigationPanel extends JPanel
   }
   
   public void mouseReleased(MouseEvent e) {
-    showPopup(e);
-    doMouseEvent(e);
+
+      showPopup(e);
+      doMouseEvent(e);
   }
+  
   
   private void showPopup(MouseEvent e) {
     if (e.isPopupTrigger()) {
@@ -562,7 +571,12 @@ public class NavigationPanel extends JPanel
           tree.scrollPathToVisible(path);
           newViewEvent(path);            
         }
-    
+    else if(event.getType() == NavigationEvent.TO){
+        TreePath path = (TreePath) event.getDestination();
+        tree.setSelectionPath(path);
+        tree.scrollPathToVisible(path);
+        newViewEvent(path);
+    }
   }
   
   public void search(SearchEvent event) 

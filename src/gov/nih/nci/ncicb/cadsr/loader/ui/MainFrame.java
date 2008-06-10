@@ -268,9 +268,12 @@ import java.awt.event.WindowEvent;
      helpMenu.add(aboutMenuItem);
      mainMenuBar.add(helpMenu);
 
+     navigationPanel = new NavigationPanel();
      errorPanel = new ErrorPanel(TreeBuilder.getInstance().getRootNode());
 
      errorPanel.addPropertyChangeListener(this);
+     errorPanel.addNavigationListener(navigationPanel);
+     navigationPanel.addNavigationListener(errorPanel);
 
      jTabbedPane1.addTab("Errors", errorPanel);
 
@@ -283,10 +286,10 @@ import java.awt.event.WindowEvent;
      jSplitPane2.add(viewTabbedPane, JSplitPane.TOP);
      jSplitPane1.add(jSplitPane2, JSplitPane.RIGHT);
      
-     navigationPanel = new NavigationPanel();
      jSplitPane1.add(navigationPanel, JSplitPane.LEFT);
      
      navigationPanel.addViewChangeListener(this);
+
 
 
      JPanel infoLabelPanel = new JPanel();

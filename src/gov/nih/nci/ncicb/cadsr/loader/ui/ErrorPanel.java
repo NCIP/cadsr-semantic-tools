@@ -20,6 +20,10 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeListener;
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
+import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
@@ -27,7 +31,7 @@ import java.io.File;
 import java.io.FileWriter;
 import javax.swing.*;
 
-import java.awt.*;
+//import java.awt.*;
 import java.awt.event.*;
 
 import java.beans.PropertyChangeListener;
@@ -38,7 +42,18 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 
-import java.util.*;
+//import java.util.*;
+
+import java.awt.BorderLayout;
+
+import java.awt.Dimension;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.swing.tree.TreePath;
 
 import org.jdom.*;
 import org.jdom.output.Format;
@@ -49,12 +64,13 @@ import org.jdom.output.XMLOutputter;
  *
  * @author Anwar Ahmad
  */
-public class ErrorPanel extends JPanel implements MouseListener {
+public class ErrorPanel extends JPanel implements MouseListener, NodeViewPanel {
 
   private JTree tree;
   private Set<UMLNode> displaySet = new HashSet<UMLNode>();
   private JPopupMenu popup;
-  
+  private List<NavigationListener> navigationListeners = new ArrayList<NavigationListener>();
+
   private JCheckBoxMenuItem conceptCb = new JCheckBoxMenuItem("Hide Concept Errors", false);
   private UMLNode node;
   
@@ -133,7 +149,24 @@ public class ErrorPanel extends JPanel implements MouseListener {
   }
 
   public void mouseReleased(MouseEvent e) {
-    showPopup(e);
+      DefaultMutableTreeNode selected = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+      TreePath treePath =  new TreePath(selected.getPath());
+
+      NavigationEvent goTo = new NavigationEvent(NavigationEvent.TO);
+      goTo.setDestination(treePath);
+      fireNavigationEvent(goTo);
+
+      showPopup(e);
+  }
+
+  public void addNavigationListener(NavigationListener l) {
+    navigationListeners.add(l);
+  }
+
+  private void fireNavigationEvent(NavigationEvent evt) {
+    for(NavigationListener nl : navigationListeners) {
+      nl.navigate(evt);
+    }
   }
 
   private void showPopup(MouseEvent e) {
@@ -349,5 +382,17 @@ public class ErrorPanel extends JPanel implements MouseListener {
     }
   }
 
+  public void addReviewListener(ReviewListener listener) {}
+  public void addElementChangeListener(ElementChangeListener listener) {}
+  public void updateNode(UMLNode node) {}
+
+  public void navigate(NavigationEvent event) {
+      if(event.getType() == NavigationEvent.TO){
+System.out.println("Calling navigate in If :- "+event.getDestination().toString());
+              TreePath path = (TreePath) event.getDestination();
+              tree.setSelectionPath(path);
+              tree.scrollPathToVisible(path);
+      }
+  }
 }
 
