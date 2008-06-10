@@ -20,6 +20,8 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui.util;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+
 import java.util.Enumeration;
 import javax.swing.tree.*;
 import javax.swing.*;
@@ -42,6 +44,13 @@ public class TreeUtil
     //Traverse if the root has any children
   }
 
+  public static TreePath getPathFromUMLNode(JTree tree, UMLNode node) {
+    
+    // recurse!
+    return null;
+
+  }
+
   private static void doNode(JTree tree, TreeNode parentNode, TreePath parentPath) {
     if(parentNode.getChildCount() > 0)
     {
@@ -55,5 +64,6 @@ public class TreeUtil
       }      
     }
   }
+
 
 }
