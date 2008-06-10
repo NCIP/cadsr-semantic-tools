@@ -54,6 +54,7 @@ public class LookupUtil implements CadsrModuleListener {
       if(!StringUtil.isEmpty(vd.getPublicId())) {
         Map<String, Object> queryFields = new HashMap<String, Object>();
         queryFields.put(CadsrModule.PUBLIC_ID, vd.getPublicId());
+        queryFields.put(CadsrModule.VERSION, vd.getVersion());
         
         Collection<ValueDomain> l = null;
         
