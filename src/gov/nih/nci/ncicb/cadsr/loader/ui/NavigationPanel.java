@@ -572,10 +572,11 @@ public class NavigationPanel extends JPanel
           newViewEvent(path);            
         }
     else if(event.getType() == NavigationEvent.TO){
-        TreePath path = (TreePath) event.getDestination();
-        tree.setSelectionPath(path);
-        tree.scrollPathToVisible(path);
-        newViewEvent(path);
+      UMLNode node = (UMLNode)event.getDestination();
+      TreePath path = TreeUtil.getPathFromUMLNode(tree, node);
+      tree.setSelectionPath(path);
+      tree.scrollPathToVisible(path);
+      newViewEvent(path);
     }
   }
   
