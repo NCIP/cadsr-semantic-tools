@@ -715,15 +715,13 @@ import java.awt.event.WindowEvent;
      }
 
      private void setInitialMainFrameSize(){
-         if(prefs.getWindowState()){
-             this.setExtendedState(MAXIMIZED_BOTH);
-             setSplitPanesFields();        }
-         else{
-             setMainFrameFields();
-             setSplitPanesFields();
-
-             this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));  //added
-         }
+       if(prefs.isMainFrameMaximized()){
+         this.setExtendedState(MAXIMIZED_BOTH);
+       } else {
+         setMainFrameFields();
+         this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));  //added
+       }
+       setSplitPanesFields();
      }
      
      private void setMainFrameFields(){
