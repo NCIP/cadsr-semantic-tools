@@ -65,7 +65,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   private JLabel numberOfResultsLabel = new JLabel("Results Per Page");
   private JComboBox searchSourceCombo;
   private JComboBox numberOfResultsCombo;
-  private JCheckBox includeRetiredCB = new JCheckBox("Include Retired?");
+  private JCheckBox includeRetiredCB = new JCheckBox("<html>Include<br> Retired?</html>");
 
   private JButton searchButton = new JButton("Search");
   
@@ -374,7 +374,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     this.getContentPane().add(searchPanel, BorderLayout.NORTH);
     this.getContentPane().add(scrollPane, BorderLayout.CENTER);
     this.getContentPane().add(browsePanel, BorderLayout.SOUTH);
-    this.setSize(600,525);
+    this.setSize(630,525);
 
     suggestButton.setVisible(true);
     
