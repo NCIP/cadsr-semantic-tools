@@ -518,7 +518,7 @@ public class UMLDefaultHandler
         logger.error("Could not query cadsr module ", e);
       } // end of try-catch
 
-      if(result.size() == 0) {
+      if(result == null | result.size() == 0) {
         ChangeTracker changeTracker = ChangeTracker.getInstance();
 
         ValidationError item = new ValidationError(PropertyAccessor.getProperty("de.doesnt.exist", className + "." + attributeName,
