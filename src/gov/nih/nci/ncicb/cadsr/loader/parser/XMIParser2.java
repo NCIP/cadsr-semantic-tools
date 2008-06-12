@@ -703,10 +703,9 @@ public class XMIParser2 implements Parser {
     fireProgressEvent(evt);
     
     String attributeName = att.getName();
-
     if(attributeName.length() != attributeName.trim().length()) {
         ValidationItems.getInstance()
-            .addItem(new ValidationFatal(PropertyAccessor.getProperty("attribute.name.spaces" , event.getName()), null));
+            .addItem(new ValidationFatal(PropertyAccessor.getProperty("attribute.name.spaces" , className+"."+attributeName /*event.getName()*/), null));
         return;
     }
 
