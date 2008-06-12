@@ -107,8 +107,8 @@
        int n = Integer.decode(s);
        return n;
      }
-     catch (NumberFormatException e)
-     {}
+     catch (NumberFormatException e) {}
+     
      return 25;
      
      
@@ -246,9 +246,9 @@
      UserSelections selections = UserSelections.getInstance();
      RunMode runMode = (RunMode)(selections.getProperty("MODE"));
 
-     if(runMode == null) {
+     if(runMode == null) 
        return new ArrayList();
-     }
+
      String s = prefs.get(runMode.toString() + "-recentFiles", "");
      if(StringUtil.isEmpty(s))
        return new ArrayList();
