@@ -7,7 +7,7 @@
   >
   
   <information>
-    <title>Semantic Integration Workbench 4.0</title>
+    <title>Semantic Integration Workbench 4.0.0.0</title>
     <description>The SIW streamlines the process of annotating Domain Model with Evs Concepts, then loading those models to caDSR</description>
     <offline-allowed/>
     <vendor>NCI</vendor>
@@ -25,12 +25,10 @@
     <jar href="lib/openide-util.jar"/>
     <jar href="lib/activation.jar"/>
     <jar href="lib/lgUtility.jar"/>
-    <jar href="lib/spring-hibernate3.jar"/>
     <jar href="lib/lbAdmin.jar"/>
     <jar href="lib/jaxen-core.jar"/>
     <jar href="lib/MSSOUserValidator.jar"/>
     <jar href="lib/lbModel.jar"/>
-    <jar href="lib/spring-core.jar"/>
     <jar href="lib/lgRDFConverter.jar"/>
     <jar href="lib/lgModel.jar"/>
     <jar href="lib/caDSR-beans.jar"/>
@@ -58,7 +56,6 @@
     <jar href="lib/commons-pool-1.3.jar"/>
     <jar href="lib/evsapi41-framework.jar"/>
     <jar href="lib/lgIndexer.jar"/>
-    <jar href="lib/spring-aop.jar"/>
     <jar href="lib/uml-loader.jar"/>
     <jar href="lib/asm.jar"/>
     <jar href="lib/sdk-client-framework.jar"/>
