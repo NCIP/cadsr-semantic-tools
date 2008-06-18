@@ -25,6 +25,8 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import org.apache.log4j.Logger;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+
 
 import java.util.*;
 
@@ -78,6 +80,8 @@ public class PackagePersister extends UMLPersister {
 	List l = classificationSchemeItemDAO.find(pkg);
 
 	if (l.size() == 0) { // not in DB, create it.
+          if(StringUtil.isEmpty(pkg.getPreferredDefinition()))
+            pkg.setPreferredDefinition("No Value Exists.");
 	  pkg.setId(classificationSchemeItemDAO.create(pkg));
 	} else {
 	  pkg = (ClassificationSchemeItem) l.get(0);
