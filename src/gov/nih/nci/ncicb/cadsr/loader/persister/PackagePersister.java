@@ -78,6 +78,8 @@ public class PackagePersister extends UMLPersister {
 	List l = classificationSchemeItemDAO.find(pkg);
 
 	if (l.size() == 0) { // not in DB, create it.
+          if(StringUtil.isEmpty(pkg.getPreferredDefinition()))
+            pkg.setPreferredDefinition("No Value Exists.");
 	  pkg.setId(classificationSchemeItemDAO.create(pkg));
 	} else {
 	  pkg = (ClassificationSchemeItem) l.get(0);
