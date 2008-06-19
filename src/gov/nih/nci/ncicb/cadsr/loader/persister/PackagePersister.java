@@ -25,6 +25,7 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import org.apache.log4j.Logger;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 
 import java.util.*;
 
