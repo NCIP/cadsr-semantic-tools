@@ -387,9 +387,11 @@ public class ErrorPanel extends JPanel implements MouseListener, NodeViewPanel {
   public void navigate(NavigationEvent event) {
       if(event.getType() == NavigationEvent.TO){
         UMLNode node = (UMLNode)event.getDestination();
-        TreePath path = new TreePath(TreeUtil.getPathFromUMLNode(tree, node));
-        tree.setSelectionPath(path);
-        tree.scrollPathToVisible(path);      
+        if(TreeUtil.getPathFromUMLNode(tree, node) != null){
+            TreePath path = new TreePath(TreeUtil.getPathFromUMLNode(tree, node));
+            tree.setSelectionPath(path);
+            tree.scrollPathToVisible(path);      
+        }
       }
   }
 }
