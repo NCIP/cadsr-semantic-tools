@@ -28,7 +28,8 @@ import javax.swing.*;
 
 public class TreeUtil 
 {
-  
+  private static TreeNode[] treeNode;
+
   public static void collapseAll(JTree tree) {
     for (int i = tree.getRowCount() - 1; i >= 0; i--) {
       tree.collapseRow(i);
@@ -44,12 +45,27 @@ public class TreeUtil
     //Traverse if the root has any children
   }
 
-  public static TreePath getPathFromUMLNode(JTree tree, UMLNode node) {
-    
-    // recurse!
-    return null;
+  public static TreeNode[] getPathFromUMLNode(JTree tree, UMLNode node) {
+    TreeModel model = tree.getModel();
+    Object root = model.getRoot();
+    return goJTree(model, root, node);
 
   }
+
+    private static TreeNode[] goJTree( TreeModel model, Object o, UMLNode node ){    
+        int count = model.getChildCount(o);    
+        for( int i=0;  i < count;  i++ )    {        
+            DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode)model.getChild(o, i );
+            if(node == dmtn.getUserObject()){
+                treeNode = new TreeNode[dmtn.getPath().length];
+                treeNode = dmtn.getPath();
+                break;
+            }
+            else            
+                goJTree(model, model.getChild(o, i), node);    
+        }
+        return treeNode;
+    }
 
   private static void doNode(JTree tree, TreeNode parentNode, TreePath parentPath) {
     if(parentNode.getChildCount() > 0)

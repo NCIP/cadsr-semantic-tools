@@ -344,10 +344,8 @@ public class NavigationPanel extends JPanel
 
   public void mousePressed(MouseEvent e) {
       DefaultMutableTreeNode selected = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-      TreePath treePath =  new TreePath(selected.getPath());
-
       NavigationEvent goTo = new NavigationEvent(NavigationEvent.TO);
-      goTo.setDestination(treePath);
+      goTo.setDestination(selected.getUserObject());
       fireNavigationEvent(goTo);
 
       showPopup(e);
@@ -573,10 +571,11 @@ public class NavigationPanel extends JPanel
         }
     else if(event.getType() == NavigationEvent.TO){
       UMLNode node = (UMLNode)event.getDestination();
-      TreePath path = TreeUtil.getPathFromUMLNode(tree, node);
+      TreePath path = new TreePath(TreeUtil.getPathFromUMLNode(tree, node));
       tree.setSelectionPath(path);
       tree.scrollPathToVisible(path);
-      newViewEvent(path);
+      if(TreeUtil.getPathFromUMLNode(tree, node).length > 2)
+        newViewEvent(path);
     }
   }
   
