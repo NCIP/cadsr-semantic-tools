@@ -571,11 +571,13 @@ public class NavigationPanel extends JPanel
         }
     else if(event.getType() == NavigationEvent.TO){
       UMLNode node = (UMLNode)event.getDestination();
-      TreePath path = new TreePath(TreeUtil.getPathFromUMLNode(tree, node));
-      tree.setSelectionPath(path);
-      tree.scrollPathToVisible(path);
-      if(TreeUtil.getPathFromUMLNode(tree, node).length > 2)
-        newViewEvent(path);
+      if(TreeUtil.getPathFromUMLNode(tree, node) != null){
+          TreePath path = new TreePath(TreeUtil.getPathFromUMLNode(tree, node));
+          tree.setSelectionPath(path);
+          tree.scrollPathToVisible(path);
+          if(TreeUtil.getPathFromUMLNode(tree, node).length > 2)
+            newViewEvent(path);
+      }
     }
   }
   

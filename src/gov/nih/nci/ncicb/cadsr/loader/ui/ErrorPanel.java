@@ -149,10 +149,12 @@ public class ErrorPanel extends JPanel implements MouseListener, NodeViewPanel {
   }
 
   public void mouseReleased(MouseEvent e) {
-      DefaultMutableTreeNode selected = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-      NavigationEvent goTo = new NavigationEvent(NavigationEvent.TO);
-      goTo.setDestination(selected.getUserObject());
-      fireNavigationEvent(goTo);
+      if(tree.getLastSelectedPathComponent() != null){
+        DefaultMutableTreeNode selected = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+        NavigationEvent goTo = new NavigationEvent(NavigationEvent.TO);
+        goTo.setDestination(selected.getUserObject());
+        fireNavigationEvent(goTo);
+      }
 
       showPopup(e);
   }
