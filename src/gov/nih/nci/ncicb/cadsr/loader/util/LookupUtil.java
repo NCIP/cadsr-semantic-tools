@@ -248,6 +248,16 @@ public class LookupUtil implements CadsrModuleListener {
     return null;
   }
 
+  public static String lookupXMLLocRef(AdminComponent ac) {
+    if(ac.getAlternateNames() != null)
+    for(AlternateName altName : ac.getAlternateNames()) {
+      if(altName.getType().equals(AlternateName.TYPE_GME_XML_LOC_REF))
+        return altName.getName();
+    }
+    
+    return null;
+  }
+
   public static String lookupFullName(ObjectClass oc) {
     for(AlternateName altName : oc.getAlternateNames()) {
       if(altName.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME))
