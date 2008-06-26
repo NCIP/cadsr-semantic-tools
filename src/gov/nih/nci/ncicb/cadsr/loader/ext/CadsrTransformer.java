@@ -378,5 +378,30 @@ public class CadsrTransformer {
 
   }
 
+  public static List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> anListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.Designation> inANs) {
+    List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> outANs = 
+      new ArrayList<gov.nih.nci.ncicb.cadsr.domain.AlternateName>();
 
+    
+    for(gov.nih.nci.cadsr.domain.Designation inAn : inANs) {
+      outANs.add(anPublicToPrivate(inAn));
+    }
+
+    return outANs;
+  }
+
+  public static gov.nih.nci.ncicb.cadsr.domain.AlternateName anPublicToPrivate(gov.nih.nci.cadsr.domain.Designation inAn) {
+  
+      gov.nih.nci.ncicb.cadsr.domain.AlternateName outAn = DomainObjectFactory.newAlternateName();
+      
+      outAn.setName(inAn.getName());
+      outAn.setType(inAn.getType());
+
+      for(gov.nih.nci.cadsr.domain.DesignationClassSchemeItem desCsi : inAn.getDesignationClassSchemeItemCollection()) {
+        outAn.addCsCsi(csCsiPublicToPrivate(desCsi.getClassSchemeClassSchemeItem()));
+      }
+      
+      return outAn;
+
+  }
 }

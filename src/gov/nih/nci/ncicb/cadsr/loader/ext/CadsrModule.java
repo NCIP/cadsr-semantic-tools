@@ -91,5 +91,7 @@ public interface CadsrModule
   public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept ocPrimaryConcept, gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts);
 
   public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept[] ocConcepts, gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts);
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> getAlternateNames(gov.nih.nci.ncicb.cadsr.domain.AdminComponent ac);
   
 }

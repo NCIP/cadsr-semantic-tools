@@ -5,6 +5,7 @@ import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.Representation;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 import gov.nih.nci.system.client.*;
 
@@ -517,6 +518,28 @@ public class CadsrPublicApiModule implements CadsrModule {
 
   public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept[] ocConcepts, gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts) {
     return null;
+  }
+
+  public List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> getAlternateNames(gov.nih.nci.ncicb.cadsr.domain.AdminComponent ac) {
+    try {
+        gov.nih.nci.cadsr.domain.AdministeredComponent searchAC = new gov.nih.nci.cadsr.domain.AdministeredComponent();
+        searchAC.setId(ac.getId());
+    
+        List results =  
+          service.search(gov.nih.nci.cadsr.domain.AdministeredComponent.class.getName(), searchAC);
+        
+        if(results.size() == 0)
+          return new ArrayList();
+    
+        else {
+          return CadsrTransformer.anListPublicToPrivate(((gov.nih.nci.cadsr.domain.AdministeredComponent)results.get(0)).getDesignationCollection());
+        }
+        
+    }
+    catch (ApplicationException e) {
+        throw new RuntimeException(e);
+    }
+    
   }
 
   

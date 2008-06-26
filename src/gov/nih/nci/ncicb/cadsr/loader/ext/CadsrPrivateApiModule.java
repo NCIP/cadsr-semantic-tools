@@ -261,6 +261,11 @@ public class CadsrPrivateApiModule implements CadsrModule
     }
   }
 
+  public List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> getAlternateNames(AdminComponent ac) {
+    throw new RuntimeException("Not Implemented");
+  }
+
+
   public static void main(String[] args) {
     CadsrPrivateApiModule testModule = new CadsrPrivateApiModule();
 
