@@ -57,8 +57,9 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   public Collection<ObjectClass>
     findObjectClass(Map<String, Object> queryFields) throws Exception  {
-    return null;
 
+    throw new RuntimeException("Not Implemented");
+    
   }
 
 
@@ -80,7 +81,8 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   public Collection<Property>
     findProperty(Map<String, Object> queryFields) throws Exception  {
-    return null;
+
+    throw new RuntimeException("Not Implemented");
 
   }
 
@@ -132,6 +134,15 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   }
 
+  public Collection<ObjectClass> 
+    findOCByClassifiedAltName(AlternateName altName, ClassSchemeClassSchemeItem csCsi) throws Exception  {
+
+    List<ObjectClass> ocs = DAOAccessor.getAdminComponentDAO().findByClassifiedAlternateName(altName, DomainObjectFactory.newObjectClass(), csCsi, null);
+
+    return ocs;
+
+  }
+
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
     findDataElement(Concept[] ocConcepts, Concept[] propConcepts, 
     String vdLongName) throws Exception {
@@ -172,7 +183,7 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.Representation> findPreferredRepTerms() {
     
-    return null;
+    throw new RuntimeException("Not Implemented");
     
   }
 
@@ -262,7 +273,12 @@ public class CadsrPrivateApiModule implements CadsrModule
   }
 
   public List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> getAlternateNames(AdminComponent ac) {
-    throw new RuntimeException("Not Implemented");
+
+    List<String> eager = new ArrayList<String>();
+    eager.add("csCsis");
+
+    return DAOAccessor.getAdminComponentDAO().getAlternateNames(ac, eager);
+
   }
 
 
