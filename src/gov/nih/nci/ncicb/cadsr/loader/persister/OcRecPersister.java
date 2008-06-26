@@ -123,6 +123,11 @@ tocr:
         ocr2.setSourceHighCardinality(ocr.getSourceHighCardinality());
         ocr2.setTargetLowCardinality(ocr.getTargetLowCardinality());
         ocr2.setTargetHighCardinality(ocr.getTargetHighCardinality());
+
+        List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(ocr
+                .getAlternateNames());
+        ocr.removeAlternateNames();
+
         
 	List eager = new ArrayList();
 	eager.add(EagerConstants.AC_CS_CSI);
@@ -159,13 +164,22 @@ tocr:
 //             ocr.getTarget().getVersion()
 //             );
 
-          ocr.setId(objectClassRelationshipDAO.create(ocr));
+//           ocr.setId(objectClassRelationshipDAO.create(ocr));
+          ocr = objectClassRelationshipDAO.create(ocr);
           // 	  addProjectCs(ocr);
 	  logger.info(PropertyAccessor.getProperty("created.association"));
 	}
-        
+
         addPackageClassification(ocr, sourcePackage);
         addPackageClassification(ocr, targetPackage);
+
+        for (AlternateName an : parsedAltNames)
+        {
+          ocr.addAlternateName(an);
+          addAlternateName(ocr, an.getName(), an.getType(), sourcePackage);
+          addAlternateName(ocr, an.getName(), an.getType(), targetPackage);
+        }
+
       }
     }
   }    
