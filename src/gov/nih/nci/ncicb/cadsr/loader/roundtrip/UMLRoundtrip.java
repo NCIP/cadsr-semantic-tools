@@ -38,7 +38,7 @@ import java.util.*;
 
 
 /**
- * This class will call the other UML Related Persisters
+ * Roundtrip implementation for UML Models
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
@@ -52,9 +52,6 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
 
   protected UMLDefaults defaults = UMLDefaults.getInstance();
 
-//  private String lastProjectName;
-//private Float lastProjectVersion;
-
   private ClassificationScheme projectCs = null;
   private ProgressListener progressListener = null;
 
@@ -67,42 +64,18 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
     progressListener = l;
   }
 
-  
-//  private void initCs() throws RoundtripException {
-//    Map<String, Object> queryFields = new HashMap<String, Object>();
-//    queryFields.put("longName", lastProjectName);
-//    queryFields.put("version", new Float(lastProjectVersion));
-//
-//    List<String> eager = new ArrayList<String>();
-//    eager.add(EagerConstants.CS_CSI);
-//
-//    try {
-//      Collection<ClassificationScheme> results = cadsrModule.findClassificationScheme(queryFields, eager);
-//      
-//      if(results.size() == 0)
-//        throw new RoundtripException(PropertyAccessor.getProperty("last.project.not.found", new String[]{lastProjectName, lastProjectVersion.toString()}));
-//
-//      projectCs = results.iterator().next();
-//    } catch (Exception e){
-//      throw new RoundtripException("Cannot connect to caDSR Public API");
-//
-//    } // end of try-catch
-//      
-//
-//  }
-
-
   public void start() throws RoundtripException {
     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
+    List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
     List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+    List<ClassificationSchemeItem> packages = elements.getElements(DomainObjectFactory.newClassificationSchemeItem());
+
 
     ProgressEvent pEvt = new ProgressEvent();
     pEvt.setGoal(des.size() + 2);
     pEvt.setMessage("Looking up Project");
     if(progressListener != null) 
       progressListener.newProgressEvent(pEvt);
-
-//    initCs();
 
     pEvt = new ProgressEvent();
     pEvt.setStatus(1);
@@ -154,6 +127,25 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
             logger.debug("Found Matching DE " + altName.getName());
             de.setPublicId(newDe.getPublicId());
             de.setVersion(newDe.getVersion());
+
+            AlternateName gmeAn = null;
+            // find GME alt Name
+            List<AlternateName> _ans = cadsrModule.getAlternateNames(newDe);
+            loopAn:
+            for(AlternateName _an : _ans) {
+              if(_an.getType().equals(AlternateName.TYPE_GME_XML_LOC_REF)) {
+                for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
+                  if(_csCsi.getId().equals(csCsi.getId())) {
+                    gmeAn = _an;
+                    break loopAn;
+                  }
+                }
+              }
+            }
+
+            if(gmeAn != null)
+              de.addAlternateName(gmeAn);
+
           } else
             logger.debug("NO DE MATCH " + altName.getName());
         } catch (Exception e){
@@ -195,17 +187,9 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
 
   }
 
-public void setClassificationScheme(ClassificationScheme cs) {
+  public void setClassificationScheme(ClassificationScheme cs) {
     this.projectCs = cs;
-}
-//  
-//  public void setProjectName(String lastProjectName) {
-//    this.lastProjectName = lastProjectName;
-//  }
-//  
-//  public void setProjectVersion(Float lastProjectVersion) {
-//    this.lastProjectVersion = lastProjectVersion;
-//  }
+  }
 
   /**
    * IoC setter
