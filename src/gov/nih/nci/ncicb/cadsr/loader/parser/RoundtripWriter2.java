@@ -163,6 +163,18 @@ public class RoundtripWriter2 implements ElementWriter {
           att.addTaggedValue(XMIParser2.TV_DE_VERSION,
                              de.getVersion().toString());
         }
+
+        String gmeTag = LookupUtil.lookupXMLLocRef(de);
+        if(gmeTag != null) {
+          UMLTaggedValue gmeTv = att.getTaggedValue(XMIParser2.TV_GME_XML_LOC_REFERENCE);
+          // only add a tagged value if one is not already there.
+          // in other words, don't replace
+          if(gmeTv == null) {
+            att.addTaggedValue(XMIParser2.TV_GME_XML_LOC_REFERENCE, 
+                               gmeTag);
+          }
+        }
+
       } else { // in case of inherited attribute
         ObjectClass oc = de.getDataElementConcept().getObjectClass();
         String fullClassName = LookupUtil.lookupFullName(oc);
