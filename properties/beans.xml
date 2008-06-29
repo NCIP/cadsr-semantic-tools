@@ -178,6 +178,7 @@
         <ref bean="inheritanceValidator"/>
         <ref bean="vdViewPanel"/>
         <ref bean="mteVDPanel"/>
+		<ref bean="umlVPFactory"/>
       </list>
     </property>
   </bean>
@@ -464,6 +465,13 @@
     <property name="lvdPanel">
       <ref bean="lvdPanel"/>
     </property>
+    <property name="umlVPFactory">
+      <ref bean="umlVPFactory"/>
+    </property>
+  </bean>
+
+  <bean name="umlVPFactory"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.UMLElementViewPanelFactory">
   </bean>
 
   <bean name="logTab"
