@@ -3,6 +3,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
@@ -63,7 +64,6 @@ public class UMLElementViewPanel extends JPanel
 
     cardPanel = new JPanel();
     initUI();
-    updateNode(node);
   }
   
   private void initUI() {
@@ -220,6 +220,10 @@ public class UMLElementViewPanel extends JPanel
     
   public ConceptEditorPanel getConceptEditorPanel() {
     return conceptEditorPanel;
+  }
+  
+  public void setCadsrModule(CadsrModule cadsrModule) {
+    dePanel.setCadsrModule(cadsrModule);
   }
 
 }

@@ -103,6 +103,8 @@ import java.awt.event.WindowEvent;
    private JLabel filePathLabel = new JLabel(" ");
 
  //   private Map<String, UMLElementViewPanel> viewPanels = new HashMap();
+   private UMLElementViewPanelFactory umlVPFactory = null;
+   private NodeViewPanel viewPanel = null;
    private Map<String, NodeViewPanel> viewPanels = new HashMap();
    private AssociationViewPanel associationViewPanel = null;
  //   private ValueDomainViewPanel vdViewPanel = null;
@@ -639,11 +641,12 @@ import java.awt.event.WindowEvent;
              + "." + tabTitle;
      }
      
-     NodeViewPanel viewPanel = null;
      if(event.getType() == ViewChangeEvent.VIEW_INHERITED) {
        viewPanel = new InheritedAttributeViewPanel(node);
      } else {
-       viewPanel = new UMLElementViewPanel(node);
+//       viewPanel = new UMLElementViewPanel(node);
+        viewPanel = umlVPFactory.createUMLElementViewPanel(node);
+        viewPanel.updateNode(node);
      }          
      
      viewPanel.addPropertyChangeListener(this);
@@ -678,6 +681,9 @@ import java.awt.event.WindowEvent;
        packageViewPanel = null;
      viewPanels.remove(c.getName());
 
+     if (viewPanel instanceof UMLElementViewPanel)
+         umlVPFactory.removeFromList((UMLElementViewPanel)viewPanel);
+   
      return true;
    }
 
@@ -745,6 +751,10 @@ import java.awt.event.WindowEvent;
      private void setSplitPanes(){
          jSplitPane1.setDividerLocation(verticleSplit); // added
          jSplitPane2.setDividerLocation(horizontalSplit); // added
+     }
+     
+     public void setUmlVPFactory(UMLElementViewPanelFactory umlVPFactory) {
+        this.umlVPFactory = umlVPFactory;
      }
 
  //   public void setValueDomainViewPanel(ValueDomainViewPanel vdViewPanel) {

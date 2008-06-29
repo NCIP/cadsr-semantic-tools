@@ -168,6 +168,18 @@
      fireUserPreferencesEvent(event);
    }
 
+   public boolean getShowConceptCodeNameSummary() 
+   {
+        return prefs.getBoolean("showConceptCodeNameSummary", false);
+   }
+     
+   public void setShowConceptCodeNameSummary(boolean show) 
+   {
+        prefs.putBoolean("showConceptCodeNameSummary", show);
+        UserPreferencesEvent event = 
+           new UserPreferencesEvent(UserPreferencesEvent.SHOW_CONCEPT_CODE_SUMMARY,(Boolean.valueOf(show)).toString());
+        fireUserPreferencesEvent(event);
+     }
 
    public boolean getPreTBox() 
    {

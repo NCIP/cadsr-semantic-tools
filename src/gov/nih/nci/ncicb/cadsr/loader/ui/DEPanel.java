@@ -1,6 +1,8 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.cadsr.domain.Property;
 import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
+import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
@@ -10,18 +12,15 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
 import gov.nih.nci.ncicb.cadsr.loader.util.DEMappingUtil;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.FlowLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.lang.reflect.Method;
@@ -35,7 +34,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class DEPanel extends JPanel
-  implements Editable {
+  implements Editable, CadsrModuleListener {
 
   private JButton searchDeButton = new JButton("Search Data Element");
   private JButton clearButton = new JButton("Clear");
@@ -49,10 +48,16 @@ public class DEPanel extends JPanel
     vdLongNameTitleLabel = new JLabel("Value Domain Long Name"), 
     vdLongNameValueLabel = new JLabel(),
     cdeBrowserLinkLabel = new JLabel("CDE Details"),
-    cdeBrowserLinkValueLabel = new JLabel();
+    cdeBrowserLinkValueLabel = new JLabel(),
+    conceptCodeSummaryLabel = new JLabel("Concept Code Summary"),
+    conceptCodeSummaryValue = new JLabel(),
+    conceptNameSummaryLabel = new JLabel("Concept Name Summary"),
+    conceptNameSummaryValue = new JLabel();
+    
   
-  private JScrollPane scrollPane;
+  private boolean showConceptCodeNameSummary;
   private String cdeURL = null;
+  private CadsrModule cadsrModule;
 
   private DataElement tempDE, de;
   private UMLNode node;
@@ -63,15 +68,12 @@ public class DEPanel extends JPanel
   private List<ElementChangeListener> changeListeners 
     = new ArrayList<ElementChangeListener>();
 
+  private UserPreferences prefs = UserPreferences.getInstance();
 
   private static final String SEARCH = "SEARCH", CLEAR = "CLEAR";
 
   private boolean modified = false;
 
-  private InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
-
-  private UserPreferences userPrefs = UserPreferences.getInstance();
-  
   public DEPanel(UMLNode node)  {
     this.node = node;
 
@@ -89,7 +91,16 @@ public class DEPanel extends JPanel
 
     JPanel mainPanel = new JPanel(new GridBagLayout());
 
-    
+    JPanel conceptCodeNameSummaryPanel = new JPanel(new GridBagLayout());
+    JPanel topPanel = new JPanel(new BorderLayout());
+
+    if(prefs.getShowConceptCodeNameSummary()){
+        UIUtil.insertInBag(conceptCodeNameSummaryPanel, conceptCodeSummaryLabel, 0, 1);
+        UIUtil.insertInBag(conceptCodeNameSummaryPanel, conceptCodeSummaryValue, 1, 1);
+
+        UIUtil.insertInBag(conceptCodeNameSummaryPanel, conceptNameSummaryLabel, 0, 2);
+        UIUtil.insertInBag(conceptCodeNameSummaryPanel, conceptNameSummaryValue, 1, 2);
+    }
     UIUtil.insertInBag(mainPanel, deLongNameTitleLabel, 0, 1);
     UIUtil.insertInBag(mainPanel, deLongNameValueLabel, 1, 1);
 
@@ -150,9 +161,12 @@ public class DEPanel extends JPanel
     titlePanel.add(title);
 
     flowPanel.add(mainPanel);
-
+    
+    topPanel.add(conceptCodeNameSummaryPanel, BorderLayout.NORTH);
+    topPanel.add(titlePanel, BorderLayout.SOUTH);
+    
     this.add(flowPanel);
-    this.add(titlePanel, BorderLayout.NORTH);
+    this.add(topPanel, BorderLayout.NORTH);
     
     searchDeButton.setActionCommand(SEARCH);
     clearButton.setActionCommand(CLEAR);
@@ -232,27 +246,39 @@ public class DEPanel extends JPanel
 
   }
 
-  public void updateNode(UMLNode node) 
-  {
-  
+  public void updateNode(UMLNode node) {
     this.node = node;
     if((node.getUserObject() instanceof DataElement)) {
       de = (DataElement)node.getUserObject();
-      
       if(de.getPublicId() != null) {
         deLongNameValueLabel.setText("<html><body>" + de.getLongName() + "</body></html>");
         deIdValueLabel.setText(de.getPublicId() + " v" + de.getVersion());
         deContextNameValueLabel.setText(de.getContext().getName());
         vdLongNameValueLabel.setText(de.getValueDomain().getLongName());
+        
+        // if preference is set to show Concept Summary, then :
+        // call cadsrModulde.getConcepts(de.getDataElementConcept().getProperty())
+        // and show the 2 fields
+        if(prefs.getShowConceptCodeNameSummary()){
+            List<gov.nih.nci.ncicb.cadsr.domain.Concept> concepts = 
+                cadsrModule.getConcepts(de.getDataElementConcept().getProperty());
+            StringBuffer conceptCodeSummary = new StringBuffer();
+            StringBuffer conceptNameSummary = new StringBuffer();
+            for(Concept con : concepts){
+                conceptCodeSummary.append(con.getPreferredName());
+                conceptCodeSummary.append(" ");
+                conceptNameSummary.append(con.getLongName());
+                conceptNameSummary.append(" ");
+            }
+            conceptCodeSummaryValue.setText(conceptCodeSummary.toString());
+            conceptNameSummaryValue.setText(conceptNameSummary.toString());
+        }
         enableCDELinks();
       }
-      else {
+      else 
         clear();
-      }
       
-      firePropertyChangeEvent
-        (new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, StringUtil.isEmpty(de.getPublicId())));
-      
+      firePropertyChangeEvent(new PropertyChangeEvent(this, ButtonPanel.SWITCH, null, StringUtil.isEmpty(de.getPublicId())));
     }
   }
   
@@ -299,6 +325,10 @@ public class DEPanel extends JPanel
     deIdValueLabel.setText("");
     deContextNameValueLabel.setText("");
     vdLongNameValueLabel.setText("");
+    if(prefs.getShowConceptCodeNameSummary()){
+        conceptCodeSummaryValue.setText("");
+        conceptNameSummaryValue.setText("");
+    }
     
   }
 
@@ -351,24 +381,6 @@ public class DEPanel extends JPanel
 
     fireElementChangeEvent(new ElementChangeEvent(node));
 
-    // Set the OC ID / Version
-    // iterate over all DE sibblings. 
-//     String pubId = null;
-//     Float version = null;
-//     List<DataElement> des = ElementsLists.getInstance().getElements(de);
-
-//     for(DataElement curDe : des) {
-//       if(!StringUtil.isEmpty(curDe.getPublicId())) {
-//         if(de.getDataElementConcept().getObjectClass() == curDe.getDataElementConcept().getObjectClass()) {
-//           pubId = curDe.getDataElementConcept().getObjectClass().getPublicId();
-//           version = curDe.getDataElementConcept().getObjectClass().getVersion();
-//         }
-//       }
-//     }
-
-//     de.getDataElementConcept().getObjectClass().setPublicId(pubId);
-//     de.getDataElementConcept().getObjectClass().setVersion(version);
-
      if(tempDE.getDataElementConcept() != null) {
        if(de.getDataElementConcept().getObjectClass().getPublicId() == null
           || de.getDataElementConcept().getObjectClass().getPublicId().length() == 0
@@ -420,9 +432,6 @@ public class DEPanel extends JPanel
       firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false));
     }  
     firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
-    
-      
-
 
   }
 
@@ -458,4 +467,8 @@ public class DEPanel extends JPanel
 ////    frame.setVisible(true);
 ////    frame.setSize(450, 350);
 //  }
+
+    public void setCadsrModule(CadsrModule cadsrModule) {
+        this.cadsrModule = cadsrModule;
+    }
 }

@@ -30,6 +30,7 @@ public class UserPreferencesEvent
   public static final int SHOW_INHERITED_ATTRIBUTES = 5;
   public static final int SORT_ELEMENTS = 6;
   public static final int SHOW_GME_TAGS = 7;
+  public static final int SHOW_CONCEPT_CODE_SUMMARY = 8;
   private int typeOfEvent;
   private String value;
   
