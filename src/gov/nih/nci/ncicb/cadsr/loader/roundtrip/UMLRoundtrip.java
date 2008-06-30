@@ -72,7 +72,7 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
 
 
     ProgressEvent pEvt = new ProgressEvent();
-    pEvt.setGoal(des.size() + 2);
+    pEvt.setGoal(des.size() + ocs.size() + 2);
     pEvt.setMessage("Looking up Project");
     if(progressListener != null) 
       progressListener.newProgressEvent(pEvt);
@@ -96,7 +96,6 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
       if(progressListener != null) 
         progressListener.newProgressEvent(pEvt);
 
-//       String className = oc.getLongName();
       String className = LookupUtil.lookupFullName(oc);
 
       int ind = className.lastIndexOf(".");
@@ -154,6 +153,80 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
         } // end of try-catch
       }
     }
+
+    for(ObjectClass oc : ocs) {
+      pEvt.setMessage("Looking up Object Classes");
+      pEvt.setStatus(pEvt.getStatus() + 1);
+      if(progressListener != null) 
+        progressListener.newProgressEvent(pEvt);
+
+      String className = LookupUtil.lookupFullName(oc);
+
+      int ind = className.lastIndexOf(".");
+      if(ind < 0)
+        continue;
+      String packageName = className.substring(0, ind);
+//       className = className.substring(ind + 1);
+
+      ClassSchemeClassSchemeItem csCsi = csCsiCache.get(packageName);
+      if(csCsi == null) {
+        csCsi = lookupCsCsi(packageName);
+      }
+      
+      if(csCsi != null) {  
+        AlternateName altName = DomainObjectFactory.newAlternateName();
+        altName.setName(className);
+        altName.setType(AlternateName.TYPE_CLASS_FULL_NAME);
+        
+        try {
+          Collection<ObjectClass> l = cadsrModule.findOCByClassifiedAltName(altName, csCsi);
+          
+          ObjectClass newOc = null;
+          if(l.size() > 0) 
+            newOc = l.iterator().next();
+          
+          if(newOc != null) {
+            logger.debug("Found Matching OC " + altName.getName());
+            oc.setPublicId(newOc.getPublicId());
+            oc.setVersion(newOc.getVersion());
+
+            AlternateName gmeNsAn = null, gmeEltAn = null;
+            // find GME alt Name
+            List<AlternateName> _ans = cadsrModule.getAlternateNames(newOc);
+            while (gmeNsAn == null && gmeEltAn == null)
+              for(AlternateName _an : _ans) {
+                if(_an.getType().equals(AlternateName.TYPE_GME_NAMESPACE)) {
+                  for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
+                    if(_csCsi.getId().equals(csCsi.getId())) {
+                      gmeNsAn = _an;
+                    }
+                  }
+                }
+                else if(_an.getType().equals(AlternateName.TYPE_GME_XML_ELEMENT)) {
+                  for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
+                    if(_csCsi.getId().equals(csCsi.getId())) {
+                      gmeEltAn = _an;
+                    }
+                  }
+                }
+              }
+            
+            if(gmeNsAn != null)
+              oc.addAlternateName(gmeNsAn);
+
+            if(gmeEltAn != null)
+              oc.addAlternateName(gmeEltAn);
+
+          } else
+            logger.debug("NO OC MATCH " + className);
+        } catch (Exception e){
+          e.printStackTrace();
+          logger.error("Cannot connect to Cadsr Public API: " + e.getMessage());
+        } // end of try-catch
+      }
+    }
+
+
 
     for(ValueDomain vd : vds) {
 
