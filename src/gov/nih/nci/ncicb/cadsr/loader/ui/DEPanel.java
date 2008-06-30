@@ -262,16 +262,18 @@ public class DEPanel extends JPanel
         if(prefs.getShowConceptCodeNameSummary()){
             List<gov.nih.nci.ncicb.cadsr.domain.Concept> concepts = 
                 cadsrModule.getConcepts(de.getDataElementConcept().getProperty());
-            StringBuffer conceptCodeSummary = new StringBuffer();
-            StringBuffer conceptNameSummary = new StringBuffer();
-            for(Concept con : concepts){
-                conceptCodeSummary.append(con.getPreferredName());
-                conceptCodeSummary.append(" ");
-                conceptNameSummary.append(con.getLongName());
-                conceptNameSummary.append(" ");
+            if(concepts != null && concepts.size() > 0){                
+                StringBuffer conceptCodeSummary = new StringBuffer();
+                StringBuffer conceptNameSummary = new StringBuffer();
+                for(Concept con : concepts){
+                    conceptCodeSummary.append(con.getPreferredName());
+                    conceptCodeSummary.append(" ");
+                    conceptNameSummary.append(con.getLongName());
+                    conceptNameSummary.append(" ");
+                }
+                conceptCodeSummaryValue.setText(conceptCodeSummary.toString());
+                conceptNameSummaryValue.setText(conceptNameSummary.toString());
             }
-            conceptCodeSummaryValue.setText(conceptCodeSummary.toString());
-            conceptNameSummaryValue.setText(conceptNameSummary.toString());
         }
         enableCDELinks();
       }
@@ -325,10 +327,8 @@ public class DEPanel extends JPanel
     deIdValueLabel.setText("");
     deContextNameValueLabel.setText("");
     vdLongNameValueLabel.setText("");
-    if(prefs.getShowConceptCodeNameSummary()){
-        conceptCodeSummaryValue.setText("");
-        conceptNameSummaryValue.setText("");
-    }
+    conceptCodeSummaryValue.setText("");
+    conceptNameSummaryValue.setText("");
     
   }
 
