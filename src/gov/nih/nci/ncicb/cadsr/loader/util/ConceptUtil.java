@@ -104,9 +104,9 @@ public class ConceptUtil {
       ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
       compCon.setConcept(con);
       if(reverseOrder)
-        compCon.setOrder(concepts.size() - 1 - c);
-      else 
         compCon.setOrder(c);
+      else 
+        compCon.setOrder(concepts.size() - 1 - c);
         
       compCon.setConceptDerivationRule(condr);
       if(reverseOrder)
