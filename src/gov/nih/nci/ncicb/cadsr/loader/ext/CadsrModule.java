@@ -4,6 +4,8 @@ package gov.nih.nci.ncicb.cadsr.loader.ext;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 
+import gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ public interface CadsrModule
   public static final String VERSION = "version";
   public static final String CONTEXT = "context";
   public static final String WORKFLOW_STATUS = "workflowStatus";
+
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.Context> 
     getAllContexts();
@@ -55,6 +58,9 @@ public interface CadsrModule
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
     findDEByClassifiedAltName(gov.nih.nci.ncicb.cadsr.domain.AlternateName altName, gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem csCsi) throws Exception;
 
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.ObjectClass> 
+    findOCByClassifiedAltName(gov.nih.nci.ncicb.cadsr.domain.AlternateName altName, gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem csCsi) throws Exception;
+
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
     findDataElement(Concept[] ocConcepts, Concept[] propConcepts, 
     String vdLongName) throws Exception;
@@ -93,5 +99,6 @@ public interface CadsrModule
   public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept[] ocConcepts, gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts);
 
   public List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> getAlternateNames(gov.nih.nci.ncicb.cadsr.domain.AdminComponent ac);
-  
+
+  public List<ObjectClassRelationship> findOCR(ObjectClassRelationship ocr);
 }
