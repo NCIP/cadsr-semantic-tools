@@ -226,17 +226,32 @@ public class CadsrPublicApiModule implements CadsrModule {
       .createCriteria("classSchemeClassSchemeItem")
       .add(Expression.eq("id", csCsi.getId()));
 
-//     csCsiCriteria.createCriteria("classificationScheme")
-//       .add(Expression.eq("id", csCsi.getCs().getId()));
-
-//     csCsiCriteria.createCriteria("classificationSchemeItem")
-//       .add(Expression.eq("type", csCsi.getCsi().getType()))
-//       .add(Expression.eq("name", csCsi.getCsi().getName()));
-    
     List listResult = service.query(deCriteria, gov.nih.nci.cadsr.domain.DataElement.class.getName());
     
     if(listResult.size() > 0) {
       return CadsrTransformer.deListPublicToPrivate(listResult);
+    } else
+      return new ArrayList();
+  }
+
+  public Collection<gov.nih.nci.ncicb.cadsr.domain.ObjectClass> 
+    findOCByClassifiedAltName(gov.nih.nci.ncicb.cadsr.domain.AlternateName altName, gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem csCsi) throws Exception {
+    
+    DetachedCriteria ocCriteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.ObjectClass.class, "oc");
+    
+    DetachedCriteria subCriteria = ocCriteria.createCriteria("designationCollection");
+    subCriteria.add(Expression.eq("name", altName.getName()));
+    subCriteria.add(Expression.eq("type", altName.getType()));
+
+
+    DetachedCriteria csCsiCriteria = subCriteria.createCriteria("designationClassSchemeItemCollection")
+      .createCriteria("classSchemeClassSchemeItem")
+      .add(Expression.eq("id", csCsi.getId()));
+
+    List listResult = service.query(ocCriteria, gov.nih.nci.cadsr.domain.ObjectClass.class.getName());
+    
+    if(listResult.size() > 0) {
+      return CadsrTransformer.ocListPublicToPrivate(listResult);
     } else
       return new ArrayList();
   }
@@ -542,6 +557,46 @@ public class CadsrPublicApiModule implements CadsrModule {
     
   }
 
+  public List<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship> findOCR(gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship ocr) {
+    try {
+
+      DetachedCriteria criteria = DetachedCriteria.forClass(
+        gov.nih.nci.cadsr.domain.ObjectClassRelationship.class, "ocr");
+
+
+      if(!StringUtil.isEmpty(ocr.getSourceRole()))
+        criteria.add(Expression.eq("sourceRole", ocr.getSourceRole()));
+      if(!StringUtil.isEmpty(ocr.getTargetRole()))
+        criteria.add(Expression.eq("targetRole", ocr.getTargetRole()));
+
+      criteria.add(Expression.eq("direction", ocr.getDirection()))
+        .add(Expression.eq("sourceLowMultiplicity", ocr.getSourceLowCardinality()))
+        .add(Expression.eq("sourceHighMultiplicity", ocr.getSourceHighCardinality()))
+        .add(Expression.eq("targetLowMultiplicity", ocr.getTargetLowCardinality()))
+        .add(Expression.eq("targetHighMultiplicity", ocr.getTargetHighCardinality()));
+      
+      criteria.createCriteria("sourceObjectClass")
+        .add(Expression.eq("id", ocr.getSource().getId()));
+
+      criteria.createCriteria("targetObjectClass")
+        .add(Expression.eq("id", ocr.getTarget().getId()));
+
+      Collection results = 
+        service.query(criteria);
+      
+      if(results.size() == 0)
+        return new ArrayList();
+             
+      else {
+        return new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship>(CadsrTransformer.ocrListPublicToPrivate(results));
+      }
+ 
+    }
+    catch (ApplicationException e) {
+        throw new RuntimeException(e);
+    }
+
+  }
   
   
 //   public void setServiceURL(String url) {
