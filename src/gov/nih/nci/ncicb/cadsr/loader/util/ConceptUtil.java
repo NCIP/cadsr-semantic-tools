@@ -60,16 +60,29 @@ public class ConceptUtil {
 
 
   public static String preferredDefinitionFromConcepts(Concept[] concepts) {
-    StringBuffer sb = new StringBuffer();
+    return preferredDefinitionFromConcepts(concepts, false);
+  }
+  
+
+  public static String preferredDefinitionFromConcepts(Concept[] concepts, boolean reverse) {
+    StringBuilder sb = new StringBuilder();
     
     for(Concept con : concepts) {
       if(sb.length() > 0)
-        sb.append(":");
-      sb.append(con.getPreferredDefinition());
+        if(reverse)
+          sb.insert(0, ":");
+        else
+          sb.append(":");
+      
+      if(reverse)
+        sb.insert(0, con.getPreferredDefinition());
+      else
+        sb.append(con.getPreferredDefinition());
     }
 
     return sb.toString();
   }
+
 
   public static String[] getConceptCodes(ValueMeaning vm) {
     return getConceptCodes(vm.getConceptDerivationRule());
