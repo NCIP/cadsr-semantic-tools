@@ -268,7 +268,7 @@ public class UMLDefaultHandler
     // if VM has no concept, then use user defined definition
     if(concepts != null && concepts.size() > 0) {
       vm.setPreferredDefinition(ConceptUtil
-                                .preferredDefinitionFromConcepts(vmConcepts));
+                                .preferredDefinitionFromConcepts(vmConcepts, true));
       
 //       if(!StringUtil.isEmpty(event.getDescription())) 
 //         vm.addDefinition(vmAltDef);
