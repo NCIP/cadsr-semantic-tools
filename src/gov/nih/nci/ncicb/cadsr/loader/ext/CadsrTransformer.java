@@ -378,6 +378,44 @@ public class CadsrTransformer {
 
   }
 
+  public static List<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship> ocrListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.ObjectClassRelationship> inOCRs) {
+  
+    List<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship> outOCRs = 
+      new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship>();
+    
+    
+    for(gov.nih.nci.cadsr.domain.ObjectClassRelationship inOCR : inOCRs) {
+      outOCRs.add(ocrPublicToPrivate(inOCR));
+    }
+
+    return outOCRs;
+    
+  }
+
+  /**
+   * Transforms a OCR from public API to private API
+   */
+  public static gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship ocrPublicToPrivate(gov.nih.nci.cadsr.domain.ObjectClassRelationship inOCR) {
+
+    gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship outOCR = DomainObjectFactory.newObjectClassRelationship();    
+
+    acPublicToPrivate(outOCR, inOCR);
+    
+    outOCR.setSourceRole(inOCR.getSourceRole());
+    outOCR.setTargetRole(inOCR.getTargetRole());
+    
+
+    outOCR.setSourceHighCardinality(inOCR.getSourceHighMultiplicity());
+    outOCR.setSourceLowCardinality(inOCR.getSourceLowMultiplicity());
+
+    outOCR.setTargetHighCardinality(inOCR.getTargetHighMultiplicity());
+    outOCR.setTargetLowCardinality(inOCR.getTargetLowMultiplicity());
+        
+    return outOCR;
+
+  }
+  
+
   public static List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> anListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.Designation> inANs) {
     List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> outANs = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.AlternateName>();
