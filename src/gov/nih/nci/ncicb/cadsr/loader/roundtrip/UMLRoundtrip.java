@@ -19,10 +19,8 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.roundtrip;
 
-import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
-import gov.nih.nci.ncicb.cadsr.spring.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
@@ -31,6 +29,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.ext.*;
+import gov.nih.nci.ncicb.cadsr.loader.persister.OCRDefinitionBuilder;
 
 import org.apache.log4j.Logger;
 
@@ -48,7 +47,7 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
 
   protected ElementsLists elements = ElementsLists.getInstance();
 
-  private Map<String, ValueDomain> valueDomains = new HashMap<String, ValueDomain>();
+//  private Map<String, ValueDomain> valueDomains = new HashMap<String, ValueDomain>();
 
   protected UMLDefaults defaults = UMLDefaults.getInstance();
 
@@ -67,12 +66,13 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
   public void start() throws RoundtripException {
     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
     List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
-    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
-    List<ClassificationSchemeItem> packages = elements.getElements(DomainObjectFactory.newClassificationSchemeItem());
+    List<ObjectClassRelationship> ocrs = elements.getElements(DomainObjectFactory.newObjectClassRelationship());
+//    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+//    List<ClassificationSchemeItem> packages = elements.getElements(DomainObjectFactory.newClassificationSchemeItem());
 
 
     ProgressEvent pEvt = new ProgressEvent();
-    pEvt.setGoal(des.size() + ocs.size() + 2);
+    pEvt.setGoal(des.size() + ocs.size() + ocrs.size() + 2);
     pEvt.setMessage("Looking up Project");
     if(progressListener != null) 
       progressListener.newProgressEvent(pEvt);
@@ -189,6 +189,7 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
             logger.debug("Found Matching OC " + altName.getName());
             oc.setPublicId(newOc.getPublicId());
             oc.setVersion(newOc.getVersion());
+            oc.setId(newOc.getId());
 
             AlternateName gmeNsAn = null, gmeEltAn = null;
             // find GME alt Name
@@ -226,18 +227,106 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
       }
     }
 
+    if (ocrs != null) {
+      for (ObjectClassRelationship ocr : ocrs) {
+        pEvt.setMessage("Looking up Object Classes Relationship");
+        pEvt.setStatus(pEvt.getStatus() + 1);
+        if(progressListener != null) 
+          progressListener.newProgressEvent(pEvt);
 
-
-    for(ValueDomain vd : vds) {
-
+        if(ocr.getType().equals(ObjectClassRelationship.TYPE_HAS)) {
+          
+          String sourcePackage = LookupUtil.getPackageName(ocr.getSource());
+          //        String targetPackage = LookupUtil.getPackageName(ocr.getTarget());
+          
+          ClassSchemeClassSchemeItem csCsi = csCsiCache.get(sourcePackage);
+          if(csCsi == null) {
+            csCsi = lookupCsCsi(sourcePackage);
+          }
+          
+          ocr.setPreferredDefinition(new OCRDefinitionBuilder().buildDefinition(ocr));
+          
+          if ((ocr.getLongName() == null) ||
+              (ocr.getLongName().length() == 0)) {
+            logger.debug("No Role name for association. Generating one");
+            ocr.setLongName(new OCRRoleNameBuilder().buildRoleName(ocr));
+          }
+          
+          ObjectClass sOcr = ocr.getSource();
+          socr:
+          for(AlternateName an : sOcr.getAlternateNames()) {
+            if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME)) {
+              ocr.setSource(LookupUtil.lookupObjectClass(an));
+              break socr;
+            }
+          }
+          ObjectClass tOcr = ocr.getTarget();
+          tocr:
+          for(AlternateName an : tOcr.getAlternateNames()) {
+            if(an.getType().equals(AlternateName.TYPE_CLASS_FULL_NAME)) {
+              ocr.setTarget(LookupUtil.lookupObjectClass(an));
+              break tocr;
+            }
+          }
+          
+          // check if association already exists
+          ObjectClassRelationship ocr2 = DomainObjectFactory.newObjectClassRelationship();
+          
+          Map<String, Object> queryFields = new HashMap<String, Object>();
+          //         queryFields.put();
+          
+          ocr2.setSource(ocr.getSource());
+          ocr2.setSourceRole(ocr.getSourceRole());
+          ocr2.setTarget(ocr.getTarget());
+          ocr2.setTargetRole(ocr.getTargetRole());
+          ocr2.setDirection(ocr.getDirection());
+          ocr2.setSourceLowCardinality(ocr.getSourceLowCardinality());
+          ocr2.setSourceHighCardinality(ocr.getSourceHighCardinality());
+          ocr2.setTargetLowCardinality(ocr.getTargetLowCardinality());
+          ocr2.setTargetHighCardinality(ocr.getTargetHighCardinality());
+          
+          List<ObjectClassRelationship> l = cadsrModule.findOCR(ocr2);
+          
+          if (l.size() > 0) {
+            ocr2 = l.get(0);
+            logger.debug("Found Matching OCR " + ocr2.getLongName());
+            ocr.setPublicId(ocr2.getPublicId());
+            ocr.setVersion(ocr2.getVersion());
+            
+            AlternateName gmeSrcAn = null, gmeTgtAn = null;
+            // find GME alt Name
+            List<AlternateName> _ans = cadsrModule.getAlternateNames(ocr2);
+            while (gmeSrcAn == null && gmeTgtAn == null)
+              for(AlternateName _an : _ans) {
+                if(_an.getType().equals(AlternateName.TYPE_GME_SRC_XML_LOC_REF)) {
+                  for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
+                    if(_csCsi.getId().equals(csCsi.getId())) {
+                      gmeSrcAn = _an;
+                    }
+                  }
+                }
+                else if(_an.getType().equals(AlternateName.TYPE_GME_TARGET_XML_LOC_REF)) {
+                  for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
+                    if(_csCsi.getId().equals(csCsi.getId())) {
+                      gmeTgtAn = _an;
+                    }
+                  }
+                }
+              }
+            
+            if(gmeSrcAn != null)
+              ocr.addAlternateName(gmeSrcAn);
+            
+            if(gmeTgtAn != null)
+              ocr.addAlternateName(gmeTgtAn);
+            
+            
+          } else {
+            logger.debug("NO OCR MATCH " + ocr2.getLongName());
+          }
+        }
+      }
     }
-
-    // Do the classes that don't have an attribute
-    // Next Version
-//     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
-//     for(ObjectClass oc : ocs) {
-
-//     }
 
   }
 
