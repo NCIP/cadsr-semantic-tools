@@ -61,6 +61,7 @@ public class RoundtripWriter2 implements ElementWriter {
 
   private HashMap<String, UMLClass> classMap = new HashMap<String, UMLClass>();
   private HashMap<String, UMLAttribute> attributeMap = new HashMap<String, UMLAttribute>();
+  private HashMap<String, UMLAssociation> assocMap = new HashMap<String, UMLAssociation>();
 
   private UMLModel model = null;
   
@@ -115,13 +116,24 @@ public class RoundtripWriter2 implements ElementWriter {
   private void readModel(){
     for(UMLPackage pkg : model.getPackages())
       doPackage(pkg);
+
+    int i = 0;
+    for(UMLAssociation assoc : model.getAssociations()) {
+ 
+        assocMap.put(String.valueOf(i), assoc);
+        
+        i++;
+    }
+
   }
 
   private void updateElements() {
     List<DataElement> des = elementsList.getElements(DomainObjectFactory.newDataElement());
+    List<ObjectClass> ocs = elementsList.getElements(DomainObjectFactory.newObjectClass());
+    List<ObjectClassRelationship> ocrs = elementsList.getElements(DomainObjectFactory.newObjectClassRelationship());
 
     ProgressEvent pEvt = new ProgressEvent();
-    pEvt.setGoal(des.size());
+    pEvt.setGoal(des.size() + ocs.size() + ocrs.size());
     pEvt.setMessage("Injecting CaDSR Public IDs");
     pEvt.setStatus(0);
     if(progressListener != null)
@@ -196,8 +208,78 @@ public class RoundtripWriter2 implements ElementWriter {
       }
     }
 
-  }
+    for(ObjectClass oc : ocs) {
+      pEvt.setStatus(pEvt.getStatus() + 1);
+      if(progressListener != null)
+        progressListener.newProgressEvent(pEvt);
 
+      String className = LookupUtil.lookupFullName(oc);
+        
+      UMLClass clazz = classMap.get(className);
+      if(clazz == null) {
+        logger.info("Parser Can't find clazz: " + className + "\n This is odd, look into it.");
+        continue;
+      }
+        
+      String gmeTag = LookupUtil.lookupXMLNamespace(oc);
+      if(gmeTag != null) {
+        UMLTaggedValue gmeTv = clazz.getTaggedValue(XMIParser2.TV_GME_NAMESPACE);
+        // only add a tagged value if one is not already there.
+        // in other words, don't replace
+        if(gmeTv == null) {
+          clazz.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, 
+                             gmeTag);
+        }
+      }
+
+      gmeTag = LookupUtil.lookupXMLElementName(oc);
+      if(gmeTag != null) {
+        UMLTaggedValue gmeTv = clazz.getTaggedValue(XMIParser2.TV_GME_XML_ELEMENT);
+        // only add a tagged value if one is not already there.
+        // in other words, don't replace
+        if(gmeTv == null) {
+          clazz.addTaggedValue(XMIParser2.TV_GME_XML_ELEMENT, 
+                             gmeTag);
+        }
+      }
+    } 
+ 
+    for(int i = 0; i < ocrs.size(); i++) {
+      pEvt.setStatus(pEvt.getStatus() + 1);
+      if(progressListener != null)
+        progressListener.newProgressEvent(pEvt);
+
+      ObjectClassRelationship ocr = ocrs.get(i);
+
+      UMLAssociation assoc = assocMap.get(String.valueOf(i));
+
+      String gmeTag = LookupUtil.lookupXMLSrcLocRef(ocr);
+      if(gmeTag != null) {
+        UMLTaggedValue gmeTv = assoc.getTaggedValue(XMIParser2.TV_GME_SOURCE_XML_LOC_REFERENCE);
+        // only add a tagged value if one is not already there.
+        // in other words, don't replace
+        if(gmeTv == null) {
+          assoc.addTaggedValue(XMIParser2.TV_GME_SOURCE_XML_LOC_REFERENCE, 
+                             gmeTag);
+        }
+      }
+
+      gmeTag = LookupUtil.lookupXMLTargetLocRef(ocr);
+      if(gmeTag != null) {
+        UMLTaggedValue gmeTv = assoc.getTaggedValue(XMIParser2.TV_GME_TARGET_XML_LOC_REFERENCE);
+        // only add a tagged value if one is not already there.
+        // in other words, don't replace
+        if(gmeTv == null) {
+          assoc.addTaggedValue(XMIParser2.TV_GME_TARGET_XML_LOC_REFERENCE, 
+                             gmeTag);
+        }
+      }
+    } 
+
+
+      
+  }
+  
   private void doPackage(UMLPackage pkg) {
  
     for(UMLClass clazz : pkg.getClasses()) {
