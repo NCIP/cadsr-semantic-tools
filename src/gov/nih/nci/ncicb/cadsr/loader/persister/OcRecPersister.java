@@ -54,8 +54,8 @@ public class OcRecPersister extends UMLPersister {
 	ocr.setVersion(1.0f);
 	ocr.setWorkflowStatus(defaults.getWorkflowStatus());
 
-        String sourcePackage = getPackageName(ocr.getSource());
-        String targetPackage = getPackageName(ocr.getTarget());
+        String sourcePackage = LookupUtil.getPackageName(ocr.getSource());
+        String targetPackage = LookupUtil.getPackageName(ocr.getTarget());
 
 	ocr.setPreferredDefinition(new OCRDefinitionBuilder().buildDefinition(ocr));
 

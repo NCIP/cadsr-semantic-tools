@@ -439,12 +439,6 @@ public class UMLPersister implements Persister {
     }
   }
 
-  protected String getPackageName(AdminComponent ac) {
-    return 
-      ((AdminComponentClassSchemeClassSchemeItem)ac.getAcCsCsis().get(0)).getCsCsi().getCsi().getLongName();
-  }
-
-
   private void initDAOs() {
     adminComponentDAO = DAOAccessor.getAdminComponentDAO();
     alternateNameDAO = DAOAccessor.getAlternateNameDAO();

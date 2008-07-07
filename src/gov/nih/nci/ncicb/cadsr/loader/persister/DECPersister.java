@@ -67,7 +67,7 @@ public class DECPersister extends UMLPersister {
         dec.removeAlternateNames();
 
         String newName = dec.getLongName();
-        String packageName = getPackageName(dec);
+        String packageName = LookupUtil.getPackageName(dec);
 
         if(!StringUtil.isEmpty(dec.getPublicId()) && dec.getVersion() != null) {
           newDec = existingMapping(dec, newName, packageName);

@@ -59,7 +59,7 @@ public class PropertyPersister extends UMLPersister {
 
         Property newProp = null;
 
-        String packageName = getPackageName(prop);
+        String packageName = LookupUtil.getPackageName(prop);
         String newDef = prop.getPreferredDefinition();
         String newName = prop.getLongName();
 
