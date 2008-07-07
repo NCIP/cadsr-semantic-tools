@@ -142,7 +142,12 @@ public class UMLDefaultHandler
         
         vd.setPublicId(null);
         vd.setVersion(null);
+
+        vd.setLongName(event.getName());
+        vd.setConceptualDomain(DomainObjectFactory.newConceptualDomain());
+        vd.setRepresentation(DomainObjectFactory.newRepresentation());
 //         changeTracker.put
+
 //           (className + "." + attributeName, 
 //            true);
       } else {
