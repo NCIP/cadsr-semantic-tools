@@ -238,6 +238,16 @@ public class LookupUtil implements CadsrModuleListener {
     return null;
   }
 
+  public static String lookupXMLNamespace(AdminComponent ac) {
+    if(ac.getAlternateNames() != null)
+    for(AlternateName altName : ac.getAlternateNames()) {
+      if(altName.getType().equals(AlternateName.TYPE_GME_NAMESPACE))
+        return altName.getName();
+    }
+    
+    return null;
+  }
+
   public static String lookupXMLElementName(AdminComponent ac) {
     if(ac.getAlternateNames() != null)
     for(AlternateName altName : ac.getAlternateNames()) {
@@ -252,6 +262,26 @@ public class LookupUtil implements CadsrModuleListener {
     if(ac.getAlternateNames() != null)
     for(AlternateName altName : ac.getAlternateNames()) {
       if(altName.getType().equals(AlternateName.TYPE_GME_XML_LOC_REF))
+        return altName.getName();
+    }
+    
+    return null;
+  }
+
+  public static String lookupXMLSrcLocRef(AdminComponent ac) {
+    if(ac.getAlternateNames() != null)
+    for(AlternateName altName : ac.getAlternateNames()) {
+      if(altName.getType().equals(AlternateName.TYPE_GME_SRC_XML_LOC_REF))
+        return altName.getName();
+    }
+    
+    return null;
+  }
+
+  public static String lookupXMLTargetLocRef(AdminComponent ac) {
+    if(ac.getAlternateNames() != null)
+    for(AlternateName altName : ac.getAlternateNames()) {
+      if(altName.getType().equals(AlternateName.TYPE_GME_TARGET_XML_LOC_REF))
         return altName.getName();
     }
     
@@ -283,6 +313,12 @@ public class LookupUtil implements CadsrModuleListener {
     return null;
   }
 
+  public static String getPackageName(AdminComponent ac) {
+    return 
+      ((AdminComponentClassSchemeClassSchemeItem)ac.getAcCsCsis().get(0)).getCsCsi().getCsi().getLongName();
+  }
+
+
   public static String getPackageName(UMLPackage pkg) {
     StringBuffer pack = new StringBuffer();
     String s = null;
@@ -302,9 +338,11 @@ public class LookupUtil implements CadsrModuleListener {
     return pack.toString();
   }
 
+
   public void setCadsrModule(CadsrModule module) {
     cadsrModule = module;
   }
+
 
 
 }
