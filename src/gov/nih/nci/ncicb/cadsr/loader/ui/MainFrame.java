@@ -594,8 +594,8 @@ import java.awt.event.WindowEvent;
  //       viewTabbedPane.setSelectedComponent(vdViewPanel);
 
           viewTabbedPane.remove(lvdPanel);
-          //viewTabbedPane.addTab("ValueDomain."+LookupUtil.lookupFullName((ValueDomain)node.getUserObject()), lvdPanel);
-          viewTabbedPane.addTab("ValueDomain", lvdPanel);
+          viewTabbedPane.addTab("ValueDomain."+LookupUtil.lookupFullName((ValueDomain)node.getUserObject()), lvdPanel);
+//          viewTabbedPane.addTab("ValueDomain", lvdPanel);
           lvdPanel.update((ValueDomain)node.getUserObject(), node);
           lvdPanel.addNavigationListener(navigationPanel);
           navigationPanel.addNavigationListener(lvdPanel);
