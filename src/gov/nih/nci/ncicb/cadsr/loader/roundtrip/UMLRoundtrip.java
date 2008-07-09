@@ -68,11 +68,11 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
     List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
     List<ObjectClassRelationship> ocrs = elements.getElements(DomainObjectFactory.newObjectClassRelationship());
 //    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
-//    List<ClassificationSchemeItem> packages = elements.getElements(DomainObjectFactory.newClassificationSchemeItem());
+    List<ClassificationSchemeItem> packages = elements.getElements(DomainObjectFactory.newClassificationSchemeItem());
 
 
     ProgressEvent pEvt = new ProgressEvent();
-    pEvt.setGoal(des.size() + ocs.size() + ocrs.size() + 2);
+    pEvt.setGoal(des.size() + ocs.size() + ocrs.size() + packages.size() + 2);
     pEvt.setMessage("Looking up Project");
     if(progressListener != null) 
       progressListener.newProgressEvent(pEvt);
@@ -194,8 +194,8 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
             AlternateName gmeNsAn = null, gmeEltAn = null;
             // find GME alt Name
             List<AlternateName> _ans = cadsrModule.getAlternateNames(newOc);
-            while (gmeNsAn == null && gmeEltAn == null)
-              for(AlternateName _an : _ans) {
+            for(AlternateName _an : _ans) {
+              if (gmeNsAn == null || gmeEltAn == null)
                 if(_an.getType().equals(AlternateName.TYPE_GME_NAMESPACE)) {
                   for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
                     if(_csCsi.getId().equals(csCsi.getId())) {
@@ -296,22 +296,22 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
             AlternateName gmeSrcAn = null, gmeTgtAn = null;
             // find GME alt Name
             List<AlternateName> _ans = cadsrModule.getAlternateNames(ocr2);
-            while (gmeSrcAn == null && gmeTgtAn == null)
               for(AlternateName _an : _ans) {
-                if(_an.getType().equals(AlternateName.TYPE_GME_SRC_XML_LOC_REF)) {
-                  for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
-                    if(_csCsi.getId().equals(csCsi.getId())) {
-                      gmeSrcAn = _an;
+                if (gmeSrcAn == null || gmeTgtAn == null)
+                  if(_an.getType().equals(AlternateName.TYPE_GME_SRC_XML_LOC_REF)) {
+                    for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
+                      if(_csCsi.getId().equals(csCsi.getId())) {
+                        gmeSrcAn = _an;
+                      }
                     }
                   }
-                }
-                else if(_an.getType().equals(AlternateName.TYPE_GME_TARGET_XML_LOC_REF)) {
-                  for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
-                    if(_csCsi.getId().equals(csCsi.getId())) {
-                      gmeTgtAn = _an;
+                  else if(_an.getType().equals(AlternateName.TYPE_GME_TARGET_XML_LOC_REF)) {
+                    for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
+                      if(_csCsi.getId().equals(csCsi.getId())) {
+                        gmeTgtAn = _an;
+                      }
                     }
                   }
-                }
               }
             
             if(gmeSrcAn != null)
@@ -326,8 +326,43 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
           }
         }
       }
-    }
 
+    }
+    
+    for(ClassificationSchemeItem csi : packages) {
+      pEvt.setMessage("Looking up CSIs");
+      pEvt.setStatus(pEvt.getStatus() + 1);
+      if(progressListener != null) 
+        progressListener.newProgressEvent(pEvt);
+
+      String packageName = csi.getLongName();
+      ClassSchemeClassSchemeItem csCsi = csCsiCache.get(packageName);
+      if(csCsi == null) {
+        csCsi = lookupCsCsi(packageName);
+      }
+      
+      AlternateName gmeNsAn = null;
+      // find GME alt Name
+      List<AlternateName> _ans = cadsrModule.getAlternateNames(csCsi.getCsi());
+      for(AlternateName _an : _ans) {
+        if (gmeNsAn == null)
+          if(_an.getType().equals(AlternateName.TYPE_GME_NAMESPACE)) {
+            for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
+              if(_csCsi.getId().equals(csCsi.getId())) {
+                gmeNsAn = _an;
+              }
+            }
+          }
+        }
+      
+      if(gmeNsAn != null) {
+        logger.debug("Found Matching CSI's gme Name " + packageName);
+        csi.addAlternateName(gmeNsAn);
+      } else {
+        logger.debug("CSI -- No Match " + packageName);
+      }
+      
+    }
   }
 
   private ClassSchemeClassSchemeItem lookupCsCsi(String packageName) {
