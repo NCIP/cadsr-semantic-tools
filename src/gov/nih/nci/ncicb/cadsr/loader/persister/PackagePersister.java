@@ -76,6 +76,10 @@ public class PackagePersister extends UMLPersister {
         }
         
 
+        List<AlternateName> parsedAltNames = new ArrayList<AlternateName>
+          (pkg.getAlternateNames());
+        pkg.removeAlternateNames();
+
 	// See if it already exist in DB
 	List l = classificationSchemeItemDAO.find(pkg);
 
@@ -96,6 +100,13 @@ public class PackagePersister extends UMLPersister {
 
 	// Put CS_CSI in cache so OCs can use it
 	packageCsCsis.put(pkg.getLongName(), packageCsCsi);
+
+        
+        for (AlternateName an : parsedAltNames)
+        {
+          pkg.addAlternateName(an);
+          addAlternateName(pkg, an.getName(), an.getType(), pkg.getLongName());
+        }
 
         
       }
