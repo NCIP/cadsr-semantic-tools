@@ -343,6 +343,7 @@ public class CadsrTransformer {
     gov.nih.nci.ncicb.cadsr.domain.ClassificationSchemeItem outCsi = DomainObjectFactory.newClassificationSchemeItem();
     outCsi.setLongName(inCsi.getLongName());
     outCsi.setType(inCsi.getType());
+    outCsi.setId(inCsi.getId());
 
     return outCsi;
 
