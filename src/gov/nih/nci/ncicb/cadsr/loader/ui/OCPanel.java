@@ -1,22 +1,17 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
-import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -29,22 +24,36 @@ public class OCPanel extends JPanel
   private JLabel ocPublicIdLabel = new JLabel("Public ID / Version"),
   ocPublicIdValueLabel = new JLabel(),
   ocLongNameLabel = new JLabel("Object Class Long Name"),
-  ocLongNameValueLabel = new JLabel();
-  
+  ocLongNameValueLabel = new JLabel(),
+  conceptCodeSummaryLabel = new JLabel("Concept Code Summary"),
+  conceptCodeSummaryValue = new JLabel(),
+  conceptNameSummaryLabel = new JLabel("Concept Name Summary"),
+  conceptNameSummaryValue = new JLabel();
+
   private ObjectClass tempOC, oc;
   private UMLNode node;
+  private CadsrModule cadsrModule;
   
   private List<PropertyChangeListener> propChangeListeners 
     = new ArrayList<PropertyChangeListener>();
   
   private static final String SEARCH = "SEARCH";
-  
+  private UserPreferences prefs = UserPreferences.getInstance();
+
   public OCPanel(UMLNode node)
   {
     if((node.getUserObject() instanceof ObjectClass))
       oc = (ObjectClass)node.getUserObject();
       
     this.setLayout(new BorderLayout());
+    JPanel conceptCodeNameSummaryPanel = new JPanel(new GridBagLayout());
+    if(prefs.getShowConceptCodeNameSummary()){
+        UIUtil.insertInBag(conceptCodeNameSummaryPanel, conceptCodeSummaryLabel, 0, 1);
+        UIUtil.insertInBag(conceptCodeNameSummaryPanel, conceptCodeSummaryValue, 1, 1);
+
+        UIUtil.insertInBag(conceptCodeNameSummaryPanel, conceptNameSummaryLabel, 0, 2);
+        UIUtil.insertInBag(conceptCodeNameSummaryPanel, conceptNameSummaryValue, 1, 2);
+    }
     JPanel mainPanel = new JPanel(new GridBagLayout());
     UIUtil.insertInBag(mainPanel, ocLongNameLabel, 0, 0);
     UIUtil.insertInBag(mainPanel, ocLongNameValueLabel, 1, 0);
@@ -55,9 +64,16 @@ public class OCPanel extends JPanel
     JLabel title = new JLabel("Map to OC");
     titlePanel.add(title);
     
-    //this.setLayout(new BorderLayout());
-    this.add(titlePanel, BorderLayout.NORTH);
-    this.add(mainPanel);
+    this.setLayout(new BorderLayout());
+    JPanel topPanel = new JPanel();
+    topPanel.setLayout(new BorderLayout());
+    topPanel.add(conceptCodeNameSummaryPanel, BorderLayout.NORTH);
+    this.add(topPanel, BorderLayout.NORTH);
+    JPanel centrePanel = new JPanel();
+    centrePanel.setLayout(new BorderLayout());
+    centrePanel.add(titlePanel, BorderLayout.NORTH);
+    centrePanel.add(mainPanel, BorderLayout.CENTER);
+    this.add(centrePanel, BorderLayout.CENTER);
     this.setSize(300, 300);
     
     searchOcButton.setActionCommand(SEARCH);
@@ -93,12 +109,17 @@ public class OCPanel extends JPanel
     {
       ocLongNameValueLabel.setText(oc.getLongName());
       ocPublicIdValueLabel.setText(oc.getPublicId() + " v" + oc.getVersion().toString());
-      
+      if(prefs.getShowConceptCodeNameSummary()){
+        conceptCodeSummaryValue.setText(oc.getPreferredName());
+        conceptNameSummaryValue.setText(oc.getLongName());
+      }
     }
     else 
     {
       ocPublicIdValueLabel.setText("");
       ocLongNameValueLabel.setText("");
+      conceptCodeSummaryValue.setText("");
+      conceptNameSummaryValue.setText("");
     }
     
     }
@@ -132,6 +153,9 @@ public class OCPanel extends JPanel
       l.propertyChange(evt);
   }
   
+    public void setCadsrModule(CadsrModule cadsrModule) {
+        this.cadsrModule = cadsrModule;
+    }
   public static void main(String[] args)
   {
 //    JFrame frame = new JFrame();

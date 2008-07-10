@@ -55,7 +55,6 @@ public class DEPanel extends JPanel
     conceptNameSummaryValue = new JLabel();
     
   
-  private boolean showConceptCodeNameSummary;
   private String cdeURL = null;
   private CadsrModule cadsrModule;
 
