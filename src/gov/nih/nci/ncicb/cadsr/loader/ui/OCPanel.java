@@ -62,10 +62,6 @@ public class OCPanel extends JPanel
     UIUtil.insertInBag(mainPanel, ocPublicIdLabel, 0, 1);
     UIUtil.insertInBag(mainPanel, ocPublicIdValueLabel, 1, 1);
     
-    JPanel titlePanel = new JPanel();
-    JLabel title = new JLabel("Map to OC");
-    titlePanel.add(title);
-    
     this.setLayout(new BorderLayout());
     JPanel topPanel = new JPanel();
     topPanel.setLayout(new BorderLayout());
@@ -73,7 +69,6 @@ public class OCPanel extends JPanel
     this.add(topPanel, BorderLayout.NORTH);
     JPanel centrePanel = new JPanel();
     centrePanel.setLayout(new BorderLayout());
-    centrePanel.add(titlePanel, BorderLayout.NORTH);
     centrePanel.add(mainPanel, BorderLayout.CENTER);
     this.add(centrePanel, BorderLayout.CENTER);
     this.setSize(300, 300);
