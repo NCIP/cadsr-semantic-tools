@@ -224,6 +224,7 @@ public class UMLElementViewPanel extends JPanel
   
   public void setCadsrModule(CadsrModule cadsrModule) {
     dePanel.setCadsrModule(cadsrModule);
+    ocPanel.setCadsrModule(cadsrModule);
   }
 
 }

@@ -1,4 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
+
+import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
@@ -110,8 +112,19 @@ public class OCPanel extends JPanel
       ocLongNameValueLabel.setText(oc.getLongName());
       ocPublicIdValueLabel.setText(oc.getPublicId() + " v" + oc.getVersion().toString());
       if(prefs.getShowConceptCodeNameSummary()){
-        conceptCodeSummaryValue.setText(oc.getPreferredName());
-        conceptNameSummaryValue.setText(oc.getLongName());
+        List<gov.nih.nci.ncicb.cadsr.domain.Concept> concepts = cadsrModule.getConcepts(oc);
+        if(concepts != null && concepts.size() > 0){                
+            StringBuffer conceptCodeSummary = new StringBuffer();
+            StringBuffer conceptNameSummary = new StringBuffer();
+            for(Concept con : concepts){
+                conceptCodeSummary.append(con.getPreferredName());
+                conceptCodeSummary.append(" ");
+                conceptNameSummary.append(con.getLongName());
+                conceptNameSummary.append(" ");
+            }
+            conceptCodeSummaryValue.setText(conceptCodeSummary.toString());
+            conceptNameSummaryValue.setText(conceptNameSummary.toString());
+        }
       }
     }
     else 
