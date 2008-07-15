@@ -62,6 +62,7 @@ public class RoundtripWriter2 implements ElementWriter {
   private HashMap<String, UMLClass> classMap = new HashMap<String, UMLClass>();
   private HashMap<String, UMLAttribute> attributeMap = new HashMap<String, UMLAttribute>();
   private HashMap<String, UMLAssociation> assocMap = new HashMap<String, UMLAssociation>();
+  private HashMap<String, UMLPackage> packageMap = new HashMap<String, UMLPackage>();
 
   private UMLModel model = null;
   
@@ -114,8 +115,9 @@ public class RoundtripWriter2 implements ElementWriter {
   }
 
   private void readModel(){
-    for(UMLPackage pkg : model.getPackages())
+    for(UMLPackage pkg : model.getPackages()) {
       doPackage(pkg);
+    }
 
     int i = 0;
     for(UMLAssociation assoc : model.getAssociations()) {
@@ -131,9 +133,11 @@ public class RoundtripWriter2 implements ElementWriter {
     List<DataElement> des = elementsList.getElements(DomainObjectFactory.newDataElement());
     List<ObjectClass> ocs = elementsList.getElements(DomainObjectFactory.newObjectClass());
     List<ObjectClassRelationship> ocrs = elementsList.getElements(DomainObjectFactory.newObjectClassRelationship());
+    List<ClassificationSchemeItem> csis = elementsList.getElements(DomainObjectFactory.newClassificationSchemeItem());
+
 
     ProgressEvent pEvt = new ProgressEvent();
-    pEvt.setGoal(des.size() + ocs.size() + ocrs.size());
+    pEvt.setGoal(des.size() + ocs.size() + ocrs.size() + csis.size());
     pEvt.setMessage("Injecting CaDSR Public IDs");
     pEvt.setStatus(0);
     if(progressListener != null)
@@ -276,12 +280,37 @@ public class RoundtripWriter2 implements ElementWriter {
       }
     } 
 
+    for(ClassificationSchemeItem csi : csis) {
+      pEvt.setStatus(pEvt.getStatus() + 1);
+      if(progressListener != null)
+        progressListener.newProgressEvent(pEvt);
 
-      
+      UMLPackage pkg = packageMap.get(csi.getLongName());
+      if(pkg == null) {
+        logger.info("Parser Can't find Package: " + csi.getLongName() + "\n This shouldn't happend");
+        continue;
+      }
+        
+      String gmeTag = LookupUtil.lookupXMLNamespace(csi);
+      if(gmeTag != null) {
+        UMLTaggedValue gmeTv = pkg.getTaggedValue(XMIParser2.TV_GME_NAMESPACE);
+        // only add a tagged value if one is not already there.
+        // in other words, don't replace
+        if(gmeTv == null) {
+          pkg.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, 
+                             gmeTag);
+        }
+      }
+    }
+
+    
+
   }
   
   private void doPackage(UMLPackage pkg) {
  
+    packageMap.put(getPackageName(pkg), pkg);
+
     for(UMLClass clazz : pkg.getClasses()) {
       String className = null;
 

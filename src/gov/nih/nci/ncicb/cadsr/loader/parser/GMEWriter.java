@@ -59,9 +59,11 @@ public class GMEWriter implements ElementWriter {
 //     ClassificationScheme cs = UMLDefaults.getInstance().getProjectCs();
     String namespace = (String)UserSelections.getInstance().getProperty("GME_NAMESPACE");
 
+    model.removeTaggedValue(XMIParser2.TV_GME_NAMESPACE);
     if(namespace != null) {
-      model.removeTaggedValue(XMIParser2.TV_GME_NAMESPACE);
       model.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, namespace);
+    } else {
+      
     }
 
     // now do the rest

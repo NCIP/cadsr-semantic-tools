@@ -317,11 +317,23 @@ public class XMIParser2 implements Parser {
   }
 
   private void doGeneralization(UMLGeneralization g) {
-    UMLClass parentClass = g.getSupertype();
+    UMLGeneralizable gener = g.getSupertype();
     
-    UMLClass subClass = g.getSubtype();
-    // Check if the parent is not explicitely excluded.
+    if(!(gener instanceof UMLClass)) {
+      logger.info("Unsupported generalization to anything other than a class " + g);
+      return;
+    }
+      
+    UMLClass parentClass = (UMLClass)gener;
+    
+    gener = g.getSubtype();
+    if(!(gener instanceof UMLClass)) {
+      logger.info("Unsupported generalization to anything other than a class " + g);
+      return;
+    }
+    UMLClass subClass = (UMLClass)gener;
 
+    // Check if the parent is not explicitely excluded.
     String ppName = LookupUtil.getPackageName(parentClass.getPackage());
     if(StringUtil.isEmpty(ppName) || !isInPackageFilter(ppName)) {
       logger.info(PropertyAccessor.getProperty("skip.inheritance", ppName + "." + parentClass.getName(), LookupUtil.getPackageName(subClass.getPackage()) + "." + subClass.getName()));
