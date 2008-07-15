@@ -179,6 +179,8 @@ public class GMEAction {
       throw new RuntimeException(e);
     } 
 
+    UserSelections.getInstance().setProperty("GME_NAMESPACE", null);
+
     List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
     for(ObjectClass oc : ocs) {
       String className = LookupUtil.lookupFullName(oc);
