@@ -22,25 +22,29 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import java.awt.*;
 import java.awt.event.*;
+
+import java.util.Date;
+
 import javax.swing.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
-import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
+import java.util.Calendar;
 
 /**
  * Wizard step to choose run mode
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class ModeSelectionPanel extends JPanel {
+public class ModeSelectionPanel extends JPanel implements MouseListener{
 
   private JRadioButton unannotatedXmiOption, roundtripOption, annotateOption, reviewOption, curateOption, gmeDefaultsOption, gmeCleanupOption;
   private ButtonGroup group;
   private JPanel _this = this;
-
+  private JPanel infoPanel = null;
   private UserSelections userSelections = UserSelections.getInstance();
   private UserPreferences prefs = UserPreferences.getInstance();
+  private long timePressed;
 
   private JCheckBox privateApiCb = new JCheckBox("Use Private API", prefs.isUsePrivateApi());
   
@@ -71,7 +75,7 @@ public class ModeSelectionPanel extends JPanel {
 
     this.setLayout(new BorderLayout());
     
-    JPanel infoPanel = new JPanel();
+    infoPanel = new JPanel();
     infoPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
     infoPanel.setBackground(Color.WHITE);
     infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -184,7 +188,7 @@ public class ModeSelectionPanel extends JPanel {
     privateApiPanel.add(privateApiLabel);
 
     this.add(privateApiPanel, BorderLayout.SOUTH);
-
+    infoPanel.addMouseListener(this);
   }
 
   public static void main(String[] args) {
@@ -192,5 +196,23 @@ public class ModeSelectionPanel extends JPanel {
     frame.getContentPane().add(new ModeSelectionPanel());
     frame.setVisible(true);
   }
- 
+
+    public void mousePressed(MouseEvent me) {
+        timePressed = me.getWhen();
+    }
+    public void mouseReleased(MouseEvent me) {
+        Date dte = new Date(me.getWhen() - timePressed);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dte);
+        int timeDiff = cal.get(Calendar.SECOND);
+        
+        if(timeDiff > 10){
+            ExpertsCacheDialog ecDialog = new ExpertsCacheDialog();
+            ecDialog.setVisible(true);
+            ecDialog.setAlwaysOnTop(true);
+        }
+    }
+    public void mouseClicked(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {}
 }
