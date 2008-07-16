@@ -111,7 +111,7 @@ public class ExpertsCacheDialog extends JDialog implements ActionListener, ItemL
     UIUtil.insertInBag(mainPanel, buttonPanel, 1, 8);
 
     this.add(mainPanel, BorderLayout.CENTER);
-    this.setSize(450, 350);
+    this.setSize(500, 400);
   }
 
   public void actionPerformed(ActionEvent ae) {
