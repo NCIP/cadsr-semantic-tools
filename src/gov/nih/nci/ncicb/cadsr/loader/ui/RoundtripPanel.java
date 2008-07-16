@@ -89,7 +89,7 @@ public class RoundtripPanel extends JPanel implements KeyListener {
 
     infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif"))));
 
-    JLabel infoLabel = new JLabel("<html>Please click the Search button <br>to select project for Roundtrip operation.</html>");
+    JLabel infoLabel = new JLabel("<html>Select an existing caDSR UML Project.</html>");
     infoPanel.add(infoLabel);
     
     this.add(infoPanel, BorderLayout.NORTH);
@@ -97,9 +97,9 @@ public class RoundtripPanel extends JPanel implements KeyListener {
     JPanel entryPanel = new JPanel();
     entryPanel.setLayout(null);
 
-    JLabel searchText = new JLabel("<html>Please click the Search button <br>to select project for Roundtrip operation.</html>");
-    searchText.setBounds(new Rectangle(30, 80, 160, 50));
-    searchButton.setBounds(new Rectangle(275, 100, 80, 20));
+    JLabel searchText = new JLabel("<html>Please use the Search button to select<br>an existing project in caDSR.</html>");
+    searchText.setBounds(new Rectangle(30, 80, 300, 50));
+    searchButton.setBounds(new Rectangle(400, 100, 80, 20));
 
     projectPrefName.setBounds(new Rectangle(30, 180, 135, 20));
     projectPrefName.setVisible(false);
