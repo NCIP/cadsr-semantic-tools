@@ -135,6 +135,7 @@ public class VDPanel extends JPanel implements MouseListener
             
             tempVD = (ValueDomain)cd.getAdminComponent();
             if(tempVD != null) {
+                lvdValueLabel.setText(tempVD.getLongName());
                 vdLongNameValueLabel.setText(tempVD.getLongName());
                 vdPublicIdValueLabel.setText(tempVD.getPublicId());
                 vdContextNameValueLabel.setText(tempVD.getContext().getName());
@@ -167,6 +168,7 @@ public class VDPanel extends JPanel implements MouseListener
             if(lvds != null){
                 selectedLVD = mapToLVD.getLocalValueDomain();
                 if(selectedLVD != null){
+                    lvdValueLabel.setText(selectedLVD.getLongName());
                     vdLongNameValueLabel.setText(selectedLVD.getLongName());
                     vdLongNameTitleLabel.setVisible(true);
                     
