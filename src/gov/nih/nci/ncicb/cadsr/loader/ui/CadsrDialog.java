@@ -28,9 +28,13 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Color;
+import java.awt.FlowLayout;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -49,9 +53,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ToolTipManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
 
@@ -66,7 +73,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   private JComboBox searchSourceCombo;
   private JComboBox numberOfResultsCombo;
   private JCheckBox includeRetiredCB = new JCheckBox("<html>Include<br> Retired?</html>");
-
+  private JPanel searchPanel = null;
   private JButton searchButton = new JButton("Search");
   
   private AbstractTableModel tableModel = null;
@@ -163,7 +170,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
 
     String values[] = {LONG_NAME, PUBLIC_ID};
     searchSourceCombo = new JComboBox(values);
-    JPanel searchPanel = new JPanel(new GridBagLayout());
+    searchPanel = new JPanel(new GridBagLayout());
     
    
     tableModel = new AbstractTableModel() {
@@ -370,8 +377,18 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     nextButton.addActionListener(this);
     closeButton.addActionListener(this);
     
-    
-    this.getContentPane().add(searchPanel, BorderLayout.NORTH);
+    if(mode == MODE_REP){
+        JLabel explainLabel = new JLabel("<html><u color=BLUE>Explain this</u></html>");
+        ToolTipManager.sharedInstance().registerComponent(explainLabel);
+        ToolTipManager.sharedInstance().setDismissDelay(3600000);
+        explainLabel.setToolTipText(PropertyAccessor.getProperty("pref.rep.term.label"));
+        JPanel explainThisPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        explainThisPanel.add(explainLabel);
+        this.getContentPane().add(explainThisPanel, BorderLayout.NORTH);
+    }
+    else{
+        this.getContentPane().add(searchPanel, BorderLayout.NORTH);
+    }
     this.getContentPane().add(scrollPane, BorderLayout.CENTER);
     this.getContentPane().add(browsePanel, BorderLayout.SOUTH);
     this.setSize(630,525);
@@ -408,6 +425,12 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
       resultSet = new ArrayList<SearchResultWrapper>();
       for(Representation rep : preferredRepTerms)
         resultSet.add(new SearchResultWrapper(rep));
+      
+      Collections.sort(resultSet, new Comparator<SearchResultWrapper>() {
+        public int compare(SearchResultWrapper s1, SearchResultWrapper s2) {
+            return s1.getLongName().compareTo(s2.getLongName());
+        }
+      });
     }
   }
 
@@ -666,6 +689,8 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
 
         
   }
+  
+
 }
 
 class SearchResultWrapper {
