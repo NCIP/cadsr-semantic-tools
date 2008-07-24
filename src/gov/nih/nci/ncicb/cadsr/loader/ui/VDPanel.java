@@ -371,26 +371,39 @@ public class VDPanel extends JPanel implements MouseListener
             vd = de.getValueDomain();
             searchVdButton.setVisible(DEMappingUtil.isMappedToLocalVD(de) == null);
 
-            vdLongNameValueLabel.setText(vd.getLongName()); 
-      
             if(vd != null && !StringUtil.isEmpty(vd.getPublicId())) {
-                vdContextNameValueLabel.setText(vd.getContext().getName());
-                vdVersionValueLabel.setText(vd.getVersion().toString());
-                vdPublicIdValueLabel.setText(vd.getPublicId());
-                vdDatatypeValueLabel.setText(vd.getDataType());
-                
                 vdLongNameTitleLabel.setVisible(true);
                 vdPublicIdTitleLabel.setVisible(true);
                 vdContextNameTitleLabel.setVisible(true);
                 vdVersionTitleLabel.setVisible(true);
                 vdDatatypeTitleLabel.setVisible(true);
+
+                vdLongNameValueLabel.setText(vd.getLongName()); 
+                vdContextNameValueLabel.setText(vd.getContext().getName());
+                vdVersionValueLabel.setText(vd.getVersion().toString());
+                vdPublicIdValueLabel.setText(vd.getPublicId());
+                vdDatatypeValueLabel.setText(vd.getDataType());
             }
             else 
             { 
-                vdContextNameValueLabel.setText("");
-                vdVersionValueLabel.setText("");
-                vdPublicIdValueLabel.setText("");
-                vdDatatypeValueLabel.setText("");
+                if(DEMappingUtil.isMappedToLocalVD(de) == null){
+                    List<AttributeDatatypePair> attTypesPairs = elements.getElements(new AttributeDatatypePair("", ""));
+                    String datatype = null;
+                    String attributeName = LookupUtil.lookupFullName(de);
+                    for(AttributeDatatypePair pair : attTypesPairs) {
+                      if(pair.getAttributeName().equals(attributeName)) {
+                        datatype = pair.getDatatype();
+                      }
+                    }
+                    vdDatatypeTitleLabel.setVisible(true);
+                    vdDatatypeValueLabel.setText(datatype);
+                }else{
+                    vdLongNameValueLabel.setText(vd.getLongName()); 
+                    vdContextNameValueLabel.setText("");
+                    vdVersionValueLabel.setText("");
+                    vdPublicIdValueLabel.setText("");
+                    vdDatatypeValueLabel.setText("");
+                }
             }
       
             if(vdLongNameValueLabel.getText().equals(""))
