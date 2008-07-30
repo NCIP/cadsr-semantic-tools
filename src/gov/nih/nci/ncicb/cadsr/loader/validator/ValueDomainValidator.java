@@ -233,7 +233,13 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
                (PropertyAccessor.getProperty
                 ("vd.missing.repTermId", vd.getLongName()), vd));
           } else if (cadsrVD != null ) {
-            if(!cadsrVD.getRepresentation().getPublicId().equals(vd.getRepresentation().getPublicId())
+            if(cadsrVD.getRepresentation() == null ||
+               StringUtil.isEmpty(cadsrVD.getRepresentation().getPublicId())) {
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("cadsrvd.missing.repTerm", vd.getLongName()), vd));
+            } else if(!cadsrVD.getRepresentation().getPublicId().equals(vd.getRepresentation().getPublicId())
                ) {
               if(ignoreVD)
                 items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.repterm.id.mismatch", vd.getLongName()), vd));
@@ -249,8 +255,14 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
                (PropertyAccessor.getProperty
                 ("vd.missing.repTermVersion", vd.getLongName()), vd));
           } else if (cadsrVD != null ) {
-            if(!cadsrVD.getRepresentation().getVersion().equals(vd.getRepresentation().getVersion())
-               ) {
+            if(cadsrVD.getRepresentation() == null ||
+               StringUtil.isEmpty(cadsrVD.getRepresentation().getPublicId())) {
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("cadsrvd.missing.repTerm", vd.getLongName()), vd));
+            } else if(!cadsrVD.getRepresentation().getVersion().equals(vd.getRepresentation().getVersion())
+                      ) {
               if(ignoreVD)
                 items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.repterm.version.mismatch", vd.getLongName()), vd));
               else
