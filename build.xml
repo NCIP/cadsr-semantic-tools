@@ -99,6 +99,7 @@
         <include name="ehcache.xml"/>
         <!--        <include name="datatype-mapping.xml"/> -->
         <include name="about.html"/>
+        <include name="cache.ccf"/>
       </fileset>
       <fileset dir="${images.dir}">
         <include name="*.png"/>
