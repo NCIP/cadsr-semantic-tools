@@ -43,6 +43,7 @@ public class GMEAction {
       throw new RuntimeException(e);
     } 
 
+
     List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
     for(ObjectClass oc : ocs) {
       String className = LookupUtil.lookupFullName(oc);
@@ -50,14 +51,16 @@ public class GMEAction {
       if(pkgName.indexOf(".") > 0) {
         pkgName = pkgName.substring(0, pkgName.lastIndexOf("."));
 
-        if(!hasAltName(oc.getAlternateNames(), AlternateName.TYPE_GME_NAMESPACE)) {
-          AlternateName altName = DomainObjectFactory.newAlternateName();
-          altName.setType(AlternateName.TYPE_GME_NAMESPACE);
-          altName.setName(namespace + "/" + pkgName);
-          
-          oc.addAlternateName(altName);
-          changeTracker.put(className, true);
-        }
+//         if(!excludeNamespaces) {
+          if(!hasAltName(oc.getAlternateNames(), AlternateName.TYPE_GME_NAMESPACE)) {
+            AlternateName altName = DomainObjectFactory.newAlternateName();
+            altName.setType(AlternateName.TYPE_GME_NAMESPACE);
+            altName.setName(namespace + "/" + pkgName);
+            
+            oc.addAlternateName(altName);
+            changeTracker.put(className, true);
+          }
+//         }
 
         if(!hasAltName(oc.getAlternateNames(), AlternateName.TYPE_GME_XML_ELEMENT)) {
           AlternateName altName = DomainObjectFactory.newAlternateName();
@@ -96,18 +99,20 @@ public class GMEAction {
 //     }
     UserSelections.getInstance().setProperty("GME_NAMESPACE", namespace);
 
-    List<ClassificationSchemeItem> csis = elements.getElements(DomainObjectFactory.newClassificationSchemeItem());
-    for(ClassificationSchemeItem csi : csis) {
-      if(!hasAltName(csi.getAlternateNames(), AlternateName.TYPE_GME_NAMESPACE)) {
-        AlternateName altName = DomainObjectFactory.newAlternateName();
-        altName.setType(AlternateName.TYPE_GME_NAMESPACE);
-        altName.setName(namespace + "/" + csi.getLongName());
-        csi.addAlternateName(altName);
-        
-        changeTracker.put(csi.getLongName(), true);
+//     if(!excludeNamespaces) {
+      List<ClassificationSchemeItem> csis = elements.getElements(DomainObjectFactory.newClassificationSchemeItem());
+      for(ClassificationSchemeItem csi : csis) {
+        if(!hasAltName(csi.getAlternateNames(), AlternateName.TYPE_GME_NAMESPACE)) {
+          AlternateName altName = DomainObjectFactory.newAlternateName();
+          altName.setType(AlternateName.TYPE_GME_NAMESPACE);
+          altName.setName(namespace + "/" + csi.getLongName());
+          csi.addAlternateName(altName);
+          
+          changeTracker.put(csi.getLongName(), true);
+        }
       }
-    }
-
+//     }
+    
 
     List<ObjectClassRelationship> ocrs = elements.getElements(DomainObjectFactory.newObjectClassRelationship());
     for(ObjectClassRelationship ocr : ocrs) {
