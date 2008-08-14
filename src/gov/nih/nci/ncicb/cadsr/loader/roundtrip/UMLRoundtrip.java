@@ -29,6 +29,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.ext.*;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.persister.OCRDefinitionBuilder;
 
 import org.apache.log4j.Logger;
@@ -154,6 +155,8 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
       }
     }
 
+    boolean excludeNamespaces = (Boolean)UserSelections.getInstance().getProperty("ROUNDTRIP_EXCLUDE_NAMESPACES");
+
     for(ObjectClass oc : ocs) {
       pEvt.setMessage("Looking up Object Classes");
       pEvt.setStatus(pEvt.getStatus() + 1);
@@ -212,12 +215,14 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
                 }
               }
             
-            if(gmeNsAn != null)
-              oc.addAlternateName(gmeNsAn);
-
+            if(!excludeNamespaces) {
+              if(gmeNsAn != null)
+                oc.addAlternateName(gmeNsAn);
+            }
+            
             if(gmeEltAn != null)
               oc.addAlternateName(gmeEltAn);
-
+            
           } else
             logger.debug("NO OC MATCH " + className);
         } catch (Exception e){
@@ -328,40 +333,41 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
       }
 
     }
-    
-    for(ClassificationSchemeItem csi : packages) {
-      pEvt.setMessage("Looking up CSIs");
-      pEvt.setStatus(pEvt.getStatus() + 1);
-      if(progressListener != null) 
-        progressListener.newProgressEvent(pEvt);
 
-      String packageName = csi.getLongName();
-      ClassSchemeClassSchemeItem csCsi = csCsiCache.get(packageName);
-      if(csCsi == null) {
-        csCsi = lookupCsCsi(packageName);
-      }
-      
-      AlternateName gmeNsAn = null;
-      // find GME alt Name
-      List<AlternateName> _ans = cadsrModule.getAlternateNames(csCsi.getCsi());
-      for(AlternateName _an : _ans) {
-        if (gmeNsAn == null)
-          if(_an.getType().equals(AlternateName.TYPE_GME_NAMESPACE)) {
-            for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
-              if(_csCsi.getId().equals(csCsi.getId())) {
-                gmeNsAn = _an;
+    if(!excludeNamespaces) {
+      for(ClassificationSchemeItem csi : packages) {
+        pEvt.setMessage("Looking up CSIs");
+        pEvt.setStatus(pEvt.getStatus() + 1);
+        if(progressListener != null) 
+          progressListener.newProgressEvent(pEvt);
+        
+        String packageName = csi.getLongName();
+        ClassSchemeClassSchemeItem csCsi = csCsiCache.get(packageName);
+        if(csCsi == null) {
+          csCsi = lookupCsCsi(packageName);
+        }
+        
+        AlternateName gmeNsAn = null;
+        // find GME alt Name
+        List<AlternateName> _ans = cadsrModule.getAlternateNames(csCsi.getCsi());
+        for(AlternateName _an : _ans) {
+          if (gmeNsAn == null)
+            if(_an.getType().equals(AlternateName.TYPE_GME_NAMESPACE)) {
+              for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
+                if(_csCsi.getId().equals(csCsi.getId())) {
+                  gmeNsAn = _an;
+                }
               }
             }
-          }
         }
-      
-      if(gmeNsAn != null) {
-        logger.debug("Found Matching CSI's gme Name " + packageName);
-        csi.addAlternateName(gmeNsAn);
-      } else {
-        logger.debug("CSI -- No Match " + packageName);
+        
+        if(gmeNsAn != null) {
+          logger.debug("Found Matching CSI's gme Name " + packageName);
+          csi.addAlternateName(gmeNsAn);
+        } else {
+          logger.debug("CSI -- No Match " + packageName);
+        }
       }
-      
     }
   }
 
