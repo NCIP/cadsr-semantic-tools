@@ -61,6 +61,8 @@ public class RoundtripPanel extends JPanel implements KeyListener {
   private JLabel selectedProjectContextName = new JLabel();
 
   private JButton searchButton = new JButton("Search");
+
+  private JCheckBox excludeNamespaces = new JCheckBox("Exclude Namespaces from Roundtrip");
   
   private List<ActionListener> actionListeners = new ArrayList<ActionListener>();
 
@@ -101,24 +103,26 @@ public class RoundtripPanel extends JPanel implements KeyListener {
     searchText.setBounds(new Rectangle(30, 80, 300, 50));
     searchButton.setBounds(new Rectangle(400, 100, 80, 20));
 
-    projectPrefName.setBounds(new Rectangle(30, 180, 135, 20));
+    projectPrefName.setBounds(new Rectangle(30, 150, 135, 20));
     projectPrefName.setVisible(false);
-    projectVersion.setBounds(new Rectangle(30, 210, 135, 20));
+    projectVersion.setBounds(new Rectangle(30, 180, 135, 20));
     projectVersion.setVisible(false);
-    projectWorkflowStatus.setBounds(new Rectangle(30, 240, 135, 20));
+    projectWorkflowStatus.setBounds(new Rectangle(30, 210, 135, 20));
     projectWorkflowStatus.setVisible(false);
-    projectContextName.setBounds(new Rectangle(30, 270, 135, 20));
+    projectContextName.setBounds(new Rectangle(30, 240, 135, 20));
     projectContextName.setVisible(false);
     
-    selectedProjectPrefName.setBounds(new Rectangle(180, 180, 500, 20));
+    selectedProjectPrefName.setBounds(new Rectangle(180, 150, 500, 20));
     selectedProjectPrefName.setVisible(false);
-    selectedProjectVersion.setBounds(new Rectangle(180, 210, 500, 20));
+    selectedProjectVersion.setBounds(new Rectangle(180, 180, 500, 20));
     selectedProjectVersion.setVisible(false);
-    selectedProjectWorkflowStatus.setBounds(new Rectangle(180, 240, 500, 20));
+    selectedProjectWorkflowStatus.setBounds(new Rectangle(180, 210, 500, 20));
     selectedProjectWorkflowStatus.setVisible(false);
-    selectedProjectContextName.setBounds(new Rectangle(180, 270, 500, 20));
+    selectedProjectContextName.setBounds(new Rectangle(180, 240, 500, 20));
     selectedProjectContextName.setVisible(false);
-    
+
+    excludeNamespaces.setBounds(new Rectangle(30, 300, 300, 20));
+
     searchButton.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent evt) {
         cadsrDialog.setVisible(true);
@@ -154,12 +158,18 @@ public class RoundtripPanel extends JPanel implements KeyListener {
     entryPanel.add(selectedProjectPrefName, null);
     entryPanel.add(selectedProjectVersion, null);
     entryPanel.add(selectedProjectWorkflowStatus, null);
-    entryPanel.add(selectedProjectContextName, null);    
+    entryPanel.add(selectedProjectContextName, null);
+    entryPanel.add(excludeNamespaces, null);
+
+    excludeNamespaces.setSelected(true);
     
     this.add(entryPanel, BorderLayout.CENTER);
 
   }
 
+  public boolean excludeNamespaces() {
+    return excludeNamespaces.isSelected();
+  }
 
   private void fireActionEvent(ActionEvent evt) {
     for (ActionListener l : actionListeners) {

@@ -189,12 +189,11 @@ public class WizardController implements ActionListener {
         UMLDefaults defaults = UMLDefaults.getInstance();
         defaults.setPackageFilter(temp);
       }
-//      if(descriptor.getPanelDescriptorIdentifier().equals(RoundtripPanelDescriptor.IDENTIFIER)) {
-//        RoundtripPanel panel = 
-//          (RoundtripPanel)descriptor.getPanelComponent();
-//        userSelections.setProperty("PROJECT_NAME", panel.getProjectName());
-//        userSelections.setProperty("PROJECT_VERSION", new Float(panel.getProjectVersion()));
-//      }
+      if(descriptor.getPanelDescriptorIdentifier().equals(RoundtripPanelDescriptor.IDENTIFIER)) {
+        RoundtripPanel panel = 
+          (RoundtripPanel)descriptor.getPanelComponent();
+        userSelections.setProperty("ROUNDTRIP_EXCLUDE_NAMESPACES", panel.excludeNamespaces());
+      }
       if(descriptor.getPanelDescriptorIdentifier().equals(GMEDefaultsPanelDescriptor.IDENTIFIER)) {
         GMEDefaultsPanel panel = 
           (GMEDefaultsPanel)descriptor.getPanelComponent();
