@@ -46,7 +46,7 @@
   <bean name="gmeAction"
     class="gov.nih.nci.ncicb.cadsr.loader.GMEAction"
     >
-    <property name="parser"><ref bean="xmiParser2"/></property>
+    <property name="parser"><ref bean="gmeParser"/></property>
     <property name="writer"><ref bean="gmeWriter"/></property>
   </bean>
 
@@ -69,6 +69,9 @@
     </property>
     <property name="preParser">
       <ref bean="preParser"/>
+    </property>
+	<property name="gmePreParser">
+      <ref bean="gmePreParser"/>
     </property>
     <property name="validator">
       <ref bean="siwValidator"/>
@@ -102,8 +105,16 @@
     class="gov.nih.nci.ncicb.cadsr.loader.event.UMLDefaultHandler">
   </bean>
 
+  <bean name="gmeEventHandler"
+    class="gov.nih.nci.ncicb.cadsr.loader.event.GMEHandler">
+  </bean>
+
   <bean name="preHandler"
     class="gov.nih.nci.ncicb.cadsr.loader.event.PackageFilterHandler">
+  </bean>
+
+  <bean name="gmePreHandler"
+    class="gov.nih.nci.ncicb.cadsr.loader.event.GmePreHandler">
   </bean>
 
   <!-- change IMPL -->
@@ -133,9 +144,19 @@
     <property name="eventHandler"><ref bean="umlEventHandler"/></property>
   </bean>
 
+  <bean name="gmeParser"
+    class="gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser2">
+    <property name="eventHandler"><ref bean="gmeEventHandler"/></property>
+  </bean>
+
   <bean name="preParser"
     class="gov.nih.nci.ncicb.cadsr.loader.parser.PreParser">
     <property name="eventHandler"><ref bean="preHandler"/></property>
+  </bean>
+
+  <bean name="gmePreParser"
+    class="gov.nih.nci.ncicb.cadsr.loader.parser.PreParser">
+    <property name="eventHandler"><ref bean="gmePreHandler"/></property>
   </bean>
 
   <!--
