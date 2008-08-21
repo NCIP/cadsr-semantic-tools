@@ -6,6 +6,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterPackage;
 import gov.nih.nci.ncicb.xmiinout.handler.*;
 import gov.nih.nci.ncicb.xmiinout.domain.*;
 import gov.nih.nci.ncicb.xmiinout.util.*;
@@ -58,10 +59,15 @@ public class GMEWriter implements ElementWriter {
     // do the project 
 //     ClassificationScheme cs = UMLDefaults.getInstance().getProjectCs();
     String namespace = (String)UserSelections.getInstance().getProperty("GME_NAMESPACE");
+   // String packageForProjectNamespace = (String)UserSelections.getInstance().getProperty("NAMESPACE_PACKAGE");
+    FilterPackage fpkg = (FilterPackage)UserSelections.getInstance().getProperty("NAMESPACE_PACKAGE");
+    String packageForProjectNamespace = fpkg.getName();
 
-    model.removeTaggedValue(XMIParser2.TV_GME_NAMESPACE);
+    UMLPackage nspkg = ModelUtil.findPackage(model, packageForProjectNamespace);
+    
+    nspkg.removeTaggedValue(XMIParser2.TV_GME_NAMESPACE);
     if(namespace != null) {
-      model.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, namespace);
+      nspkg.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, namespace);
     } else {
       
     }

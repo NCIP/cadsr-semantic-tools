@@ -156,7 +156,7 @@ public class GMEAction {
     pEvt.setMessage("Done");
     pEvt.setStatus(100);
     pEvt.setCompleted(true);
-    progressListener.newProgressEvent(pEvt);
+//    progressListener.newProgressEvent(pEvt);
 
   }
 

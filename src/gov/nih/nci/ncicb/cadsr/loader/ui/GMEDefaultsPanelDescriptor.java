@@ -47,11 +47,11 @@ public class GMEDefaultsPanelDescriptor
   }
 
   public Object getNextPanelDescriptor() {
-    return FileSelectionPanelDescriptor.IDENTIFIER;
+    return ReportConfirmPanelDescriptor.IDENTIFIER;
   }
 
   public Object getBackPanelDescriptor() {
-    return ModeSelectionPanelDescriptor.IDENTIFIER;
+    return FileSelectionPanelDescriptor.IDENTIFIER;
   }  
   
   public void aboutToDisplayPanel() 

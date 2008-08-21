@@ -38,6 +38,16 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 
 import gov.nih.nci.ncicb.cadsr.domain.Context;
 
+import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterPackage;
+
+import java.awt.Dimension;
+
+import javax.swing.plaf.basic.BasicComboBoxUI;
+import javax.swing.plaf.basic.BasicComboPopup;
+import javax.swing.plaf.basic.ComboPopup;
+import javax.swing.plaf.metal.MetalComboBoxUI;
+
 import org.apache.log4j.Logger;
 
 
@@ -52,7 +62,8 @@ public class GMEDefaultsPanel extends JPanel implements KeyListener, CadsrModule
 
   private JTextField projectNameField = new JTextField();
   private JTextField projectVersionField = new JTextField(5);
-  private JComboBox contextComboBox = new JComboBox();
+  private CustomCombo contextComboBox = new CustomCombo();
+  private CustomCombo packageComboBox = new CustomCombo();
 
 
   private List<ActionListener> actionListeners = new ArrayList<ActionListener>();
@@ -62,6 +73,8 @@ public class GMEDefaultsPanel extends JPanel implements KeyListener, CadsrModule
   private static Logger logger = Logger.getLogger(GMEDefaultsPanel.class.getName());
 
   private Collection<Context> contexts;
+  
+  private List<FilterPackage> packages = new ArrayList<FilterPackage>();
 
   public GMEDefaultsPanel() {
     initUI();
@@ -103,13 +116,19 @@ public class GMEDefaultsPanel extends JPanel implements KeyListener, CadsrModule
     contextLabel.setBounds(new Rectangle(30, 165, 135, 20));
     contextComboBox.setBounds(new Rectangle(180, 165, 175, 20));
 
+    
+    JLabel packageLabel = new JLabel("Select Package");
+    packageLabel.setBounds(new Rectangle(30, 210, 135, 20));
+    packageComboBox.setBounds(new Rectangle(180, 210, 175, 20));
+
     entryPanel.add(projectNameLabel, null);
     entryPanel.add(projectNameField, null);
     entryPanel.add(projectVersionLabel, null);
     entryPanel.add(projectVersionField, null);
-
     entryPanel.add(contextLabel, null);
     entryPanel.add(contextComboBox, null);
+    entryPanel.add(packageLabel, null);
+    entryPanel.add(packageComboBox, null);
     
     this.add(entryPanel, BorderLayout.CENTER);
 
@@ -120,6 +139,13 @@ public class GMEDefaultsPanel extends JPanel implements KeyListener, CadsrModule
 
   void init() {
     contexts = cadsrModule.getAllContexts();
+
+      int contentCount = contextComboBox.getItemCount();
+      int i=0;
+      while(i<=contentCount && contentCount != 0){
+          contextComboBox.removeItemAt(i);
+          contentCount = contextComboBox.getItemCount();
+      }
 
     for(Context _con : contexts) {
       contextComboBox.addItem(_con.getName());
@@ -141,6 +167,16 @@ public class GMEDefaultsPanel extends JPanel implements KeyListener, CadsrModule
       if(_con.getName().equals(selected))
         return _con;
     }
+    return null;
+  }
+  
+  public FilterPackage getPackage(){
+    String selected =  (String)packageComboBox.getSelectedItem();
+    for(FilterPackage _pkg : packages){
+        if(_pkg.getName().equals(selected))
+            return _pkg;
+    }
+    
     return null;
   }
 
@@ -171,6 +207,28 @@ public class GMEDefaultsPanel extends JPanel implements KeyListener, CadsrModule
     this.cadsrModule = cadsrModule;
   }
   
+  public void initPackages() {
+      packages = ElementsLists.getInstance().getElements(new FilterPackage(""));
+      
+      //packageComboBox.removeAll();
+      int pkgCount = packageComboBox.getItemCount();
+      int i=0;
+      while(i<=pkgCount && pkgCount != 0){
+          packageComboBox.removeItemAt(i);
+          pkgCount = packageComboBox.getItemCount();
+      }
+          
+      for(FilterPackage pkg : packages) 
+          packageComboBox.addItem(pkg.getName());
+
+      if(packageComboBox.getItemCount() > 0)
+        for(int j=0; j<packageComboBox.getItemCount(); j++)
+            if(packageComboBox.getItemAt(j).toString().trim().equalsIgnoreCase("Logical View.Logical Model")){
+                packageComboBox.setSelectedIndex(j);
+                break;
+            }
+  }
+  
   public static void main(String[] args) 
   {
     JFrame frame = new JFrame();
@@ -180,5 +238,22 @@ public class GMEDefaultsPanel extends JPanel implements KeyListener, CadsrModule
     
     frame.setVisible(true);
   }
-
+}
+class CustomCombo extends JComboBox{
+    public CustomCombo(){
+        super();
+        setUI(new CustomComboUI());
+    }//end of default constructor
+    
+    public class CustomComboUI extends BasicComboBoxUI{
+        protected ComboPopup createPopup(){
+            BasicComboPopup popup = new BasicComboPopup(comboBox){
+                protected JScrollPane createScroller() {
+                        return new JScrollPane( list, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED );
+              }//end of method createScroller
+            };
+            return popup;
+        }//end of method createPopup
+    }//end of inner class myComboUI
 }
