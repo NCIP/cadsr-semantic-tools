@@ -163,14 +163,12 @@
                  desc.setBackPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
                  break;
 
-             case GMEDefaults:
- System.out.println("Calling case GMEDefaults");
-                 String modeSelection = (String)userSelections.getProperty("MODE_SELECTION");
- System.out.println("modeSelection :- "+modeSelection);
-                 desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-                 desc.setBackPanelDescriptor(GMEDefaultsPanelDescriptor.IDENTIFIER);
-                 break; 
-
+         case GMEDefaults:
+           String modeSelection = (String)userSelections.getProperty("MODE_SELECTION");
+           desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+           desc.setBackPanelDescriptor(GMEDefaultsPanelDescriptor.IDENTIFIER);
+           break; 
+           
              case GMECleanup:
                  desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
                  desc.setBackPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
@@ -200,35 +198,28 @@
        if(descriptor.getPanelDescriptorIdentifier().equals(GMEDefaultsPanelDescriptor.IDENTIFIER)) {
          final GMEDefaultsPanel panel = 
            (GMEDefaultsPanel)descriptor.getPanelComponent();
- //        userSelections.setProperty("PROJECT_NAME", panel.getProjectName());
- //        userSelections.setProperty("PROJECT_VERSION", new Float(panel.getProjectVersion()));
- //        userSelections.setProperty("CONTEXT", panel.getContext());
-
-          userSelections.setProperty("NAMESPACE_PACKAGE", panel.getPackage());
          
-           final ProgressFileSelectionPanelDescriptor progressDesc =
-             (ProgressFileSelectionPanelDescriptor)model
-             .getPanelDescriptor(ProgressFileSelectionPanelDescriptor.IDENTIFIER);
-             
-           ReportConfirmPanelDescriptor reportDesc =
-             (ReportConfirmPanelDescriptor)model
-             .getPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-           final ReportConfirmPanel reportPanel = 
-             (ReportConfirmPanel)reportDesc.getPanelComponent();
-             
-                 gmeAction.addProgressListener(progressDesc);
-
- //                String projectName = (String)userSelections.getProperty("PROJECT_NAME");
- //                Float projectVersion = (Float)(userSelections.getProperty("PROJECT_VERSION"));
- //                Context context = (Context)(userSelections.getProperty("CONTEXT"));
-                 
-                 File f = new File(filename);
-                 outputFile = f.getParent() + "/GMEDefault_" + f.getName();
-
-                 gmeAction.generateDefaults(filename, outputFile, panel.getProjectName(), new Float(panel.getProjectVersion()), panel.getContext());
-
-                 reportPanel.setOutputText("Default geration complete. The output file can be found here: <br>" + outputFile);
-
+         userSelections.setProperty("NAMESPACE_PACKAGE", panel.getPackage());
+         
+         final ProgressFileSelectionPanelDescriptor progressDesc =
+           (ProgressFileSelectionPanelDescriptor)model
+           .getPanelDescriptor(ProgressFileSelectionPanelDescriptor.IDENTIFIER);
+         
+         ReportConfirmPanelDescriptor reportDesc =
+           (ReportConfirmPanelDescriptor)model
+           .getPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+         final ReportConfirmPanel reportPanel = 
+           (ReportConfirmPanel)reportDesc.getPanelComponent();
+         
+         gmeAction.addProgressListener(progressDesc);
+         
+         File f = new File(filename);
+         outputFile = f.getParent() + "/GMEDefault_" + f.getName();
+         
+         gmeAction.generateDefaults(filename, outputFile, panel.getProjectName(), new Float(panel.getProjectVersion()), panel.getContext());
+         
+         reportPanel.setOutputText("Default geration complete. The output file can be found here: <br>" + outputFile);
+         
        }
 
 
