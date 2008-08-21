@@ -119,7 +119,7 @@ public class GMEDefaultsPanel extends JPanel implements KeyListener, CadsrModule
     
     JLabel packageLabel = new JLabel("Select Package");
     packageLabel.setBounds(new Rectangle(30, 210, 135, 20));
-    packageComboBox.setBounds(new Rectangle(180, 210, 175, 20));
+    packageComboBox.setBounds(new Rectangle(180, 210, 250, 20));
 
     entryPanel.add(projectNameLabel, null);
     entryPanel.add(projectNameField, null);

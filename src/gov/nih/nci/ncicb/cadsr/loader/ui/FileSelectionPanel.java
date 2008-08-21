@@ -194,12 +194,6 @@
        UIUtil.insertInBag(browsePanel, jl, 0, y++, 2, 1);
      }
 
- //     if(runMode != null && runMode.equals(RunMode.Reviewer)) {
- //       insertInBag(browsePanel,
- //                   skipVdValidationCheckBox, 0, y, 2, 1);
- //     }
-
-
      // uncomment to add functionality. Also check getChoosePanel in this file
      UIUtil.insertInBag(browsePanel, chooseClassesCheckBox, 0, y, 2, 1);
 
@@ -238,8 +232,10 @@
      progressPanel = new ProgressPanel(goal);
      
     if(userSelections.getProperty("MODE_SELECTION") != null && 
-      userSelections.getProperty("MODE_SELECTION").equals(RunMode.GMEDefaults.toString()))
+      userSelections.getProperty("MODE_SELECTION").equals(RunMode.GMEDefaults.toString())){
+          chooseClassesCheckBox.setSelected(false);
           chooseClassesCheckBox.setVisible(false);
+      }
     else
           chooseClassesCheckBox.setVisible(true);
           
