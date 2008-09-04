@@ -75,6 +75,7 @@ public class VDPanel extends JPanel implements MouseListener
     private ValueDomain selectedLVD = null;
     private JPanel cadsrVDPanel;
     private JPanel lvdPanel;
+    private JPanel mainPanel;
     
     public VDPanel(UMLNode node)
     {
@@ -86,7 +87,7 @@ public class VDPanel extends JPanel implements MouseListener
         }    
 
         this.setLayout(new BorderLayout());
-        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel = new JPanel(new GridBagLayout());
     
         UIUtil.insertInBag(mainPanel, lvdTitleLabel, 0, 0);
         UIUtil.insertInBag(mainPanel, lvdValueLabel, 1, 0);
@@ -135,6 +136,8 @@ public class VDPanel extends JPanel implements MouseListener
             
             tempVD = (ValueDomain)cd.getAdminComponent();
             if(tempVD != null) {
+                removeAll();
+                makePanel();
                 lvdValueLabel.setText(tempVD.getLongName());
                 vdLongNameValueLabel.setText(tempVD.getLongName());
                 vdPublicIdValueLabel.setText(tempVD.getPublicId());
@@ -152,6 +155,7 @@ public class VDPanel extends JPanel implements MouseListener
                   new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
                 
                 modified = true;
+                setMainPanel();
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -168,9 +172,12 @@ public class VDPanel extends JPanel implements MouseListener
             if(lvds != null){
                 selectedLVD = mapToLVD.getLocalValueDomain();
                 if(selectedLVD != null){
+                    removeAll();
+                    addLongName();
                     lvdValueLabel.setText(selectedLVD.getLongName());
                     vdLongNameValueLabel.setText(selectedLVD.getLongName());
                     vdLongNameTitleLabel.setVisible(true);
+                    lvdTitleLabel.setVisible(true);
                     
                     vdPublicIdValueLabel.setText("");
                     vdContextNameValueLabel.setText("");
@@ -186,6 +193,7 @@ public class VDPanel extends JPanel implements MouseListener
         
                     modified = true;
                     isLVD = true;
+                    setMainPanel();
                 }
             }
         } catch (Exception ex) {
@@ -363,26 +371,83 @@ public class VDPanel extends JPanel implements MouseListener
         fireElementChangeEvent(new ElementChangeEvent(node));
     }
   
+    public void makePanel(){
+        mainPanel = new JPanel(new GridBagLayout());
+        UIUtil.insertInBag(mainPanel, lvdTitleLabel, 0, 0);
+        UIUtil.insertInBag(mainPanel, lvdValueLabel, 1, 0);
+        UIUtil.insertInBag(mainPanel, vdLongNameTitleLabel, 0, 1);
+        UIUtil.insertInBag(mainPanel, vdLongNameValueLabel, 1, 1);
+        UIUtil.insertInBag(mainPanel, vdPublicIdTitleLabel, 0, 2);
+        UIUtil.insertInBag(mainPanel, vdPublicIdValueLabel, 1, 2);
+        UIUtil.insertInBag(mainPanel, vdContextNameTitleLabel, 0, 3);
+        UIUtil.insertInBag(mainPanel, vdContextNameValueLabel, 1, 3);
+        UIUtil.insertInBag(mainPanel, vdVersionTitleLabel, 0, 4);
+        UIUtil.insertInBag(mainPanel, vdVersionValueLabel, 1, 4);
+        UIUtil.insertInBag(mainPanel, vdDatatypeTitleLabel, 0, 5);
+        UIUtil.insertInBag(mainPanel, vdDatatypeValueLabel, 1, 5);
+    }
+  
+    public void addAll(){
+        makePanel();
+        
+        vdLongNameTitleLabel.setVisible(true);
+        vdPublicIdTitleLabel.setVisible(true);
+        vdContextNameTitleLabel.setVisible(true);
+        vdVersionTitleLabel.setVisible(true);
+        vdDatatypeTitleLabel.setVisible(true);
+
+        vdLongNameValueLabel.setText(vd.getLongName()); 
+        vdContextNameValueLabel.setText(vd.getContext().getName());
+        vdVersionValueLabel.setText(vd.getVersion().toString());
+        vdPublicIdValueLabel.setText(vd.getPublicId());
+        vdDatatypeValueLabel.setText(vd.getDataType());
+        setMainPanel();
+    }    
+    public void removeAll(){
+        this.remove(mainPanel);
+    }
+    
+    public void addDatatype(){
+        
+        mainPanel = new JPanel(new GridBagLayout());
+        UIUtil.insertInBag(mainPanel, lvdTitleLabel, 0, 0);
+        UIUtil.insertInBag(mainPanel, lvdValueLabel, 1, 0);
+        UIUtil.insertInBag(mainPanel, vdDatatypeTitleLabel, 0, 1);
+        UIUtil.insertInBag(mainPanel, vdDatatypeValueLabel, 1, 1);
+        vdDatatypeTitleLabel.setVisible(true);
+        vdDatatypeValueLabel.setVisible(true);
+        setMainPanel();
+    }
+  
+    public void addLongName(){
+        mainPanel = new JPanel(new GridBagLayout());
+        UIUtil.insertInBag(mainPanel, lvdTitleLabel, 0, 0);
+        UIUtil.insertInBag(mainPanel, lvdValueLabel, 1, 0);
+        UIUtil.insertInBag(mainPanel, vdLongNameTitleLabel, 0, 1);
+        UIUtil.insertInBag(mainPanel, vdLongNameValueLabel, 1, 1);
+        vdLongNameTitleLabel.setVisible(true);
+        vdLongNameValueLabel.setVisible(true);
+        setMainPanel();
+    }
+    
+    public void setMainPanel(){
+        UIUtil.insertInBag(mainPanel, toolbar, 2, 8, 2, 1);
+        mainPanel.setBorder(BorderFactory.createTitledBorder("Value Domain"));
+        this.add(mainPanel);
+        this.setSize(400, 400);
+    }
+    
     public void updateNode(UMLNode node) 
     {
         this.node = node;
+        removeAll();
         if(node.getUserObject() instanceof DataElement) {
             DataElement de = (DataElement)node.getUserObject();
             vd = de.getValueDomain();
             searchVdButton.setVisible(DEMappingUtil.isMappedToLocalVD(de) == null);
 
             if(vd != null && !StringUtil.isEmpty(vd.getPublicId())) {
-                vdLongNameTitleLabel.setVisible(true);
-                vdPublicIdTitleLabel.setVisible(true);
-                vdContextNameTitleLabel.setVisible(true);
-                vdVersionTitleLabel.setVisible(true);
-                vdDatatypeTitleLabel.setVisible(true);
-
-                vdLongNameValueLabel.setText(vd.getLongName()); 
-                vdContextNameValueLabel.setText(vd.getContext().getName());
-                vdVersionValueLabel.setText(vd.getVersion().toString());
-                vdPublicIdValueLabel.setText(vd.getPublicId());
-                vdDatatypeValueLabel.setText(vd.getDataType());
+                addAll();
             }
             else 
             { 
@@ -395,9 +460,10 @@ public class VDPanel extends JPanel implements MouseListener
                         datatype = pair.getDatatype();
                       }
                     }
-                    vdDatatypeTitleLabel.setVisible(true);
+                    addDatatype();
                     vdDatatypeValueLabel.setText(datatype);
                 }else{
+                    addLongName();
                     vdLongNameValueLabel.setText(vd.getLongName()); 
                     vdContextNameValueLabel.setText("");
                     vdVersionValueLabel.setText("");
@@ -406,15 +472,15 @@ public class VDPanel extends JPanel implements MouseListener
                 }
             }
       
-            if(vdLongNameValueLabel.getText().equals(""))
+            if(vdLongNameValueLabel.getText().trim().equals(""))
                 vdLongNameTitleLabel.setVisible(false);
-            if(vdVersionValueLabel.getText().equals(""))
+            if(vdVersionValueLabel.getText().trim().equals(""))
                 vdVersionTitleLabel.setVisible(false);
-            if(vdPublicIdValueLabel.getText().equals(""))
+            if(vdPublicIdValueLabel.getText().trim().equals(""))
                 vdPublicIdTitleLabel.setVisible(false);
-            if(vdDatatypeValueLabel.getText() == null || vdDatatypeValueLabel.getText().equals(""))
+            if(vdDatatypeValueLabel.getText() == null || vdDatatypeValueLabel.getText().trim().equals(""))
                 vdDatatypeTitleLabel.setVisible(false);
-            if(vdContextNameValueLabel.getText().equals(""))
+            if(vdContextNameValueLabel.getText().trim().equals(""))
                 vdContextNameTitleLabel.setVisible(false);
 
             if(DEMappingUtil.isMappedToLocalVD(de) != null) {
