@@ -50,7 +50,7 @@
    
    public Object getBackPanelDescriptor() {
      if(prefs.getModeSelection().equals(RunMode.GenerateReport.toString()))
-       backPanelDescriptor = PackageFilterSelectionPanelDescriptor.IDENTIFIER;
+       backPanelDescriptor = ModeSelectionPanelDescriptor.IDENTIFIER;
      else if(prefs.getModeSelection().equals(RunMode.Roundtrip.toString()))
        backPanelDescriptor = RoundtripPanelDescriptor.IDENTIFIER;
      else
