@@ -60,21 +60,21 @@ public class GMEWriter implements ElementWriter {
 //     ClassificationScheme cs = UMLDefaults.getInstance().getProjectCs();
     String namespace = (String)UserSelections.getInstance().getProperty("GME_NAMESPACE");
    // String packageForProjectNamespace = (String)UserSelections.getInstance().getProperty("NAMESPACE_PACKAGE");
-    FilterPackage fpkg = (FilterPackage)UserSelections.getInstance().getProperty("NAMESPACE_PACKAGE");
-    String packageForProjectNamespace = fpkg.getName();
 
-    UMLPackage nspkg = ModelUtil.findPackage(model, packageForProjectNamespace);
-    
-    nspkg.removeTaggedValue(XMIParser2.TV_GME_NAMESPACE);
-    if(namespace != null) {
-      nspkg.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, namespace);
-    } else {
-      
-    }
 
     // now do the rest
     for(UMLPackage pkg : model.getPackages())
       doPackage(pkg);
+
+    FilterPackage fpkg = (FilterPackage)UserSelections.getInstance().getProperty("NAMESPACE_PACKAGE");
+    if(fpkg != null) {
+      String packageForProjectNamespace = fpkg.getName();
+      
+      UMLPackage nspkg = ModelUtil.findPackage(model, packageForProjectNamespace);
+      if(namespace != null) {
+        nspkg.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, namespace);
+      }
+    }
     
   }
 
@@ -86,18 +86,18 @@ public class GMEWriter implements ElementWriter {
     attAltName.setType(AlternateName.TYPE_FULL_NAME);
 
     String pkgName = LookupUtil.getPackageName(pkg);
-    boolean pkgChanged = changeTracker.get(pkgName);
-    if(pkgChanged) {
-      pkg.removeTaggedValue(XMIParser2.TV_GME_NAMESPACE);
-      List<ClassificationSchemeItem> packages = cadsrObjects.getElements(DomainObjectFactory.newClassificationSchemeItem());
-      for(ClassificationSchemeItem csi : packages) {
-        if(csi.getLongName().equals(pkgName)) {
-          for(AlternateName an : csi.getAlternateNames()) {
-            if(an.getType().equals(AlternateName.TYPE_GME_NAMESPACE)) {
-              pkg.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, an.getName());
-            } 
-          }
+//     boolean pkgChanged = changeTracker.get(pkgName);
+//     if(pkgChanged) {
+    pkg.removeTaggedValue(XMIParser2.TV_GME_NAMESPACE);
+    List<ClassificationSchemeItem> packages = cadsrObjects.getElements(DomainObjectFactory.newClassificationSchemeItem());
+    for(ClassificationSchemeItem csi : packages) {
+      if(csi.getLongName().equals(pkgName)) {
+        for(AlternateName an : csi.getAlternateNames()) {
+          if(an.getType().equals(AlternateName.TYPE_GME_NAMESPACE)) {
+            pkg.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, an.getName());
+          } 
         }
+//         }
       }
     }
 
