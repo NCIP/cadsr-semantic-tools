@@ -116,28 +116,26 @@ public class GMEAction {
 
     List<ObjectClassRelationship> ocrs = elements.getElements(DomainObjectFactory.newObjectClassRelationship());
     for(ObjectClassRelationship ocr : ocrs) {
-      if(!hasAltName(ocr.getAlternateNames(), AlternateName.TYPE_GME_SRC_XML_LOC_REF)
-         || !hasAltName(ocr.getAlternateNames(), AlternateName.TYPE_GME_TARGET_XML_LOC_REF)) {
-
-        if(!StringUtil.isEmpty(ocr.getTargetRole())) {
-          AlternateName altName = DomainObjectFactory.newAlternateName();
-          altName.setType(AlternateName.TYPE_GME_TARGET_XML_LOC_REF);
-          altName.setName(ocr.getTargetRole() + "/" + LookupUtil.lookupXMLElementName(ocr.getTarget()));
-          ocr.addAlternateName(altName);
-        }          
-
-        if(!StringUtil.isEmpty(ocr.getSourceRole())) {
-          AlternateName altName = DomainObjectFactory.newAlternateName();
-          altName.setType(AlternateName.TYPE_GME_SRC_XML_LOC_REF);
-          altName.setName(ocr.getSourceRole() + "/" + LookupUtil.lookupXMLElementName(ocr.getSource()));
-          ocr.addAlternateName(altName);
-        }
-        
         OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
         String fullName = nameBuilder.buildRoleName(ocr);
-
-        changeTracker.put(fullName, true);
-      }
+        if(!hasAltName(ocr.getAlternateNames(), AlternateName.TYPE_GME_SRC_XML_LOC_REF)) {
+            if(!StringUtil.isEmpty(ocr.getSourceRole())) {
+                AlternateName altName = DomainObjectFactory.newAlternateName();
+                altName.setType(AlternateName.TYPE_GME_SRC_XML_LOC_REF);
+                altName.setName(ocr.getSourceRole() + "/" + LookupUtil.lookupXMLElementName(ocr.getSource()));
+                ocr.addAlternateName(altName);
+                changeTracker.put(fullName, true);
+            }
+        }
+        if(!hasAltName(ocr.getAlternateNames(), AlternateName.TYPE_GME_TARGET_XML_LOC_REF)) {
+            if(!StringUtil.isEmpty(ocr.getTargetRole())) {
+                AlternateName altName = DomainObjectFactory.newAlternateName();
+                altName.setType(AlternateName.TYPE_GME_TARGET_XML_LOC_REF);
+                altName.setName(ocr.getTargetRole() + "/" + LookupUtil.lookupXMLElementName(ocr.getTarget()));
+                ocr.addAlternateName(altName);
+                changeTracker.put(fullName, true);
+            }          
+        }
     }
 
     pEvt.setGoal(50);
