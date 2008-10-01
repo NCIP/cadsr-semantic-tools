@@ -89,8 +89,8 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
                               (deList.get(conceptConcat)).getDataElementConcept().getLongName()),de);
               item.setIncludeInInherited(true);
               items.addItem(item);
-            } else if (!StringUtil.isEmpty(de.getDataElementConcept().getProperty().getPreferredName())){
-              deList.put(de.getDataElementConcept().getProperty().getPreferredName(), de);
+            } else {
+              deList.put(conceptConcat, de);
             }
           }
         }
