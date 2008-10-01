@@ -102,6 +102,4 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
   public void setCadsrModule(CadsrModule module) {
     this.cadsrModule = module;
   }
-
-
 }
