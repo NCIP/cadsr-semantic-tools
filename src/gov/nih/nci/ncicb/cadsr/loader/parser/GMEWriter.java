@@ -129,8 +129,8 @@ public class GMEWriter implements ElementWriter {
         if(attChanged) {
           // Remove all att GME Tags
           att.removeTaggedValue(XMIParser2.TV_GME_XML_LOC_REFERENCE);
-        }
-        attAltName.setName(attName);
+        
+         attAltName.setName(attName);
         DataElement de = LookupUtil.lookupDataElement(attAltName);
         if(de != null)
           for(AlternateName an : de.getAlternateNames()) {
@@ -138,6 +138,7 @@ public class GMEWriter implements ElementWriter {
               att.addTaggedValue(XMIParser2.TV_GME_XML_LOC_REFERENCE, an.getName());
             }
           }
+        }
       }
     }
 
