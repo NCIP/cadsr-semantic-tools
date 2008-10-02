@@ -57,9 +57,7 @@ public class GMEWriter implements ElementWriter {
 
   private void addGmeTags() {
     // do the project 
-//     ClassificationScheme cs = UMLDefaults.getInstance().getProjectCs();
     String namespace = (String)UserSelections.getInstance().getProperty("GME_NAMESPACE");
-   // String packageForProjectNamespace = (String)UserSelections.getInstance().getProperty("NAMESPACE_PACKAGE");
 
 
     // now do the rest
@@ -86,8 +84,6 @@ public class GMEWriter implements ElementWriter {
     attAltName.setType(AlternateName.TYPE_FULL_NAME);
 
     String pkgName = LookupUtil.getPackageName(pkg);
-//     boolean pkgChanged = changeTracker.get(pkgName);
-//     if(pkgChanged) {
     pkg.removeTaggedValue(XMIParser2.TV_GME_NAMESPACE);
     List<ClassificationSchemeItem> packages = cadsrObjects.getElements(DomainObjectFactory.newClassificationSchemeItem());
     for(ClassificationSchemeItem csi : packages) {
@@ -97,7 +93,6 @@ public class GMEWriter implements ElementWriter {
             pkg.addTaggedValue(XMIParser2.TV_GME_NAMESPACE, an.getName());
           } 
         }
-//         }
       }
     }
 
@@ -121,7 +116,6 @@ public class GMEWriter implements ElementWriter {
             }
           }
       }
-      
       
       for(UMLAttribute att : clazz.getAttributes()) {
         String attName = className + "." + att.getName();
@@ -215,5 +209,4 @@ public class GMEWriter implements ElementWriter {
   public void setOutput(String url) {
     this.output = url;
   }
-
 }
