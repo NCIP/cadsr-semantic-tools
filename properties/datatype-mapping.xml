@@ -59,6 +59,18 @@
   <alias name="java.lang.Double[]"/>
 </alias-list>
 
+<alias-list name="float One Dimensional Array">
+  <alias name="float[]"/>
+</alias-list>
+
+<alias-list name="float Two Dimensional Array">
+  <alias name="float[][]"/>
+</alias-list>
+
+<alias-list name="double Two Dimensional Array">
+  <alias name="double[][]"/>
+</alias-list>
+
 <alias-list name="long One Dimensional Array">
   <alias name="long[]"/>
   <alias name="Long[]"/>
@@ -153,6 +165,45 @@
 <alias-list name="HL7.PQ">
   <alias name="pq"/>
 </alias-list>
+
+<alias-list name="double Collection">
+  <alias name="collection&lt;double&gt;"/>
+</alias-list>
+
+<alias-list name="float Collection">
+  <alias name="collection&lt;float&gt;"/>
+</alias-list>
+
+<alias-list name="long Collection">
+  <alias name="collection&lt;long&gt;"/>
+</alias-list>
+
+<alias-list name="boolean Collection">
+  <alias name="collection&lt;boolean&gt;"/>
+</alias-list>
+
+<alias-list name="byte Collection">
+  <alias name="collection&lt;byte&gt;"/>
+</alias-list>
+
+<alias-list name="short Collection">
+  <alias name="collection&lt;short&gt;"/>
+</alias-list>
+
+<alias-list name="character Collection">
+  <alias name="collection&lt;char&gt;"/>
+  <alias name="collection&lt;character&gt;"/>
+</alias-list>
+
+<alias-list name="integer Collection">
+  <alias name="collection&lt;int&gt;"/>
+  <alias name="collection&lt;integer&gt;"/>
+</alias-list>
+
+<alias-list name="string Collection">
+  <alias name="collection&lt;string&gt;"/>
+</alias-list>
+
 
 
 
