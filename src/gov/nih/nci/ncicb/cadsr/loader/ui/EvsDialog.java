@@ -296,14 +296,14 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
         if(selection.equals(AUTO_SEARCH)) {
           if(text.matches(autoRegexp)) {
             EvsResult evsResult = null;
-            evsResult = module.findByConceptCode(text, includeRetiredCB.isSelected());
+            evsResult = module.findByConceptCode(text.toUpperCase(), includeRetiredCB.isSelected());
             if(evsResult != null)
               resultSet.add(evsResult);
           }
           else 
             resultSet.addAll(module.findBySynonym(text, includeRetiredCB.isSelected()));
         } else if(selection.equals(CONCEPT_CODE)) {
-          EvsResult evsResult = module.findByConceptCode(text, includeRetiredCB.isSelected());
+          EvsResult evsResult = module.findByConceptCode(text.toUpperCase(), includeRetiredCB.isSelected());
           if(evsResult != null)
             resultSet.add(evsResult);
         } else if(selection.equals(SYNONYMS)) {
