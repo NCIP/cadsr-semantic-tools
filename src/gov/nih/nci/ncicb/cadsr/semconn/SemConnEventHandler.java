@@ -46,6 +46,12 @@ public class SemConnEventHandler implements UMLHandler {
 
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     oc.setLongName(className);
+
+    if(event.getDescription() != null && event.getDescription().length() > 0)
+      oc.setPreferredDefinition(event.getDescription());
+    else 
+      oc.setPreferredDefinition("");
+
     AlternateName fullName = DomainObjectFactory.newAlternateName();
     fullName.setType(AlternateName.TYPE_CLASS_FULL_NAME);
     fullName.setName(className);
