@@ -123,7 +123,7 @@ import java.awt.event.WindowEvent;
 
    private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
    private UserPreferences prefs = UserPreferences.getInstance();
-   private int currentState;
+   private boolean isFrameMaximed;
    private int oldState;
    private int mainFrameWidth = 0;
    private int mainFrameHeight = 0;
@@ -157,12 +157,10 @@ import java.awt.event.WindowEvent;
      int verticleSplit = jSplitPane1.getDividerLocation();
      int horizontalSplit = jSplitPane2.getDividerLocation();
      
-     if((currentState & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH){
-         prefs.setMainFramePreferences(true, verticleSplit, horizontalSplit);
-         currentState = -1;
+     if(isFrameMaximed){
+        prefs.setMainFramePreferences(true, verticleSplit, horizontalSplit);
      }
-     else{
-         
+     else{         
          Dimension dim = this.getSize();
          int mainFrameWidth = (int) dim.getWidth();
          int mainFrameHeight = (int) dim.getHeight();
@@ -704,13 +702,13 @@ import java.awt.event.WindowEvent;
    }
   
      public void stateChanged(WindowEvent e){
-         currentState = e.getNewState();
+         int currentState = e.getNewState();
          oldState = e.getOldState();
-         if((currentState & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH){
+         isFrameMaximed = (currentState & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH;
+         if(isFrameMaximed){
              this.setExtendedState(MAXIMIZED_BOTH);
              setSplitPanesFields();
-         
-         }else{
+         } else{
              setMainFrameFields();
              setSplitPanesFields();
              this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));  //added
@@ -724,7 +722,8 @@ import java.awt.event.WindowEvent;
      }
 
      private void setInitialMainFrameSize(){
-       if(prefs.isMainFrameMaximized()){
+     this.isFrameMaximed = prefs.isMainFrameMaximized();
+     if(isFrameMaximed){
          this.setExtendedState(MAXIMIZED_BOTH);
        } else {
          setMainFrameFields();
