@@ -21,8 +21,8 @@ public class GMEViewPanel extends JPanel implements UserPreferencesListener {
   private JLabel gmeNamespaceLabel = new JLabel("GME Namespace"),
     gmeElementLabel = new JLabel("GME XML Element"),
     gmeLocRefLabel = new JLabel("GME XML Location Reference"),
-    gmeSourceLocRefLabel = new JLabel("GME Source XML Location Refence"),
-    gmeTargetLocRefLabel = new JLabel("GME Target XML Location Refence");
+    gmeSourceLocRefLabel = new JLabel("GME Source XML Location Reference"),
+    gmeTargetLocRefLabel = new JLabel("GME Target XML Location Reference");
   
   private JTextField gmeNamespaceField = new JTextField(),
     gmeElementField = new JTextField(),
