@@ -35,6 +35,10 @@ import java.util.*;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
+import java.awt.event.ComponentAdapter;
+
+import java.awt.event.ComponentEvent;
+
 import org.apache.log4j.*;
 
 /** 
@@ -154,8 +158,13 @@ public class UMLLoaderGUI
         public void windowStateChanged(WindowEvent e) {
           mainFrame.stateChanged(e);
         }
-    });
-
+      });
+    mainFrame.addComponentListener(new ComponentAdapter() {
+        public void componentResized(ComponentEvent evt) {
+          mainFrame.componentResized(evt);
+        }
+      });
+    
     mainFrame.setWorkingTitle(null);
 
     mainFrame.setVisible(true);
