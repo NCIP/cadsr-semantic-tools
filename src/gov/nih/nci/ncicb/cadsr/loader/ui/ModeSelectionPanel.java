@@ -41,12 +41,13 @@ public class ModeSelectionPanel extends JPanel implements MouseListener{
   private JRadioButton unannotatedXmiOption, roundtripOption, annotateOption, reviewOption, curateOption, gmeDefaultsOption, gmeCleanupOption;
   private ButtonGroup group;
   private JPanel _this = this;
-  private JPanel infoPanel = null;
+  private JPanel infoPanel = null, privateApiPanel = null;
   private UserSelections userSelections = UserSelections.getInstance();
   private UserPreferences prefs = UserPreferences.getInstance();
   private long timePressed;
 
   private JCheckBox privateApiCb = new JCheckBox("Use Private API", prefs.isUsePrivateApi());
+
   
   public ModeSelectionPanel()
   {
@@ -80,7 +81,24 @@ public class ModeSelectionPanel extends JPanel implements MouseListener{
     infoPanel.setBackground(Color.WHITE);
     infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-    infoPanel.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif"))));
+    JLabel imgLabel = new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("siw-logo3_2.gif")));
+    infoPanel.add(imgLabel);
+    imgLabel.addMouseListener(new MouseAdapter() {
+        long timePressed;
+        public void mousePressed(MouseEvent me) {
+          timePressed = me.getWhen();
+        }
+        public void mouseReleased(MouseEvent me) {
+          Date dte = new Date(me.getWhen() - timePressed);
+          Calendar cal = Calendar.getInstance();
+          cal.setTime(dte);
+          int timeDiff = cal.get(Calendar.SECOND);
+          
+          if(timeDiff > 10){
+            _this.add(privateApiPanel, BorderLayout.SOUTH);
+          }
+        }
+      });
 
     JLabel infoLabel = new JLabel("<html>Welcome to the " + PropertyAccessor.getProperty("siw.title") + "</html>");
     infoPanel.add(infoLabel);
@@ -182,12 +200,14 @@ public class ModeSelectionPanel extends JPanel implements MouseListener{
     JLabel privateApiLabel = new JLabel("<html><body>The private API is offered as an alternative to the caCORE public API.<br> It requires that the user be inside the NCI network or use VPN.</body></html>");
     privateApiLabel.setFont(font);
 
-    JPanel privateApiPanel = new JPanel();
+    privateApiPanel = new JPanel();
     privateApiPanel.setLayout(new FlowLayout());
     privateApiPanel.add(privateApiCb);
     privateApiPanel.add(privateApiLabel);
 
-    this.add(privateApiPanel, BorderLayout.SOUTH);
+    privateApiCb.setSelected(false);
+
+//     this.add(privateApiPanel, BorderLayout.SOUTH);
     infoPanel.addMouseListener(this);
   }
 
@@ -197,22 +217,22 @@ public class ModeSelectionPanel extends JPanel implements MouseListener{
     frame.setVisible(true);
   }
 
-    public void mousePressed(MouseEvent me) {
-        timePressed = me.getWhen();
+  public void mousePressed(MouseEvent me) {
+    timePressed = me.getWhen();
+  }
+  public void mouseReleased(MouseEvent me) {
+    Date dte = new Date(me.getWhen() - timePressed);
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(dte);
+    int timeDiff = cal.get(Calendar.SECOND);
+    
+    if(timeDiff > 10){
+      ExpertsCacheDialog ecDialog = new ExpertsCacheDialog();
+      ecDialog.setVisible(true);
+      ecDialog.setAlwaysOnTop(true);
     }
-    public void mouseReleased(MouseEvent me) {
-        Date dte = new Date(me.getWhen() - timePressed);
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dte);
-        int timeDiff = cal.get(Calendar.SECOND);
-        
-        if(timeDiff > 10){
-            ExpertsCacheDialog ecDialog = new ExpertsCacheDialog();
-            ecDialog.setVisible(true);
-            ecDialog.setAlwaysOnTop(true);
-        }
-    }
-    public void mouseClicked(MouseEvent e) {}
-    public void mouseEntered(MouseEvent e) {}
-    public void mouseExited(MouseEvent e) {}
+  }
+  public void mouseClicked(MouseEvent e) {}
+  public void mouseEntered(MouseEvent e) {}
+  public void mouseExited(MouseEvent e) {}
 }
