@@ -46,6 +46,7 @@
  import gov.nih.nci.ncicb.cadsr.domain.*;
 
 import java.awt.FlowLayout;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 
  import org.apache.log4j.Logger;
@@ -156,31 +157,26 @@ import java.awt.event.WindowEvent;
    public void exit() {
      int verticleSplit = jSplitPane1.getDividerLocation();
      int horizontalSplit = jSplitPane2.getDividerLocation();
-     
-     if(isFrameMaximed){
-        prefs.setMainFramePreferences(true, verticleSplit, horizontalSplit);
-     }
-     else{         
-         Dimension dim = this.getSize();
-         int mainFrameWidth = (int) dim.getWidth();
-         int mainFrameHeight = (int) dim.getHeight();
-         prefs.setMainFramePreferences(false, verticleSplit, horizontalSplit);
-         prefs.setMainFramePreferences(mainFrameWidth, mainFrameHeight, verticleSplit, horizontalSplit);
-     }
 
-     if(!ChangeTracker.getInstance().isEmpty()) {
-     int result = JOptionPane.showConfirmDialog((JFrame) null, "Would you like to save your file before quitting?");
-     switch(result) { 
-     case JOptionPane.YES_OPTION: 
-       saveMenuItem.doClick();
-       break;
-     case JOptionPane.NO_OPTION:
-       break;
+//      Dimension dim = this.getSize();
+//      int mainFrameWidth = (int) dim.getWidth();
+//      int mainFrameHeight = (int) dim.getHeight();
      
-     case JOptionPane.CANCEL_OPTION:
-       return;    
-     }
-     System.exit(0);
+     prefs.setMainFramePreferences(isFrameMaximed, mainFrameWidth, mainFrameHeight, verticleSplit, horizontalSplit);
+     
+     if(!ChangeTracker.getInstance().isEmpty()) {
+       int result = JOptionPane.showConfirmDialog((JFrame) null, "Would you like to save your file before quitting?");
+       switch(result) { 
+       case JOptionPane.YES_OPTION: 
+         saveMenuItem.doClick();
+         break;
+       case JOptionPane.NO_OPTION:
+         break;
+         
+       case JOptionPane.CANCEL_OPTION:
+         return;    
+       }
+       System.exit(0);
      }
      else 
        System.exit(0);
@@ -700,22 +696,28 @@ import java.awt.event.WindowEvent;
      lvdPanel.addPropertyChangeListener(this);
 
    }
+
+   public void componentResized(ComponentEvent evt) {
+     Dimension dim = this.getSize();
+     mainFrameWidth = (int) dim.getWidth();
+     mainFrameHeight = (int) dim.getHeight();
+
+   }
   
-     public void stateChanged(WindowEvent e){
-         int currentState = e.getNewState();
-         oldState = e.getOldState();
-         isFrameMaximed = (currentState & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH;
-         if(isFrameMaximed){
-             this.setExtendedState(MAXIMIZED_BOTH);
-             setSplitPanesFields();
-         } else{
-             setMainFrameFields();
-             setSplitPanesFields();
-             this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));  //added
-//             putToCenter();
-         }
-         setSplitPanes();
+   public void stateChanged(WindowEvent e){
+     int currentState = e.getNewState();
+     oldState = e.getOldState();
+     isFrameMaximed = (currentState == JFrame.MAXIMIZED_BOTH);
+     if(isFrameMaximed){
+       this.setExtendedState(MAXIMIZED_BOTH);
+       setSplitPanesFields();
+     } else{
+//        setMainFrameFields();
+       setSplitPanesFields();
+       this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));
      }
+     setSplitPanes();
+   }
 
      private void putToCenter() {
        this.setLocation((screenSize.width - this.getSize().width) / 2, (screenSize.height - this.getSize().height) / 2);
@@ -724,11 +726,13 @@ import java.awt.event.WindowEvent;
      private void setInitialMainFrameSize(){
        setVisible(true);
        this.isFrameMaximed = prefs.isMainFrameMaximized();
+
+       setMainFrameFields();
+
+       this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));
+       
        if(isFrameMaximed){
          this.setExtendedState(MAXIMIZED_BOTH);
-       } else {
-         setMainFrameFields();
-         this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));  //added
        }
        setSplitPanesFields();
      }
