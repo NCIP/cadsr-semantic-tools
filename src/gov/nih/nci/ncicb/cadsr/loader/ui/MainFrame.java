@@ -721,7 +721,8 @@ import java.awt.event.WindowEvent;
        this.setLocation((screenSize.width - this.getSize().width) / 2, (screenSize.height - this.getSize().height) / 2);
      }
 
-     private void setInitialMainFrameSize(){
+   private void setInitialMainFrameSize(){
+     setVisible(true);
      this.isFrameMaximed = prefs.isMainFrameMaximized();
      if(isFrameMaximed){
          this.setExtendedState(MAXIMIZED_BOTH);
