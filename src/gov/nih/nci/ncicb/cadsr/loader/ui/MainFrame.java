@@ -722,8 +722,9 @@ import java.awt.event.WindowEvent;
      }
 
      private void setInitialMainFrameSize(){
-     this.isFrameMaximed = prefs.isMainFrameMaximized();
-     if(isFrameMaximed){
+       setVisible(true);
+       this.isFrameMaximed = prefs.isMainFrameMaximized();
+       if(isFrameMaximed){
          this.setExtendedState(MAXIMIZED_BOTH);
        } else {
          setMainFrameFields();
