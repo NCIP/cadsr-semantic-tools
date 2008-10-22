@@ -331,8 +331,9 @@
      cadsrModuleListeners = listeners;
    }
    
-   public void setMainFramePreferences(int width, int height, int verticalSplit, int horizontalSplit) 
+   public void setMainFramePreferences(boolean maximized, int width, int height, int verticalSplit, int horizontalSplit) 
    {
+     prefs.putBoolean("MAXIMIZED", maximized);
      prefs.put("MainFrameWidth", new Integer(width).toString());
      prefs.put("MainFrameHeight", new Integer(height).toString());
      prefs.put("VerticalSplit", new Integer(verticalSplit).toString());
@@ -349,12 +350,6 @@
      return mainFramePrefs;
    }
    
-   public void setMainFramePreferences(boolean maximized, int verticalSplit, int horizontalSplit){
-     prefs.putBoolean("MAXIMIZED", maximized);
-     prefs.put("VerticalSplit", new Integer(verticalSplit).toString());
-     prefs.put("HorizontalSplit", new Integer(horizontalSplit).toString());
-   }
-
    public boolean isMainFrameMaximized(){
        return prefs.getBoolean("MAXIMIZED", false);
    }
