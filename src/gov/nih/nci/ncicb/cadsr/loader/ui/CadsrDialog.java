@@ -377,18 +377,18 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     nextButton.addActionListener(this);
     closeButton.addActionListener(this);
     
-    if(mode == MODE_REP){
-        JLabel explainLabel = new JLabel("<html><u color=BLUE>Explain this</u></html>");
-        ToolTipManager.sharedInstance().registerComponent(explainLabel);
-        ToolTipManager.sharedInstance().setDismissDelay(3600000);
-        explainLabel.setToolTipText(PropertyAccessor.getProperty("pref.rep.term.label"));
-        JPanel explainThisPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        explainThisPanel.add(explainLabel);
-        this.getContentPane().add(explainThisPanel, BorderLayout.NORTH);
-    }
-    else{
-        this.getContentPane().add(searchPanel, BorderLayout.NORTH);
-    }
+//     if(mode == MODE_REP){
+//         JLabel explainLabel = new JLabel("<html><u color=BLUE>Explain this</u></html>");
+//         ToolTipManager.sharedInstance().registerComponent(explainLabel);
+//         ToolTipManager.sharedInstance().setDismissDelay(3600000);
+//         explainLabel.setToolTipText(PropertyAccessor.getProperty("pref.rep.term.label"));
+//         JPanel explainThisPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+//         explainThisPanel.add(explainLabel);
+//         this.getContentPane().add(explainThisPanel, BorderLayout.NORTH);
+//     }
+//     else{
+    this.getContentPane().add(searchPanel, BorderLayout.NORTH);
+//     }
     this.getContentPane().add(scrollPane, BorderLayout.CENTER);
     this.getContentPane().add(browsePanel, BorderLayout.SOUTH);
     this.setSize(630,525);
@@ -411,6 +411,12 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
   }
 
   public void startSearchPreferredRepTerms() {
+    
+    // disable this feature for now!!
+    if (true)
+      return;
+    
+
     if(preferredRepTerms == null) {
       try {
         preferredRepTerms = cadsrModule.findPreferredRepTerms();
@@ -450,14 +456,17 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
     boolean cbStatus = includeRetiredCB.isSelected();
     if(button.getActionCommand().equals(SEARCH)) {
 
-      if(mode == MODE_REP) {
-        if(!showRepTermWarning) {
-          int result = JOptionPane.showConfirmDialog(_this, PropertyAccessor.getProperty("search.nonPreferred.repTerms"), "Warning", JOptionPane.YES_NO_OPTION);
-          if (result == JOptionPane.NO_OPTION)
-            return;
-          showRepTermWarning = true;
-        }
-      }
+      // !! Disable this for now
+
+
+//       if(mode == MODE_REP) {
+//         if(!showRepTermWarning) {
+//           int result = JOptionPane.showConfirmDialog(_this, PropertyAccessor.getProperty("search.nonPreferred.repTerms"), "Warning", JOptionPane.YES_NO_OPTION);
+//           if (result == JOptionPane.NO_OPTION)
+//             return;
+//           showRepTermWarning = true;
+//         }
+//       }
       
       String selection = (String) searchSourceCombo.getSelectedItem();
       String text = searchField.getText() == null ? "" : searchField.getText().trim();
@@ -539,12 +548,22 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
           break;
         case MODE_CD:
           for(ConceptualDomain cd : cadsrModule.findConceptualDomain(queryFields))
-            resultSet.add(new SearchResultWrapper(cd));       
+            if(cbStatus)
+              resultSet.add(new SearchResultWrapper(cd));       
+            else
+              if(cd.getWorkflowStatus() != null 
+                 && (cd.getWorkflowStatus().toUpperCase().indexOf("RETIRED") == -1))
+                resultSet.add(new SearchResultWrapper(cd));
           break;
         case MODE_REP:
           queryFields.put(CadsrModule.WORKFLOW_STATUS, Representation.WF_STATUS_RELEASED);
           for(Representation rep : cadsrModule.findRepresentation(queryFields))
-            resultSet.add(new SearchResultWrapper(rep));       
+            if(cbStatus)
+              resultSet.add(new SearchResultWrapper(rep));       
+            else
+              if(rep.getWorkflowStatus() != null 
+                 && (rep.getWorkflowStatus().toUpperCase().indexOf("RETIRED") == -1))
+                resultSet.add(new SearchResultWrapper(rep));
           break;
         case MODE_VD:
           for(ValueDomain vd : cadsrModule.findValueDomain(queryFields)){
