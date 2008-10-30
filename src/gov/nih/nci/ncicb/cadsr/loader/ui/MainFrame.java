@@ -705,18 +705,18 @@ import java.awt.event.WindowEvent;
    }
   
    public void stateChanged(WindowEvent e){
-     int currentState = e.getNewState();
-     oldState = e.getOldState();
-     isFrameMaximed = (currentState == JFrame.MAXIMIZED_BOTH);
-     if(isFrameMaximed){
-       this.setExtendedState(MAXIMIZED_BOTH);
-       setSplitPanesFields();
-     } else{
-//        setMainFrameFields();
-       setSplitPanesFields();
-       this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));
-     }
-     setSplitPanes();
+//      int currentState = e.getNewState();
+//      oldState = e.getOldState();
+//      isFrameMaximed = (currentState == JFrame.MAXIMIZED_BOTH);
+//      if(isFrameMaximed){
+//        this.setExtendedState(MAXIMIZED_BOTH);
+//        setSplitPanesFields();
+//      } else{
+// //        setMainFrameFields();
+//        setSplitPanesFields();
+//        this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));
+//      }
+//      setSplitPanes();
    }
 
      private void putToCenter() {
