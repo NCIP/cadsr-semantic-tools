@@ -724,16 +724,19 @@ import java.awt.event.WindowEvent;
      }
 
      private void setInitialMainFrameSize(){
+       this.setSize(new Dimension(930, 700));
+           
+
        setVisible(true);
-       this.isFrameMaximed = prefs.isMainFrameMaximized();
+//        this.isFrameMaximed = prefs.isMainFrameMaximized();
 
-       setMainFrameFields();
+//        setMainFrameFields();
 
-       this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));
+//        this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));
        
-       if(isFrameMaximed){
-         this.setExtendedState(MAXIMIZED_BOTH);
-       }
+//        if(isFrameMaximed){
+//          this.setExtendedState(MAXIMIZED_BOTH);
+//        }
        setSplitPanesFields();
      }
      
@@ -753,8 +756,13 @@ import java.awt.event.WindowEvent;
      }
 
      private void setSplitPanes(){
-         jSplitPane1.setDividerLocation(verticleSplit); // added
-         jSplitPane2.setDividerLocation(horizontalSplit); // added
+       
+       jSplitPane1.setDividerLocation(160);
+       jSplitPane2.setDividerLocation(450);
+
+
+//          jSplitPane1.setDividerLocation(verticleSplit);
+//          jSplitPane2.setDividerLocation(horizontalSplit);
      }
      
      public void setUmlVPFactory(UMLElementViewPanelFactory umlVPFactory) {
