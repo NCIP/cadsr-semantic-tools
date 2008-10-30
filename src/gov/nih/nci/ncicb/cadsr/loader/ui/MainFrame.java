@@ -1,4 +1,4 @@
- /*
+/*
   * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
   *
   Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -724,16 +724,21 @@ import java.awt.event.WindowEvent;
      }
 
      private void setInitialMainFrameSize(){
+       this.setSize(new Dimension(930, 700));
+
+
        setVisible(true);
-       this.isFrameMaximed = prefs.isMainFrameMaximized();
+//        this.isFrameMaximed = prefs.isMainFrameMaximized();
 
-       setMainFrameFields();
+//        setMainFrameFields();
 
-       this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));
+//        this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));
        
-       if(isFrameMaximed){
-         this.setExtendedState(MAXIMIZED_BOTH);
-       }
+//        pack();
+
+//        if(isFrameMaximed){
+//          this.setExtendedState(MAXIMIZED_BOTH);
+//        }
        setSplitPanesFields();
      }
      
@@ -753,8 +758,13 @@ import java.awt.event.WindowEvent;
      }
 
      private void setSplitPanes(){
-         jSplitPane1.setDividerLocation(verticleSplit); // added
-         jSplitPane2.setDividerLocation(horizontalSplit); // added
+
+       jSplitPane1.setDividerLocation(160);
+       jSplitPane2.setDividerLocation(450);
+
+
+//          jSplitPane1.setDividerLocation(verticleSplit); // added
+//          jSplitPane2.setDividerLocation(horizontalSplit); // added
      }
      
      public void setUmlVPFactory(UMLElementViewPanelFactory umlVPFactory) {
