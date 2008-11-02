@@ -84,6 +84,13 @@ public class XMIParser2 implements Parser {
   public static final String TV_VD_DEFINITION = "CADSR_ValueDomainDefinition";
   public static final String TV_VD_DATATYPE = "CADSR_ValueDomainDatatype";
   public static final String TV_VD_TYPE = "CADSR_ValueDomainType";
+  public static final String TV_VD_UOM = "NCI_VD_UOM";
+  public static final String TV_VD_DISPLAY_FORMAT = "NCI_VD_DISPLAY_FORMAT";
+  public static final String TV_VD_MINIMUM_LENGTH = "NCI_VD_MIN_LENGTH";
+  public static final String TV_VD_MAXIMUM_LENGTH = "NCI_VD_MAX_LENGTH";
+  public static final String TV_VD_DECIMAL_PLACE = "NCI_VD_DECIMAL_PLACE";
+  public static final String TV_VD_HIGH_VALUE = "NCI_VD_HIGH_VALUE";
+  public static final String TV_VD_LOW_VALUE = "NCI_VD_LOW_VALUE";
   public static final String TV_CD_ID = "CADSR_ConceptualDomainPublicID";
   public static final String TV_CD_VERSION = "CADSR_ConceptualDomainVersion";
   public static final String TV_REP_ID = "CADSR_RepresentationPublicID";
@@ -609,6 +616,46 @@ public class XMIParser2 implements Parser {
     if(tv != null) {
       event.setDatatype(tv.getValue().trim());
     }
+
+///////////////////////////////////////////////////////////////////////////////
+
+     tv = clazz.getTaggedValue(TV_VD_UOM);
+     if(tv != null) {
+       event.setUnitOfMeasure(tv.getValue().trim());
+     }
+
+      tv = clazz.getTaggedValue(TV_VD_DISPLAY_FORMAT);
+      if(tv != null) {
+        event.setDisplayFormat(tv.getValue().trim());
+      }
+
+      tv = clazz.getTaggedValue(TV_VD_MINIMUM_LENGTH);
+      if(tv != null) {
+        event.setMinLength(Integer.parseInt(tv.getValue().trim()));
+      }
+
+      tv = clazz.getTaggedValue(TV_VD_MAXIMUM_LENGTH);
+      if(tv != null) {
+        event.setMaxLength(Integer.parseInt(tv.getValue().trim()));
+      }
+
+      tv = clazz.getTaggedValue(TV_VD_DECIMAL_PLACE);
+      if(tv != null) {
+        event.setDecimalPlace(Integer.parseInt(tv.getValue().trim()));
+      }
+
+      tv = clazz.getTaggedValue(TV_VD_HIGH_VALUE);
+      if(tv != null) {
+        event.setHighValue(tv.getValue().trim());
+      }
+
+      tv = clazz.getTaggedValue(TV_VD_LOW_VALUE);
+      if(tv != null) {
+        event.setLowValue(tv.getValue().trim());
+      }
+
+
+///////////////////////////////////////////////////////////////////////////////
 
     tv = clazz.getTaggedValue(TV_VD_TYPE);
     if(tv != null) {

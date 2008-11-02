@@ -36,6 +36,13 @@ public class NewValueDomainEvent extends NewConceptualEvent {
   private Float repTermVersion;
   private String vdId;
   private Float vdVersion;
+  private String unitOfMeasure;
+  private String displayFormat;
+  private int minLength;
+  private int maxLength;
+  private int decimalPlace;
+  private String highValue;
+  private String lowValue;
 
   public NewValueDomainEvent(String name) {
     this.name = name;
@@ -201,6 +208,60 @@ public class NewValueDomainEvent extends NewConceptualEvent {
     this.cdVersion = newCdVersion;
   }
 
-  
-  
+
+    public void setUnitOfMeasure(String unitOfMeasure) {
+        this.unitOfMeasure = unitOfMeasure;
+    }
+
+    public String getUnitOfMeasure() {
+        return unitOfMeasure;
+    }
+
+    public void setDisplayFormat(String displayFormat) {
+        this.displayFormat = displayFormat;
+    }
+
+    public String getDisplayFormat() {
+        return displayFormat;
+    }
+
+    public void setMinLength(int minLength) {
+        this.minLength = minLength;
+    }
+
+    public int getMinLength() {
+        return minLength;
+    }
+
+    public void setMaxLength(int maxLength) {
+        this.maxLength = maxLength;
+    }
+
+    public int getMaxLength() {
+        return maxLength;
+    }
+
+    public void setDecimalPlace(int decimalPlace) {
+        this.decimalPlace = decimalPlace;
+    }
+
+    public int getDecimalPlace() {
+        return decimalPlace;
+    }
+
+    public void setHighValue(String highValue) {
+        this.highValue = highValue;
+    }
+
+    public String getHighValue() {
+        return highValue;
+    }
+
+    public void setLowValue(String lowValue) {
+        this.lowValue = lowValue;
+    }
+
+    public String getLowValue() {
+        return lowValue;
+    }
 }

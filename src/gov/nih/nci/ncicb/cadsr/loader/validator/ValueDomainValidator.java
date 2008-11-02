@@ -173,7 +173,43 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
               }
           }
         
+        // START: OPTIONAL PANEL VALIDATIONS GOES HERE
+        String[] defaultList = PropertyAccessor.getProperty("vd.unit.of.measures").split(",");
+        String valueToBeTested = vd.getUOMName();
+        if(!StringUtil.isEmpty(valueToBeTested)){
+            boolean contains = contains(defaultList, valueToBeTested);
+            if(!contains){
+                items.addItem
+                  (new ValidationError
+                   (PropertyAccessor.getProperty
+                    ("vd.mismatch.uom", vd.getUOMName()), vd));
+            }
+        }
+        defaultList = PropertyAccessor.getProperty("vd.display.format").split(",");
+        valueToBeTested = vd.getFormatName();
+        if(!StringUtil.isEmpty(valueToBeTested)){
+            boolean contains = contains(defaultList, valueToBeTested);
+            if(!contains){
+                items.addItem
+                  (new ValidationError
+                   (PropertyAccessor.getProperty
+                    ("vd.mismatch.displayFormat", vd.getFormatName()), vd));
+            }
+        }
+//        int minLength = vd.getMinimumLength();
+//        int maxLength = vd.getMaximumLength();
+//        int decPlace = vd.getDecimalPlace();
+//        if(!StringUtil.isEmpty(Integer.toString(minLength))){
+//            if(IntegerminLength){
+//                items.addItem
+//                  (new ValidationError
+//                   (PropertyAccessor.getProperty
+//                    ("vd.mismatch.displayFormat", vd.getFormatName()), vd));
+//            }
+//        }
         
+        
+        // END: OPTIONAL PANEL VALIDATIONS GOES HERE
         
           if(StringUtil.isEmpty(vd.getDataType())) {
             items.addItem
@@ -400,6 +436,14 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
     }
     }
     return items;
+  }
+  
+  private boolean contains(String[] defaultList, String valueToBeTested){
+      boolean contains = false;  
+      for (String uomValue : defaultList)
+        if(uomValue.equals(valueToBeTested))
+            contains = true;
+      return contains;
   }
 
   public void setCadsrModule(CadsrModule module) {

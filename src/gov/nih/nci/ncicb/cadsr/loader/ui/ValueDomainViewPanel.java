@@ -13,6 +13,8 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueDomainNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.ConventionUtil;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -26,19 +28,24 @@ import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ToolTipManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -50,7 +57,14 @@ public class ValueDomainViewPanel extends JPanel
     vdTypeTitleLabel = new JLabel("VD Type"),
     vdCdIdTitleLabel = new JLabel("VD CD PublicId / Version"),
     vdRepIdTitleLabel = new JLabel("Representation PublicId / Version"),
-    vdCdLongNameTitleLabel = new JLabel("VD CD Long Name");
+    vdCdLongNameTitleLabel = new JLabel("VD CD Long Name"),
+    vdUnitOfMeasureTitleLabel = new JLabel("Unit Of Measure"),
+    vdDisplayFormatTitleLabel = new JLabel("Display Format"),
+    vdMinimumLengthTitleLabel = new JLabel("Minimum Length"),
+    vdMaximumLengthTitleLabel = new JLabel("Maximum Length"),
+    vdDecimalPlaceTitleLabel = new JLabel("Decimal Place"),
+    vdHighValueTitleLabel = new JLabel("High Value"),
+    vdLowValueTitleLabel = new JLabel("Low Value");
   
   public JTextArea vdPrefDefValueTextField = new JTextArea();
   private CadsrDialog cadsrCDDialog;
@@ -68,9 +82,21 @@ public class ValueDomainViewPanel extends JPanel
   private JButton repSearchButton = new JButton("Search");
   public JLabel vdRepIdValueJLabel = null;
   
-  private JScrollPane scrollPane;
-  private List datatypeList = null;
+  private JComboBox vdUnitOfMeasureValueCombobox = new JComboBox();
+  private JComboBox vdDisplayFormatValueCombobox =  new JComboBox();
+  private JTextField vdMinimumLengthValueTextField;
+  private JTextField vdMaximumLengthValueTextField;
+  private JTextField vdDecimalPlaceValueTextField;
+  private JTextArea vdHighValuevalueTextArea = new JTextArea();
+  private JTextArea vdLowValuevalueTextArea = new JTextArea();
+  private JScrollPane vdHighValueScrollPane = null;
+  private JScrollPane vdLowValueScrollPane = null;
 
+  private JScrollPane scrollPane;
+  private List datatypeList = null,
+  uomList = null, displayFormatList = null;
+  
+  private JLabel explainLabel;
   private ValueDomain vd, tempVD;
   private ApplyButtonPanel applyButtonPanel;
   private UMLNode umlNode;
@@ -102,6 +128,14 @@ public class ValueDomainViewPanel extends JPanel
     tempVD.setRepresentation(vd.getRepresentation());
     tempVD.setDataType(vd.getDataType());
     tempVD.setVdType(vd.getVdType());
+    tempVD.setUOMName(vd.getUOMName());
+    tempVD.setFormatName(vd.getFormatName());
+    tempVD.setMaximumLength(vd.getMaximumLength());
+    tempVD.setMinimumLength(vd.getMinimumLength());
+    tempVD.setDecimalPlace(vd.getDecimalPlace());
+    tempVD.setHighValue(vd.getHighValue());
+    tempVD.setLowValue(vd.getLowValue());
+    
     vd = null;
 
     if(!isInitialized)
@@ -118,6 +152,8 @@ public class ValueDomainViewPanel extends JPanel
 
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
+    JPanel optionalPanel = new JPanel(new GridBagLayout());
+    optionalPanel.setBorder(BorderFactory.createTitledBorder("Optional"));
     applyButtonPanel = new ApplyButtonPanel(this, (ValueDomainNode)umlNode);
     addPropertyChangeListener(applyButtonPanel);
 
@@ -195,20 +231,105 @@ public class ValueDomainViewPanel extends JPanel
     UIUtil.insertInBag(mainPanel, vdRepIdTitleLabel, 0, 7);
     UIUtil.insertInBag(mainPanel, vdCDRepPanel, 1, 7);
 
+
+    // START: Data population for optional panel fields goes here
+    populateUOMCombobox();
+    populateDFCombobox();
+
+    vdHighValuevalueTextArea.setLineWrap(true);
+    vdHighValuevalueTextArea.setWrapStyleWord(true);
+    vdHighValueScrollPane = new JScrollPane(vdHighValuevalueTextArea);
+    vdHighValueScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    vdHighValueScrollPane.setPreferredSize(new Dimension(200, 100));
+    
+    vdLowValuevalueTextArea.setLineWrap(true);
+    vdLowValuevalueTextArea.setWrapStyleWord(true);
+    vdLowValueScrollPane = new JScrollPane(vdLowValuevalueTextArea);
+    vdLowValueScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    vdLowValueScrollPane.setPreferredSize(new Dimension(200, 100));
+    
+//    NumberFormat nf = NumberFormat.getIntegerInstance();
+//    nf.setMaximumIntegerDigits(2);
+    
+    vdMinimumLengthValueTextField = new JFormattedTextField(new RegexFormatter("\\d{0,8}"));
+    vdMaximumLengthValueTextField = new JFormattedTextField(new RegexFormatter("\\d{0,8}"));
+    vdDecimalPlaceValueTextField = new JFormattedTextField(new RegexFormatter("\\d{0,2}"));
+    
+    vdMinimumLengthValueTextField.setColumns(8);
+    vdMaximumLengthValueTextField.setColumns(8);
+    vdDecimalPlaceValueTextField.setColumns(8);
+    
+    explainLabel = new JLabel("<html><u color=BLUE>Explain this</u></html>");
+    ToolTipManager.sharedInstance().registerComponent(explainLabel);
+    ToolTipManager.sharedInstance().setDismissDelay(3600000);
+
+    JPanel explainPanel = new JPanel();
+    explainPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+    explainPanel.add(explainLabel);
+    explainLabel.setToolTipText("This is the tool tip text. This needs to be updated for the text of the optional panel.");
+
+    UIUtil.insertInBag(optionalPanel, vdUnitOfMeasureTitleLabel, 0, 2);
+    UIUtil.insertInBag(optionalPanel, vdUnitOfMeasureValueCombobox, 1, 2); 
+    UIUtil.insertInBag(optionalPanel, explainPanel, 2, 2); 
+    
+    UIUtil.insertInBag(optionalPanel, vdDisplayFormatTitleLabel, 0, 3);
+    UIUtil.insertInBag(optionalPanel, vdDisplayFormatValueCombobox, 1, 3); 
+    
+    UIUtil.insertInBag(optionalPanel, vdMinimumLengthTitleLabel, 0, 4);
+    UIUtil.insertInBag(optionalPanel, vdMinimumLengthValueTextField, 1, 4);
+    
+    UIUtil.insertInBag(optionalPanel, vdMaximumLengthTitleLabel, 0, 5);
+    UIUtil.insertInBag(optionalPanel, vdMaximumLengthValueTextField, 1, 5);
+
+    UIUtil.insertInBag(optionalPanel, vdDecimalPlaceTitleLabel, 0, 6);
+    UIUtil.insertInBag(optionalPanel, vdDecimalPlaceValueTextField, 1, 6);
+    
+    UIUtil.insertInBag(optionalPanel, vdHighValueTitleLabel, 0, 7);
+    UIUtil.insertInBag(optionalPanel, vdHighValueScrollPane, 1, 7, 3, 1);
+    
+    UIUtil.insertInBag(optionalPanel, vdLowValueTitleLabel, 0, 9);
+    UIUtil.insertInBag(optionalPanel, vdLowValueScrollPane, 1, 9, 3, 1);
+    // END: Data population for optional panel fields goes here
+
     JScrollPane scrollPane = new JScrollPane(mainPanel);
     scrollPane.getVerticalScrollBar().setUnitIncrement(30);
-
-    this.add(scrollPane, BorderLayout.CENTER);
+    JScrollPane optionalPanelScrollPane = new JScrollPane(optionalPanel);
+    optionalPanelScrollPane.getVerticalScrollBar().setUnitIncrement(30);
     
+    this.add(mainPanel, BorderLayout.NORTH);
+    this.add(optionalPanel, BorderLayout.SOUTH);
+    
+  }
+  private void populateUOMCombobox(){
+      uomList = new ArrayList();
+      String[] collUOM = PropertyAccessor.getProperty("vd.unit.of.measures").split(",");
+      vdUnitOfMeasureValueCombobox = new JComboBox();
+      vdUnitOfMeasureValueCombobox.addItem("NOT SPECIFIED");
+      uomList.add("NOT SPECIFIED");
+      for (String uomValue : collUOM){
+          uomList.add(uomValue);
+          vdUnitOfMeasureValueCombobox.addItem(uomValue);
+      }
+  }
+  private void populateDFCombobox(){
+      displayFormatList = new ArrayList();
+      String[] collDisplayFormat = PropertyAccessor.getProperty("vd.display.format").split(",");
+      vdDisplayFormatValueCombobox = new JComboBox();
+      vdDisplayFormatValueCombobox.addItem("NOT SPECIFIED");
+      displayFormatList.add("NOT SPECIFIED");
+      for (String dfValue : collDisplayFormat){
+          displayFormatList.add(dfValue);
+          vdDisplayFormatValueCombobox.addItem(dfValue);
+      }
   }
   
   private void initValues() 
   {
     vdPrefDefValueTextField.setText(tempVD.getPreferredDefinition());
     
-    int datatypeIndex = tempVD.getDataType() == null ? -1 : getSelectedIndex(tempVD.getDataType());
-    vdDatatypeValueCombobox.setSelectedIndex(datatypeIndex == -1 ? 0 : datatypeIndex);
-        
+    int index = tempVD.getDataType() == null ? -1 : getSelectedIndex(tempVD.getDataType(), datatypeList);
+    vdDatatypeValueCombobox.setSelectedIndex(index == -1 ? 0 : index);
+    
       if(vd.getVdType() != null && tempVD != null && tempVD.getVdType() != null){
           if(!vd.getVdType().equals("null")){
               if(!vd.getVdType().equals(null)){
@@ -246,11 +367,36 @@ public class ValueDomainViewPanel extends JPanel
 
     vdRepIdValueJLabel.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
 
-    firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
+    index = tempVD.getUOMName() == null ? -1 : getSelectedIndex(tempVD.getUOMName(), uomList);
+    vdUnitOfMeasureValueCombobox.setSelectedIndex(index == -1 ? 0 : index);
+      
+    index = tempVD.getFormatName() == null ? -1 : getSelectedIndex(tempVD.getFormatName(), displayFormatList);
+    vdDisplayFormatValueCombobox.setSelectedIndex(index == -1 ? 0 : index);
+    
+    vdMinimumLengthValueTextField.setText(setTextFieldValue(tempVD.getMinimumLength()));
+    vdMaximumLengthValueTextField.setText(setTextFieldValue(tempVD.getMaximumLength()));
+    vdDecimalPlaceValueTextField.setText(setTextFieldValue(tempVD.getDecimalPlace()));
+    vdHighValuevalueTextArea.setText(tempVD.getHighValue());
+    vdLowValuevalueTextArea.setText(tempVD.getLowValue());
+
+    
+    vdMinimumLengthValueTextField.setActionCommand("MIN_LENGTH");
+    vdMaximumLengthValueTextField.setActionCommand("MAX_LENGTH");
+    vdDecimalPlaceValueTextField.setActionCommand("DECIMAL_PLACE");
+
     vdPrefDefValueTextField.getDocument().addDocumentListener(this);
+    vdMinimumLengthValueTextField.getDocument().addDocumentListener(this);
+    vdMaximumLengthValueTextField.getDocument().addDocumentListener(this);
+    vdDecimalPlaceValueTextField.getDocument().addDocumentListener(this);
+    vdHighValuevalueTextArea.getDocument().addDocumentListener(this);
+    vdLowValuevalueTextArea.getDocument().addDocumentListener(this);
     vdTypeERadioButton.addItemListener(this);
     vdTypeNRadioButton.addItemListener(this);
     vdDatatypeValueCombobox.addItemListener(this);
+    vdUnitOfMeasureValueCombobox.addItemListener(this);
+    vdDisplayFormatValueCombobox.addItemListener(this);
+    
+    firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
   }
   
   private void setVdCdSearchedValues(){
@@ -281,9 +427,9 @@ public class ValueDomainViewPanel extends JPanel
         vd.setPublicId(null);
         vd.setConceptualDomain(tempVD.getConceptualDomain());
         vd.setRepresentation(tempVD.getRepresentation());
-        if(vdDatatypeValueCombobox.getSelectedIndex() != 0){
-            vd.setDataType(String.valueOf(vdDatatypeValueCombobox.getSelectedItem()));}
-        if(vdPrefDefValueTextField.getText() != null || !vdPrefDefValueTextField.getText().equals("null") || vdPrefDefValueTextField.getText().length() > 0)
+        if(vdDatatypeValueCombobox.getSelectedIndex() != 0)
+            vd.setDataType(String.valueOf(vdDatatypeValueCombobox.getSelectedItem()));
+        if(checkForNullOrZero(vdPrefDefValueTextField.getText()))
             vd.setPreferredDefinition(vdPrefDefValueTextField.getText());
         if(vdTypeERadioButton.isSelected())
             vd.setVdType("E");
@@ -291,6 +437,29 @@ public class ValueDomainViewPanel extends JPanel
             vd.setVdType("N");
         vdTypeERadioButton.addItemListener(this);
         vdTypeNRadioButton.addItemListener(this);
+        
+        vd.setUOMName(vdUnitOfMeasureValueCombobox.getSelectedItem().toString());
+        vd.setFormatName(vdDisplayFormatValueCombobox.getSelectedItem().toString());
+        if(vdMinimumLengthValueTextField.getText() != null &&
+            vdMinimumLengthValueTextField.getText() != "null" &&
+            vdMinimumLengthValueTextField.getText().trim().length() != 0)
+            vd.setMinimumLength(Integer.parseInt(vdMinimumLengthValueTextField.getText()));
+        else
+            vd.setMinimumLength(0);
+        if(vdMaximumLengthValueTextField.getText() != null &&
+            vdMaximumLengthValueTextField.getText() != "null" &&
+            vdMaximumLengthValueTextField.getText().trim().length() != 0)
+            vd.setMaximumLength(Integer.parseInt(vdMaximumLengthValueTextField.getText()));
+        else
+            vd.setMaximumLength(0);
+        if(vdDecimalPlaceValueTextField.getText() != null &&
+            vdDecimalPlaceValueTextField.getText() != "null" &&
+            vdDecimalPlaceValueTextField.getText().trim().length() != 0)
+            vd.setDecimalPlace(Integer.parseInt(vdDecimalPlaceValueTextField.getText()));
+        else
+            vd.setDecimalPlace(0);
+        vd.setHighValue(vdHighValuevalueTextArea.getText());
+        vd.setLowValue(vdLowValuevalueTextArea.getText());
         
         firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
         fireElementChangeEvent(new ElementChangeEvent((Object)umlNode));
@@ -308,6 +477,19 @@ public class ValueDomainViewPanel extends JPanel
       this.cadsrModule = cadsrModule;
     }
     
+    private String setTextFieldValue(int value){
+    
+        return value == 0 ? "" : Integer.toString(value);
+    
+    }
+    
+    private boolean checkForNullOrZero(String value){
+        if(value != null || !value.equals("null") || value.length() > 0)
+            return true;
+        else
+            return false;
+    }
+    
     private void populateDatatypeCombobox(){
         datatypeList = new ArrayList();
         Collection<String> collDatatypes = cadsrModule.getAllDatatypes();
@@ -321,14 +503,15 @@ public class ValueDomainViewPanel extends JPanel
             vdDatatypeValueCombobox.addItem(datatypeValue);
         }
     }
-    
-    private int getSelectedIndex(String selectedString){
-        for(int i=0; i<datatypeList.size(); i++)
-            if(datatypeList.get(i)!= null 
-                && datatypeList.get(i).toString().trim().equals(selectedString.trim()))
+
+    private int getSelectedIndex(String selectedString, List lst){
+        for(int i=0; i<lst.size(); i++)
+            if(lst.get(i)!= null 
+                && lst.get(i).toString().trim().equals(selectedString.trim()))
                 return i;
         return -1;
     }
+    
     public void addElementChangeListener(ElementChangeListener listener){
         changeListeners.add(listener);
     }
@@ -363,4 +546,5 @@ public class ValueDomainViewPanel extends JPanel
     public String getPubId() {
         return tempVD.getPublicId();
     }
+
 }

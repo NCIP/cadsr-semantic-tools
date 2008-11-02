@@ -291,6 +291,13 @@ public class XMIWriter2 implements ElementWriter {
         clazz.removeTaggedValue(XMIParser2.TV_REP_VERSION);
         clazz.removeTaggedValue(XMIParser2.TV_VD_ID);
         clazz.removeTaggedValue(XMIParser2.TV_VD_VERSION);
+        clazz.removeTaggedValue(XMIParser2.TV_VD_UOM);
+        clazz.removeTaggedValue(XMIParser2.TV_VD_DISPLAY_FORMAT);
+        clazz.removeTaggedValue(XMIParser2.TV_VD_MINIMUM_LENGTH);
+        clazz.removeTaggedValue(XMIParser2.TV_VD_MAXIMUM_LENGTH);
+        clazz.removeTaggedValue(XMIParser2.TV_VD_DECIMAL_PLACE);
+        clazz.removeTaggedValue(XMIParser2.TV_VD_HIGH_VALUE);
+        clazz.removeTaggedValue(XMIParser2.TV_VD_LOW_VALUE);
         
         if(!StringUtil.isEmpty(vd.getPublicId()) && vd.getVersion() != null) {
           clazz.addTaggedValue(XMIParser2.TV_VD_ID, vd.getPublicId());
@@ -323,6 +330,21 @@ public class XMIWriter2 implements ElementWriter {
             if(vd.getRepresentation().getVersion() != null)
               clazz.addTaggedValue(XMIParser2.TV_REP_VERSION, String.valueOf(vd.getRepresentation().getVersion().toString()));
           }
+
+          if(!vd.getUOMName().equals("NOT SPECIFIED"))
+              clazz.addTaggedValue(XMIParser2.TV_VD_UOM, vd.getUOMName());
+          if(!vd.getFormatName().equals("NOT SPECIFIED"))
+              clazz.addTaggedValue(XMIParser2.TV_VD_DISPLAY_FORMAT, vd.getFormatName());
+          if(vd.getMinimumLength() != 0)
+              clazz.addTaggedValue(XMIParser2.TV_VD_MINIMUM_LENGTH, Integer.toString(vd.getMinimumLength()));
+          if(vd.getMaximumLength() != 0)
+              clazz.addTaggedValue(XMIParser2.TV_VD_MAXIMUM_LENGTH, Integer.toString(vd.getMaximumLength()));
+          if(vd.getDecimalPlace() != 0)
+              clazz.addTaggedValue(XMIParser2.TV_VD_DECIMAL_PLACE, Integer.toString(vd.getDecimalPlace()));
+          if(!StringUtil.isEmpty(vd.getHighValue()))
+              clazz.addTaggedValue(XMIParser2.TV_VD_HIGH_VALUE, vd.getHighValue());
+          if(!StringUtil.isEmpty(vd.getLowValue()))
+              clazz.addTaggedValue(XMIParser2.TV_VD_LOW_VALUE, vd.getLowValue());
         }
       }        
 

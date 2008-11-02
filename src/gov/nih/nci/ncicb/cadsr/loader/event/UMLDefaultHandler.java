@@ -177,11 +177,18 @@ public class UMLDefaultHandler
         vd.setId(existingVd.getId());
 
       }
-    } else {
+    } else {///////////////////////
       vd.setLongName(event.getName());
       vd.setPreferredDefinition(event.getDescription());
       vd.setVdType(event.getType());
       vd.setDataType(event.getDatatype());
+      vd.setUOMName(event.getUnitOfMeasure());
+      vd.setFormatName(event.getDisplayFormat());
+      vd.setMinimumLength(event.getMinLength());
+      vd.setMaximumLength(event.getMaxLength());
+      vd.setDecimalPlace(event.getDecimalPlace());
+      vd.setHighValue(event.getHighValue());
+      vd.setLowValue(event.getLowValue());
 
       ConceptualDomain cd = DomainObjectFactory.newConceptualDomain();
       cd.setPublicId(event.getCdId());
