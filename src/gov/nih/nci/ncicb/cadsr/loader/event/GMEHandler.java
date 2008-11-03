@@ -46,7 +46,7 @@ public class GMEHandler implements UMLHandler{
             elements.addElement(csi);
             packageList.add(pName);
           }
-          
+        
           AlternateName gmeNamespaceName = DomainObjectFactory.newAlternateName();
           gmeNamespaceName.setType(AlternateName.TYPE_GME_NAMESPACE);
           gmeNamespaceName.setName(event.getGmeNamespace());
@@ -84,6 +84,14 @@ public class GMEHandler implements UMLHandler{
 
         oc.addAlternateName(fullName);
         oc.addAlternateName(className);
+
+        ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
+        String pName = event.getPackageName();
+        csi.setLongName(pName);
+        if (!packageList.contains(pName)) {
+          elements.addElement(csi);
+          packageList.add(pName);
+        }
 
     }
 
