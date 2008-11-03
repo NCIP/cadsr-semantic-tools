@@ -85,6 +85,14 @@ public class GMEHandler implements UMLHandler{
         oc.addAlternateName(fullName);
         oc.addAlternateName(className);
 
+        ClassificationSchemeItem csi = DomainObjectFactory.newClassificationSchemeItem();
+        String pName = event.getPackageName();
+        csi.setLongName(pName);
+        if (!packageList.contains(pName)) {
+          elements.addElement(csi);
+          packageList.add(pName);
+        }
+
     }
 
     public void newAttribute(NewAttributeEvent event) {
