@@ -617,51 +617,55 @@ public class XMIParser2 implements Parser {
       event.setDatatype(tv.getValue().trim());
     }
 
-///////////////////////////////////////////////////////////////////////////////
+    tv = clazz.getTaggedValue(TV_VD_UOM);
+    if(tv != null) {
+      event.setUnitOfMeasure(tv.getValue().trim());
+    }
 
-     tv = clazz.getTaggedValue(TV_VD_UOM);
-     if(tv != null) {
-       event.setUnitOfMeasure(tv.getValue().trim());
-     }
-
-      tv = clazz.getTaggedValue(TV_VD_DISPLAY_FORMAT);
-      if(tv != null) {
-        event.setDisplayFormat(tv.getValue().trim());
-      }
-
-      tv = clazz.getTaggedValue(TV_VD_MINIMUM_LENGTH);
-      if(tv != null) {
+    tv = clazz.getTaggedValue(TV_VD_DISPLAY_FORMAT);
+    if(tv != null) {
+      event.setDisplayFormat(tv.getValue().trim());
+    }
+    
+    tv = clazz.getTaggedValue(TV_VD_MINIMUM_LENGTH);
+    if(tv != null) {
+      try {
         event.setMinLength(Integer.parseInt(tv.getValue().trim()));
-      }
+      } catch (NumberFormatExceptio e) {
+      } // end of try-catch
+    }
 
-      tv = clazz.getTaggedValue(TV_VD_MAXIMUM_LENGTH);
-      if(tv != null) {
+    tv = clazz.getTaggedValue(TV_VD_MAXIMUM_LENGTH);
+    if(tv != null) {
+      try {
         event.setMaxLength(Integer.parseInt(tv.getValue().trim()));
-      }
-
-      tv = clazz.getTaggedValue(TV_VD_DECIMAL_PLACE);
-      if(tv != null) {
+      } catch (NumberFormatExceptio e) {
+      } // end of try-catch
+    }
+    
+    tv = clazz.getTaggedValue(TV_VD_DECIMAL_PLACE);
+    if(tv != null) {
+      try {
         event.setDecimalPlace(Integer.parseInt(tv.getValue().trim()));
-      }
-
-      tv = clazz.getTaggedValue(TV_VD_HIGH_VALUE);
-      if(tv != null) {
-        event.setHighValue(tv.getValue().trim());
-      }
-
-      tv = clazz.getTaggedValue(TV_VD_LOW_VALUE);
-      if(tv != null) {
-        event.setLowValue(tv.getValue().trim());
-      }
-
-
-///////////////////////////////////////////////////////////////////////////////
-
+      } catch (NumberFormatExceptio e) {
+      } // end of try-catch
+    }
+    
+    tv = clazz.getTaggedValue(TV_VD_HIGH_VALUE);
+    if(tv != null) {
+      event.setHighValue(tv.getValue().trim());
+    }
+    
+    tv = clazz.getTaggedValue(TV_VD_LOW_VALUE);
+    if(tv != null) {
+      event.setLowValue(tv.getValue().trim());
+    }
+    
     tv = clazz.getTaggedValue(TV_VD_TYPE);
     if(tv != null) {
       event.setType(tv.getValue());
     }
-
+    
     tv = clazz.getTaggedValue(TV_VD_ID);
     if(tv != null) {
       event.setVdId(tv.getValue().trim());
@@ -675,7 +679,7 @@ public class XMIParser2 implements Parser {
         logger.warn(PropertyAccessor.getProperty("version.numberFormatException", tv.getValue()));
       } // end of try-catch
     }
-
+    
 
     tv = clazz.getTaggedValue(TV_CD_ID);
     if(tv != null) {
