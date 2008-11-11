@@ -63,7 +63,7 @@ public class LookupUtil implements CadsrModuleListener {
         } catch (Exception ex) {
           throw new RuntimeException(ex);
         }
-        
+
         if (l.size() == 0) {
           return null;
         } else {
@@ -77,7 +77,7 @@ public class LookupUtil implements CadsrModuleListener {
         
         //       List<ValueDomain> l = valueDomainDAO.find(vd);
         Collection<ValueDomain> l = null;
-      
+
         try {
           l = cadsrModule.findValueDomain(queryFields);
         } catch (Exception ex) {
@@ -109,10 +109,10 @@ public class LookupUtil implements CadsrModuleListener {
               }
             }
           
-          if(result == null)
-            throw new RuntimeException
-              ("Value Domain " +
-               vd.getLongName() + " does not exist.");
+//          if(result == null)
+//            throw new RuntimeException
+//              ("Value Domain " +
+//               vd.getLongName() + " does not exist.");
         }
       }
     }
