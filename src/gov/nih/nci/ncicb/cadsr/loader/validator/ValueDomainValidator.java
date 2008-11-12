@@ -173,41 +173,72 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
               }
           }
         
-        // START: OPTIONAL PANEL VALIDATIONS GOES HERE
-        String[] defaultList = PropertyAccessor.getProperty("vd.unit.of.measures").split(",");
-        String valueToBeTested = vd.getUOMName();
-        if(!StringUtil.isEmpty(valueToBeTested)){
+          // START: OPTIONAL PANEL VALIDATIONS GOES HERE
+          String[] defaultList = PropertyAccessor.getProperty("vd.unit.of.measures").split(",");
+          String valueToBeTested = vd.getUOMName();
+          if(!StringUtil.isEmpty(valueToBeTested)){
             boolean contains = contains(defaultList, valueToBeTested);
             if(!contains){
-                items.addItem
-                  (new ValidationError
-                   (PropertyAccessor.getProperty
-                    ("vd.mismatch.uom", vd.getUOMName()), vd));
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.mismatch.uom", vd.getUOMName()), vd));
             }
-        }
-        defaultList = PropertyAccessor.getProperty("vd.display.format").split(",");
-        valueToBeTested = vd.getFormatName();
-        if(!StringUtil.isEmpty(valueToBeTested)){
+          }
+
+          defaultList = PropertyAccessor.getProperty("vd.display.format").split(",");
+          valueToBeTested = vd.getFormatName();
+          if(!StringUtil.isEmpty(valueToBeTested)){
             boolean contains = contains(defaultList, valueToBeTested);
             if(!contains){
-                items.addItem
-                  (new ValidationError
-                   (PropertyAccessor.getProperty
-                    ("vd.mismatch.displayFormat", vd.getFormatName()), vd));
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.mismatch.displayFormat", vd.getFormatName()), vd));
             }
-        }
-//        int minLength = vd.getMinimumLength();
-//        int maxLength = vd.getMaximumLength();
-//        int decPlace = vd.getDecimalPlace();
-//        if(!StringUtil.isEmpty(Integer.toString(minLength))){
-//            if(IntegerminLength){
-//                items.addItem
-//                  (new ValidationError
-//                   (PropertyAccessor.getProperty
-//                    ("vd.mismatch.displayFormat", vd.getFormatName()), vd));
-//            }
-//        }
-        
+          }
+          
+          if(vd.getMinimumLength() != Integer.MAX_VALUE) {
+            if(vd.getMinimumLength() > 9999999) {
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.min.length.validation.msg"), vd));
+            }
+          }            
+          
+          if(vd.getMaximumLength() != Integer.MAX_VALUE) {
+            if(vd.getMaximumLength() > 9999999) {
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.max.length.validation.msg"), vd));
+            }
+          }
+          
+          if(vd.getMaximumLength() < vd.getMinimumLength()) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.min.higher.than.max.validation.msg"), vd));
+          }
+          
+          if(vd.getDecimalPlace() != Integer.MAX_VALUE) {
+            if(vd.getDecimalPlace() > 99) {
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.decimal.place.validation.msg"), vd));
+            }
+          }
+          
+          // !! TODO
+          // Validate that Low and High are NUMBER
+
+          // Validate that HIGH is higher than LOW
+
+          // Validate that LOW And HIGH are shorter than 255 chars
+
         
         // END: OPTIONAL PANEL VALIDATIONS GOES HERE
         
@@ -409,15 +440,26 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
                           ("vd.not.used", vd.getLongName()), vd));
       }
     }
-    
+
+    evt = new ProgressEvent();
+    evt.setMessage("Validating Value Domains ...");
+    evt.setGoal(vds.size());
+    evt.setStatus(0);
+    fireProgressEvent(evt);
+    count = 1;
     for(ValueDomain vd : vds) {
+      evt = new ProgressEvent();
+      evt.setMessage(" Validating " + vd.getLongName());
+      evt.setStatus(count++);
+      fireProgressEvent(evt);
+      
       if(vd.getConceptDerivationRule() != null) {
         List<ComponentConcept> vdList = vd.getConceptDerivationRule().getComponentConcepts();
         List<Concept> vdConceptList = new ArrayList<Concept>();
         for(ComponentConcept cc : vdList)
           vdConceptList.add(cc.getConcept());
         if(vdConceptList.isEmpty())
-          break;
+          continue;
         for(ValueDomain currentVd : vds)     
           if(vd != currentVd && currentVd.getConceptDerivationRule() != null) {
             List<ComponentConcept> currentVdList = currentVd.getConceptDerivationRule().getComponentConcepts();
@@ -425,7 +467,7 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
             for(ComponentConcept cc : currentVdList)
               currentVdConceptList.add(cc.getConcept());
             if(currentVdConceptList.isEmpty())
-              break;
+              continue;
             if(vdConceptList.size() == currentVdConceptList.size()
                && vdConceptList.containsAll(currentVdConceptList)) 
               items.addItem(new ValidationError
