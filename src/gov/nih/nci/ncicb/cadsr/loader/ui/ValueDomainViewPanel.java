@@ -29,10 +29,17 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 
+import java.text.ParseException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -48,6 +55,7 @@ import javax.swing.JTextField;
 import javax.swing.ToolTipManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.DefaultFormatter;
 
 public class ValueDomainViewPanel extends JPanel 
     implements Editable, CadsrModuleListener, ItemListener, DocumentListener
@@ -141,9 +149,10 @@ public class ValueDomainViewPanel extends JPanel
     if(!isInitialized)
       initUI();
 
-    initValues();
-    applyButtonPanel.propertyChange(new PropertyChangeEvent(this, ButtonPanel.SETUP, null, true));
     applyButtonPanel.update();
+    applyButtonPanel.propertyChange(new PropertyChangeEvent(this, ButtonPanel.SETUP, null, true));
+
+    initValues();
   }
   
   private void initUI() 
@@ -248,9 +257,6 @@ public class ValueDomainViewPanel extends JPanel
     vdLowValueScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     vdLowValueScrollPane.setPreferredSize(new Dimension(200, 100));
     
-//    NumberFormat nf = NumberFormat.getIntegerInstance();
-//    nf.setMaximumIntegerDigits(2);
-    
     vdMinimumLengthValueTextField = new JFormattedTextField(new RegexFormatter("\\d{0,8}"));
     vdMaximumLengthValueTextField = new JFormattedTextField(new RegexFormatter("\\d{0,8}"));
     vdDecimalPlaceValueTextField = new JFormattedTextField(new RegexFormatter("\\d{0,2}"));
@@ -266,7 +272,7 @@ public class ValueDomainViewPanel extends JPanel
     JPanel explainPanel = new JPanel();
     explainPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
     explainPanel.add(explainLabel);
-    explainLabel.setToolTipText("This is the tool tip text. This needs to be updated for the text of the optional panel.");
+    explainLabel.setToolTipText(PropertyAccessor.getProperty("value.domain.view.explain.this"));
 
     UIUtil.insertInBag(optionalPanel, vdUnitOfMeasureTitleLabel, 0, 2);
     UIUtil.insertInBag(optionalPanel, vdUnitOfMeasureValueCombobox, 1, 2); 
@@ -327,55 +333,82 @@ public class ValueDomainViewPanel extends JPanel
   {
     vdPrefDefValueTextField.setText(tempVD.getPreferredDefinition());
     
-    int index = tempVD.getDataType() == null ? -1 : getSelectedIndex(tempVD.getDataType(), datatypeList);
-    vdDatatypeValueCombobox.setSelectedIndex(index == -1 ? 0 : index);
-    
+    // Set Datatype
+    {
+      int index = tempVD.getDataType() == null ? -1 : getSelectedIndex(tempVD.getDataType(), datatypeList);
+      vdDatatypeValueCombobox.setSelectedIndex(index == -1 ? 0 : index);
+      
       if(vd.getVdType() != null && tempVD != null && tempVD.getVdType() != null){
-          if(!vd.getVdType().equals("null")){
-              if(!vd.getVdType().equals(null)){
-                if(tempVD.getVdType().equals("E")){
-                    vdTypeERadioButton.setSelected(true);
-                    vdTypeNRadioButton.setSelected(false);
-                }
-                else if(tempVD.getVdType().equals("N")){
-                    vdTypeNRadioButton.setSelected(true);
-                    vdTypeERadioButton.setSelected(false);
-                }
-              }else{
-                tmpInvisible.setSelected(true);
-                vdTypeERadioButton.setSelected(false);
-                vdTypeNRadioButton.setSelected(false);
-              }
-         }else{
+        if(!vd.getVdType().equals("null")){
+          if(!vd.getVdType().equals(null)){
+            if(tempVD.getVdType().equals("E")){
+              vdTypeERadioButton.setSelected(true);
+              vdTypeNRadioButton.setSelected(false);
+            }
+            else if(tempVD.getVdType().equals("N")){
+              vdTypeNRadioButton.setSelected(true);
+              vdTypeERadioButton.setSelected(false);
+            }
+          }else{
             tmpInvisible.setSelected(true);
             vdTypeERadioButton.setSelected(false);
             vdTypeNRadioButton.setSelected(false);
-         }
-      }else{
+          }
+        }else{
           tmpInvisible.setSelected(true);
           vdTypeERadioButton.setSelected(false);
           vdTypeNRadioButton.setSelected(false);
         }
+      }else{
+        tmpInvisible.setSelected(true);
+        vdTypeERadioButton.setSelected(false);
+        vdTypeNRadioButton.setSelected(false);
+      }
+    }
 
-    vdCDPublicIdJLabel.setText(ConventionUtil.publicIdVersion(tempVD.getConceptualDomain()));
-
-    if(tempVD != null && tempVD.getConceptualDomain() != null && tempVD.getConceptualDomain().getLongName() != null
-        && !tempVD.getConceptualDomain().getLongName().equals(""))
-      vdCdLongNameValueJLabel.setText(tempVD.getConceptualDomain().getLongName());
-    else
-      vdCdLongNameValueJLabel.setText("Unable to lookup CD Long Name");
-
-    vdRepIdValueJLabel.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
-
-    index = tempVD.getUOMName() == null ? -1 : getSelectedIndex(tempVD.getUOMName(), uomList);
-    vdUnitOfMeasureValueCombobox.setSelectedIndex(index == -1 ? 0 : index);
+    // Set Conceptual Domain
+    {
+      vdCDPublicIdJLabel.setText(ConventionUtil.publicIdVersion(tempVD.getConceptualDomain()));
       
-    index = tempVD.getFormatName() == null ? -1 : getSelectedIndex(tempVD.getFormatName(), displayFormatList);
-    vdDisplayFormatValueCombobox.setSelectedIndex(index == -1 ? 0 : index);
-    
-    vdMinimumLengthValueTextField.setText(setTextFieldValue(tempVD.getMinimumLength()));
-    vdMaximumLengthValueTextField.setText(setTextFieldValue(tempVD.getMaximumLength()));
-    vdDecimalPlaceValueTextField.setText(setTextFieldValue(tempVD.getDecimalPlace()));
+      if(tempVD != null && tempVD.getConceptualDomain() != null && tempVD.getConceptualDomain().getLongName() != null
+         && !tempVD.getConceptualDomain().getLongName().equals(""))
+        vdCdLongNameValueJLabel.setText(tempVD.getConceptualDomain().getLongName());
+      else
+        vdCdLongNameValueJLabel.setText("Unable to lookup CD Long Name");
+    }
+
+    // Set Rep Term
+    {
+      vdRepIdValueJLabel.setText(ConventionUtil.publicIdVersion(tempVD.getRepresentation()));
+    }
+
+    // Set UOM
+    {
+      int index = tempVD.getUOMName() == null ? -1 : getSelectedIndex(tempVD.getUOMName(), uomList);
+      vdUnitOfMeasureValueCombobox.setSelectedIndex(index == -1 ? 0 : index);
+    }
+
+    // Set Format
+    {
+      int index = tempVD.getFormatName() == null ? -1 : getSelectedIndex(tempVD.getFormatName(), displayFormatList);
+      vdDisplayFormatValueCombobox.setSelectedIndex(index == -1 ? 0 : index);
+    }
+
+    if(tempVD.getMinimumLength() != Integer.MAX_VALUE)
+      vdMinimumLengthValueTextField.setText(setTextFieldValue(tempVD.getMinimumLength()));
+    else 
+      vdMinimumLengthValueTextField.setText("");
+
+    if(tempVD.getMaximumLength() != Integer.MAX_VALUE)
+      vdMaximumLengthValueTextField.setText(setTextFieldValue(tempVD.getMaximumLength()));
+    else 
+      vdMaximumLengthValueTextField.setText("");
+
+    if(tempVD.getDecimalPlace() != Integer.MAX_VALUE)
+      vdDecimalPlaceValueTextField.setText(setTextFieldValue(tempVD.getDecimalPlace()));
+    else 
+      vdDecimalPlaceValueTextField.setText("");
+
     vdHighValuevalueTextArea.setText(tempVD.getHighValue());
     vdLowValuevalueTextArea.setText(tempVD.getLowValue());
 
@@ -423,47 +456,46 @@ public class ValueDomainViewPanel extends JPanel
 //    frame.setSize(450, 350);
   }
 
-    public void applyPressed() {   
-        vd.setPublicId(null);
-        vd.setConceptualDomain(tempVD.getConceptualDomain());
-        vd.setRepresentation(tempVD.getRepresentation());
-        if(vdDatatypeValueCombobox.getSelectedIndex() != 0)
-            vd.setDataType(String.valueOf(vdDatatypeValueCombobox.getSelectedItem()));
-        if(checkForNullOrZero(vdPrefDefValueTextField.getText()))
-            vd.setPreferredDefinition(vdPrefDefValueTextField.getText());
-        if(vdTypeERadioButton.isSelected())
-            vd.setVdType("E");
-        if(vdTypeNRadioButton.isSelected())
-            vd.setVdType("N");
-        vdTypeERadioButton.addItemListener(this);
-        vdTypeNRadioButton.addItemListener(this);
-        
-        vd.setUOMName(vdUnitOfMeasureValueCombobox.getSelectedItem().toString());
-        vd.setFormatName(vdDisplayFormatValueCombobox.getSelectedItem().toString());
-        if(vdMinimumLengthValueTextField.getText() != null &&
-            vdMinimumLengthValueTextField.getText() != "null" &&
-            vdMinimumLengthValueTextField.getText().trim().length() != 0)
-            vd.setMinimumLength(Integer.parseInt(vdMinimumLengthValueTextField.getText()));
-        else
-            vd.setMinimumLength(0);
-        if(vdMaximumLengthValueTextField.getText() != null &&
-            vdMaximumLengthValueTextField.getText() != "null" &&
-            vdMaximumLengthValueTextField.getText().trim().length() != 0)
-            vd.setMaximumLength(Integer.parseInt(vdMaximumLengthValueTextField.getText()));
-        else
-            vd.setMaximumLength(0);
-        if(vdDecimalPlaceValueTextField.getText() != null &&
-            vdDecimalPlaceValueTextField.getText() != "null" &&
-            vdDecimalPlaceValueTextField.getText().trim().length() != 0)
-            vd.setDecimalPlace(Integer.parseInt(vdDecimalPlaceValueTextField.getText()));
-        else
-            vd.setDecimalPlace(0);
-        vd.setHighValue(vdHighValuevalueTextArea.getText());
-        vd.setLowValue(vdLowValuevalueTextArea.getText());
-        
-        firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
-        fireElementChangeEvent(new ElementChangeEvent((Object)umlNode));
-    }
+  public void applyPressed() {   
+    vd.setPublicId(null);
+    vd.setConceptualDomain(tempVD.getConceptualDomain());
+    vd.setRepresentation(tempVD.getRepresentation());
+    if(vdDatatypeValueCombobox.getSelectedIndex() != 0)
+      vd.setDataType(String.valueOf(vdDatatypeValueCombobox.getSelectedItem()));
+    if(checkForNullOrZero(vdPrefDefValueTextField.getText()))
+      vd.setPreferredDefinition(vdPrefDefValueTextField.getText());
+    if(vdTypeERadioButton.isSelected())
+      vd.setVdType("E");
+    if(vdTypeNRadioButton.isSelected())
+      vd.setVdType("N");
+    vdTypeERadioButton.addItemListener(this);
+    vdTypeNRadioButton.addItemListener(this);
+    
+    if(!vdUnitOfMeasureValueCombobox.getSelectedItem().toString().equals("NOT SPECIFIED"))
+      vd.setUOMName(vdUnitOfMeasureValueCombobox.getSelectedItem().toString());
+
+    if(!vdDisplayFormatValueCombobox.getSelectedItem().toString().equals("NOT SPECIFIED"))
+      vd.setFormatName(vdDisplayFormatValueCombobox.getSelectedItem().toString());
+
+    if(!checkForNullOrZero(vdMinimumLengthValueTextField.getText()))
+      vd.setMinimumLength(Integer.parseInt(vdMinimumLengthValueTextField.getText()));
+    else // Can't come up with anything better than this:
+      // we need to check for this logic when writing. Not good to carry logic around like this...
+      vd.setMinimumLength(Integer.MAX_VALUE);
+    if(!checkForNullOrZero(vdMaximumLengthValueTextField.getText()))
+      vd.setMaximumLength(Integer.parseInt(vdMaximumLengthValueTextField.getText()));
+    else
+      vd.setMaximumLength(Integer.MAX_VALUE);
+    if(!checkForNullOrZero(vdDecimalPlaceValueTextField.getText()))
+      vd.setDecimalPlace(Integer.parseInt(vdDecimalPlaceValueTextField.getText()));
+    else
+      vd.setDecimalPlace(Integer.MAX_VALUE);
+    vd.setHighValue(vdHighValuevalueTextArea.getText());
+    vd.setLowValue(vdLowValuevalueTextArea.getText());
+    
+    firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
+    fireElementChangeEvent(new ElementChangeEvent((Object)umlNode));
+  }
 
     public void setCadsrCDDialog(CadsrDialog cadsrCDDialog) {
       this.cadsrCDDialog = cadsrCDDialog;
@@ -483,12 +515,12 @@ public class ValueDomainViewPanel extends JPanel
     
     }
     
-    private boolean checkForNullOrZero(String value){
-        if(value != null || !value.equals("null") || value.length() > 0)
-            return true;
-        else
-            return false;
-    }
+  private boolean checkForNullOrZero(String value){
+    if(value != null || !value.equals("null") || value.length() > 0)
+      return true;
+    else
+      return false;
+  }
     
     private void populateDatatypeCombobox(){
         datatypeList = new ArrayList();
@@ -546,5 +578,7 @@ public class ValueDomainViewPanel extends JPanel
     public String getPubId() {
         return tempVD.getPublicId();
     }
+
+
 
 }
