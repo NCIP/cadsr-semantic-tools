@@ -5,6 +5,7 @@ import java.util.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
@@ -15,18 +16,34 @@ public class DefinitionLengthValidator implements Validator {
 
   private ValidationItems items = ValidationItems.getInstance();
 
-  public void addProgressListener(ProgressListener l) {
+  private ProgressListener progressListener;
 
+  public void addProgressListener(ProgressListener l) {
+    progressListener = l;
   }
 
+  private void fireProgressEvent(ProgressEvent evt) {
+    if(progressListener != null)
+      progressListener.newProgressEvent(evt);
+  }
 
   /**
    * returns a list of Validation errors.
    */
   public ValidationItems validate() {
     List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
+    ProgressEvent evt = new ProgressEvent();
+    evt.setMessage("Validating Object Classes ...");
+    evt.setGoal(ocs.size());
+    evt.setStatus(0);
+    fireProgressEvent(evt);
+    int count = 1;
     if(ocs != null)
       for(ObjectClass oc : ocs) {
+        evt = new ProgressEvent();
+        evt.setMessage(" Validating " + oc.getLongName());
+        evt.setStatus(count++);
+        fireProgressEvent(evt);
         if((StringUtil.isEmpty(oc.getPublicId()) || oc.getVersion() == null) && !StringUtil.isEmpty(oc.getPreferredName())) {
           String[] conceptCodes = oc.getPreferredName().split(":");
           if(conceptCodes.length > 0) {
@@ -59,8 +76,19 @@ public class DefinitionLengthValidator implements Validator {
 //       }
 
     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
+    evt = new ProgressEvent();
+    evt.setMessage("Validating Data Elements ...");
+    evt.setGoal(des.size());
+    evt.setStatus(0);
+    fireProgressEvent(evt);
+    count = 1;
     if(des != null)
       for(DataElement de : des) {
+        evt = new ProgressEvent();
+        evt.setMessage(" Validating " + de.getLongName());
+        evt.setStatus(count++);
+        fireProgressEvent(evt);
+
         DataElementConcept dec = de.getDataElementConcept();
         if(StringUtil.isEmpty(de.getPublicId()) || de.getVersion() == null) {
           String ocDef = "";
