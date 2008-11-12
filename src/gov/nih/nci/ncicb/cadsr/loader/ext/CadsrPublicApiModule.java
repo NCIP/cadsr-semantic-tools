@@ -1,6 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ext;
 
 import gov.nih.nci.cadsr.domain.ComponentConcept;
+import gov.nih.nci.cadsr.umlproject.domain.Project;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.Representation;
@@ -20,6 +21,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 
 /**
@@ -599,6 +601,27 @@ public class CadsrPublicApiModule implements CadsrModule {
   }
   
   
+  public List<Project> getAllProjects() {
+
+    DetachedCriteria projectCriteria = DetachedCriteria.forClass(Project.class);
+
+    projectCriteria.addOrder(Order.asc("longName").ignoreCase());
+
+    DetachedCriteria csCriteria = projectCriteria.createCriteria("classificationScheme");
+
+    csCriteria.add(Expression.eq("workflowStatusName", "RELEASED"));
+    List results = null;
+    try {
+       results = service.query(projectCriteria); 
+    } catch (ApplicationException e) {
+      throw new RuntimeException(e);
+    } // end of try-catch
+
+    return results;
+
+  }
+
+  
 //   public void setServiceURL(String url) {
 //     this.serviceURL = url;
 // //     service = ApplicationService.getRemoteInstance(serviceURL);
@@ -634,7 +657,7 @@ public class CadsrPublicApiModule implements CadsrModule {
 //  }
 
   public static void main(String[] args) {
-    CadsrModule testModule = new CadsrPublicApiModule("http://cabio.nci.nih.gov/cacore32/http/remoteService");
+    CadsrPublicApiModule testModule = new CadsrPublicApiModule("http://cabio.nci.nih.gov/cacore32/http/remoteService");
     try {
 
 //       System.out.println("Test Find CS");
@@ -714,13 +737,18 @@ public class CadsrPublicApiModule implements CadsrModule {
 //         System.out.println(rep.getLongName());
 //       }
 
-      gov.nih.nci.ncicb.cadsr.domain.Concept concept = DomainObjectFactory.newConcept();
-      concept.setPreferredName("C16612");
+//       gov.nih.nci.ncicb.cadsr.domain.Concept concept = DomainObjectFactory.newConcept();
+//       concept.setPreferredName("C16612");
 
-      System.out.println("find " + concept.getPreferredName());
-      Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> des = testModule.findDEByOCConcept(concept);
-      for(gov.nih.nci.ncicb.cadsr.domain.DataElement de : des) {
-        System.out.println(de.getLongName());
+//       System.out.println("find " + concept.getPreferredName());
+//       Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> des = testModule.findDEByOCConcept(concept);
+//       for(gov.nih.nci.ncicb.cadsr.domain.DataElement de : des) {
+//         System.out.println(de.getLongName());
+//       }
+
+      List<Project> result = testModule.getAllProjects();
+      for(Project p : result) {
+        System.out.println(p.getLongName() + "-- WS: " + p.getClassificationScheme().getWorkflowStatusName() + "-- Context : " + p.getClassificationScheme().getContext().getName());
       }
 
 
