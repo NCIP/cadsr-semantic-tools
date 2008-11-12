@@ -28,8 +28,9 @@ import java.util.List;
 public class ApplyButtonPanel extends JPanel implements ActionListener, PropertyChangeListener
 {
 
-  private JCheckBox reviewButton;
-  private JButton applyButton;
+  private JCheckBox reviewButton = new JCheckBox();
+  private JButton applyButton = new JButton("Apply");
+;
 
   static final String SAVE = "APPLY", 
     REVIEW = "REVIEW";
@@ -49,17 +50,21 @@ public class ApplyButtonPanel extends JPanel implements ActionListener, Property
 
   private RunMode runMode = null;
 
+  private boolean isInitialized = false;
+
   public ApplyButtonPanel(Editable viewPanel, ReviewableUMLNode node) {
     this.viewPanel = viewPanel;
     this.node = node;
+  }
 
+  public void initUI() {
+    isInitialized = true;
+    
     UserSelections selections = UserSelections.getInstance();
     
     runMode = (RunMode)(selections.getProperty("MODE"));
 
-
-    applyButton = new JButton("Apply");
-
+    
     if(runMode.equals(RunMode.Reviewer))
       reviewButton = new JCheckBox("<html> Model <br> Owner <br> Verified</html");
     else if(runMode.equals(RunMode.Curator))
@@ -78,6 +83,7 @@ public class ApplyButtonPanel extends JPanel implements ActionListener, Property
 
     this.add(applyButton);
     this.add(reviewButton);
+    
 
   }
   
@@ -87,6 +93,8 @@ public class ApplyButtonPanel extends JPanel implements ActionListener, Property
   }
 
   void update() {
+    if(!isInitialized)
+      initUI();
     reviewButton.setSelected(node.isReviewed());
   }
 
