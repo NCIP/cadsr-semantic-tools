@@ -36,7 +36,7 @@ import java.util.Calendar;
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class ModeSelectionPanel extends JPanel implements MouseListener{
+public class ModeSelectionPanel extends JPanel implements MouseListener, KeyListener {
 
   private JRadioButton unannotatedXmiOption, roundtripOption, annotateOption, reviewOption, curateOption, gmeDefaultsOption, gmeCleanupOption;
   private ButtonGroup group;
@@ -209,6 +209,8 @@ public class ModeSelectionPanel extends JPanel implements MouseListener{
 
 //     this.add(privateApiPanel, BorderLayout.SOUTH);
     infoPanel.addMouseListener(this);
+
+    unannotatedXmiOption.addKeyListener(this);
   }
 
   public static void main(String[] args) {
@@ -235,4 +237,31 @@ public class ModeSelectionPanel extends JPanel implements MouseListener{
   public void mouseClicked(MouseEvent e) {}
   public void mouseEntered(MouseEvent e) {}
   public void mouseExited(MouseEvent e) {}
+
+
+  private long timeTyped = 0;
+  private StringBuilder sb = new StringBuilder();
+  public void keyTyped(KeyEvent e) {
+  }
+
+  public void keyPressed(KeyEvent e) {
+  }
+
+  public void keyReleased(KeyEvent e) {
+    long diff = e.getWhen() - timeTyped;
+    timeTyped = e.getWhen();
+    if(sb.length() == 0) {
+      sb.append(e.getKeyChar());
+    } else if(diff < 1000) {
+      sb.append(e.getKeyChar());
+      if(sb.toString().equals("expert")) {
+        ExpertsCacheDialog ecDialog = new ExpertsCacheDialog();
+        ecDialog.setVisible(true);
+        ecDialog.setAlwaysOnTop(true);
+      }
+    } else {
+      sb = new StringBuilder(e.getKeyChar());
+    }
+      
+  }
 }
