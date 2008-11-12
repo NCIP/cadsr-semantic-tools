@@ -43,11 +43,11 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   private JPanel displayedPanel;
     
   public LVDPanel() {
+    vdButtonPanel = new VDButtonPanel(this);
   }
   
   private void initUI() {
     isInitialized = true;
-    vdButtonPanel = new VDButtonPanel(this);
     
     cardPanel = new JPanel();
 
@@ -133,6 +133,10 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
     mteVDPanel.addPropertyChangeListener(l);
   }
 
+  public void addReviewListener(ReviewListener l) {
+    vdButtonPanel.addReviewListener(l);
+  }
+
   public void applyPressed() throws ApplyException {
     if((Editable)displayedPanel instanceof MapToExistingVDPanel)
       if(mteVDPanel.getPubId() != null) {//Apply Button clicked after search
@@ -157,9 +161,6 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
 
   public void addNavigationListener(NavigationListener listener) {
       vdButtonPanel.addNavigationListener(listener);
-  }
-
-  public void addReviewListener(ReviewListener listener) {
   }
 
   public void updateNode(UMLNode node) {
