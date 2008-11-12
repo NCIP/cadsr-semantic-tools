@@ -59,7 +59,7 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
         }
         else if(!StringUtil.isEmpty(oc.getPreferredName())) {
           if(prefNameList.containsKey(oc.getPreferredName()))
-            items.addItem(new ValidationError
+            items.addItem(new ValidationConceptError
                           (PropertyAccessor.getProperty
                            ("class.same.mapping", oc.getLongName(),(prefNameList.get(oc.getPreferredName())).getLongName()),oc));
           else
