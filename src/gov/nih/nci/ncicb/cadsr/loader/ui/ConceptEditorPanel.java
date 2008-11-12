@@ -290,11 +290,24 @@ public class ConceptEditorPanel extends JPanel
             }
           }
         }
-      } 
-      if(o instanceof ValueMeaning) {
-        ValueMeaning vm = (ValueMeaning)o;
-        ObjectUpdater.update(vm, concepts, newConcepts);
-      } else if(o instanceof ObjectClassRelationship) {
+        if(o instanceof ValueMeaning) {
+          ValueMeaning vm = (ValueMeaning)o;
+          ObjectUpdater.updateVmByName(vm.getLongName(), concepts, newConcepts);
+          List<ValueMeaning> vms = ElementsLists.getInstance().getElements(DomainObjectFactory.newValueMeaning());
+          for(ValueMeaning _vm : vms) {
+            if(_vm.getLongName().equals(vm.getLongName())) {
+              fireElementChangeEvent(new ElementChangeEvent(_vm));
+            }
+            
+          }
+        }
+      } else {
+        if(o instanceof ValueMeaning) {
+          ValueMeaning vm = (ValueMeaning)o;
+          ObjectUpdater.update(vm, concepts, newConcepts);
+        }
+      }
+      if(o instanceof ObjectClassRelationship) {
         ObjectClassRelationship ocr = (ObjectClassRelationship)o;
         if (node instanceof AssociationNode) {
             ObjectUpdater.updateAssociation(ocr, concepts, newConcepts);
