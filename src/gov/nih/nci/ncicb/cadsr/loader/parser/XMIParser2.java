@@ -631,7 +631,7 @@ public class XMIParser2 implements Parser {
     if(tv != null) {
       try {
         event.setMinLength(Integer.parseInt(tv.getValue().trim()));
-      } catch (NumberFormatExceptio e) {
+      } catch (NumberFormatException e) {
       } // end of try-catch
     }
 
@@ -639,7 +639,7 @@ public class XMIParser2 implements Parser {
     if(tv != null) {
       try {
         event.setMaxLength(Integer.parseInt(tv.getValue().trim()));
-      } catch (NumberFormatExceptio e) {
+      } catch (NumberFormatException e) {
       } // end of try-catch
     }
     
@@ -647,7 +647,7 @@ public class XMIParser2 implements Parser {
     if(tv != null) {
       try {
         event.setDecimalPlace(Integer.parseInt(tv.getValue().trim()));
-      } catch (NumberFormatExceptio e) {
+      } catch (NumberFormatException e) {
       } // end of try-catch
     }
     
