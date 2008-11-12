@@ -28,6 +28,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
+import gov.nih.nci.ncicb.cadsr.domain.ValueMeaning;
 
 
 import java.util.HashMap;
@@ -74,6 +75,9 @@ public class ChangeTracker implements ElementChangeListener
       this.put(LookupUtil.lookupFullName((DataElement)event.getUserObject()), true);
     } else if(event.getUserObject() instanceof Concept) {
       this.put(((Concept)event.getUserObject()).getPreferredName(), true);
+    } else if(event.getUserObject() instanceof ValueMeaning) {
+      // !!! THIS IS NOT WORKING BECAUSE WE NEED THE VD NAME IN THERE 
+      this.put("ValueDomains." + ((ValueMeaning)event.getUserObject()).getLongName(), true);
     }
 
   }
