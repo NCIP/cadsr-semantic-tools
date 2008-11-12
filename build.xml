@@ -9,8 +9,8 @@
   <property name="docs.dir" value="./javadoc" />
   <property name="images.dir" value="./images" />
   <property name="jnlp.dir" value="./jnlp" />
-
   <property name="target.env" value="default"/>
+  <property name="sqlsuite.dir" value="./test/sqlsuite"/>
 
   <path id="proj.class.path">
     <pathelement location="${class.dir}"/>
@@ -327,6 +327,56 @@
       <arg value="${projectName}"/>
       <arg value="${projectVersion}"/>
     </java>
+  </target>
+
+  <target name="sqlTestSuite">
+    <mkdir dir="${sqlsuite.dir}/classes"/>
+    
+    <copy file="${sqlsuite.dir}/properties/sqlsuite-beans.xml"
+      todir="${class.dir}" overwrite="true"
+      >
+    </copy>
+
+    <input 
+      message="url"
+      addproperty="url"
+      />
+    <input 
+      message="db user"
+      addproperty="user"
+      />
+    <input 
+      message="db password"
+      addproperty="password"
+      />
+    <input 
+      message="Read (r) or Read/Write (rw)"
+      addproperty="rw"
+      validargs="r,rw"
+      />
+    
+    <replace file="${class.dir}/sqlsuite-beans.xml">
+      <replacefilter token="@@URL@@" value="${url}"/>
+      <replacefilter token="@@USER@@" value="${user}"/>
+      <replacefilter token="@@PASSWORD@@" value="${password}"/>
+    </replace>
+    
+    <javac
+      destdir="${class.dir}"
+      debug="on"
+      srcdir="${sqlsuite.dir}/src"
+      deprecation="false"
+      fork="yes"
+      >
+      <classpath refid="proj.class.path"/>
+    </javac>
+    
+    <java classname="test.SQLTest" classpathref="proj.class.path" 
+      fork="yes" 
+      >
+      <arg value="${rw}"/>
+    </java>
+
   </target>
 
 </project>
