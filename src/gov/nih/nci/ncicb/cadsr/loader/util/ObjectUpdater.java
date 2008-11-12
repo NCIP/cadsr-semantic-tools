@@ -43,6 +43,20 @@ public class ObjectUpdater {
     
   }
 
+  public static void updateVmByName(String vmName, Concept[] oldConcepts, Concept[] newConcepts) {
+
+    ElementsLists elements = ElementsLists.getInstance();
+    List<ValueMeaning> vms = elements.getElements(DomainObjectFactory.newValueMeaning());
+
+    for(ValueMeaning vm : vms) {
+      if(vm.getLongName().equals(vmName)) {
+        update(vm, oldConcepts, newConcepts);
+      }
+    }
+    
+  }
+
+
   public static void update(ValueMeaning vm, Concept[] oldConcepts, Concept[] newConcepts) {
 
     ConceptDerivationRule condr = newConDR(newConcepts);
