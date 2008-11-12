@@ -331,20 +331,20 @@ public class XMIWriter2 implements ElementWriter {
               clazz.addTaggedValue(XMIParser2.TV_REP_VERSION, String.valueOf(vd.getRepresentation().getVersion().toString()));
           }
 
-          if(!vd.getUOMName().equals("NOT SPECIFIED"))
-              clazz.addTaggedValue(XMIParser2.TV_VD_UOM, vd.getUOMName());
-          if(!vd.getFormatName().equals("NOT SPECIFIED"))
-              clazz.addTaggedValue(XMIParser2.TV_VD_DISPLAY_FORMAT, vd.getFormatName());
-          if(vd.getMinimumLength() != 0)
-              clazz.addTaggedValue(XMIParser2.TV_VD_MINIMUM_LENGTH, Integer.toString(vd.getMinimumLength()));
-          if(vd.getMaximumLength() != 0)
-              clazz.addTaggedValue(XMIParser2.TV_VD_MAXIMUM_LENGTH, Integer.toString(vd.getMaximumLength()));
-          if(vd.getDecimalPlace() != 0)
-              clazz.addTaggedValue(XMIParser2.TV_VD_DECIMAL_PLACE, Integer.toString(vd.getDecimalPlace()));
+          if(!StringUtil.isEmpty(vd.getUOMName()))
+            clazz.addTaggedValue(XMIParser2.TV_VD_UOM, vd.getUOMName());
+          if(!StringUtil.isEmpty(vd.getFormatName()))
+            clazz.addTaggedValue(XMIParser2.TV_VD_DISPLAY_FORMAT, vd.getFormatName());
+          if(vd.getMinimumLength() != Integer.MAX_VALUE)
+            clazz.addTaggedValue(XMIParser2.TV_VD_MINIMUM_LENGTH, Integer.toString(vd.getMinimumLength()));
+          if(vd.getMaximumLength() != Integer.MAX_VALUE)
+            clazz.addTaggedValue(XMIParser2.TV_VD_MAXIMUM_LENGTH, Integer.toString(vd.getMaximumLength()));
+          if(vd.getDecimalPlace() != Integer.MAX_VALUE)
+            clazz.addTaggedValue(XMIParser2.TV_VD_DECIMAL_PLACE, Integer.toString(vd.getDecimalPlace()));
           if(!StringUtil.isEmpty(vd.getHighValue()))
-              clazz.addTaggedValue(XMIParser2.TV_VD_HIGH_VALUE, vd.getHighValue());
+            clazz.addTaggedValue(XMIParser2.TV_VD_HIGH_VALUE, vd.getHighValue());
           if(!StringUtil.isEmpty(vd.getLowValue()))
-              clazz.addTaggedValue(XMIParser2.TV_VD_LOW_VALUE, vd.getLowValue());
+            clazz.addTaggedValue(XMIParser2.TV_VD_LOW_VALUE, vd.getLowValue());
         }
       }        
 
@@ -601,6 +601,26 @@ public class XMIWriter2 implements ElementWriter {
       }
 
       for(ValueDomain vd : vds) {
+        {
+          String fullVDName = "ValueDomains." + vd.getLongName();
+
+          UMLClass clazz = classMap.get(fullVDName);
+
+          Boolean reviewed = ownerReviewTracker.get(vd.getLongName());
+          if(reviewed != null) {
+            clazz.removeTaggedValue(XMIParser2.TV_OWNER_REVIEWED);
+            clazz.addTaggedValue(XMIParser2.TV_OWNER_REVIEWED,
+                                 reviewed?"1":"0");
+          }
+          
+          reviewed = curatorReviewTracker.get(vd.getLongName());
+          if(reviewed != null) {
+            clazz.removeTaggedValue(XMIParser2.TV_CURATOR_REVIEWED);
+            clazz.addTaggedValue(XMIParser2.TV_CURATOR_REVIEWED,
+                                 reviewed?"1":"0");
+          }
+        }
+
         for(PermissibleValue pv : vd.getPermissibleValues()) {
           ValueMeaning vm = pv.getValueMeaning();
           String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getLongName();
