@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
@@ -83,20 +84,26 @@ public class VDButtonPanel extends JPanel implements ActionListener,
   }
   
   public void actionPerformed(ActionEvent evt) {
-        if(switchButton.getText().equals(SWITCH_TO_VD_SEARCH)) {
-          ((LVDPanel)viewPanel).switchCards(LVDPanel.VD_MTE_PANEL_KEY);
-          switchButton.setText(SWITCH_TO_VD_FIELDS);
-        } else if(switchButton.getText().equals(SWITCH_TO_VD_FIELDS)) {
-          ((LVDPanel)viewPanel).switchCards(LVDPanel.VD_FIELDS_PANEL_KEY);
-           switchButton.setText(SWITCH_TO_VD_SEARCH);
-        }
-    } 
+    if(switchButton.getText().equals(SWITCH_TO_VD_SEARCH)) {
+      ((LVDPanel)viewPanel).switchCards(LVDPanel.VD_MTE_PANEL_KEY);
+      switchButton.setText(SWITCH_TO_VD_FIELDS);
+    } else if(switchButton.getText().equals(SWITCH_TO_VD_FIELDS)) {
+      ((LVDPanel)viewPanel).switchCards(LVDPanel.VD_FIELDS_PANEL_KEY);
+      switchButton.setText(SWITCH_TO_VD_SEARCH);
+    }
+  } 
+  
   public void addNavigationListener(NavigationListener listener) 
   {
     applyButtonPanel.addNavigationListener(listener);
   }
-    public void navigate(NavigationEvent evt) {  
-      applyButtonPanel.navigate(evt);
-    }
+   
+  public void navigate(NavigationEvent evt) {  
+    applyButtonPanel.navigate(evt);
+  }
+  
+  public void addReviewListener(ReviewListener listener) {
+    applyButtonPanel.addReviewListener(listener);
+  }
     
 }
