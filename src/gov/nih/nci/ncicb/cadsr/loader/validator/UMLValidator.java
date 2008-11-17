@@ -46,22 +46,10 @@ public class UMLValidator implements Validator {
    * returns a list of Validation errors.
    */
   public ValidationItems validate() {
-//     validators = new ArrayList();
-//     validators.add(new ConceptCodeValidator(elements)); 
-//     validators.add(new AssociationValidator(elements));
-//     validators.add(new DescriptionValidator(elements));
     
-//     UserSelections userSelections = UserSelections.getInstance();
-
-//     RunMode mode = (RunMode)(userSelections.getProperty("MODE"));
-    
-//     if(mode.equals(RunMode.Reviewer))
-//       validators.add(new DatatypeValidator(elements));
-
-//     if(!(Boolean)userSelections.getProperty("SKIP_VD_VALIDATION")) {
-//       validators.add(new ValueDomainValidator(elements));
-//     }
-
+    Boolean noValidation = (Boolean)UserSelections.getInstance().getProperty("NO_VALIDATION");
+    if(noValidation != null && noValidation.equals(true))
+      return ValidationItems.getInstance();
 
     for(Validator val : validators)
       val.validate();
