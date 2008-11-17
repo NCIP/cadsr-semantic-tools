@@ -247,6 +247,9 @@ public class ModeSelectionPanel extends JPanel implements MouseListener, KeyList
   public void keyPressed(KeyEvent e) {
   }
 
+  /*
+   * to trigger expert mode, click option one, then type 'expert'
+   */
   public void keyReleased(KeyEvent e) {
     long diff = e.getWhen() - timeTyped;
     timeTyped = e.getWhen();
