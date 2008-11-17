@@ -256,7 +256,11 @@ public class UMLDefaultHandler
     
     List<Concept> concepts = createConcepts(event);
 
-    ValueDomain vd = LookupUtil.lookupValueDomain(event.getValueDomainName());
+    AlternateName vdFullName = DomainObjectFactory.newAlternateName();
+    vdFullName.setType(AlternateName.TYPE_FULL_NAME);
+    vdFullName.setName(event.getValueDomainName());
+
+    ValueDomain vd = LookupUtil.lookupValueDomain(vdFullName);
 
     ValueMeaning vm = DomainObjectFactory.newValueMeaning();
     vm.setLongName(event.getName());
