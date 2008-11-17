@@ -279,12 +279,12 @@ public class TreeBuilder implements UserPreferencesListener {
     List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
     
     for(ValueDomain vd : vds) {
-      UMLNode node = new ValueDomainNode(vd);
+      ValueDomainNode node = new ValueDomainNode(vd);
       
       parentNode.addChild(node);
       
-      ((ValueDomainNode) node).setReviewed
-        (reviewTracker.get(node.getFullPath()));
+      node.setReviewed
+        (reviewTracker.get(LookupUtil.lookupFullName(vd)));
       
       doValueMeanings(node);
 
@@ -305,10 +305,15 @@ public class TreeBuilder implements UserPreferencesListener {
     // Find all DEs that have this OC.
     List<ValueMeaning> vms = elements.getElements(DomainObjectFactory.newValueMeaning());
     
+    ValueDomainNode vdNode = (ValueDomainNode)parentNode;
+    ValueDomain parentVD = (ValueDomain)vdNode.getUserObject();
+    
+    String vdFullName = LookupUtil.lookupFullName(parentVD);
+
     for(ValueMeaning vm : vms) {
       try {
-        if(isInValueDomain(parentNode.getFullPath(), vm)) {
-          UMLNode node = new ValueMeaningNode(vm, parentNode.getFullPath());
+        if(isInValueDomain(vdFullName, vm)) {
+          UMLNode node = new ValueMeaningNode(vm, vdFullName);
 
           Boolean reviewed = reviewTracker.get(node.getFullPath());
           if(reviewed != null) {
@@ -464,7 +469,7 @@ public class TreeBuilder implements UserPreferencesListener {
     List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
     
     for(ValueDomain vd : vds) {
-      if(vd.getLongName().equals(vdName)) {
+      if(LookupUtil.lookupFullName(vd).equals(vdName)) {
         if(vd.getPermissibleValues() != null)
           for(PermissibleValue pv : vd.getPermissibleValues()) 
             if(pv.getValueMeaning() == vm)
