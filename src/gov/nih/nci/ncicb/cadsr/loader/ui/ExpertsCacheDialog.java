@@ -3,6 +3,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 
 import java.awt.BorderLayout;
 
@@ -48,7 +49,8 @@ public class ExpertsCacheDialog extends JDialog implements ActionListener, ItemL
   private Integer[] days = {new Integer(0), new Integer(1), new Integer(2), new Integer(3), new Integer(4), new Integer(5),
         new Integer(6), new Integer(7), new Integer(8), new Integer(9), new Integer(10), new Integer(11),
         new Integer(12), new Integer(13), new Integer(14)};
-  
+
+  private JCheckBox noValidationBox = new JCheckBox("No Validation");
   
   public ExpertsCacheDialog() {
     
@@ -86,12 +88,21 @@ public class ExpertsCacheDialog extends JDialog implements ActionListener, ItemL
     clearCacheButton = new JButton("Clear Cache");
     clearCacheButton.setActionCommand(CLEAR_CACHE);
     clearCacheButton.addActionListener(this);
+
     setCacheButton = new JButton("Set Cache Parameters");
     setCacheButton.setActionCommand(SET_CACHE);
     setCacheButton.addActionListener(this);
+
     closeButton = new JButton("Close");
     closeButton.setActionCommand(CLOSE);
     closeButton.addActionListener(this);
+
+    noValidationBox.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          UserSelections.getInstance().setProperty("NO_VALIDATION", new Boolean(noValidationBox.isSelected()));
+        }
+      });
+
     JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     buttonPanel.add(setCacheButton);
     buttonPanel.add(new JLabel("    "));
@@ -109,6 +120,8 @@ public class ExpertsCacheDialog extends JDialog implements ActionListener, ItemL
     
     UIUtil.insertInBag(mainPanel, clearCacheButton, 0, 8);
     UIUtil.insertInBag(mainPanel, buttonPanel, 1, 8);
+
+    UIUtil.insertInBag(mainPanel, noValidationBox, 0, 9);
 
     this.add(mainPanel, BorderLayout.CENTER);
     this.setSize(500, 400);
@@ -140,4 +153,11 @@ public class ExpertsCacheDialog extends JDialog implements ActionListener, ItemL
             setCacheButton.setEnabled(false);
         }
     }
+
+  public static void main(String[] args) {
+    ExpertsCacheDialog dialog = new ExpertsCacheDialog();
+    
+    dialog.setVisible(true);
+  }
+
 }
