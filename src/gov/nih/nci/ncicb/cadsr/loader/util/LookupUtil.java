@@ -250,6 +250,16 @@ public class LookupUtil implements CadsrModuleListener {
     return null;
   }
 
+  public static ValueDomain lookupValueDomain(AlternateName altName) {
+    for(ValueDomain vd : ElementsLists.getInstance().getElements(DomainObjectFactory.newValueDomain())) {
+      for(AlternateName an : vd.getAlternateNames()) {
+        if(an.getType().equals(altName.getType()) && an.getName().equals(altName.getName()))
+          return vd;
+      }
+    }
+    return null;
+  }
+
   public static String lookupXMLNamespace(AdminComponent ac) {
     if(ac.getAlternateNames() != null)
     for(AlternateName altName : ac.getAlternateNames()) {
