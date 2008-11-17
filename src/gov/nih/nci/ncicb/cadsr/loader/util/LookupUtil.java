@@ -36,6 +36,8 @@ public class LookupUtil implements CadsrModuleListener {
   private static Map<String, ValueDomain> valueDomains = new HashMap<String, ValueDomain>();
   private static Map<Integer, ValueDomain> valueDomainsById = new HashMap<Integer, ValueDomain>();
 
+  private static List<String> nullList = new ArrayList<String>();
+
   public static ValueDomain lookupValueDomain(ValueDomain vd) {
 
     ValueDomain result = null;
@@ -46,6 +48,10 @@ public class LookupUtil implements CadsrModuleListener {
       if(vd.getLongName().startsWith("enum")) {
         vd.setLongName("java.lang.String");
       }
+  
+      // check known null VDs:
+      if(nullList.contains(vd.getLongName()))
+        return null;
       
       result = valueDomains.get(vd.getLongName());
     }
@@ -85,6 +91,7 @@ public class LookupUtil implements CadsrModuleListener {
         }
         
         if (l.size() == 0) {
+          nullList.add(vd.getLongName());
           return null;
         } else {
           List<String> excludeContext = Arrays.asList(PropertyAccessor.getProperty("vd.exclude.contexts").split(","));
@@ -110,9 +117,11 @@ public class LookupUtil implements CadsrModuleListener {
             }
           
           if(result == null)
-            throw new RuntimeException
-              ("Value Domain " +
-               vd.getLongName() + " does not exist.");
+            nullList.add(vd.getLongName());
+//          if(result == null)
+//            throw new RuntimeException
+//              ("Value Domain " +
+//               vd.getLongName() + " does not exist.");
         }
       }
     }
