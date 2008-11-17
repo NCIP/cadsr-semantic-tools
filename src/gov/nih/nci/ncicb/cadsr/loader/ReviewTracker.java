@@ -18,11 +18,15 @@
  * 5. THIS SOFTWARE IS PROVIDED "AS IS," AND ANY EXPRESSED OR IMPLIED WARRANTIES, (INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE) ARE DISCLAIMED. IN NO EVENT SHALL THE NATIONAL CANCER INSTITUTE, ORACLE, OR THEIR AFFILIATES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  */
 package gov.nih.nci.ncicb.cadsr.loader;
+
+import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewEventType;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AbstractUMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ReviewableUMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
+
 import java.util.HashMap;
 
 /**
@@ -72,13 +76,20 @@ public class ReviewTracker implements ReviewListener
        (event.getType().equals(ReviewEventType.Curator) && trackerType.equals(ReviewTrackerType.Curator)
         )) {
       AbstractUMLNode absNode = (AbstractUMLNode) event.getUserObject();
-      if(reviewed.get(absNode.getFullPath()) != null) 
+      
+      String fullPath = absNode.getFullPath();
+      if(absNode.getUserObject() instanceof ValueDomain) {
+        ValueDomain vd = (ValueDomain)absNode.getUserObject();
+        fullPath = LookupUtil.lookupFullName(vd);
+      }
+
+      if(reviewed.get(fullPath) != null) 
         {
-          reviewed.remove(absNode.getFullPath());
-          this.put(absNode.getFullPath(), event.isReviewed());
+          reviewed.remove(fullPath);
+          this.put(fullPath, event.isReviewed());
         }
       else
-        this.put(absNode.getFullPath(), event.isReviewed());
+        this.put(fullPath, event.isReviewed());
     }
   }
   
