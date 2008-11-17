@@ -272,13 +272,11 @@ public class XMIWriter2 implements ElementWriter {
     }
 
     for(ValueDomain vd : vds) {
-
       sendProgressEvent(status++, goal, "Value Domain: " + vd.getLongName());
       String fullClassName = "ValueDomains." + LookupUtil.lookupFullName(vd);
 
       UMLClass clazz = classMap.get(fullClassName);
       
-//       boolean vdChanged = changeTracker.get(vd.getLongName());
       boolean vdChanged = changeTracker.get(LookupUtil.lookupFullName(vd));
       
       if(vdChanged){
@@ -602,18 +600,18 @@ public class XMIWriter2 implements ElementWriter {
 
       for(ValueDomain vd : vds) {
         {
-          String fullVDName = "ValueDomains." + vd.getLongName();
+          String fullVDName = "ValueDomains." + LookupUtil.lookupFullName(vd);
 
           UMLClass clazz = classMap.get(fullVDName);
 
-          Boolean reviewed = ownerReviewTracker.get(vd.getLongName());
+          Boolean reviewed = ownerReviewTracker.get(LookupUtil.lookupFullName(vd));
           if(reviewed != null) {
             clazz.removeTaggedValue(XMIParser2.TV_OWNER_REVIEWED);
             clazz.addTaggedValue(XMIParser2.TV_OWNER_REVIEWED,
                                  reviewed?"1":"0");
           }
           
-          reviewed = curatorReviewTracker.get(vd.getLongName());
+          reviewed = curatorReviewTracker.get(LookupUtil.lookupFullName(vd));
           if(reviewed != null) {
             clazz.removeTaggedValue(XMIParser2.TV_CURATOR_REVIEWED);
             clazz.addTaggedValue(XMIParser2.TV_CURATOR_REVIEWED,
