@@ -56,6 +56,8 @@ public class ConceptEditorPanel extends JPanel
     
   private static EvsDialog evsDialog;
   private VDPanel vdPanel;
+
+  private JPanel[] conceptPanels;
     
   private static boolean editable = false;
   private boolean verify;
@@ -95,6 +97,12 @@ public class ConceptEditorPanel extends JPanel
     if(node.getUserObject() instanceof DataElement) {
       vdPanel.updateNode(node);
     }
+  }
+
+  public void setExpanded(boolean b) {
+    if(conceptPanels != null)
+      for(JPanel p : conceptPanels)
+        p.setVisible(b);
   }
 
   private AdminComponent checkForDuplicateMapping() {
@@ -371,15 +379,8 @@ public class ConceptEditorPanel extends JPanel
 
     gridPanel = new JPanel(new GridBagLayout());
 
-//     scrollPane = new JScrollPane(gridPanel);
-//    scrollPane.getVerticalScrollBar().setUnitIncrement(30);
-    
-
     conceptUIs = new ConceptUI[concepts.length];
-    JPanel[] conceptPanels = new JPanel[concepts.length];
-
-//     if(prefs.getUmlDescriptionOrder().equals("first"))
-//       UIUtil.insertInBag(gridPanel, UIUtil.createDescriptionPanel(node), 0, 0);
+    conceptPanels = new JPanel[concepts.length];
 
     boolean primaryConceptFirst = prefs.getOrderOfConcepts().equalsIgnoreCase("first");
     
@@ -393,8 +394,9 @@ public class ConceptEditorPanel extends JPanel
         (BorderFactory.createTitledBorder(title));
 
       conceptPanels[i].setLayout(new BorderLayout());
-
+      
       JPanel mainPanel = new JPanel(new GridBagLayout());
+
 
       UIUtil.insertInBag(mainPanel, conceptUIs[i].labels[0], 0, 0);
       UIUtil.insertInBag(mainPanel, conceptUIs[i].labels[1], 0, 1);

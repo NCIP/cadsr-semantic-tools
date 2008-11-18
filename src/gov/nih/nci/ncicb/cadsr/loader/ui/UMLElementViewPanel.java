@@ -99,11 +99,6 @@ public class UMLElementViewPanel extends JPanel
     UIUtil.insertInBag(editPanel, cardPanel, 0, 1);
     UIUtil.insertInBag(editPanel, gmePanel, 0, 2);
 
-//     editPanel.setLayout(new BorderLayout());
-
-//     editPanel.add(cardPanel, BorderLayout.CENTER);
-//     editPanel.add(gmePanel, BorderLayout.SOUTH);
-
     JScrollPane scrollPane = new JScrollPane(editPanel);
     scrollPane.getVerticalScrollBar().setUnitIncrement(30);
 
@@ -120,8 +115,18 @@ public class UMLElementViewPanel extends JPanel
   public void switchCards(String key) 
   {
     CardLayout layout = (CardLayout)cardPanel.getLayout();
+
+    if(displayedPanel instanceof ConceptEditorPanel) {
+      conceptEditorPanel.setExpanded(false);
+    }
+
     layout.show(cardPanel, key);
     displayedPanel = panelKeyMap.get(key);
+
+    if(displayedPanel instanceof ConceptEditorPanel) {
+      conceptEditorPanel.setExpanded(true);
+    }
+
   }
   
   public void updateNode(UMLNode node) 
