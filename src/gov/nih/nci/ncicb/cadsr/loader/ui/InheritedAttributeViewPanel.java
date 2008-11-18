@@ -11,6 +11,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 import java.beans.PropertyChangeListener;
@@ -65,7 +66,7 @@ public class InheritedAttributeViewPanel extends JPanel
     dsp.addPropertyChangeListener(applyButtonPanel);
 
     initUI();
-    updateNode(node);
+//     updateNode(node);
   }
 
   private void initUI() {
@@ -310,6 +311,10 @@ public class InheritedAttributeViewPanel extends JPanel
     }
       
     return null;
+  }
+
+  public void setCadsrModule(CadsrModule cadsrModule) {
+    dePanel.setCadsrModule(cadsrModule);
   }
 
 
