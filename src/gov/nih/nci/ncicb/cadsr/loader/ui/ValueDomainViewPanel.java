@@ -83,6 +83,8 @@ public class ValueDomainViewPanel extends JPanel
   public JRadioButton vdTypeNRadioButton = new JRadioButton("N");
   public JRadioButton tmpInvisible = new JRadioButton("dummy");
   private ButtonGroup vdTypeRadioButtonGroup = new ButtonGroup();
+
+  public JPanel optionalPanel;
   
   public JLabel vdCDPublicIdJLabel = null;
   public JLabel vdCdLongNameValueJLabel = null;
@@ -161,7 +163,7 @@ public class ValueDomainViewPanel extends JPanel
 
     this.setLayout(new BorderLayout());
     JPanel mainPanel = new JPanel(new GridBagLayout());
-    JPanel optionalPanel = new JPanel(new GridBagLayout());
+    optionalPanel = new JPanel(new GridBagLayout());
     optionalPanel.setBorder(BorderFactory.createTitledBorder("Optional"));
     applyButtonPanel = new ApplyButtonPanel(this, (ValueDomainNode)umlNode);
     addPropertyChangeListener(applyButtonPanel);
@@ -306,6 +308,11 @@ public class ValueDomainViewPanel extends JPanel
     this.add(optionalPanel, BorderLayout.SOUTH);
     
   }
+
+  public void setExpanded(boolean b) {
+    optionalPanel.setVisible(b);
+  }
+
   private void populateUOMCombobox(){
       uomList = new ArrayList();
       String[] collUOM = PropertyAccessor.getProperty("vd.unit.of.measures").split(",");

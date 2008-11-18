@@ -100,8 +100,18 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
 
   public void switchCards(String key) {
     CardLayout layout = (CardLayout)cardPanel.getLayout();
+    
+    if(displayedPanel instanceof ValueDomainViewPanel) {
+      vdViewPanel.setExpanded(false);
+    }
+
     layout.show(cardPanel, key);
     displayedPanel = panelKeyMap.get(key);
+
+    if(displayedPanel instanceof ValueDomainViewPanel) {
+      vdViewPanel.setExpanded(true);
+    }
+
     if((Editable)displayedPanel instanceof ValueDomainViewPanel)
         vdButtonPanel.switchButton.setEnabled(true);
     else
