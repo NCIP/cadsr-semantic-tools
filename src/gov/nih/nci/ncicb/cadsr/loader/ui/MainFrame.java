@@ -636,7 +636,8 @@ import java.awt.event.WindowEvent;
      }
      
      if(event.getType() == ViewChangeEvent.VIEW_INHERITED) {
-       viewPanel = new InheritedAttributeViewPanel(node);
+       viewPanel = umlVPFactory.createInheritedAttributeViewPanel(node);
+       viewPanel.updateNode(node);
      } else {
 //       viewPanel = new UMLElementViewPanel(node);
         viewPanel = umlVPFactory.createUMLElementViewPanel(node);
@@ -678,6 +679,9 @@ import java.awt.event.WindowEvent;
      if (viewPanel instanceof UMLElementViewPanel)
          umlVPFactory.removeFromList((UMLElementViewPanel)viewPanel);
    
+     if(viewPanel instanceof InheritedAttributeViewPanel)
+        umlVPFactory.removeFromList((InheritedAttributeViewPanel)viewPanel);
+
      return true;
    }
 
