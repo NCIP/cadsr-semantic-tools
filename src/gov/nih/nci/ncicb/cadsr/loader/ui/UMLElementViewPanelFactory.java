@@ -12,6 +12,7 @@ import java.util.List;
 public class UMLElementViewPanelFactory implements CadsrModuleListener {
 
     private List<UMLElementViewPanel> umlVPList = new ArrayList<UMLElementViewPanel>();
+    private List<InheritedAttributeViewPanel> inheritedVPList = new ArrayList<InheritedAttributeViewPanel>();
 
     private CadsrModule cadsrModule;
 
@@ -21,13 +22,23 @@ public class UMLElementViewPanelFactory implements CadsrModuleListener {
     public UMLElementViewPanel createUMLElementViewPanel(UMLNode node) {
        
         UMLElementViewPanel vp = new UMLElementViewPanel(node);
-        
         vp.setCadsrModule(cadsrModule);
-    
         umlVPList.add(vp);
-
         return vp;
         
+    }
+
+    public InheritedAttributeViewPanel createInheritedAttributeViewPanel(UMLNode node) {
+       
+        InheritedAttributeViewPanel vp = new InheritedAttributeViewPanel(node);
+        vp.setCadsrModule(cadsrModule);
+        inheritedVPList.add(vp);
+        return vp;
+        
+    }
+
+    public void removeFromList(InheritedAttributeViewPanel vp) {
+        inheritedVPList.remove(vp);
     }
 
     public void removeFromList(UMLElementViewPanel vp) {
@@ -37,6 +48,9 @@ public class UMLElementViewPanelFactory implements CadsrModuleListener {
     public void setCadsrModule(CadsrModule cadsrModule) {
       this.cadsrModule = cadsrModule;
       for(UMLElementViewPanel vp : umlVPList)
+        vp.setCadsrModule(cadsrModule);
+      
+      for(InheritedAttributeViewPanel vp : inheritedVPList)
         vp.setCadsrModule(cadsrModule);
     }
 }
