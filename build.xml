@@ -253,6 +253,10 @@
   </target>
 
   <target name="run" depends="prepare">
+    <input 
+      message="Database Password"
+      addproperty="db.passwd"
+      />
     <!--copy file="${config.dir}/log4j-loader.properties"
       tofile="${class.dir}/log4j.properties" overwrite="true"
       >
@@ -267,6 +271,7 @@
       >
       <jvmarg value="-Djava.security.auth.login.config=classes/jaas.config"/>
       <jvmarg value="-Dignore-vd=false"/>
+      <jvmarg value="-Ddb.passwd=${db.passwd}"/>
       <arg value="${dir}"/>
       <arg value="${projectName}"/>
       <arg value="${projectVersion}"/>
