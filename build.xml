@@ -94,8 +94,8 @@
         <include name="jaas.config"/>
         <include name="beans.xml"/>
         <include name="application-config-client.xml"/>
-		<include name="log4j.xml"/>
-        <!--        <include name="spring-datasources.xml"/> -->
+        <include name="log4j.xml"/>
+        <include name="spring-datasources.xml"/>
         <include name="ehcache.xml"/>
         <!--        <include name="datatype-mapping.xml"/> -->
         <include name="about.html"/>
@@ -106,11 +106,6 @@
         <include name="*.jpg"/>
         <include name="*.gif"/>
       </fileset>
-    </copy>
-
-    <copy file="${config.dir}/spring-datasources-${target.env}.xml"
-      tofile="${class.dir}/spring-datasources.xml" overwrite="true"
-      >
     </copy>
     <copy file="${config.dir}/application-config-client-${target.env}.xml"
       tofile="${class.dir}/application-config-client.xml" overwrite="true"
@@ -143,7 +138,7 @@
       <fileset dir="${class.dir}">
       </fileset>
     </jar>
-    <copy file="${jnlp.dir}/siw-${target.env}.jnlp"
+    <copy file="${jnlp.dir}/siw.jnlp"
       tofile="${dist.dir}/siw.jnlp"
       >
     </copy>
@@ -151,6 +146,10 @@
       tofile="${dist.dir}/siw-logo3_2.gif"
       >
     </copy>
+    <replace file="${dist.dir}/siw.jnlp" 
+      propertyFile="${jnlp.dir}/jnlp.properties">
+      <replacefilter token="@@CODEBASE@@" property="codebase.${target.env}"/>
+    </replace>
     <copy todir="${dist.dir}/lib">
       <fileset dir="${lib.dir}/cacore">
         <include name="caDSR-beans.jar"/>
@@ -253,14 +252,16 @@
   </target>
 
   <target name="run" depends="prepare">
+    <replace file="${class.dir}/spring-datasources.xml" 
+      propertyFile="${config.dir}/db.properties">
+      <replacefilter token="@@DB_URL@@" property="db.url.${target.env}"/>
+      <replacefilter token="@@DB_USER@@" property="db.loader.user"/>
+      <replacefilter token="@@DB_PASSWD@@" property="db.loader.passwd"/>
+    </replace>
     <input 
       message="Database Password"
       addproperty="db.passwd"
       />
-    <!--copy file="${config.dir}/log4j-loader.properties"
-      tofile="${class.dir}/log4j.properties" overwrite="true"
-      >
-    </copy-->
     <copy file="${config.dir}/log4j-loader.xml"
       tofile="${class.dir}/log4j.xml" overwrite="true"
       >
@@ -294,6 +295,13 @@
   <target name="siw" depends="gui"/>
 
   <target name="gui" depends="prepare">
+    <replace file="${class.dir}/spring-datasources.xml" 
+      propertyFile="${config.dir}/db.properties">
+      <replacefilter token="@@DB_URL@@" property="db.url.${target.env}"/>
+      <replacefilter token="@@DB_USER@@" property="db.siw.user"/>
+      <replacefilter token="@@DB_PASSWD@@" property="db.siw.passwd.${target.env}"/>
+    </replace>
+
     <java classname="gov.nih.nci.ncicb.cadsr.loader.SIW" classpathref="proj.class.path" 
       fork="yes"
       maxmemory="512m"
