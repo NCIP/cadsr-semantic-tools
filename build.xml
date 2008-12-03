@@ -19,7 +19,25 @@
       <include name="**/*.jar"/>
     </fileset>
   </path>
-  
+
+  <property name="PROP.FILE" location="${target.env}.properties" />
+  <property file="${PROP.FILE}" />
+
+  <condition property="check.props">
+    <and>
+      <isset property="TOOL.ROOT.DIR" />
+      <isset property="TOOL.LOG.DIR" />
+      <isset property="SCP.USER" />
+      <isset property="SCP.HOST" />
+      <isset property="SCP.PATH" />
+      <isset property="SCP.KEYFILE" />
+      <isset property="SCP.PORT" />
+      <isset property="SCP.PASSPHRASE" />
+    </and>
+  </condition>
+
+  <property name="scpPath.dir" location="${SCP.PATH}/siw" />
+    
   <!--
   <taskdef name="jalopy"
     classname="de.hunsicker.jalopy.plugin.ant.AntPlugin">
@@ -34,6 +52,19 @@
   <target name="nci-deploy" depends="dist, sign">
     
   </target>
+
+  <target name="remote-deploy" depends="dist, sign">
+    <echo>Deploying binaries to remote file system "${SCP.USER}@${SCP.HOST}:${scpPath.dir}"</echo>
+    <scp todir="${SCP.USER}@${SCP.HOST}:${scpPath.dir}" port="${SCP.PORT}" passphrase="${SCP.PASSPHRASE}" keyfile="${SCP.KEYFILE}" trust="true" verbose="true">
+      <fileset dir="${dist.dir}">
+        <include name="siw.jnlp"/>
+        <include name="siw-logo3_2.gif"/>
+        <include name="datatype-mapping.xml"/>
+        <include name="lib/*.jar"/>
+      </fileset>
+    </scp>
+  </target>
+
 
   <target name="sign" if="keystore">
     <signjar alias="${alias}" storepass="${storepass}" keystore="${keystore}">
