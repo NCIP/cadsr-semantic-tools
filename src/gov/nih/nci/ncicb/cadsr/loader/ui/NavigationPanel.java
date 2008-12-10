@@ -343,12 +343,14 @@ public class NavigationPanel extends JPanel
   }
 
   public void mousePressed(MouseEvent e) {
-      DefaultMutableTreeNode selected = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+    DefaultMutableTreeNode selected = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+    if(selected != null) {
       NavigationEvent goTo = new NavigationEvent(NavigationEvent.TO);
       goTo.setDestination(selected.getUserObject());
       fireNavigationEvent(goTo);
-
-      showPopup(e);
+    }
+    
+    showPopup(e);
   }
   
   public void mouseExited(MouseEvent e) {
