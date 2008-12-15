@@ -188,7 +188,9 @@ public class DBModule implements LoginModule {
 //     conn.getMetaData();
     Statement stmt = conn.createStatement();
     try {
-      ResultSet rs = stmt.executeQuery("select ua_name from user_accounts where ");
+      
+      ResultSet rs = stmt.executeQuery("select ua_name from user_accounts where ua_name = '" + username.toUpperCase() + "'");
+      
       return rs.next();
     } finally  {
       conn.close();
