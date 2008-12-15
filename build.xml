@@ -304,6 +304,7 @@
       <jvmarg value="-Djava.security.auth.login.config=classes/jaas.config"/>
       <jvmarg value="-Dignore-vd=false"/>
       <jvmarg value="-Ddb.passwd=${db.passwd}"/>
+      <jvmarg value="-Ddb.user=UMLLDR"/>
       <arg value="${dir}"/>
       <arg value="${projectName}"/>
       <arg value="${projectVersion}"/>
