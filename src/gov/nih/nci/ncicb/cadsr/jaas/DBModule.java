@@ -24,8 +24,12 @@ import java.util.*;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.Statement;
 
 import java.security.*;
+
+import java.sql.ResultSet;
+
 import javax.security.auth.spi.LoginModule;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.Subject;
@@ -179,9 +183,16 @@ public class DBModule implements LoginModule {
   {
     DataSourceProvider dsp = (DataSourceProvider)Class.forName((String)options.get("dataSourceProvider")).newInstance();
     DataSource ds = dsp.getDataSource((String)options.get("dataSource"));
-    Connection conn = ds.getConnection(username, password);
-    conn.getMetaData();
-    return true;
+    System.out.println("USER: " + System.getProperty("db.user") + "PASSWD: " + System.getProperty("db.passwd"));
+    Connection conn = ds.getConnection(System.getProperty("db.user"), System.getProperty("db.passwd"));
+//     conn.getMetaData();
+    Statement stmt = conn.createStatement();
+    try {
+      ResultSet rs = stmt.executeQuery("select ua_name from user_accounts where ");
+      return rs.next();
+    } finally  {
+      conn.close();
+    } 
   }
     
 
