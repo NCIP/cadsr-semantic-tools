@@ -2,7 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
  
 <beans>
-
+  
   <bean name="siw"
     class="gov.nih.nci.ncicb.cadsr.loader.UMLLoaderGUI"
     >
@@ -29,7 +29,7 @@
   </bean>
 
   <bean name="umlLoader"
-    class="gov.nih.nci.ncicb.cadsr.loader.UMLLoader"
+    class="gov.nih.nci.ncicb.cadsr.loader.CadsrLoader"
     >
     <property name="validator"><ref bean="loaderValidator"/></property>
     <property name="parser"><ref bean="xmiParser2"/></property>
@@ -124,7 +124,7 @@
 
   <bean name="datatypeMapping"
     class="gov.nih.nci.ncicb.cadsr.loader.util.DatatypeMapping"
-    factory-method="createInstance">
+    factory-method="getInstance">
     <property name="mappingURL"><value>--DatatypeMapping URL Here--</value></property>
   </bean>
 
