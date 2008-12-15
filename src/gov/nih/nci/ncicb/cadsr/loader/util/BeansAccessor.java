@@ -19,7 +19,7 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.util;
 
-import gov.nih.nci.ncicb.cadsr.loader.UMLLoader;
+import gov.nih.nci.ncicb.cadsr.loader.CadsrLoader;
 import gov.nih.nci.ncicb.cadsr.loader.UMLLoaderGUI;
 import gov.nih.nci.ncicb.cadsr.loader.Unclassifier;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
@@ -68,8 +68,12 @@ public class BeansAccessor {
     return (WizardController)getFactory().getBean("wizardController");
   }
   
-  public static UMLLoader getUmlLoader() {
-    return (UMLLoader)getFactory().getBean("umlLoader");
+  public static CadsrLoader getUmlLoader() {
+    return (CadsrLoader)getFactory().getBean("umlLoader");
+  }
+
+  public static CadsrLoader getIsoLoader() {
+    return (CadsrLoader)getFactory().getBean("isoLoader");
   }
   
   public static Unclassifier getUnclassifier() {
