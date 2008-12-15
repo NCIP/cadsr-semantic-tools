@@ -1,13 +1,13 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
+
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.util.DatatypeMapping;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
-import java.awt.Component;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -15,16 +15,17 @@ import java.util.*;
 
 import javax.swing.*;
 
-public class DatatypePanel extends JPanel implements ActionListener
+public class DatatypePanel extends JPanel 
 {
   private JTextField datatypeField = new JTextField(20);
   private JComboBox associateComboBox = new JComboBox(new Vector(new HashSet(DatatypeMapping.getValues())));
   private JButton addButton = new JButton("Add");
+  private JButton addToListButton = new JButton("Add to List");
   private JButton removeButton = new JButton("Remove");
   private JList systemDatatypesList;
   private JList userDatatypesList;
   private DefaultListModel systemListModel, userListModel;
-  private Map<String, String> userMap = new HashMap();
+  private Map<String, String> userMap = new HashMap<String, String>();
   
   
   public DatatypePanel()
@@ -41,7 +42,8 @@ public class DatatypePanel extends JPanel implements ActionListener
     
     //inserts all system mappings
     Map<String, String> systemMap = DatatypeMapping.getSystemMapping();
-    Set<String> keys = DatatypeMapping.getSystemKeys();
+    TreeSet<String> keys = new TreeSet(DatatypeMapping.getSystemKeys());
+    
     for(String key : keys) {
       systemListModel.addElement(key + " -> " + systemMap.get(key).toString() + " ");
     }
@@ -78,7 +80,8 @@ public class DatatypePanel extends JPanel implements ActionListener
     UIUtil.insertInBag(this, datatypeField, 0, 1);
     UIUtil.insertInBag(this, associateComboBox, 1, 1);
     UIUtil.insertInBag(this, addButton, 2, 1);
-    UIUtil.insertInBag(this, new JLabel("User Mappings"), 0, 2);
+    UIUtil.insertInBag(this, addToListButton, 3, 1); 
+   UIUtil.insertInBag(this, new JLabel("User Mappings"), 0, 2);
     UIUtil.insertInBag(this, userDatatypeScrollPane, 0, 3, 2, 1);
     UIUtil.insertInBag(this, new JLabel("System Mappings"), 0, 4);
     UIUtil.insertInBag(this, datatypeScrollPane, 0, 5, 2, 1);
@@ -89,6 +92,14 @@ public class DatatypePanel extends JPanel implements ActionListener
       {     
         userMap.put(datatypeField.getText().toLowerCase(), (String) associateComboBox.getSelectedItem());
         updateUserList();
+      }
+    });
+
+    addToListButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent event) 
+      {     
+        associateComboBox.addItem(datatypeField.getText());
+        datatypeField.setText("");
       }
     });
     
@@ -105,22 +116,46 @@ public class DatatypePanel extends JPanel implements ActionListener
         
   }
   
-  public Map getUserDatatypes() 
+  public Map<String, String> getUserDatatypes() 
   {
     return userMap;
   }
   
-  public void actionPerformed(ActionEvent event) 
-  {
-    
-  }
-  
   private void updateUserList() {
     userListModel.removeAllElements();
-    Set<String> userKeys = userMap.keySet();
-    for(String key : userKeys) {
+    TreeSet<String> sortedUserKeys = new TreeSet(userMap.keySet());
+    for(String key : sortedUserKeys) {
       userListModel.addElement(key + " -> " + userMap.get(key).toString() + " ");
     }
   }
-  
+ 
+  public static void main(String[] args) {
+    DatatypeMapping dm = DatatypeMapping.getInstance();
+    dm.setMappingURL("http://cadsrsiw-dev.nci.nih.gov/datatype-mapping.xml");
+
+    UserSelections.getInstance().setProperty("FILENAME", "/home/ludetc/temp/xmi/temp.xmi");
+
+    dm.addUserMapping();
+
+    final DatatypePanel dp = new DatatypePanel();
+
+    JFrame jf = new JFrame();
+    jf.setLayout(new BorderLayout());
+    jf.add(dp, BorderLayout.CENTER);
+
+    JButton saveButton = new JButton("Save");
+    saveButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          DatatypeMapping.writeUserMapping(dp.getUserDatatypes());
+        }
+      });
+    
+    
+    jf.add(saveButton, BorderLayout.SOUTH);
+
+    jf.setSize(800, 600);
+    jf.setVisible(true);
+    
+  }
+ 
 }
