@@ -236,6 +236,8 @@ public class WizardController implements ActionListener {
          
          userSelections.setProperty("FILENAME", filename);
          
+         DatatypeMapping.getInstance().addUserMapping();
+
          try {
            if(panel.getChoosePackage()) {
              userSelections.setProperty("FILTER_CLASS_AND_PACKAGES", new Boolean(true));
