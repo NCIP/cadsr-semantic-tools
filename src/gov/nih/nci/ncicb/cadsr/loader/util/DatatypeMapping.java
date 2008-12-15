@@ -70,12 +70,13 @@ public class DatatypeMapping {
 
   private static String userFilename = "user-datatype-mapping.xml";
 
+  private static DatatypeMapping instance = new DatatypeMapping();
+
   private DatatypeMapping() 
   {}
 
-  public static DatatypeMapping createInstance() 
-  {
-    return new DatatypeMapping();
+  public static DatatypeMapping getInstance() {
+    return instance;
   }
 
   public void setMappingURL(String mappingURL) 
@@ -92,6 +93,15 @@ public class DatatypeMapping {
       systemMapping = DatatypeMappingXMLUtil.readMapping(url);
       vdMapping.putAll(systemMapping);
       
+    } catch (Exception e){
+      logger.fatal("Resource Properties could not be loaded (" + systemFilename + "). Exiting now.");
+      logger.fatal(e.getMessage());
+      System.exit(1);
+    } // end of try-catch
+  }
+
+  public void addUserMapping() {
+    try{
       UserSelections selections = UserSelections.getInstance();
       String name = (String) selections.getProperty("FILENAME");
       
@@ -100,7 +110,7 @@ public class DatatypeMapping {
         userFile = new File(userFile.getParent()+ "/" + userFilename);
 	
         if(userFile.exists()) {
-          url = new URL("file:///" + userFile.toString());
+          URL url = new URL("file://" + userFile.toString());
           userMapping = DatatypeMappingXMLUtil.readMapping(url);
         } else 
           userMapping = new HashMap();
@@ -108,13 +118,13 @@ public class DatatypeMapping {
         updateVdMapping();
       } 
     } catch (Exception e){
-      logger.fatal("Resource Properties could not be loaded (" + systemFilename + "). Exiting now.");
       logger.fatal(e.getMessage());
       System.exit(1);
     } // end of try-catch
+    
   }
   
-  public static void writeUserMapping(Map datatypes) 
+  public static void writeUserMapping(Map<String, String> datatypes) 
   {
     UserSelections selections = UserSelections.getInstance();
     String filename =  (String) selections.getProperty("FILENAME");
