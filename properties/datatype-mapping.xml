@@ -166,6 +166,10 @@
   <alias name="pq"/>
 </alias-list>
 
+<alias-list name="HL7.AD" complex="true">
+  <alias name="ad"/>
+</alias-list>
+
 <alias-list name="double Collection">
   <alias name="collection&lt;double&gt;"/>
 </alias-list>
@@ -205,6 +209,87 @@
 </alias-list>
 
 
+  <alias-list name="ISO21090.DSET.TEL.1.0">
+    <alias name="dset&lt;tel&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.DSET.SC.v1.0">
+    <alias name="dset&lt;sc&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.EN.PN.v1.0">
+    <alias name="en.pn" />
+  </alias-list>
+  <alias-list name="ISO21090.IVL.INT.v1.0">
+    <alias name="ivl&lt;int&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.AD.v1.0">
+    <alias name="ad" />
+  </alias-list>
+  <alias-list name="ISO21090.RTO.INT:PQ.v1.0">
+    <alias name="rto&lt;int:pq&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.EN.TN.v1.0">
+    <alias name="en.tn" />
+  </alias-list>
+  <alias-list name="ISO21090.DSET.EN.ON.v1.0">
+    <alias name="dset&lt;en.on&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.IVL.PQ.v1.0">
+    <alias name="ivl&lt;pq&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.DSET.EN.TN.v1.0">
+    <alias name="dset&lt;en.tn&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.TS.v1.0">
+    <alias name="ts" />
+  </alias-list>
+  <alias-list name="ISO21090.CS.v1.0">
+    <alias name="cs" />
+  </alias-list>
+  <alias-list name="ISO21090.REAL.v1.0">
+    <alias name="real" />
+  </alias-list>
+  <alias-list name="ISO21090.DSET.ST.v1.0">
+    <alias name="dset&lt;st&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.II.v1.0">
+    <alias name="ii" />
+  </alias-list>
+  <alias-list name="ISO21090.PQ.v1.0">
+    <alias name="pq" />
+  </alias-list>
+  <alias-list name="ISO21090.TEL.URL.v1.0">
+    <alias name="tel.url" />
+  </alias-list>
+  <alias-list name="ISO21090.DSET.II.1.0">
+    <alias name="dset&lt;ii&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.RTO.PQ,PQ.v1.0">
+    <alias name="rto&lt;pq,pq&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.BL.v1.0">
+    <alias name="bl" />
+  </alias-list>
+  <alias-list name="ISO21090.IVL.TS.v1.0">
+    <alias name="ivl&lt;ts&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.SC.v1.0">
+    <alias name="sc" />
+  </alias-list>
+  <alias-list name="ISO21090.CD.v1.0">
+    <alias name="cd" />
+  </alias-list>
+  <alias-list name="ISO21090.DSET.CD.v1.0">
+    <alias name="dset&lt;cd&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.ED.v1.0">
+    <alias name="ed" />
+  </alias-list>
+  <alias-list name="BRIDG.SET.TEL.v2.1">
+    <alias name="set&lt;tel&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.ST.v1.0">
+    <alias name="st" />
+  </alias-list>
 
 
 </Datatype-mapping>
