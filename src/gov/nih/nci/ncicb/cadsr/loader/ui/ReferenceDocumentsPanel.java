@@ -3,6 +3,7 @@ package gov.nih.nci.ncicb.cadsr.loader.ui;
 import gov.nih.nci.ncicb.cadsr.domain.ReferenceDocument;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 import java.awt.Dimension;
