@@ -23,6 +23,8 @@ import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import org.apache.log4j.Logger;
@@ -34,13 +36,23 @@ import java.util.*;
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class DEPersister extends UMLPersister {
+public class DEPersister implements Persister {
   private static Logger logger = Logger.getLogger(DEPersister.class.getName());
   public static String DE_PREFERRED_NAME_DELIMITER = "v";
   public static String DE_PREFERRED_NAME_CONCAT_CHAR = ":";
   public static String DE_PREFERRED_DEF_CONCAT_CHAR = "_";
 
+  private UMLDefaults defaults = UMLDefaults.getInstance();
+  private ElementsLists elements = ElementsLists.getInstance();
+
+  private ProgressListener progressListener = null;
+  
+  private PersisterUtil persisterUtil;
+  
+  private DataElementDAO dataElementDAO;
+
   public DEPersister() {
+    initDAOs();
   }
 
   public void persist() throws PersisterException {
@@ -65,10 +77,10 @@ public class DEPersister extends UMLPersister {
           String packageName = LookupUtil.getPackageName(de);
 
           de.setDataElementConcept(
-            lookupDec(de.getDataElementConcept().getId()));
+            persisterUtil.lookupDec(de.getDataElementConcept().getId()));
           newDe.setDataElementConcept(de.getDataElementConcept());
 
-//           if(StringUtil.isEmpty(de.getValueDomain().getPublicId())) {
+
           ValueDomain vd = LookupUtil.lookupValueDomain(de.getValueDomain());
           if(vd == null) {
             logger.error("Value Domain " + de.getValueDomain().getLongName() + " does not exist.");
@@ -86,7 +98,7 @@ public class DEPersister extends UMLPersister {
                * If context is different, add Used_by alt_name
                */
             if (!newDe.getContext().getId().equals(defaults.getContext().getId())) {
-              addAlternateName
+              persisterUtil.addAlternateName
                 (newDe, defaults.getContext().getName(), 
                  AlternateName.TYPE_USED_BY,
                  null);
@@ -111,8 +123,8 @@ public class DEPersister extends UMLPersister {
               de.setAudit(defaults.getAudit());
               de.setLifecycle(defaults.getLifecycle());
               logger.debug("Creating DE: " + de.getLongName());
-              List<AlternateName> altNames = new ArrayList(de.getAlternateNames());
-              List<Definition> altDefs = new ArrayList(de.getDefinitions());
+              List<AlternateName> altNames = new ArrayList<AlternateName>(de.getAlternateNames());
+              List<Definition> altDefs = new ArrayList<Definition>(de.getDefinitions());
               de.removeAlternateNames();
               de.removeDefinitions();
 
@@ -137,7 +149,7 @@ public class DEPersister extends UMLPersister {
                * If context is different, add Used_by alt_name
                */
               if (!newDe.getContext().getId().equals(defaults.getContext().getId())) {
-                addAlternateName(
+                persisterUtil.addAlternateName(
                                  newDe, defaults.getContext().getName(), AlternateName.TYPE_USED_BY,
                                  null);
               }
@@ -149,16 +161,16 @@ public class DEPersister extends UMLPersister {
             PropertyAccessor.getProperty(
               "vd.preferredName", newDe.getValueDomain().getPreferredName()));
 
-          addPackageClassification(newDe, packageName);
+          persisterUtil.addPackageClassification(newDe, packageName);
 
           for(AlternateName altName : de.getAlternateNames()) {
-            addAlternateName(
+            persisterUtil.addAlternateName(
               newDe, altName.getName(),
               altName.getType(), packageName);
           }
 
           for(Definition def : de.getDefinitions()) {
-            addAlternateDefinition(
+            persisterUtil.addAlternateDefinition(
               newDe, def.getDefinition(), 
               def.getType(), packageName);
           }
@@ -209,5 +221,28 @@ public class DEPersister extends UMLPersister {
 
   }
 
+  protected void sendProgressEvent(int status, int goal, String message) {
+    if(progressListener != null) {
+      ProgressEvent pEvent = new ProgressEvent();
+      pEvent.setMessage(message);
+      pEvent.setStatus(status);
+      pEvent.setGoal(goal);
+      
+      progressListener.newProgressEvent(pEvent);
+
+    }
+  }
+
+  public void setProgressListener(ProgressListener listener) {
+    progressListener = listener;
+  }
+  
+  public void setPersisterUtil(PersisterUtil pu) {
+    persisterUtil = pu;
+  }
+  
+  private void initDAOs()  {
+    dataElementDAO = DAOAccessor.getDataElementDAO();
+  }
 
 }

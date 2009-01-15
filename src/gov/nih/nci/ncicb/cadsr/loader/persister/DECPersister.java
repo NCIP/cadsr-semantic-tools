@@ -23,6 +23,8 @@ import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import org.apache.log4j.Logger;
@@ -33,7 +35,7 @@ import java.util.*;
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class DECPersister extends UMLPersister {
+public class DECPersister implements Persister {
 
   public static String DEC_PREFERRED_NAME_DELIMITER = "v";
   public static String DEC_PREFERRED_NAME_CONCAT_CHAR = ":";
@@ -42,7 +44,17 @@ public class DECPersister extends UMLPersister {
 
   private static Logger logger = Logger.getLogger(DECPersister.class.getName());
 
+  private UMLDefaults defaults = UMLDefaults.getInstance();
+  private ElementsLists elements = ElementsLists.getInstance();
+
+  private ProgressListener progressListener = null;
+  
+  private PersisterUtil persisterUtil;
+  
+  private DataElementConceptDAO dataElementConceptDAO;
+
   public DECPersister() {
+    initDAOs();
   }
 
   public void persist() throws PersisterException {
@@ -62,7 +74,6 @@ public class DECPersister extends UMLPersister {
 
 
         List<Definition> modelDefinitions = dec.getDefinitions();
-        List<AlternateName> modelAltNames = dec.getAlternateNames();
         dec.removeDefinitions();
         dec.removeAlternateNames();
 
@@ -72,7 +83,7 @@ public class DECPersister extends UMLPersister {
         if(!StringUtil.isEmpty(dec.getPublicId()) && dec.getVersion() != null) {
           newDec = existingMapping(dec, newName, packageName);
           it.set(newDec);
-          addPackageClassification(newDec, packageName);
+          persisterUtil.addPackageClassification(newDec, packageName);
 	  logger.info(PropertyAccessor.getProperty("mapped.to.existing.dec"));
           continue;
         }
@@ -109,7 +120,6 @@ public class DECPersister extends UMLPersister {
 	// does this dec exist?
 	List l = dataElementConceptDAO.find(newDec, eager);
 
-//         String newDef = dec.getPreferredDefinition();
 	if (l.size() == 0) {
           dec.setConceptualDomain(defaults.getConceptualDomain());
           dec.setContext(defaults.getContext());
@@ -136,36 +146,11 @@ public class DECPersister extends UMLPersister {
           dec.setProperty(LookupUtil.lookupProperty(dec.getProperty().getPreferredName()));
 
 
-// 	  List props = elements.getElements(DomainObjectFactory.newProperty()
-// 					    .getClass());
-
-// 	  for (int j = 0; j < props.size(); j++) {
-// 	    Property o = (Property) props.get(j);
-
-// 	    if (o.getLongName().equals(dec.getProperty()
-// 				       .getLongName())) {
-// 	      dec.setProperty(o);
-// 	    }
-// 	  }
 
 	  dec.setAudit(defaults.getAudit());
           dec.setLifecycle(defaults.getLifecycle());
 
-//           List altDefs = new ArrayList(dec.getDefinitions());
-//           List altNames = new ArrayList(dec.getAlternateNames());
-
           newDec = dataElementConceptDAO.create(dec);
-
-//           // restore altNames
-//           for(Iterator it2 = altNames.iterator(); it2.hasNext();) {
-//             AlternateName an = (AlternateName)it2.next();
-//             dec.addAlternateName(an);
-//           }
-//           // restore altDefs
-//           for(Iterator it2 = altDefs.iterator(); it2.hasNext();) {
-//             Definition def = (Definition)it2.next();
-//             dec.addDefinition(def);
-//           }
 
 	  logger.info(PropertyAccessor.getProperty("created.dec"));
 
@@ -177,16 +162,16 @@ public class DECPersister extends UMLPersister {
            * If context is different, add Used_by alt_name
            */
           if(!newDec.getContext().getId().equals(defaults.getContext().getId())) {
-            addAlternateName(newDec, defaults.getContext().getName(), AlternateName.TYPE_USED_BY, null);
+            persisterUtil.addAlternateName(newDec, defaults.getContext().getName(), AlternateName.TYPE_USED_BY, null);
           }
           
 
 	}
 
-        addAlternateName(newDec, newName, AlternateName.TYPE_UML_DEC, packageName);
+        persisterUtil.addAlternateName(newDec, newName, AlternateName.TYPE_UML_DEC, packageName);
 
         for(Definition def : modelDefinitions) {
-          addAlternateDefinition(
+          persisterUtil.addAlternateDefinition(
             newDec, def.getDefinition(), 
             def.getType(), packageName);
         }
@@ -201,7 +186,7 @@ public class DECPersister extends UMLPersister {
                                  newDec.getProperty().getLongName()));
 
 
-        addPackageClassification(newDec, packageName);
+        persisterUtil.addPackageClassification(newDec, packageName);
 	it.set(newDec);
 
         // dec still referenced in DE. Need ID to retrieve it in DEPersister.
@@ -225,10 +210,34 @@ public class DECPersister extends UMLPersister {
     
     DataElementConcept existingDec = l.get(0);
 
-    addAlternateName(existingDec, newName, AlternateName.TYPE_UML_CLASS ,packageName);
+    persisterUtil.addAlternateName(existingDec, newName, AlternateName.TYPE_UML_CLASS ,packageName);
 
     return existingDec;
 
+  }
+
+  protected void sendProgressEvent(int status, int goal, String message) {
+    if(progressListener != null) {
+      ProgressEvent pEvent = new ProgressEvent();
+      pEvent.setMessage(message);
+      pEvent.setStatus(status);
+      pEvent.setGoal(goal);
+      
+      progressListener.newProgressEvent(pEvent);
+
+    }
+  }
+
+  public void setProgressListener(ProgressListener listener) {
+    progressListener = listener;
+  }
+
+    public void setPersisterUtil(PersisterUtil pu) {
+        persisterUtil = pu;
+    }
+
+ private void initDAOs()  {
+    dataElementConceptDAO = DAOAccessor.getDataElementConceptDAO();
   }
 
 

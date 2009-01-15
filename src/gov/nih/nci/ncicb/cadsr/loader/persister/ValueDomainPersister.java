@@ -25,6 +25,8 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import org.apache.log4j.Logger;
 
@@ -39,7 +41,19 @@ public class ValueDomainPersister extends UMLPersister {
 
   private static Logger logger = Logger.getLogger(ValueDomainPersister.class.getName());
 
+  private UMLDefaults defaults = UMLDefaults.getInstance();
+  private ElementsLists elements = ElementsLists.getInstance();
+
+  private ProgressListener progressListener = null;
+  
+  private PersisterUtil persisterUtil;
+  
+  private ValueDomainDAO valueDomainDAO;
+  
+  private Map<String, ValueDomain> valueDomains = new HashMap<String, ValueDomain>();
+
   public ValueDomainPersister() {
+    initDAOs();
   }
 
   public void persist() throws PersisterException {
@@ -123,12 +137,12 @@ public class ValueDomainPersister extends UMLPersister {
             PermissibleValue originalPv = isPvIncluded(pv, thesePvs);
             if(originalPv != null) {
               String packName = acCsCsi.getCsCsi().getCsi().getLongName();
-              addPackageClassification(pv.getValueMeaning(), packName);
+              persisterUtil.addPackageClassification(pv.getValueMeaning(), packName);
               for(AlternateName altName : originalPv.getValueMeaning().getAlternateNames())
-                addAlternateName(pv.getValueMeaning(), altName.getName(), altName.getType(), packName);
+                persisterUtil.addAlternateName(pv.getValueMeaning(), altName.getName(), altName.getType(), packName);
               
               for(Definition altDef : originalPv.getValueMeaning().getDefinitions())
-                addAlternateDefinition(pv.getValueMeaning(), altDef.getDefinition(), altDef.getType(), packName);
+                persisterUtil.addAlternateDefinition(pv.getValueMeaning(), altDef.getDefinition(), altDef.getType(), packName);
 
             }            
           }
@@ -147,6 +161,31 @@ public class ValueDomainPersister extends UMLPersister {
         return thisPv;
     }
     return null;
+  }
+
+
+  protected void sendProgressEvent(int status, int goal, String message) {
+    if(progressListener != null) {
+      ProgressEvent pEvent = new ProgressEvent();
+      pEvent.setMessage(message);
+      pEvent.setStatus(status);
+      pEvent.setGoal(goal);
+      
+      progressListener.newProgressEvent(pEvent);
+
+    }
+  }
+
+  public void setProgressListener(ProgressListener listener) {
+    progressListener = listener;
+  }
+  
+  public void setPersisterUtil(PersisterUtil pu) {
+    persisterUtil = pu;
+  }
+  
+  private void initDAOs()  {
+    valueDomainDAO = DAOAccessor.getValueDomainDAO();
   }
   
 }

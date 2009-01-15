@@ -21,14 +21,20 @@ package gov.nih.nci.ncicb.cadsr.loader.persister;
 
 import gov.nih.nci.ncicb.cadsr.dao.DAOCreateException;
 import gov.nih.nci.ncicb.cadsr.dao.EagerConstants;
+import gov.nih.nci.ncicb.cadsr.dao.ObjectClassDAO;
 import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
 import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.Definition;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
+import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.util.ConceptUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.ConventionUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
@@ -43,9 +49,21 @@ import org.apache.log4j.Logger;
  * 
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class ObjectClassPersister extends UMLPersister
-{
+public class ObjectClassPersister implements Persister {
   private static Logger logger = Logger.getLogger(ObjectClassPersister.class);
+
+  private UMLDefaults defaults = UMLDefaults.getInstance();
+  private ElementsLists elements = ElementsLists.getInstance();
+
+  private ProgressListener progressListener = null;
+  
+  private PersisterUtil persisterUtil;
+  
+  private ObjectClassDAO objectClassDAO;
+
+  public ObjectClassPersister() {
+    initDAOs();
+  }
 
   public void persist() throws PersisterException
   {
@@ -84,13 +102,13 @@ public class ObjectClassPersister extends UMLPersister
         {
           newOc = existingMapping(oc, packageName);
           it.set(newOc);
-          addPackageClassification(newOc, packageName);
+          persisterUtil.addPackageClassification(newOc, packageName);
 
           for (AlternateName an : parsedAltNames)
           {
             oc.addAlternateName(an);
             newOc.addAlternateName(an);
-            addAlternateName(newOc, an.getName(), an.getType(), packageName);
+            persisterUtil.addAlternateName(newOc, an.getName(), an.getType(), packageName);
           }
 
           logger.info(PropertyAccessor.getProperty("mapped.to.existing.oc"));
@@ -99,7 +117,6 @@ public class ObjectClassPersister extends UMLPersister
 
         // does this oc exist?
         List<String> eager = new ArrayList<String>();
-//         eager.add(EagerConstants.AC_CS_CSI);
 
         String[] conceptCodes = oc.getPreferredName().split(":");
         Concept[] concepts = new Concept[conceptCodes.length];
@@ -127,17 +144,9 @@ public class ObjectClassPersister extends UMLPersister
           List acCsCsis = oc.getAcCsCsis();
           try
           {
-            // List<AlternateName> parsedAltNames = new
-            // ArrayList<AlternateName>(oc.getAlternateNames());
-            // oc.removeAlternateNames();
-            // oc.removeDefinitions();
-
             newOc = objectClassDAO.create(oc, conceptCodes);
             logger.info(PropertyAccessor.getProperty("created.oc"));
 
-            // for(AlternateName ann : parsedAltNames) {
-            // oc.addAlternateName(ann);
-            // }
           }
           catch (DAOCreateException e)
           {
@@ -165,7 +174,7 @@ public class ObjectClassPersister extends UMLPersister
           // if not, then add alternate Def
           if (!newDefSource.equals(newOc.getDefinitionSource()))
           {
-            addAlternateDefinition(newOc, newConceptDef, newDefSource,
+            persisterUtil.addAlternateDefinition(newOc, newConceptDef, newDefSource,
                     packageName);
           }
 
@@ -174,29 +183,20 @@ public class ObjectClassPersister extends UMLPersister
         LogUtil.logAc(newOc, logger);
         logger.info("public ID: " + newOc.getPublicId());
 
-        // is definition the same?
-        // if not, then add alternate Def
-//         if (!isSameDefinition(newDef, concepts))
-//         {
-          // if((newDef.length() > 0) &&
-          // !newDef.equals(newOc.getPreferredDefinition())) {
-          addAlternateDefinition(newOc, newDef, Definition.TYPE_UML_CLASS,
+          persisterUtil.addAlternateDefinition(newOc, newDef, Definition.TYPE_UML_CLASS,
                   packageName);
-//         }
 
-        // addAlternateName(newOc, newName, AlternateName.TYPE_UML_CLASS
-        // ,packageName);
 
         for (AlternateName an : parsedAltNames)
         {
           oc.addAlternateName(an);
-          addAlternateName(newOc, an.getName(), an.getType(), packageName);
+          persisterUtil.addAlternateName(newOc, an.getName(), an.getType(), packageName);
         }
 
         it.set(newOc);
         oc.setLongName(newOc.getLongName());
         oc.setPreferredName(newOc.getPreferredName());
-        addPackageClassification(newOc, packageName);
+        persisterUtil.addPackageClassification(newOc, packageName);
 
       }
     }
@@ -224,16 +224,41 @@ public class ObjectClassPersister extends UMLPersister
 
     for (AlternateName an : parsedAltNames)
     {
-      addAlternateName(existingOc, an.getName(), an.getType(), packageName);
+      persisterUtil.addAlternateName(existingOc, an.getName(), an.getType(), packageName);
       existingOc.addAlternateName(an);
     }
 
     if (!StringUtil.isEmpty(newDef))
-      addAlternateDefinition(existingOc, newDef, Definition.TYPE_UML_CLASS,
+      persisterUtil.addAlternateDefinition(existingOc, newDef, Definition.TYPE_UML_CLASS,
               packageName);
 
     return existingOc;
 
+  }
+
+
+  protected void sendProgressEvent(int status, int goal, String message) {
+    if(progressListener != null) {
+      ProgressEvent pEvent = new ProgressEvent();
+      pEvent.setMessage(message);
+      pEvent.setStatus(status);
+      pEvent.setGoal(goal);
+      
+      progressListener.newProgressEvent(pEvent);
+
+    }
+  }
+
+  public void setProgressListener(ProgressListener listener) {
+    progressListener = listener;
+  }
+  
+  public void setPersisterUtil(PersisterUtil pu) {
+    persisterUtil = pu;
+  }
+  
+  private void initDAOs()  {
+    objectClassDAO = DAOAccessor.getObjectClassDAO();
   }
 
 }

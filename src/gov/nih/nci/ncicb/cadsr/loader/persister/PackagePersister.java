@@ -19,11 +19,16 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.persister;
 
+import gov.nih.nci.ncicb.cadsr.dao.ClassificationSchemeDAO;
+import gov.nih.nci.ncicb.cadsr.dao.ClassificationSchemeItemDAO;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import org.apache.log4j.Logger;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
+import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 
@@ -35,11 +40,23 @@ import java.util.*;
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class PackagePersister extends UMLPersister {
+public class PackagePersister implements Persister {
   
   private static Logger logger = Logger.getLogger(PackagePersister.class.getName());
 
+  private UMLDefaults defaults = UMLDefaults.getInstance();
+  private ElementsLists elements = ElementsLists.getInstance();
+
+  private ProgressListener progressListener = null;
+  
+  private PersisterUtil persisterUtil;
+  
+  private ClassificationSchemeItemDAO classificationSchemeItemDAO;
+    private ClassificationSchemeDAO classificationSchemeDAO;
+
+
   public PackagePersister() {
+    initDAOs();
   }
 
   public void persist() {
@@ -105,7 +122,7 @@ public class PackagePersister extends UMLPersister {
         for (AlternateName an : parsedAltNames)
         {
           pkg.addAlternateName(an);
-          addAlternateName(pkg, an.getName(), an.getType(), pkg.getLongName());
+          persisterUtil.addAlternateName(pkg, an.getName(), an.getType(), pkg.getLongName());
         }
 
         
@@ -170,5 +187,33 @@ public class PackagePersister extends UMLPersister {
 	}
         return newCsCsi;
   }
+
+
+  protected void sendProgressEvent(int status, int goal, String message) {
+    if(progressListener != null) {
+      ProgressEvent pEvent = new ProgressEvent();
+      pEvent.setMessage(message);
+      pEvent.setStatus(status);
+      pEvent.setGoal(goal);
+      
+      progressListener.newProgressEvent(pEvent);
+
+    }
+  }
+
+  public void setProgressListener(ProgressListener listener) {
+    progressListener = listener;
+  }
+  
+  public void setPersisterUtil(PersisterUtil pu) {
+    persisterUtil = pu;
+  }
+  
+  private void initDAOs()  {
+      classificationSchemeItemDAO = DAOAccessor.getClassificationSchemeItemDAO();
+          classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
+
+  }
+
 
 }

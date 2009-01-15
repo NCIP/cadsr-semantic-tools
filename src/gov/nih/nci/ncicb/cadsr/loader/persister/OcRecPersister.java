@@ -26,6 +26,9 @@ import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
+
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -35,11 +38,21 @@ import java.util.*;
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class OcRecPersister extends UMLPersister {
+public class OcRecPersister implements Persister {
 
   private static Logger logger = Logger.getLogger(OcRecPersister.class.getName());
 
+  private UMLDefaults defaults = UMLDefaults.getInstance();
+  private ElementsLists elements = ElementsLists.getInstance();
+
+  private ProgressListener progressListener = null;
+  
+  private PersisterUtil persisterUtil;
+  
+  private ObjectClassRelationshipDAO objectClassRelationshipDAO;
+
   public OcRecPersister() {
+    initDAOs();
   }
 
   public void persist() throws PersisterException {
@@ -65,9 +78,6 @@ public class OcRecPersister extends UMLPersister {
 	  ocr.setLongName(new OCRRoleNameBuilder().buildRoleName(ocr));
 	}
 
-	List<ObjectClass> ocs = elements.
-	  getElements(DomainObjectFactory.newObjectClass());
-
         ObjectClass sOcr = ocr.getSource();
 
 socr:
@@ -86,10 +96,6 @@ tocr:
           }
         }
 
-
-
-//         logger.info(PropertyAccessor
-//                     .getProperty("created.association"));
 	LogUtil.logAc(ocr, logger);
 	logger.info(PropertyAccessor
                     .getProperty("source.role",  ocr.getSourceRole()));
@@ -133,55 +139,55 @@ tocr:
 	eager.add(EagerConstants.AC_CS_CSI);
 
 	List l = objectClassRelationshipDAO.find(ocr2, eager);
-// 	boolean found = false;
 
-// 	if (l.size() > 0) {
-// 	  for (Iterator it2 = l.iterator(); it2.hasNext();) {
-// 	    ocr2 = (ObjectClassRelationship) it2.next();
-
-// 	    List acCsCsis = (List) ocr2.getAcCsCsis();
-
-// 	    for (Iterator it3 = acCsCsis.iterator(); it3.hasNext();) {
-// 	      AdminComponentClassSchemeClassSchemeItem acCsCsi = (AdminComponentClassSchemeClassSchemeItem) it3.next();
-
-// 	      if (acCsCsi.getCsCsi().getCs().getLongName().equals(defaults.getProjectCs().getLongName())) {
-// 	      found = true;
-// 	      logger.debug("Association with same classification already found");
-// 	      }
-	      
-// 	    }
-// 	  }
-// 	}
         
         if (l.size() > 0) {
           logger.info(PropertyAccessor.getProperty("existed.association"));
           ocr = (ObjectClassRelationship)l.get(0);
         } else {
-//           ocr.setPreferredName(
-//             ocr.getSource().getPublicId() + "-" +
-//             ocr.getSource().getVersion() + ":" + 
-//             ocr.getTarget().getPublicId() + "-" + 
-//             ocr.getTarget().getVersion()
-//             );
 
-//           ocr.setId(objectClassRelationshipDAO.create(ocr));
           ocr = objectClassRelationshipDAO.create(ocr);
-          // 	  addProjectCs(ocr);
+
 	  logger.info(PropertyAccessor.getProperty("created.association"));
 	}
 
-        addPackageClassification(ocr, sourcePackage);
-        addPackageClassification(ocr, targetPackage);
+        persisterUtil.addPackageClassification(ocr, sourcePackage);
+        persisterUtil.addPackageClassification(ocr, targetPackage);
 
         for (AlternateName an : parsedAltNames)
         {
           ocr.addAlternateName(an);
-          addAlternateName(ocr, an.getName(), an.getType(), sourcePackage);
-          addAlternateName(ocr, an.getName(), an.getType(), targetPackage);
+          persisterUtil.addAlternateName(ocr, an.getName(), an.getType(), sourcePackage);
+          persisterUtil.addAlternateName(ocr, an.getName(), an.getType(), targetPackage);
         }
 
       }
     }
   }    
+
+
+  protected void sendProgressEvent(int status, int goal, String message) {
+    if(progressListener != null) {
+      ProgressEvent pEvent = new ProgressEvent();
+      pEvent.setMessage(message);
+      pEvent.setStatus(status);
+      pEvent.setGoal(goal);
+      
+      progressListener.newProgressEvent(pEvent);
+
+    }
+  }
+
+  public void setProgressListener(ProgressListener listener) {
+    progressListener = listener;
+  }
+  
+  public void setPersisterUtil(PersisterUtil pu) {
+    persisterUtil = pu;
+  }
+  
+  private void initDAOs()  {
+    objectClassRelationshipDAO = DAOAccessor.getObjectClassRelationshipDAO();
+  }
   
 }

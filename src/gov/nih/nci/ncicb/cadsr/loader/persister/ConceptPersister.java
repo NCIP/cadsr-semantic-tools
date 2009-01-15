@@ -19,15 +19,22 @@
  */
 package gov.nih.nci.ncicb.cadsr.loader.persister;
 
+import gov.nih.nci.ncicb.cadsr.dao.AdminComponentDAO;
+import gov.nih.nci.ncicb.cadsr.dao.ConceptDAO;
 import gov.nih.nci.ncicb.cadsr.domain.*;
+
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import org.apache.log4j.Logger;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
+
+import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
 
 import java.util.*;
 
@@ -36,13 +43,22 @@ import java.util.*;
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class ConceptPersister extends UMLPersister {
+public class ConceptPersister implements Persister {
 
   private static Logger logger = Logger.getLogger(ConceptPersister.class.getName());
 
   private EvsModule evsModule = new EvsModule("PRE_NCI_Thesaurus");
 
+  private UMLDefaults defaults = UMLDefaults.getInstance();
+  private ElementsLists elements = ElementsLists.getInstance();
+
+  private ProgressListener progressListener = null;
+  
+  private static ConceptDAO conceptDAO;
+  private static AdminComponentDAO adminComponentDAO;
+
   public ConceptPersister() {
+    initDAOs();
   }
 
   public void persist() {
@@ -158,4 +174,25 @@ public class ConceptPersister extends UMLPersister {
     } 
   }
 
+  protected void sendProgressEvent(int status, int goal, String message) {
+    if(progressListener != null) {
+      ProgressEvent pEvent = new ProgressEvent();
+      pEvent.setMessage(message);
+      pEvent.setStatus(status);
+      pEvent.setGoal(goal);
+      
+      progressListener.newProgressEvent(pEvent);
+
+    }
+  }
+
+  public void setProgressListener(ProgressListener listener) {
+    progressListener = listener;
+  }
+
+  private void initDAOs()  {
+    conceptDAO = DAOAccessor.getConceptDAO();
+    adminComponentDAO = DAOAccessor.getAdminComponentDAO();
+  }
+  
 }

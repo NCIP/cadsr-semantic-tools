@@ -27,6 +27,9 @@ import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import org.apache.log4j.Logger;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
+
 import java.util.*;
 
 
@@ -34,11 +37,21 @@ import java.util.*;
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class PropertyPersister extends UMLPersister {
+public class PropertyPersister implements Persister {
 
   private static Logger logger = Logger.getLogger(PropertyPersister.class.getName());
 
+  private UMLDefaults defaults = UMLDefaults.getInstance();
+  private ElementsLists elements = ElementsLists.getInstance();
+
+  private PersisterUtil persisterUtil;
+
+  private ProgressListener progressListener = null;
+
+  private PropertyDAO propertyDAO;
+
   public PropertyPersister() {
+   initDAOs();
   }
 
   public void persist() throws PersisterException {
@@ -60,7 +73,6 @@ public class PropertyPersister extends UMLPersister {
         Property newProp = null;
 
         String packageName = LookupUtil.getPackageName(prop);
-        String newDef = prop.getPreferredDefinition();
         String newName = prop.getLongName();
 
 	prop.setContext(defaults.getMainContext());
@@ -71,7 +83,7 @@ public class PropertyPersister extends UMLPersister {
           logger.debug("mapping to existing Prop");
           newProp = existingMapping(prop, newName, packageName);
           it.set(newProp);
-          addPackageClassification(newProp, packageName);
+          persisterUtil.addPackageClassification(newProp, packageName);
 	  logger.info(PropertyAccessor.getProperty("mapped.to.existing.prop"));
           continue;
         }
@@ -119,7 +131,7 @@ public class PropertyPersister extends UMLPersister {
           } 
 
 	} else {
-	  newProp = (Property) l.get(0);
+	  newProp = l.get(0);
 	  logger.info(PropertyAccessor.getProperty("existed.prop"));
           
 	}
@@ -127,11 +139,11 @@ public class PropertyPersister extends UMLPersister {
 	LogUtil.logAc(newProp, logger);
         logger.info("-- Public ID: " + newProp.getPublicId());
 
-        addAlternateName(newProp, newName, AlternateName.TYPE_UML_ATTRIBUTE, packageName);
+        persisterUtil.addAlternateName(newProp, newName, AlternateName.TYPE_UML_ATTRIBUTE, packageName);
 
 	it.set(newProp);
 
-        addPackageClassification(newProp, packageName);
+        persisterUtil.addPackageClassification(newProp, packageName);
 
         // This object still reference in DEC, update long_name to real long name
         prop.setLongName(newProp.getLongName());
@@ -154,10 +166,35 @@ public class PropertyPersister extends UMLPersister {
     
     Property existingProp = l.get(0);
 
-    addAlternateName(existingProp, newName, AlternateName.TYPE_UML_ATTRIBUTE ,packageName);
+    persisterUtil.addAlternateName(existingProp, newName, AlternateName.TYPE_UML_ATTRIBUTE ,packageName);
 
     return existingProp;
 
+  }
+
+
+  protected void sendProgressEvent(int status, int goal, String message) {
+    if(progressListener != null) {
+      ProgressEvent pEvent = new ProgressEvent();
+      pEvent.setMessage(message);
+      pEvent.setStatus(status);
+      pEvent.setGoal(goal);
+      
+      progressListener.newProgressEvent(pEvent);
+
+    }
+  }
+
+  public void setProgressListener(ProgressListener listener) {
+    progressListener = listener;
+  }
+  
+  public void setPersisterUtil(PersisterUtil pu) {
+    persisterUtil = pu;
+  }
+  
+  private void initDAOs()  {
+    propertyDAO = DAOAccessor.getPropertyDAO();
   }
 
 
