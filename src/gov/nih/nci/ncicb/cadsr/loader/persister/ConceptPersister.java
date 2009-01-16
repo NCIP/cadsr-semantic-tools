@@ -57,6 +57,8 @@ public class ConceptPersister implements Persister {
   private static ConceptDAO conceptDAO;
   private static AdminComponentDAO adminComponentDAO;
 
+  private PersisterUtil persisterUtil;
+
   public ConceptPersister() {
     initDAOs();
   }
@@ -184,6 +186,10 @@ public class ConceptPersister implements Persister {
       progressListener.newProgressEvent(pEvent);
 
     }
+  }
+
+  public void setPersisterUtil(PersisterUtil pu) {
+    persisterUtil = pu;
   }
 
   public void setProgressListener(ProgressListener listener) {
