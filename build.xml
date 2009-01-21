@@ -12,6 +12,8 @@
   <property name="target.env" value="default"/>
   <property name="sqlsuite.dir" value="./test/sqlsuite"/>
 
+  <property file="${config.dir}/db.properties" prefix="db"/>
+
   <path id="proj.class.path">
     <pathelement location="${class.dir}"/>
     <fileset dir="${lib.dir}">
@@ -304,7 +306,7 @@
       <jvmarg value="-Djava.security.auth.login.config=classes/jaas.config"/>
       <jvmarg value="-Dignore-vd=false"/>
       <jvmarg value="-Ddb.passwd=${db.passwd}"/>
-      <jvmarg value="-Ddb.user=sbrext"/>
+      <jvmarg value="-Ddb.user=${db.db.loader.user}"/>
       <arg value="${dir}"/>
       <arg value="${projectName}"/>
       <arg value="${projectVersion}"/>
