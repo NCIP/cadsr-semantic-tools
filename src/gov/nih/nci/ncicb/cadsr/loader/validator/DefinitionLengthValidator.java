@@ -148,7 +148,7 @@ public class DefinitionLengthValidator implements Validator {
             List<Definition> def = de.getDefinitions();
                 for(Definition dfn : def)
                     if(dfn.getDefinition().length() > 2000)
-                        items.addItem(new ValidationError(PropertyAccessor.getProperty("alt.definition.too.long", dfn.getDefinition()), de));
+                      items.addItem(new ValidationError(PropertyAccessor.getProperty("alt.definition.too.long", LookupUtil.lookupFullName(de)), de));
         }
 
     return items;
