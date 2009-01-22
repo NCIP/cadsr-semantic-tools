@@ -11,6 +11,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 
 import java.awt.event.ActionEvent;
@@ -21,7 +22,9 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
-public class ReferenceDocumentsPanel extends JPanel {
+public class ReferenceDocumentsPanel extends JDialog {
+
+  private ReferenceDocumentsPanel _this = this;
   
   private List<ReferenceDocument> refDocs = new ArrayList<ReferenceDocument>();
 
@@ -42,27 +45,38 @@ public class ReferenceDocumentsPanel extends JPanel {
   private JTable refDocTable;
   private AbstractTableModel refDocTableModel;
 
+  private int closeStatus;
+  
+  public static int CLOSE_STATUS_CANCEL = 0,
+    CLOSE_STATUS_OK = 1;
+
   public ReferenceDocumentsPanel() {
+    super((java.awt.Frame)null, true);
     initUI();
   }
-  
 
   private void initUI() {
-    this.setLayout(new GridBagLayout());
+    this.setTitle("Manage Reference Documents");
+
+    JPanel mainPanel = new JPanel();
+    JScrollPane scrollPane = new JScrollPane(mainPanel);
+    this.getContentPane().add(scrollPane);
+
+    mainPanel.setLayout(new GridBagLayout());
 
     languageCombo = new JComboBox(PropertyAccessor.getProperty("reference.documents.languages").split(","));
-    UIUtil.insertInBag(this, languageLabel, 0, 0, 2, 1);
-    UIUtil.insertInBag(this, languageCombo, 0, 1, 2, 1); 
+    UIUtil.insertInBag(mainPanel, languageLabel, 0, 0);
+    UIUtil.insertInBag(mainPanel, languageCombo, 0, 1); 
 
     typeCombo = new JComboBox(PropertyAccessor.getProperty("reference.documents.types").split(","));
-    UIUtil.insertInBag(this, typeLabel, 0, 2, 2, 1);
-    UIUtil.insertInBag(this, typeCombo, 0, 3, 2, 1); 
+    UIUtil.insertInBag(mainPanel, typeLabel, 0, 2);
+    UIUtil.insertInBag(mainPanel, typeCombo, 0, 3); 
     
-    UIUtil.insertInBag(this, nameLabel, 0, 4, 2, 1);
-    UIUtil.insertInBag(this, nameField, 0, 5, 2, 1); 
+    UIUtil.insertInBag(mainPanel, nameLabel, 0, 4);
+    UIUtil.insertInBag(mainPanel, nameField, 0, 5); 
 
-    UIUtil.insertInBag(this, urlLabel, 0, 6, 2, 1);
-    UIUtil.insertInBag(this, urlField, 0, 7, 2, 1); 
+    UIUtil.insertInBag(mainPanel, urlLabel, 0, 6);
+    UIUtil.insertInBag(mainPanel, urlField, 0, 7); 
 
     textTextArea.setLineWrap(true);
     textTextArea.setWrapStyleWord(true);
@@ -70,8 +84,13 @@ public class ReferenceDocumentsPanel extends JPanel {
     textScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     textScrollPane.setPreferredSize(new Dimension(400, 100));
 
-    UIUtil.insertInBag(this, textLabel, 0, 8, 2, 1);
-    UIUtil.insertInBag(this, textScrollPane, 0, 9, 2, 1); 
+    UIUtil.insertInBag(mainPanel, textLabel, 0, 8);
+    UIUtil.insertInBag(mainPanel, textScrollPane, 0, 9); 
+
+    JPanel addButtonPanel = new JPanel();
+    FlowLayout fl = new FlowLayout();
+    fl.setAlignment(FlowLayout.RIGHT);
+    addButtonPanel.setLayout(fl);
     
     JButton addButton = new JButton("Add");
     addButton.addActionListener(new ActionListener() {
@@ -100,7 +119,7 @@ public class ReferenceDocumentsPanel extends JPanel {
           refDocTableModel.fireTableDataChanged();
         }
     });
-    UIUtil.insertInBag(this, addButton, 0, 10); 
+    addButtonPanel.add(addButton);
     
     JButton removeButton = new JButton("Remove");
     removeButton.addActionListener(new ActionListener() {
@@ -113,7 +132,9 @@ public class ReferenceDocumentsPanel extends JPanel {
 
         }
       });
-    UIUtil.insertInBag(this, removeButton, 1, 10); 
+
+    addButtonPanel.add(removeButton);
+    UIUtil.insertInBag(mainPanel, addButtonPanel, 0, 10); 
 
 
     refDocTableModel = new AbstractTableModel() {
@@ -163,22 +184,58 @@ public class ReferenceDocumentsPanel extends JPanel {
     // New table overriding the tooltip method
     refDocTable = new JTable(refDocTableModel) {
         public String getToolTipText(java.awt.event.MouseEvent e) {
-          String tip = null;
           java.awt.Point p = e.getPoint();
           int rowIndex = rowAtPoint(p);
           int colIndex = columnAtPoint(p);
           return (String)getModel().getValueAt(rowIndex, colIndex);
         }
       };
-    JScrollPane tableScrollPane = new JScrollPane(refDocTable);
+//     JScrollPane tableScrollPane = new JScrollPane(refDocTable);
 
-    UIUtil.insertInBag(this, refDocTable, 0, 11, 2, 1);
+    UIUtil.insertInBag(mainPanel, refDocTable, 0, 11);
     
+    JPanel closeButtonPanel = new JPanel();
+    fl = new FlowLayout(FlowLayout.RIGHT);
+    closeButtonPanel.setLayout(fl);
+    
+    JButton okButton = new JButton("OK");
+    okButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          closeStatus = CLOSE_STATUS_OK;
+          _this.dispose();
+        }
+      });
+    
+    closeButtonPanel.add(okButton);
 
+    JButton cancelButton = new JButton("Cancel");
+    cancelButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          closeStatus = CLOSE_STATUS_CANCEL;
+          _this.dispose();
+        }
+      });
+    
+    closeButtonPanel.add(cancelButton);
+
+
+    UIUtil.insertInBag(mainPanel, closeButtonPanel, 0, 12);
+
+    this.setSize(500, 600);
+
+  }
+
+  public int getCloseStatus() {
+    return closeStatus;
+  }
+
+  public List<ReferenceDocument> getResult() {
+    return refDocs;
   }
 
   public void setReferenceDocuments(List<ReferenceDocument> refDocs) {
     this.refDocs = refDocs;
+    refDocTableModel.fireTableDataChanged();
   }
 
   private void addReferenceDocument(String language, 
@@ -197,10 +254,8 @@ public class ReferenceDocumentsPanel extends JPanel {
   }
   
   public static void main(String[] args) {
-    JFrame f = new JFrame();
-    f.setSize(500, 500);
-    f.add(new ReferenceDocumentsPanel());
-    f.setVisible(true);
+    ReferenceDocumentsPanel refDocPanel = new ReferenceDocumentsPanel();
+    refDocPanel.setVisible(true);
   }
 
   public void setCadsrModule(CadsrModule cadsrModule){
