@@ -156,6 +156,8 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
       else {// Apply Button clicked after clear, set all values to null for ValueDomainViewPanel
           vdButtonPanel.switchButton.setEnabled(true);
           mteVDPanel.setApplied(true);
+          
+          // !! TODO - REFACTOR THIS. DONT USE PUBLIC FIELDS. GURU MEDITATION.
           vdViewPanel.vdPrefDefValueTextField.setText("");
           vdViewPanel.vdDatatypeValueCombobox.setSelectedIndex(0);
           vdViewPanel.tmpInvisible.setSelected(true);
