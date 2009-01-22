@@ -40,7 +40,7 @@
       <map>
         <entry key="APPLICATION_SERVICE_BEAN" value="evsApplicationService"/>
         <entry key="AUTHENTICATION_SERVICE_BEAN" value-ref="evsAuthenticationProvider"/>
-        <entry key="APPLICATION_SERVICE_URL"  value="http://evsapi-stage.nci.nih.gov:19080/evsapi41"/>
+        <entry key="APPLICATION_SERVICE_URL"  value="http://evsapi-stage.nci.nih.gov/evsapi41"/>
         <entry key="APPLICATION_SERVICE_CONFIG"  value-ref="applicationServiceConfig"/>
       </map>
     </constructor-arg>
@@ -49,7 +49,7 @@
   <bean id="evsApplicationService" class="org.springframework.aop.framework.ProxyFactoryBean">
     <property name="target">
       <bean class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
-        <property name="serviceUrl" value="http://evsapi-stage.nci.nih.gov:19080/evsapi41/http/applicationService"/>
+        <property name="serviceUrl" value="http://evsapi-stage.nci.nih.gov/evsapi41/http/applicationService"/>
         <property name="serviceInterface" value="gov.nih.nci.system.applicationservice.EVSApplicationService"/>
         <property name="httpInvokerRequestExecutor">
           <bean class="org.acegisecurity.context.httpinvoker.AuthenticationSimpleHttpInvokerRequestExecutor"/>
@@ -63,7 +63,7 @@
   <bean id="evsAuthenticationProvider" class="org.acegisecurity.providers.rcp.RemoteAuthenticationProvider">
     <property name="remoteAuthenticationManager">
       <bean class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
-        <property name="serviceUrl" value="http://evsapi-stage.nci.nih.gov:19080/evsapi41/http/remoteAuthenticationManager"/>
+        <property name="serviceUrl" value="http://evsapi-stage.nci.nih.gov/evsapi41/http/remoteAuthenticationManager"/>
         <property name="serviceInterface" value="org.acegisecurity.providers.rcp.RemoteAuthenticationManager"/>
       </bean>
     </property>
