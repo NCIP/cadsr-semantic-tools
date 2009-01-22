@@ -22,7 +22,6 @@ package gov.nih.nci.ncicb.cadsr.loader.validator;
 import java.util.*;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
-import gov.nih.nci.ncicb.cadsr.dao.ValueDomainDAO;
 
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
@@ -39,7 +38,7 @@ import org.apache.log4j.Logger;
 /**
  * Validate that Value Domains requested for load validate required rules: <ul>
  * <li>Must not already Exist
- * <ul>
+ * </ul>
  */
 public class ValueDomainValidator implements Validator, CadsrModuleListener {
 
@@ -232,15 +231,35 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
             }
           }
           
-          // !! TODO
           // Validate that Low and High are NUMBER
+          if(!StringUtil.isEmpty(vd.getLowValue())) {
+            if(!vd.getLowValue().matches("\\d*\\.?\\d*"))
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.low.value.number.validation.msg"), vd));
+            if(vd.getLowValue().length() > 255) {
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.low.value.length.validation.msg"), vd));
+            }
+          }
+          if(!StringUtil.isEmpty(vd.getHighValue())) {
+            if(!vd.getHighValue().matches("\\d*\\.?\\d*"))
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.high.value.number.validation.msg"), vd));
+            if(vd.getHighValue().length() > 255) {
+             items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.high.value.length.validation.msg"), vd));
+            }
+          }          
 
-          // Validate that HIGH is higher than LOW
-
-          // Validate that LOW And HIGH are shorter than 255 chars
-
-        
-        // END: OPTIONAL PANEL VALIDATIONS GOES HERE
+        // END: OPTIONAL PANEL VALIDATIONS 
         
           if(StringUtil.isEmpty(vd.getDataType())) {
             items.addItem
@@ -422,7 +441,7 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
         }
       }    
         
-    List<DataElement> des = (List<DataElement>)elements.getElements(DomainObjectFactory.newDataElement().getClass());
+    List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
     boolean match = false;
     
     if(des != null) {
