@@ -28,18 +28,10 @@ import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-
-import java.text.ParseException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import java.util.regex.PatternSyntaxException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -55,7 +47,6 @@ import javax.swing.JTextField;
 import javax.swing.ToolTipManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.DefaultFormatter;
 
 public class ValueDomainViewPanel extends JPanel 
     implements Editable, CadsrModuleListener, ItemListener, DocumentListener
@@ -74,21 +65,23 @@ public class ValueDomainViewPanel extends JPanel
     vdHighValueTitleLabel = new JLabel("High Value"),
     vdLowValueTitleLabel = new JLabel("Low Value");
   
+  
+  // !! TODO REFACTOR THESE PUBLIC FIELDS. GURU MEDITATION.
   public JTextArea vdPrefDefValueTextField = new JTextArea();
   private CadsrDialog cadsrCDDialog;
   private CadsrDialog cadsrREPDialog;
 
   public JComboBox vdDatatypeValueCombobox = null;
-  public JRadioButton vdTypeERadioButton = new JRadioButton("E");
-  public JRadioButton vdTypeNRadioButton = new JRadioButton("N");
+  private JRadioButton vdTypeERadioButton = new JRadioButton("E");
+  private JRadioButton vdTypeNRadioButton = new JRadioButton("N");
   public JRadioButton tmpInvisible = new JRadioButton("dummy");
   private ButtonGroup vdTypeRadioButtonGroup = new ButtonGroup();
 
-  public JPanel optionalPanel;
+  private JPanel optionalPanel;
   
   public JLabel vdCDPublicIdJLabel = null;
   public JLabel vdCdLongNameValueJLabel = null;
-  private JButton searchButton = new JButton("Search");
+  private JButton cdSearchButton = new JButton("Search");
   private JButton repSearchButton = new JButton("Search");
   public JLabel vdRepIdValueJLabel = null;
   
@@ -97,10 +90,8 @@ public class ValueDomainViewPanel extends JPanel
   private JTextField vdMinimumLengthValueTextField;
   private JTextField vdMaximumLengthValueTextField;
   private JTextField vdDecimalPlaceValueTextField;
-  private JTextArea vdHighValuevalueTextArea = new JTextArea();
-  private JTextArea vdLowValuevalueTextArea = new JTextArea();
-  private JScrollPane vdHighValueScrollPane = null;
-  private JScrollPane vdLowValueScrollPane = null;
+  private JTextField vdHighValueTextField;
+  private JTextField vdLowValueTextField;
 
   private JScrollPane scrollPane;
   private List datatypeList = null,
@@ -112,16 +103,18 @@ public class ValueDomainViewPanel extends JPanel
   private UMLNode umlNode;
   private CadsrModule cadsrModule;
 
+  private ReferenceDocumentsPanel refDocPanel = null;
+
   private boolean isInitialized = false;
   private List<ElementChangeListener> changeListeners = new ArrayList<ElementChangeListener>();
   private List<PropertyChangeListener> propChangeListeners = new ArrayList<PropertyChangeListener>();  
 
+  private ReferenceDocumentsPanel refDocDialog;
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
       super.addPropertyChangeListener(l);;
       propChangeListeners.add(l);
   }
-
 
   public ValueDomainViewPanel() {
 
@@ -145,6 +138,8 @@ public class ValueDomainViewPanel extends JPanel
     tempVD.setDecimalPlace(vd.getDecimalPlace());
     tempVD.setHighValue(vd.getHighValue());
     tempVD.setLowValue(vd.getLowValue());
+
+    tempVD.setReferenceDocuments(vd.getReferenceDocuments());
     
     vd = null;
 
@@ -184,8 +179,8 @@ public class ValueDomainViewPanel extends JPanel
     JPanel vdCDIdVersionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     vdCDPublicIdJLabel = new JLabel();
     vdCDIdVersionPanel.add(vdCDPublicIdJLabel);
-    vdCDIdVersionPanel.add(searchButton);
-    searchButton.addActionListener(new ActionListener() {
+    vdCDIdVersionPanel.add(cdSearchButton);
+    cdSearchButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
             cadsrCDDialog.setAlwaysOnTop(true);
             cadsrCDDialog.setVisible(true);
@@ -247,17 +242,23 @@ public class ValueDomainViewPanel extends JPanel
     populateUOMCombobox();
     populateDFCombobox();
 
-    vdHighValuevalueTextArea.setLineWrap(true);
-    vdHighValuevalueTextArea.setWrapStyleWord(true);
-    vdHighValueScrollPane = new JScrollPane(vdHighValuevalueTextArea);
-    vdHighValueScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-    vdHighValueScrollPane.setPreferredSize(new Dimension(200, 100));
+//     vdHighValuevalueTextArea.setLineWrap(true);
+//     vdHighValuevalueTextArea.setWrapStyleWord(true);
+//     vdHighValueScrollPane = new JScrollPane(vdHighValuevalueTextArea);
+//     vdHighValueScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+//     vdHighValueScrollPane.setPreferredSize(new Dimension(200, 100));
     
-    vdLowValuevalueTextArea.setLineWrap(true);
-    vdLowValuevalueTextArea.setWrapStyleWord(true);
-    vdLowValueScrollPane = new JScrollPane(vdLowValuevalueTextArea);
-    vdLowValueScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-    vdLowValueScrollPane.setPreferredSize(new Dimension(200, 100));
+//     vdLowValuevalueTextArea.setLineWrap(true);
+//     vdLowValuevalueTextArea.setWrapStyleWord(true);
+//     vdLowValueScrollPane = new JScrollPane(vdLowValuevalueTextArea);
+//     vdLowValueScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+//     vdLowValueScrollPane.setPreferredSize(new Dimension(200, 100));
+    
+    vdLowValueTextField = new JFormattedTextField(new RegexFormatter("\\d*\\.?\\d*", 255));
+    vdHighValueTextField = new JFormattedTextField(new RegexFormatter("\\d*\\.?\\d*", 255));
+
+    vdLowValueTextField.setColumns(10);
+    vdHighValueTextField.setColumns(10);
     
     vdMinimumLengthValueTextField = new JFormattedTextField(new RegexFormatter("\\d{0,8}"));
     vdMaximumLengthValueTextField = new JFormattedTextField(new RegexFormatter("\\d{0,8}"));
@@ -293,10 +294,24 @@ public class ValueDomainViewPanel extends JPanel
     UIUtil.insertInBag(optionalPanel, vdDecimalPlaceValueTextField, 1, 6);
     
     UIUtil.insertInBag(optionalPanel, vdHighValueTitleLabel, 0, 7);
-    UIUtil.insertInBag(optionalPanel, vdHighValueScrollPane, 1, 7, 3, 1);
+    UIUtil.insertInBag(optionalPanel, vdHighValueTextField, 1, 7, 3, 1);
     
     UIUtil.insertInBag(optionalPanel, vdLowValueTitleLabel, 0, 9);
-    UIUtil.insertInBag(optionalPanel, vdLowValueScrollPane, 1, 9, 3, 1);
+    UIUtil.insertInBag(optionalPanel, vdLowValueTextField, 1, 9, 3, 1);
+
+    JButton refDocButton = new JButton("Reference Documents");
+    refDocButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          refDocDialog.setVisible(true);
+          if(refDocDialog.getCloseStatus() == ReferenceDocumentsPanel.CLOSE_STATUS_OK) {
+            tempVD.setReferenceDocuments(refDocDialog.getResult());
+          } else {
+            refDocDialog.setReferenceDocuments(tempVD.getReferenceDocuments());
+          }
+        }
+      });
+//     UIUtil.insertInBag(optionalPanel, refDocButton, 0, 10, 2, 1);
+
     // END: Data population for optional panel fields goes here
 
     JScrollPane scrollPane = new JScrollPane(mainPanel);
@@ -416,8 +431,8 @@ public class ValueDomainViewPanel extends JPanel
     else 
       vdDecimalPlaceValueTextField.setText("");
 
-    vdHighValuevalueTextArea.setText(tempVD.getHighValue());
-    vdLowValuevalueTextArea.setText(tempVD.getLowValue());
+    vdHighValueTextField.setText(tempVD.getHighValue());
+    vdLowValueTextField.setText(tempVD.getLowValue());
 
     
     vdMinimumLengthValueTextField.setActionCommand("MIN_LENGTH");
@@ -428,13 +443,17 @@ public class ValueDomainViewPanel extends JPanel
     vdMinimumLengthValueTextField.getDocument().addDocumentListener(this);
     vdMaximumLengthValueTextField.getDocument().addDocumentListener(this);
     vdDecimalPlaceValueTextField.getDocument().addDocumentListener(this);
-    vdHighValuevalueTextArea.getDocument().addDocumentListener(this);
-    vdLowValuevalueTextArea.getDocument().addDocumentListener(this);
+    vdHighValueTextField.getDocument().addDocumentListener(this);
+    vdLowValueTextField.getDocument().addDocumentListener(this);
     vdTypeERadioButton.addItemListener(this);
     vdTypeNRadioButton.addItemListener(this);
     vdDatatypeValueCombobox.addItemListener(this);
     vdUnitOfMeasureValueCombobox.addItemListener(this);
     vdDisplayFormatValueCombobox.addItemListener(this);
+
+    // Set ReferenceDocuments
+    refDocDialog = new ReferenceDocumentsPanel();
+    refDocDialog.setReferenceDocuments(vd.getReferenceDocuments());
     
     firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
   }
@@ -497,8 +516,8 @@ public class ValueDomainViewPanel extends JPanel
       vd.setDecimalPlace(Integer.parseInt(vdDecimalPlaceValueTextField.getText()));
     else
       vd.setDecimalPlace(Integer.MAX_VALUE);
-    vd.setHighValue(vdHighValuevalueTextArea.getText());
-    vd.setLowValue(vdLowValuevalueTextArea.getText());
+    vd.setHighValue(vdHighValueTextField.getText());
+    vd.setLowValue(vdLowValueTextField.getText());
     
     firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, false));
     fireElementChangeEvent(new ElementChangeEvent((Object)umlNode));
@@ -516,33 +535,37 @@ public class ValueDomainViewPanel extends JPanel
       this.cadsrModule = cadsrModule;
     }
     
-    private String setTextFieldValue(int value){
+  private String setTextFieldValue(int value){
     
-        return value == 0 ? "" : Integer.toString(value);
+    return value == 0 ? "" : Integer.toString(value);
     
-    }
-    
+  }
+  
+  /**
+   * Returns true if the value is null.
+   */
+
   private boolean checkForNullOrZero(String value){
-    if(value != null || !value.equals("null") || value.length() > 0)
+    if(value == null || value.equals("null") || value.length() == 0)
       return true;
     else
       return false;
   }
-    
-    private void populateDatatypeCombobox(){
-        datatypeList = new ArrayList();
-        Collection<String> collDatatypes = cadsrModule.getAllDatatypes();
-        vdDatatypeValueCombobox = new JComboBox();
-        vdDatatypeValueCombobox.addItem("Please Select The Datatype");
-        datatypeList.add("Please Select The Datatype");
-        Iterator itr = collDatatypes.iterator();
-        while(itr.hasNext()){
-            String datatypeValue = (String) itr.next();
-            datatypeList.add(datatypeValue);
-            vdDatatypeValueCombobox.addItem(datatypeValue);
-        }
+  
+  private void populateDatatypeCombobox(){
+    datatypeList = new ArrayList();
+    Collection<String> collDatatypes = cadsrModule.getAllDatatypes();
+    vdDatatypeValueCombobox = new JComboBox();
+    vdDatatypeValueCombobox.addItem("Please Select The Datatype");
+    datatypeList.add("Please Select The Datatype");
+    Iterator itr = collDatatypes.iterator();
+    while(itr.hasNext()){
+      String datatypeValue = (String) itr.next();
+      datatypeList.add(datatypeValue);
+      vdDatatypeValueCombobox.addItem(datatypeValue);
     }
-
+  }
+  
     private int getSelectedIndex(String selectedString, List lst){
         for(int i=0; i<lst.size(); i++)
             if(lst.get(i)!= null 
@@ -585,7 +608,10 @@ public class ValueDomainViewPanel extends JPanel
     public String getPubId() {
         return tempVD.getPublicId();
     }
-
+  
+  public void setReferenceDocumentsPanel(ReferenceDocumentsPanel p) {
+    this.refDocPanel = p;
+  }
 
 
 }
