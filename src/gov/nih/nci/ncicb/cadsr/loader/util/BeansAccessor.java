@@ -61,7 +61,7 @@ public class BeansAccessor {
   }
 
   public static UMLLoaderGUI getSiw() {
-    return (UMLLoaderGUI)getFactory().getBean("siw");
+    return (UMLLoaderGUI)getFactoryForSiw().getBean("siw");
   }
 
   public static WizardController getWizardController() {
@@ -104,12 +104,39 @@ public class BeansAccessor {
 //     return (UMLHandler)getFactory().getBean("umlEventHandler");
 //   }
 
-  private static BeanFactory getFactory() {
+  private static BeanFactory getFactoryForSiw() {
     try {
       if(factory != null) {
         return factory;
       }
       ClassPathXmlApplicationContext cpCtx = new ClassPathXmlApplicationContext(new String[]{"beans.xml", "spring-datasources.xml"});
+
+//       GenericApplicationContext genCtx = new GenericApplicationContext();
+//       XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(genCtx);
+
+//       cpCtx.initBeanDefinitionReader(xmlReader);
+
+//       cpCtx.refresh();
+      
+      factory = cpCtx;
+
+
+//       factory = new XmlBeanFactory(new InputStreamResource(Thread.currentThread().getContextClassLoader().getResourceAsStream("beans.xml")));
+
+      return factory;
+    } catch (Exception e){
+      logger.error(e.getMessage());
+    } // end of try-catch
+    return null;
+  }
+
+
+  private static BeanFactory getFactory() {
+    try {
+      if(factory != null) {
+        return factory;
+      }
+      ClassPathXmlApplicationContext cpCtx = new ClassPathXmlApplicationContext(new String[]{"beans.xml", "spring-datasources.xml", "loader-spring.xml"});
 
 //       GenericApplicationContext genCtx = new GenericApplicationContext();
 //       XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(genCtx);
