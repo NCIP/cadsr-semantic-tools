@@ -126,6 +126,7 @@
         <include name="*.properties"/>
         <include name="jaas.config"/>
         <include name="beans.xml"/>
+        <include name="loader-spring.xml"/>
         <include name="application-config-client.xml"/>
         <include name="log4j.xml"/>
         <include name="spring-datasources.xml"/>
