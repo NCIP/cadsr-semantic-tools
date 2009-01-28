@@ -52,6 +52,9 @@ public class PackagePersister extends UMLPersister {
     if (packages != null) {
       for (ListIterator<ClassificationSchemeItem> it = packages.listIterator(); it.hasNext();) {
 	pkg = it.next();
+
+        if(StringUtil.isEmpty(pkg.getLongName()))
+          continue;
         
 	pkg.setAudit(defaults.getAudit());
 	pkg.setType(ClassificationSchemeItem.TYPE_UML_PACKAGE);
@@ -86,6 +89,7 @@ public class PackagePersister extends UMLPersister {
 	if (l.size() == 0) { // not in DB, create it.
           if(StringUtil.isEmpty(pkg.getPreferredDefinition()))
             pkg.setPreferredDefinition("No Value Exists.");
+
 	  pkg.setId(classificationSchemeItemDAO.create(pkg));
 	} else {
 	  pkg = (ClassificationSchemeItem) l.get(0);
