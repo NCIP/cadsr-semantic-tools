@@ -28,20 +28,6 @@
     </property>
   </bean>
 
-  <bean name="umlLoader"
-    class="gov.nih.nci.ncicb.cadsr.loader.CadsrLoader"
-    >
-    <property name="validator"><ref bean="loaderValidator"/></property>
-    <property name="parser"><ref bean="xmiParser2"/></property>
-    <property name="persister"><ref bean="mainPersister"/></property>
-    <property name="userPreferences"><ref bean="usersPreferences"/></property>
-    <property name="dataSource"><ref bean="dataSource"/></property>
-    <property name="runModeListeners">
-      <list>
-        <ref bean="umlEventHandler"/>
-      </list>
-    </property>
-  </bean>
 
   <bean name="gmeAction"
     class="gov.nih.nci.ncicb.cadsr.loader.GMEAction"
@@ -50,11 +36,6 @@
     <property name="writer"><ref bean="gmeWriter"/></property>
   </bean>
 
-  <bean name="unclassifier"
-    class="gov.nih.nci.ncicb.cadsr.loader.Unclassifier"
-    >
-    <property name="dataSource"><ref bean="dataSource"/></property>
-  </bean>
   
   <bean name="wizardController"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.WizardController"
