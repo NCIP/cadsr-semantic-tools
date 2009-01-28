@@ -23,6 +23,7 @@ import gov.nih.nci.ncicb.cadsr.dao.DAOCreateException;
 import gov.nih.nci.ncicb.cadsr.dao.EagerConstants;
 import gov.nih.nci.ncicb.cadsr.dao.ObjectClassDAO;
 import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
+import gov.nih.nci.ncicb.cadsr.domain.AdminComponentClassSchemeClassSchemeItem;
 import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.Definition;
@@ -86,10 +87,10 @@ public class ObjectClassPersister implements Persister {
 
         oc.setContext(defaults.getMainContext());
 
-        String className = LookupUtil.lookupFullName(oc);
-        int ind = className.lastIndexOf(".");
-        String packageName = className.substring(0, ind);
-        className = className.substring(ind + 1);
+//         String className = LookupUtil.lookupFullName(oc);
+//         int ind = className.lastIndexOf(".");
+//         String packageName = className.substring(0, ind);
+//         className = className.substring(ind + 1);
         String newDef = oc.getPreferredDefinition();
 
         List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc
@@ -100,15 +101,15 @@ public class ObjectClassPersister implements Persister {
         // Use case for existing Element
         if (!StringUtil.isEmpty(oc.getPublicId()) && oc.getVersion() != null)
         {
-          newOc = existingMapping(oc, packageName);
+          newOc = existingMapping(oc);
           it.set(newOc);
-          persisterUtil.addPackageClassification(newOc, packageName);
+          persisterUtil.addPackageClassification(newOc);
 
           for (AlternateName an : parsedAltNames)
           {
             oc.addAlternateName(an);
             newOc.addAlternateName(an);
-            persisterUtil.addAlternateName(newOc, an.getName(), an.getType(), packageName);
+            persisterUtil.addAlternateName(newOc, an);
           }
 
           logger.info(PropertyAccessor.getProperty("mapped.to.existing.oc"));
@@ -141,7 +142,7 @@ public class ObjectClassPersister implements Persister {
           oc.setOrigin(defaults.getOrigin());
           oc.setLifecycle(defaults.getLifecycle());
 
-          List acCsCsis = oc.getAcCsCsis();
+          List<AdminComponentClassSchemeClassSchemeItem> acCsCsis = oc.getAcCsCsis();
           try
           {
             newOc = objectClassDAO.create(oc, conceptCodes);
@@ -174,8 +175,7 @@ public class ObjectClassPersister implements Persister {
           // if not, then add alternate Def
           if (!newDefSource.equals(newOc.getDefinitionSource()))
           {
-            persisterUtil.addAlternateDefinition(newOc, newConceptDef, newDefSource,
-                    packageName);
+            persisterUtil.addAlternateDefinition(newOc, newConceptDef, newDefSource);
           }
 
         }
@@ -183,27 +183,26 @@ public class ObjectClassPersister implements Persister {
         LogUtil.logAc(newOc, logger);
         logger.info("public ID: " + newOc.getPublicId());
 
-          persisterUtil.addAlternateDefinition(newOc, newDef, Definition.TYPE_UML_CLASS,
-                  packageName);
+          persisterUtil.addAlternateDefinition(newOc, newDef, Definition.TYPE_UML_CLASS);
 
 
         for (AlternateName an : parsedAltNames)
         {
           oc.addAlternateName(an);
-          persisterUtil.addAlternateName(newOc, an.getName(), an.getType(), packageName);
+          persisterUtil.addAlternateName(newOc, an);
         }
 
         it.set(newOc);
         oc.setLongName(newOc.getLongName());
         oc.setPreferredName(newOc.getPreferredName());
-        persisterUtil.addPackageClassification(newOc, packageName);
+        persisterUtil.addPackageClassification(newOc);
 
       }
     }
 
   }
 
-  private ObjectClass existingMapping(ObjectClass oc, String packageName)
+  private ObjectClass existingMapping(ObjectClass oc)
           throws PersisterException
   {
 
@@ -224,13 +223,12 @@ public class ObjectClassPersister implements Persister {
 
     for (AlternateName an : parsedAltNames)
     {
-      persisterUtil.addAlternateName(existingOc, an.getName(), an.getType(), packageName);
+      persisterUtil.addAlternateName(existingOc, an);
       existingOc.addAlternateName(an);
     }
 
     if (!StringUtil.isEmpty(newDef))
-      persisterUtil.addAlternateDefinition(existingOc, newDef, Definition.TYPE_UML_CLASS,
-              packageName);
+      persisterUtil.addAlternateDefinition(existingOc, newDef, Definition.TYPE_UML_CLASS);
 
     return existingOc;
 

@@ -33,7 +33,6 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.*;
 import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
 
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTrackerType;
-import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationWarning;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationError;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
 
@@ -388,6 +387,9 @@ public class UMLDefaultHandler
     oc.addAlternateName(fullName);
     oc.addAlternateName(className);
 
+    for(AlternateName an : oc.getAlternateNames()) {
+      an.addCsCsi(csCsi);
+    }
   }
 
   public void newAttribute(NewAttributeEvent event) {
@@ -920,8 +922,9 @@ public class UMLDefaultHandler
           newDec.setAcCsCsis(childOc.getAcCsCsis());
 
           Property oldProp = de.getDataElementConcept().getProperty();
-          List oldAcCsCsis = oldProp.getAcCsCsis();
-          List newAcCsCsis = new ArrayList(childOc.getAcCsCsis());
+          List<AdminComponentClassSchemeClassSchemeItem> oldAcCsCsis = oldProp.getAcCsCsis();
+          List<AdminComponentClassSchemeClassSchemeItem> newAcCsCsis = new ArrayList<AdminComponentClassSchemeClassSchemeItem>
+            (childOc.getAcCsCsis());
           newAcCsCsis.addAll(oldAcCsCsis);
           oldProp.setAcCsCsis(newAcCsCsis);
 
