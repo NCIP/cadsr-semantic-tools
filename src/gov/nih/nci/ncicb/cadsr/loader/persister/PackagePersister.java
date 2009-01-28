@@ -69,6 +69,9 @@ public class PackagePersister implements Persister {
     if (packages != null) {
       for (ListIterator<ClassificationSchemeItem> it = packages.listIterator(); it.hasNext();) {
 	pkg = it.next();
+
+        if(StringUtil.isEmpty(pkg.getLongName()))
+          continue;
         
 	pkg.setAudit(defaults.getAudit());
 	pkg.setType(ClassificationSchemeItem.TYPE_UML_PACKAGE);
