@@ -109,7 +109,7 @@ public class BeansAccessor {
       if(factory != null) {
         return factory;
       }
-      ClassPathXmlApplicationContext cpCtx = new ClassPathXmlApplicationContext(new String[]{"beans.xml", "spring-datasources.xml"});
+      ClassPathXmlApplicationContext cpCtx = new ClassPathXmlApplicationContext(new String[]{"beans.xml"});
 
 //       GenericApplicationContext genCtx = new GenericApplicationContext();
 //       XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(genCtx);
