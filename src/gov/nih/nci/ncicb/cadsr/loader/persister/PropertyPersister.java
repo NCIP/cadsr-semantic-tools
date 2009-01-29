@@ -72,24 +72,25 @@ public class PropertyPersister implements Persister {
 
         Property newProp = null;
 
-        String packageName = LookupUtil.getPackageName(prop);
-        String newName = prop.getLongName();
-
 	prop.setContext(defaults.getMainContext());
 
         String[] conceptCodes = prop.getPreferredName().split(":");
         
         if(!StringUtil.isEmpty(prop.getPublicId()) && prop.getVersion() != null) {
           logger.debug("mapping to existing Prop");
-          newProp = existingMapping(prop, newName, packageName);
+          newProp = existingMapping(prop);
           it.set(newProp);
-          persisterUtil.addPackageClassification(newProp, packageName);
+          for(AlternateName an : prop.getAlternateNames()) {
+              persisterUtil.addAlternateName(prop, an);
+          }
+          prop.setId(newProp.getId());
+          persisterUtil.addPackageClassification(prop);
 	  logger.info(PropertyAccessor.getProperty("mapped.to.existing.prop"));
           continue;
         }
 
 
-	List eager = new ArrayList();
+	List<String> eager = new ArrayList<String>();
 	eager.add(EagerConstants.AC_CS_CSI);
 
         List<Property> l = propertyDAO.findByConceptCodes(conceptCodes, prop.getContext(), eager);
@@ -139,11 +140,13 @@ public class PropertyPersister implements Persister {
 	LogUtil.logAc(newProp, logger);
         logger.info("-- Public ID: " + newProp.getPublicId());
 
-        persisterUtil.addAlternateName(newProp, newName, AlternateName.TYPE_UML_ATTRIBUTE, packageName);
+        for(AlternateName an : prop.getAlternateNames()) {
+           persisterUtil.addAlternateName(newProp, an);            
+        }
 
 	it.set(newProp);
 
-        persisterUtil.addPackageClassification(newProp, packageName);
+        persisterUtil.addPackageClassification(prop);
 
         // This object still reference in DEC, update long_name to real long name
         prop.setLongName(newProp.getLongName());
@@ -154,8 +157,18 @@ public class PropertyPersister implements Persister {
   }
 
 
-  private Property existingMapping(Property prop, String newName, String packageName) throws PersisterException {
+  private Property existingMapping(Property prop) throws PersisterException {
 
+    // for now, only classify with one CS_CSI
+    ClassSchemeClassSchemeItem csCsi = null;
+    for(AdminComponentClassSchemeClassSchemeItem acCsCsi : prop.getAcCsCsis()) {
+      csCsi = acCsCsi.getCsCsi();
+      String packageName = csCsi.getCsi().getLongName();
+      if(!StringUtil.isEmpty(packageName)) {
+        break;
+      }
+    }
+    
     List<String> eager = new ArrayList<String>();
     eager.add(EagerConstants.AC_CS_CSI);
     
@@ -166,7 +179,11 @@ public class PropertyPersister implements Persister {
     
     Property existingProp = l.get(0);
 
-    persisterUtil.addAlternateName(existingProp, newName, AlternateName.TYPE_UML_ATTRIBUTE ,packageName);
+    Property newProp = DomainObjectFactory.newProperty();
+    newProp.setLongName(existingProp.getLongName());
+    newProp.setId(existingProp.getId());
+    if(csCsi != null)
+    newProp.addCsCsi(csCsi);
 
     return existingProp;
 
