@@ -488,6 +488,12 @@ public class UMLDefaultHandler
     fullName.setName(className + ":" + propName);
     de.addAlternateName(fullName);
 
+    // Store Alt Name for Property
+    AlternateName propAN = DomainObjectFactory.newAlternateName();
+    propAN.setType(AlternateName.TYPE_UML_ATTRIBUTE);
+    propAN.setName(event.getName());
+    prop.addAlternateName(propAN);
+    
 
     if(!StringUtil.isEmpty(event.getGmeXmlLocRef())) {
       AlternateName gmeXmlLocRefName = DomainObjectFactory.newAlternateName();
