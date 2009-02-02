@@ -74,12 +74,9 @@ public class DEPersister implements Persister {
 
           DataElement newDe = DomainObjectFactory.newDataElement();
 
-          String packageName = LookupUtil.getPackageName(de);
-
           de.setDataElementConcept(
             persisterUtil.lookupDec(de.getDataElementConcept().getId()));
           newDe.setDataElementConcept(de.getDataElementConcept());
-
 
           ValueDomain vd = LookupUtil.lookupValueDomain(de.getValueDomain());
           if(vd == null) {
@@ -97,11 +94,12 @@ public class DEPersister implements Persister {
               /* if DE alreay exists, check context
                * If context is different, add Used_by alt_name
                */
+            de.setId(newDe.getId());
             if (!newDe.getContext().getId().equals(defaults.getContext().getId())) {
-              persisterUtil.addAlternateName
-                (newDe, defaults.getContext().getName(), 
-                 AlternateName.TYPE_USED_BY,
-                 null);
+              AlternateName _an = DomainObjectFactory.newAlternateName();
+              _an.setName(defaults.getContext().getName());
+              _an.setType(AlternateName.TYPE_USED_BY);
+              persisterUtil.addAlternateName(newDe, _an);
             }
             logger.info(PropertyAccessor.getProperty("mapped.to.existing.de"));
           } else {
@@ -161,18 +159,15 @@ public class DEPersister implements Persister {
             PropertyAccessor.getProperty(
               "vd.preferredName", newDe.getValueDomain().getPreferredName()));
 
-          persisterUtil.addPackageClassification(newDe, packageName);
+          de.setId(newDe.getId());
+          persisterUtil.addPackageClassification(newDe);
 
           for(AlternateName altName : de.getAlternateNames()) {
-            persisterUtil.addAlternateName(
-              newDe, altName.getName(),
-              altName.getType(), packageName);
+            persisterUtil.addAlternateName(de, altName);
           }
 
           for(Definition def : de.getDefinitions()) {
-            persisterUtil.addAlternateDefinition(
-              newDe, def.getDefinition(), 
-              def.getType(), packageName);
+            persisterUtil.addAlternateDefinition(newDe, def);
           }
 
           it.set(newDe);
