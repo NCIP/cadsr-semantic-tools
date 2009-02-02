@@ -128,7 +128,8 @@ public class DECPersister implements Persister {
 	List l = dataElementConceptDAO.find(newDec, eager);
 
 	if (l.size() == 0) {
-          dec.setConceptualDomain(defaults.getConceptualDomain());
+          if(dec.getConceptualDomain() == null)
+            dec.setConceptualDomain(defaults.getConceptualDomain());
           dec.setContext(defaults.getContext());
           dec.setLongName(
             dec.getObjectClass().getLongName()
