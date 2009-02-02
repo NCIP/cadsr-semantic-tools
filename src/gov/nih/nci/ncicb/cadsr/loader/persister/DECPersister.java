@@ -72,18 +72,26 @@ public class DECPersister implements Persister {
 
         sendProgressEvent(count++, decs.size(), "DEC : " + dec.getLongName());
 
+        List<AlternateName> passedAltNames = new ArrayList<AlternateName>();
+        for(AlternateName _an : dec.getAlternateNames())
+            passedAltNames.add(_an);
 
-        List<Definition> modelDefinitions = dec.getDefinitions();
+        List<Definition> modelDefinitions = new ArrayList<Definition>();
+        for(Definition _def : dec.getDefinitions()) 
+            modelDefinitions.add(_def);
+            
         dec.removeDefinitions();
         dec.removeAlternateNames();
 
-        String newName = dec.getLongName();
-        String packageName = LookupUtil.getPackageName(dec);
 
         if(!StringUtil.isEmpty(dec.getPublicId()) && dec.getVersion() != null) {
-          newDec = existingMapping(dec, newName, packageName);
+          newDec = existingMapping(dec);
+          dec.setId(newDec.getId());
+          for(AlternateName _an : passedAltNames) {
+              persisterUtil.addAlternateName(dec, _an);
+          }
           it.set(newDec);
-          persisterUtil.addPackageClassification(newDec, packageName);
+          persisterUtil.addPackageClassification(dec);
 	  logger.info(PropertyAccessor.getProperty("mapped.to.existing.dec"));
           continue;
         }
@@ -109,10 +117,9 @@ public class DECPersister implements Persister {
                               dec.getProperty().getVersion()));
           
         newDec.setProperty(dec.getProperty());
-        
 
 	logger.debug("dec name: " + dec.getLongName());
-        logger.debug("alt Name: " + newName);
+//        logger.debug("alt Name: " + ne);
 
         List<String> eager = new ArrayList<String>();
         eager.add("definitions");
@@ -151,7 +158,6 @@ public class DECPersister implements Persister {
           dec.setLifecycle(defaults.getLifecycle());
 
           newDec = dataElementConceptDAO.create(dec);
-
 	  logger.info(PropertyAccessor.getProperty("created.dec"));
 
 	} else {
@@ -162,18 +168,22 @@ public class DECPersister implements Persister {
            * If context is different, add Used_by alt_name
            */
           if(!newDec.getContext().getId().equals(defaults.getContext().getId())) {
-            persisterUtil.addAlternateName(newDec, defaults.getContext().getName(), AlternateName.TYPE_USED_BY, null);
+            AlternateName _an = DomainObjectFactory.newAlternateName();
+            _an.setName(defaults.getContext().getName());
+            _an.setType(AlternateName.TYPE_USED_BY);
+            persisterUtil.addAlternateName(newDec, _an);
           }
           
 
 	}
 
-        persisterUtil.addAlternateName(newDec, newName, AlternateName.TYPE_UML_DEC, packageName);
+        dec.setId(newDec.getId());
+        for(AlternateName _an : passedAltNames) {
+            persisterUtil.addAlternateName(dec, _an);
+        }
 
         for(Definition def : modelDefinitions) {
-          persisterUtil.addAlternateDefinition(
-            newDec, def.getDefinition(), 
-            def.getType(), packageName);
+          persisterUtil.addAlternateDefinition(dec, def);
         }
 
 	LogUtil.logAc(newDec, logger);
@@ -186,7 +196,7 @@ public class DECPersister implements Persister {
                                  newDec.getProperty().getLongName()));
 
 
-        persisterUtil.addPackageClassification(newDec, packageName);
+        persisterUtil.addPackageClassification(dec);
 	it.set(newDec);
 
         // dec still referenced in DE. Need ID to retrieve it in DEPersister.
@@ -198,7 +208,7 @@ public class DECPersister implements Persister {
   }
 
 
-  private DataElementConcept existingMapping(DataElementConcept dec, String newName, String packageName) throws PersisterException {
+  private DataElementConcept existingMapping(DataElementConcept dec) throws PersisterException {
 
     List<String> eager = new ArrayList<String>();
     eager.add(EagerConstants.AC_CS_CSI);
@@ -209,8 +219,6 @@ public class DECPersister implements Persister {
       throw new PersisterException(PropertyAccessor.getProperty("dec.existing.error", ConventionUtil.publicIdVersion(dec)));
     
     DataElementConcept existingDec = l.get(0);
-
-    persisterUtil.addAlternateName(existingDec, newName, AlternateName.TYPE_UML_CLASS ,packageName);
 
     return existingDec;
 

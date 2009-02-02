@@ -80,10 +80,10 @@ public class PropertyPersister implements Persister {
           logger.debug("mapping to existing Prop");
           newProp = existingMapping(prop);
           it.set(newProp);
-          for(AlternateName an : prop.getAlternateNames()) {
-              persisterUtil.addAlternateName(prop, an);
-          }
           prop.setId(newProp.getId());
+          for(AlternateName an : prop.getAlternateNames()) {
+            persisterUtil.addAlternateName(prop, an);
+          }
           persisterUtil.addPackageClassification(prop);
 	  logger.info(PropertyAccessor.getProperty("mapped.to.existing.prop"));
           continue;

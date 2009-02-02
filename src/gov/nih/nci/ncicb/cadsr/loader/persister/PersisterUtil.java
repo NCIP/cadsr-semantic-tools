@@ -205,6 +205,10 @@ public class PersisterUtil {
     } 
   }
 
+  void addAlternateDefinition(AdminComponent ac, Definition newDef) {
+    addAlternateDefinition(ac, newDef.getDefinition(), newDef.getType());
+  }
+
   void addAlternateDefinition(AdminComponent ac, String newDef, String type) {
 
     Definition queryDef = DomainObjectFactory.newDefinition();
