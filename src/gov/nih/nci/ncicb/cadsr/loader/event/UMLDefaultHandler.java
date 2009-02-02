@@ -493,6 +493,12 @@ public class UMLDefaultHandler
     propAN.setType(AlternateName.TYPE_UML_ATTRIBUTE);
     propAN.setName(event.getName());
     prop.addAlternateName(propAN);
+
+    // Store Alt Name for DEC
+    AlternateName decAN = DomainObjectFactory.newAlternateName();
+    decAN.setType(AlternateName.TYPE_UML_DEC);
+    decAN.setName(className + ":" + propName);
+    dec.addAlternateName(decAN);
     
 
     if(!StringUtil.isEmpty(event.getGmeXmlLocRef())) {
@@ -815,7 +821,7 @@ public class UMLDefaultHandler
     an.setName(event.getParentClassName());
     an.setType(AlternateName.TYPE_CLASS_FULL_NAME);
     ocr.setTarget(LookupUtil.lookupObjectClass(an));
-    
+
     an.setName(event.getChildClassName());
     ocr.setSource(LookupUtil.lookupObjectClass(an));
 
