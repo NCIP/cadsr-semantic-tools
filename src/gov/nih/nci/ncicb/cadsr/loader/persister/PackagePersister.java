@@ -83,7 +83,9 @@ public class PackagePersister implements Persister {
           // See if it already exist in DB
           List l = classificationSchemeItemDAO.find(subProject);
           
-          if (l.size() == 0) { // not in DB, create it.
+          if (l.size() == 0) { // not in DB, create it. 
+            if(StringUtil.isEmpty(pkg.getPreferredDefinition()))
+              pkg.setPreferredDefinition("No Value Exists.");
             subProject.setId(classificationSchemeItemDAO.create(subProject));
           } else {
             subProject = (ClassificationSchemeItem) l.get(0);
