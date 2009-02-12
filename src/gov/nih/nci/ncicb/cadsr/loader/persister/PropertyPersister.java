@@ -137,11 +137,13 @@ public class PropertyPersister implements Persister {
           
 	}
 
+        prop.setId(newProp.getId());
+
 	LogUtil.logAc(newProp, logger);
         logger.info("-- Public ID: " + newProp.getPublicId());
 
         for(AlternateName an : prop.getAlternateNames()) {
-           persisterUtil.addAlternateName(newProp, an);            
+           persisterUtil.addAlternateName(prop, an);            
         }
 
 	it.set(newProp);
