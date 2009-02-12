@@ -109,7 +109,7 @@ public class ObjectClassPersister implements Persister {
           {
             oc.addAlternateName(an);
             newOc.addAlternateName(an);
-            persisterUtil.addAlternateName(newOc, an);
+            persisterUtil.addAlternateName(oc, an);
           }
 
           logger.info(PropertyAccessor.getProperty("mapped.to.existing.oc"));
@@ -192,7 +192,7 @@ public class ObjectClassPersister implements Persister {
         for (AlternateName an : parsedAltNames)
         {
           oc.addAlternateName(an);
-          persisterUtil.addAlternateName(newOc, an);
+          persisterUtil.addAlternateName(oc, an);
         }
 
         it.set(newOc);
