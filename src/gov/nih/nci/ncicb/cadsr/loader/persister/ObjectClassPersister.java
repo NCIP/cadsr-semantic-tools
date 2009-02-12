@@ -103,7 +103,7 @@ public class ObjectClassPersister implements Persister {
         {
           newOc = existingMapping(oc);
           it.set(newOc);
-          persisterUtil.addPackageClassification(newOc);
+          persisterUtil.addPackageClassification(oc);
 
           for (AlternateName an : parsedAltNames)
           {
@@ -164,6 +164,8 @@ public class ObjectClassPersister implements Persister {
           String newConceptDef = primaryConcept.getPreferredDefinition();
           newOc = l.get(0);
 
+          oc.setId(newOc.getId());
+
           for (AlternateName an : parsedAltNames)
           {
             newOc.addAlternateName(an);
@@ -175,7 +177,7 @@ public class ObjectClassPersister implements Persister {
           // if not, then add alternate Def
           if (!newDefSource.equals(newOc.getDefinitionSource()))
           {
-            persisterUtil.addAlternateDefinition(newOc, newConceptDef, newDefSource);
+            persisterUtil.addAlternateDefinition(oc, newConceptDef, newDefSource);
           }
 
         }
@@ -183,8 +185,9 @@ public class ObjectClassPersister implements Persister {
         LogUtil.logAc(newOc, logger);
         logger.info("public ID: " + newOc.getPublicId());
 
-          persisterUtil.addAlternateDefinition(newOc, newDef, Definition.TYPE_UML_CLASS);
-
+        oc.setId(newOc.getId());
+        persisterUtil.addAlternateDefinition(oc, newDef, Definition.TYPE_UML_CLASS);
+        
 
         for (AlternateName an : parsedAltNames)
         {
@@ -195,7 +198,7 @@ public class ObjectClassPersister implements Persister {
         it.set(newOc);
         oc.setLongName(newOc.getLongName());
         oc.setPreferredName(newOc.getPreferredName());
-        persisterUtil.addPackageClassification(newOc);
+        persisterUtil.addPackageClassification(oc);
 
       }
     }
@@ -211,8 +214,8 @@ public class ObjectClassPersister implements Persister {
 
     String newDef = oc.getPreferredDefinition();
 
-    List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc
-            .getAlternateNames());
+//     List<AlternateName> parsedAltNames = new ArrayList<AlternateName>(oc
+//             .getAlternateNames());
     List<ObjectClass> l = objectClassDAO.find(oc, eager);
 
     if (l.size() == 0)
@@ -221,14 +224,16 @@ public class ObjectClassPersister implements Persister {
 
     ObjectClass existingOc = l.get(0);
 
-    for (AlternateName an : parsedAltNames)
-    {
-      persisterUtil.addAlternateName(existingOc, an);
-      existingOc.addAlternateName(an);
-    }
+//     for (AlternateName an : parsedAltNames)
+//     {
+//       persisterUtil.addAlternateName(existingOc, an);
+//       existingOc.addAlternateName(an);
+//     }
 
-    if (!StringUtil.isEmpty(newDef))
-      persisterUtil.addAlternateDefinition(existingOc, newDef, Definition.TYPE_UML_CLASS);
+    oc.setId(existingOc.getId());
+
+    if (!StringUtil.isEmpty(newDef)) 
+      persisterUtil.addAlternateDefinition(oc, newDef, Definition.TYPE_UML_CLASS);
 
     return existingOc;
 
