@@ -52,7 +52,8 @@ public class PersisterUtil {
     
     // for now, only classify with one CS_CSI
     String packageName = null;
-    for(ClassSchemeClassSchemeItem csCsi : altName.getCsCsis()) {
+    for(AdminComponentClassSchemeClassSchemeItem acCsCsi : ac.getAcCsCsis()) {
+      ClassSchemeClassSchemeItem csCsi = acCsCsi.getCsCsi();
       packageName = csCsi.getCsi().getLongName();
       if(!StringUtil.isEmpty(packageName)) {
         break;
@@ -101,7 +102,7 @@ public class PersisterUtil {
       newAltName.setAudit(defaults.getAudit());
       newAltName.setName(altName.getName());
       newAltName.setType(altName.getType());
-      altName.setId(adminComponentDAO.addAlternateName(ac, altName));
+      altName.setId(adminComponentDAO.addAlternateName(ac, newAltName));
       logger.info(PropertyAccessor.getProperty(
                     "added.altName", 
                     new String[] {
@@ -506,7 +507,7 @@ public class PersisterUtil {
 //    objectClassRelationshipDAO = DAOAccessor.getObjectClassRelationshipDAO();
 //    classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
 //    classificationSchemeItemDAO = DAOAccessor.getClassificationSchemeItemDAO();
-//    classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
+    classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
 //    conceptDAO = DAOAccessor.getConceptDAO();
   }
 }

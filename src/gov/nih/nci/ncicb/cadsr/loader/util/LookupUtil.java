@@ -337,7 +337,7 @@ public class LookupUtil implements CadsrModuleListener {
 
   public static String getPackageName(AdminComponent ac) {
     return 
-      ((AdminComponentClassSchemeClassSchemeItem)ac.getAcCsCsis().get(0)).getCsCsi().getCsi().getLongName();
+      (ac.getAcCsCsis().get(0)).getCsCsi().getCsi().getLongName();
   }
 
 
