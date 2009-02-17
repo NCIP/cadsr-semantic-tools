@@ -77,7 +77,7 @@ public class UMLLoaderGUI
     InitClass initClass = new InitClass(this);
     Thread t = new Thread(initClass);
     t.setPriority(Thread.MIN_PRIORITY);
-    t.start();
+//     t.start();
 
     logger.getParent().addAppender(appender);
 
