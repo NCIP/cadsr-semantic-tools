@@ -37,7 +37,6 @@ import gov.nih.nci.ncicb.xmiinout.util.ModelUtil;
 
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterClass;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterPackage;
-import java.io.*;
 
 import java.util.*;
 
@@ -47,8 +46,6 @@ import java.util.*;
  * @author <a href="mailto:ludetc@mail.nih.gov">Christophe Ludet</a>
  */
 public class XMIParser2 implements Parser {
-  private static final String EA_CONTAINMENT = "containment";
-  private static final String EA_UNSPECIFIED = "Unspecified";
   private UMLHandler listener;
 
   private String packageName = "";
@@ -293,8 +290,6 @@ public class XMIParser2 implements Parser {
 
       UserSelections.getInstance().setProperty("MARKED_IGNORED", markedAsIgnored);
 
-//       UMLModel model = handler.getModel("EA Model");
-
       UMLModel model = handler.getModel();
       totalNumberOfElements = countNumberOfElements(model);
       
@@ -440,14 +435,10 @@ public class XMIParser2 implements Parser {
   }
 
   private void doPackage(UMLPackage pack) throws ParserException {
-    UMLDefaults defaults = UMLDefaults.getInstance();
-
     if (packageName.length() == 0) {
-      //       if(pack.getName().indexOf(" ") == -1)
       packageName = pack.getName();
     }
     else {
-      //       if(pack.getName().indexOf(" ") == -1)
       packageName += ("." + pack.getName());
     }
 
@@ -455,15 +446,9 @@ public class XMIParser2 implements Parser {
     UMLTaggedValue tv = pack.getTaggedValue(TV_GME_NAMESPACE);
     if(tv != null) {
       event.setGmeNamespace(tv.getValue());
-    }
-    
-    
+    }  
 
-//     if(isInPackageFilter(packageName)) {
     listener.newPackage(event);
-//     } else {
-//       logger.info(PropertyAccessor.getProperty("skip.package", packageName));
-//     }
 
     for(UMLPackage subPkg : pack.getPackages()) {
       String oldPackage = packageName;
@@ -479,7 +464,6 @@ public class XMIParser2 implements Parser {
   }
 
   private void doClass(UMLClass clazz) throws ParserException {
-    UMLDefaults defaults = UMLDefaults.getInstance();
     String pName = LookupUtil.getPackageName(clazz.getPackage());
 
     className = clazz.getName();
@@ -583,8 +567,6 @@ public class XMIParser2 implements Parser {
   }
 
   private void doValueDomain(UMLClass clazz) throws ParserException {
-    UMLDefaults defaults = UMLDefaults.getInstance();
-
     className = clazz.getName();
 
 
