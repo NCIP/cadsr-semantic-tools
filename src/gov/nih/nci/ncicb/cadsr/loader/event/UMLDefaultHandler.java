@@ -428,8 +428,8 @@ public class UMLDefaultHandler
     
     logger.debug("DEC LONG_NAME: " + dec.getLongName());
     
-    ObjectClass oc = DomainObjectFactory.newObjectClass();
-    List<ObjectClass> ocs = elements.getElements(oc);
+    ObjectClass oc = null;
+    List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
     
     for (ObjectClass o : ocs) {
       String fullClassName = null;
