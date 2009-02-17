@@ -99,7 +99,7 @@ public class DEPersister implements Persister {
               AlternateName _an = DomainObjectFactory.newAlternateName();
               _an.setName(defaults.getContext().getName());
               _an.setType(AlternateName.TYPE_USED_BY);
-              persisterUtil.addAlternateName(newDe, _an);
+              persisterUtil.addAlternateName(de, _an);
             }
             logger.info(PropertyAccessor.getProperty("mapped.to.existing.de"));
           } else {
@@ -160,14 +160,14 @@ public class DEPersister implements Persister {
               "vd.preferredName", newDe.getValueDomain().getPreferredName()));
 
           de.setId(newDe.getId());
-          persisterUtil.addPackageClassification(newDe);
+          persisterUtil.addPackageClassification(de);
 
           for(AlternateName altName : de.getAlternateNames()) {
             persisterUtil.addAlternateName(de, altName);
           }
 
           for(Definition def : de.getDefinitions()) {
-            persisterUtil.addAlternateDefinition(newDe, def);
+            persisterUtil.addAlternateDefinition(de, def);
           }
 
           it.set(newDe);

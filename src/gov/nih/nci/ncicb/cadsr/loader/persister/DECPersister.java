@@ -168,11 +168,13 @@ public class DECPersister implements Persister {
           /* if DEC alreay exists, check context
            * If context is different, add Used_by alt_name
            */
+          dec.setId(newDec.getId());
+
           if(!newDec.getContext().getId().equals(defaults.getContext().getId())) {
             AlternateName _an = DomainObjectFactory.newAlternateName();
             _an.setName(defaults.getContext().getName());
             _an.setType(AlternateName.TYPE_USED_BY);
-            persisterUtil.addAlternateName(newDec, _an);
+            persisterUtil.addAlternateName(dec, _an);
           }
           
 
