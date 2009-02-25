@@ -76,7 +76,7 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
         for(DataElement de : des) {
           if(de.getDataElementConcept().getObjectClass() == oc) {
             String conceptConcat = null;
-            if(!StringUtil.isEmpty(de.getPublicId())) {
+            if(!StringUtil.isEmpty(de.getDataElementConcept().getProperty().getPublicId())) {
               List<Concept> concepts = cadsrModule.getConcepts(de.getDataElementConcept().getProperty());
               conceptConcat = ConceptUtil.preferredNameFromConcepts(concepts);
             } else {
