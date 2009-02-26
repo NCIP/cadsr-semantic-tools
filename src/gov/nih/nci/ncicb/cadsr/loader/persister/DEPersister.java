@@ -146,9 +146,10 @@ public class DEPersister implements Persister {
               /* if DE alreay exists, check context
                * If context is different, add Used_by alt_name
                */
+              de.setId(newDe.getId());
               if (!newDe.getContext().getId().equals(defaults.getContext().getId())) {
                 persisterUtil.addAlternateName(
-                                 newDe, defaults.getContext().getName(), AlternateName.TYPE_USED_BY,
+                                 de, defaults.getContext().getName(), AlternateName.TYPE_USED_BY,
                                  null);
               }
             }
