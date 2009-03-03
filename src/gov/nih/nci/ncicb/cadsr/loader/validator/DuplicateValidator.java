@@ -1,6 +1,5 @@
 package gov.nih.nci.ncicb.cadsr.loader.validator;
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
-import gov.nih.nci.ncicb.cadsr.domain.DataElementConcept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
@@ -31,7 +30,6 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
     List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
     Map<String, ObjectClass> listed = new HashMap<String, ObjectClass>();
     Map<String, ObjectClass> prefNameList = new HashMap<String, ObjectClass>();
-    Map<String, ObjectClass> deListed = new HashMap<String, ObjectClass>();
     
     if(ocs != null) {
       for(ObjectClass oc : ocs) {  
@@ -54,7 +52,8 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
             
             else
               // we also need to add the concept lists so it can be validated against OC that are mapped to concepts
-              prefNameList.put(prefname, oc);
+              if(!StringUtil.isEmpty(prefname))
+                prefNameList.put(prefname, oc);
           }
         }
         else if(!StringUtil.isEmpty(oc.getPreferredName())) {
@@ -76,7 +75,7 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
         for(DataElement de : des) {
           if(de.getDataElementConcept().getObjectClass() == oc) {
             String conceptConcat = null;
-            if(!StringUtil.isEmpty(de.getPublicId())) {
+            if(!StringUtil.isEmpty(de.getDataElementConcept().getProperty().getPublicId())) {
               List<Concept> concepts = cadsrModule.getConcepts(de.getDataElementConcept().getProperty());
               conceptConcat = ConceptUtil.preferredNameFromConcepts(concepts);
             } else {
@@ -90,7 +89,8 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
               item.setIncludeInInherited(true);
               items.addItem(item);
             } else {
-              deList.put(conceptConcat, de);
+              if(!StringUtil.isEmpty(conceptConcat))
+                deList.put(conceptConcat, de);
             }
           }
         }
