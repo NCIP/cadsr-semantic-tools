@@ -54,7 +54,8 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
             
             else
               // we also need to add the concept lists so it can be validated against OC that are mapped to concepts
-              prefNameList.put(prefname, oc);
+              if(!StringUtil.isEmpty(prefname))
+                prefNameList.put(prefname, oc);
           }
         }
         else if(!StringUtil.isEmpty(oc.getPreferredName())) {
@@ -90,7 +91,8 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
               item.setIncludeInInherited(true);
               items.addItem(item);
             } else {
-              deList.put(conceptConcat, de);
+              if(!StringUtil.isEmpty(conceptConcat))
+                deList.put(conceptConcat, de);
             }
           }
         }
