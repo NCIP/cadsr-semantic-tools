@@ -166,7 +166,7 @@ public class XMIWriter2 implements ElementWriter {
             clazz.removeTaggedValue(tv.getName());
         }
         clazz.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
-        clazz.addTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION, oc.getPreferredDefinition());
+        addSplitTaggedValue(clazz, XMIParser2.TV_CADSR_DESCRIPTION, oc.getPreferredDefinition(), "_");
         addConceptTvs(clazz, conceptCodes, XMIParser2.TV_TYPE_CLASS);
       }
         
@@ -197,8 +197,8 @@ public class XMIWriter2 implements ElementWriter {
             att.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
             for(Definition def : (List<Definition>) de.getDefinitions()) {
                 if(def.getType().equals(Definition.TYPE_UML_DE)) {
-                    att.addTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition());
-                    break;
+                  addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "_");
+                  break;
                 }
             }
         }
@@ -302,7 +302,7 @@ public class XMIWriter2 implements ElementWriter {
           clazz.addTaggedValue(XMIParser2.TV_VD_VERSION, vd.getVersion().toString());
         } else {
           if(!StringUtil.isEmpty(vd.getPreferredDefinition()))
-            clazz.addTaggedValue(XMIParser2.TV_VD_DEFINITION, vd.getPreferredDefinition());
+            addSplitTaggedValue(clazz, XMIParser2.TV_VD_DEFINITION, vd.getPreferredDefinition(), "_");
           
           if(!StringUtil.isEmpty(vd.getDataType()))
             clazz.addTaggedValue(XMIParser2.TV_VD_DATATYPE, vd.getDataType());
@@ -362,8 +362,8 @@ public class XMIWriter2 implements ElementWriter {
                 att.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
                 for(Definition def : (List<Definition>) vm.getDefinitions()) {
                     if(def.getType().equals(Definition.TYPE_UML_VM)) {
-                        att.addTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition());
-                        break;
+                      addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "_");
+                      break;
                     }
                 }
             }
