@@ -29,6 +29,7 @@
     
     <property name="persisters">
       <list>
+        <ref bean="packagePersister"/>
         <ref bean="conceptPersister"/>
         <ref bean="objectClassPersister"/>
         <ref bean="propertyPersister"/>
