@@ -488,7 +488,7 @@ public class ValueDomainViewPanel extends JPanel
     vd.setRepresentation(tempVD.getRepresentation());
     if(vdDatatypeValueCombobox.getSelectedIndex() != 0)
       vd.setDataType(String.valueOf(vdDatatypeValueCombobox.getSelectedItem()));
-    if(checkForNullOrZero(vdPrefDefValueTextField.getText()))
+    if(!checkForNullOrZero(vdPrefDefValueTextField.getText()))
       vd.setPreferredDefinition(vdPrefDefValueTextField.getText());
     if(vdTypeERadioButton.isSelected())
       vd.setVdType("E");
