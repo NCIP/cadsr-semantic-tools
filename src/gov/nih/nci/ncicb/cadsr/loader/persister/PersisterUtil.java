@@ -268,7 +268,7 @@ public class PersisterUtil {
 //    objectClassRelationshipDAO = DAOAccessor.getObjectClassRelationshipDAO();
 //    classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
 //    classificationSchemeItemDAO = DAOAccessor.getClassificationSchemeItemDAO();
-//    classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
+    classSchemeClassSchemeItemDAO = DAOAccessor.getClassSchemeClassSchemeItemDAO();
 //    conceptDAO = DAOAccessor.getConceptDAO();
   }
 }
