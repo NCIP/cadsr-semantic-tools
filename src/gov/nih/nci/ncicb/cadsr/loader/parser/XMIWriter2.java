@@ -302,7 +302,7 @@ public class XMIWriter2 implements ElementWriter {
           clazz.addTaggedValue(XMIParser2.TV_VD_VERSION, vd.getVersion().toString());
         } else {
           if(!StringUtil.isEmpty(vd.getPreferredDefinition()))
-            clazz.addTaggedValue(XMIParser2.TV_VD_DEFINITION, vd.getPreferredDefinition());
+            addSplitTaggedValue(clazz, XMIParser2.TV_VD_DEFINITION, vd.getPreferredDefinition(), "_");
           
           if(!StringUtil.isEmpty(vd.getDataType()))
             clazz.addTaggedValue(XMIParser2.TV_VD_DATATYPE, vd.getDataType());
