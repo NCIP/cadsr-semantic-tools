@@ -182,7 +182,9 @@ public class XMIParser2 implements Parser {
   public static final String TV_GME_XML_LOC_REFERENCE = "NCI_GME_XML_LOC_REF";
   public static final String TV_GME_SOURCE_XML_LOC_REFERENCE = "NCI_GME_SOURCE_XML_LOC_REF";
   public static final String TV_GME_TARGET_XML_LOC_REFERENCE = "NCI_GME_TARGET_XML_LOC_REF";
-  
+
+  public static final String TV_EXCLUDE_SEMANTIC_INHERITANCE = "NCI_EXCLUDE_FROM_SEMANTIC_INHERITANCE"; 
+  public static final String TV_EXCLUDE_SEMANTIC_INHERITANCE_REASON = "NCI_REASON_FOR_SEMANTIC_EXCLUSION"; 
   
   private int totalNumberOfElements = 0, currentElementIndex = 0;
   private boolean filterClassAndPackages = false;
