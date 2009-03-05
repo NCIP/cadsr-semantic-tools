@@ -34,7 +34,8 @@ public enum RunMode {
     FixEa("Run fix-EA", "Model Owner"),
     UnannotatedXmi("Review Unannotated XMI File", "Model Owner"),
     GMEDefaults("Generate Default GME Tags", "Model Owner"),
-    GMECleanup("GME Cleanup", "Model Owner")
+    GMECleanup("GME Cleanup", "Model Owner"),
+    ConceptInheritance("Perform Automatic Concept Inheritance", "Model Owner")
     ;
 
   private String titleName;

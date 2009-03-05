@@ -836,6 +836,8 @@ public class UMLDefaultHandler
       return;
     }
 
+    inheritedAttributes.add(childOc, parentOc);
+
     List newElts = new ArrayList();
     List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
     if(des != null)

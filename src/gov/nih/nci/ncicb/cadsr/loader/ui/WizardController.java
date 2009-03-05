@@ -39,8 +39,6 @@ import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 
 import gov.nih.nci.ncicb.cadsr.semconn.*;
 
-import gov.nih.nci.ncicb.cadsr.domain.Context;
-
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -63,8 +61,6 @@ public class WizardController implements ActionListener {
    private String outputFile;
 
    private RunMode mode;
-
-   private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
      
    private static Logger logger = Logger.getLogger(WizardController.class.getName());
 
@@ -77,6 +73,7 @@ public class WizardController implements ActionListener {
    private Parser xmiParser = null, preParser = null, gmePreParser;
    private RoundtripAction roundtripAction = null;
    private GMEAction gmeAction = null;
+   private ConceptInheritanceAction conceptInheritanceAction = null;
    private Validator validator = null;
 
    public WizardController() {}
@@ -144,43 +141,47 @@ public class WizardController implements ActionListener {
 
          // Set the next panel based on the wizard selection.
          switch (mode)
-         {
-             case GenerateReport:
-                 desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-                 break;
-                 
-             case AnnotateXMI:
-                 desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-                 break;
-                 
-             case Reviewer:
-                 desc.setNextPanelDescriptor("FINISH");
-                 break;
-                 
-             case Curator:
-                 desc.setNextPanelDescriptor("FINISH");
-                 break;
-                 
-             case Roundtrip:
-                 desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-                 desc.setBackPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
-                 break;
+           {
+           case GenerateReport:
+             desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+             break;
+             
+           case AnnotateXMI:
+             desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+             break;
+             
+           case Reviewer:
+             desc.setNextPanelDescriptor("FINISH");
+             break;
+             
+           case Curator:
+             desc.setNextPanelDescriptor("FINISH");
+             break;
+             
+           case Roundtrip:
+             desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+             desc.setBackPanelDescriptor(RoundtripPanelDescriptor.IDENTIFIER);
+             break;
+             
+           case GMEDefaults:
+             desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+             desc.setBackPanelDescriptor(GMEDefaultsPanelDescriptor.IDENTIFIER);
+             break; 
+             
+           case GMECleanup:
+             desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+             desc.setBackPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
+             break; 
+              
+           case ConceptInheritance:
+             desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+             desc.setBackPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
+             break; 
 
-         case GMEDefaults:
-           String modeSelection = (String)userSelections.getProperty("MODE_SELECTION");
-           desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-           desc.setBackPanelDescriptor(GMEDefaultsPanelDescriptor.IDENTIFIER);
-           break; 
-           
-             case GMECleanup:
-                 desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-                 desc.setBackPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
-                 break; 
-                
-             case FixEa:
-                 desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
-                 desc.setBackPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
-                 break;
+           case FixEa:
+             desc.setNextPanelDescriptor(ReportConfirmPanelDescriptor.IDENTIFIER);
+             desc.setBackPanelDescriptor(ModeSelectionPanelDescriptor.IDENTIFIER);
+             break;
          }
 
          
@@ -240,13 +241,11 @@ public class WizardController implements ActionListener {
 
          try {
            if(panel.getChoosePackage()) {
-             userSelections.setProperty("FILTER_CLASS_AND_PACKAGES", new Boolean(true));
-             
- //             wizard.getModel().setNextButtonEnabled(false);
+             userSelections.setProperty("FILTER_CLASS_AND_PACKAGES", Boolean.valueOf(true));
+
              wizard.getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
              preParser.parse(filename);
              wizard.getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
- //             wizard.getModel().setNextButtonEnabled(true);
 
              wizard.setCurrentPanel(nextPanelDescriptor);
              PackageClassFilterPanelDescriptor filterDesc =
@@ -295,7 +294,6 @@ public class WizardController implements ActionListener {
                     try {
                       ProgressEvent evt = new ProgressEvent();
 
-                      String filenameNoExt = filename.substring(filename.lastIndexOf("/")+1);
                       String inputXmi = filename;
                      
                       SemanticConnector sem = BeansAccessor.getSemanticConnector();
@@ -331,12 +329,8 @@ public class WizardController implements ActionListener {
            if(mode.equals(RunMode.Roundtrip)) {
              SwingWorker worker = new SwingWorker() {
                  public Object construct() {
- //                   RoundtripAction roundtripAction = BeansAccessor.getRoundtripAction();
-                   
+                
                    roundtripAction.addProgressListener(progressDesc);
- //
- //                  String projectName = (String)userSelections.getProperty("PROJECT_NAME");
- //                  Float projectVersion = (Float)(userSelections.getProperty("PROJECT_VERSION"));
    
                  ClassificationScheme cs = (ClassificationScheme)userSelections.getProperty("SELECTED_PROJECT");                
                    File f = new File(filename);
@@ -393,12 +387,10 @@ public class WizardController implements ActionListener {
                  public Object construct() {
                    try {
                      if(mode.equals(RunMode.UnannotatedXmi))
-                       userSelections.setProperty("HIDE_CONCEPT_ERRORS", new Boolean(true));
+                       userSelections.setProperty("HIDE_CONCEPT_ERRORS", Boolean.valueOf(true));
 
- //                     XMIParser2 parser = new XMIParser2();
                      ElementsLists elements = ElementsLists.getInstance();
- //                     UMLHandler listener = BeansAccessor.getUMLHandler();
- //                     parser.setEventHandler(listener);
+
                      xmiParser.addProgressListener(progressDesc);
                      UMLDefaults defaults = UMLDefaults.getInstance();
                      defaults.initParams(filename);
@@ -417,9 +409,7 @@ public class WizardController implements ActionListener {
                        s += "<br>Would you still like to continue?</body></html>";
 
                        JLabel label = new JLabel(s);
- //                       textArea.setFont(new Font("Sans-Serif", Font.PLAIN, 10));
- //                       textArea.setEditable(false);
- //                       textField.setText(s);
+
                        
                        JScrollPane scrollPane = new JScrollPane(label);          
                        scrollPane.setPreferredSize(new Dimension(350, 150));
@@ -447,15 +437,32 @@ public class WizardController implements ActionListener {
                };
              worker.start(); 
              
-           }
-         }
-         
-         if (nextPanelDescriptor instanceof WizardPanelDescriptor.FinishIdentifier) {
-             wizard.close(Wizard.FINISH_RETURN_CODE);
-         } else {        
-             wizard.setCurrentPanel(nextPanelDescriptor);
-         }
+           } else if(mode.equals(RunMode.ConceptInheritance)) {
 
+             SwingWorker worker = new SwingWorker() {
+                 public Object construct() {
+                   conceptInheritanceAction.addProgressListener(progressDesc);
+                   
+                   File f = new File(filename);
+                   outputFile = f.getParent() + "/AutoConceptInheritance_" + f.getName();
+                   
+                   conceptInheritanceAction.performConceptInheritance(filename, outputFile);
+                   
+                   reportPanel.setOutputText("Concept Inheritance was performed on input file. The output file can be found here: <br>" + outputFile);
+                   
+                   return null;
+                   
+                 } 
+               };
+             worker.start(); 
+           }
+       }
+            if (nextPanelDescriptor instanceof WizardPanelDescriptor.FinishIdentifier) {
+              wizard.close(Wizard.FINISH_RETURN_CODE);
+            } else {        
+              wizard.setCurrentPanel(nextPanelDescriptor);
+            }
+            
        } catch (Throwable t) {
          logger.fatal("Could not parse File");
          logger.fatal(t, t);
@@ -556,13 +563,13 @@ public class WizardController implements ActionListener {
      for(RunModeListener l : runModeListeners)
        l.setRunMode(runMode);
    }
-     
-   private void putToCenter(Component comp) {
-     comp.setLocation((screenSize.width - comp.getSize().width) / 2, (screenSize.height - comp.getSize().height) / 2);
-   }
 
    public void setRoundtripAction(RoundtripAction action) {
      this.roundtripAction = action;
+   }
+
+   public void setConceptInheritanceAction(ConceptInheritanceAction action) {
+     this.conceptInheritanceAction = action;
    }
 
    public void setGmeAction(GMEAction gmeAction) {

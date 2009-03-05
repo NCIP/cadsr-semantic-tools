@@ -38,7 +38,7 @@ import java.util.Calendar;
  */
 public class ModeSelectionPanel extends JPanel implements MouseListener, KeyListener {
 
-  private JRadioButton unannotatedXmiOption, roundtripOption, annotateOption, reviewOption, curateOption, gmeDefaultsOption, gmeCleanupOption;
+  private JRadioButton unannotatedXmiOption, roundtripOption, annotateOption, reviewOption, curateOption, gmeDefaultsOption, gmeCleanupOption, conceptInheritanceOption;
   private ButtonGroup group;
   private JPanel _this = this;
   private JPanel infoPanel = null, privateApiPanel = null;
@@ -62,6 +62,7 @@ public class ModeSelectionPanel extends JPanel implements MouseListener, KeyList
     reviewOption.addActionListener(l);
     gmeDefaultsOption.addActionListener(l);
     gmeCleanupOption.addActionListener(l);
+    conceptInheritanceOption.addActionListener(l);
   }
 
   public String getSelection() {
@@ -107,25 +108,30 @@ public class ModeSelectionPanel extends JPanel implements MouseListener, KeyList
     
     group = new ButtonGroup();
 
-    unannotatedXmiOption = new JRadioButton("1. " + RunMode.UnannotatedXmi.getTitleName() + " (" + RunMode.UnannotatedXmi.getAuthor() + ")");
+    int bullet = 1;
+
+    unannotatedXmiOption = new JRadioButton(bullet++ + ". " + RunMode.UnannotatedXmi.getTitleName() + " (" + RunMode.UnannotatedXmi.getAuthor() + ")");
     unannotatedXmiOption.setActionCommand(RunMode.UnannotatedXmi.toString());
 
-    roundtripOption = new JRadioButton("2. " + RunMode.Roundtrip.getTitleName() + " (" + RunMode.Roundtrip.getAuthor() + ")");
+    roundtripOption = new JRadioButton(bullet++ + ". " + RunMode.Roundtrip.getTitleName() + " (" + RunMode.Roundtrip.getAuthor() + ")");
     roundtripOption.setActionCommand(RunMode.Roundtrip.toString());
     
-    annotateOption = new JRadioButton("3. " + RunMode.GenerateReport.getTitleName() + " (" + RunMode.GenerateReport.getAuthor() + ")");
+    annotateOption = new JRadioButton(bullet++ + ". " + RunMode.GenerateReport.getTitleName() + " (" + RunMode.GenerateReport.getAuthor() + ")");
     annotateOption.setActionCommand(RunMode.GenerateReport.toString());
         
-    curateOption = new JRadioButton("4. " + RunMode.Curator.getTitleName() + " (" + RunMode.Curator.getAuthor() + ")");
+    conceptInheritanceOption = new JRadioButton(bullet++ + ". " + RunMode.ConceptInheritance.getTitleName() + " (" + RunMode.ConceptInheritance.getAuthor() + ")");
+    conceptInheritanceOption.setActionCommand(RunMode.ConceptInheritance.toString());
+
+    curateOption = new JRadioButton(bullet++ + ". " + RunMode.Curator.getTitleName() + " (" + RunMode.Curator.getAuthor() + ")");
     curateOption.setActionCommand(RunMode.Curator.toString());
 
-    reviewOption = new JRadioButton("5. " + RunMode.Reviewer.getTitleName() + " (" + RunMode.Reviewer.getAuthor() + ")");
+    reviewOption = new JRadioButton(bullet++ + ". " + RunMode.Reviewer.getTitleName() + " (" + RunMode.Reviewer.getAuthor() + ")");
     reviewOption.setActionCommand(RunMode.Reviewer.toString());
 
-    gmeDefaultsOption = new JRadioButton("6. " + RunMode.GMEDefaults.getTitleName() + " (" + RunMode.GMEDefaults.getAuthor() + ")");
+    gmeDefaultsOption = new JRadioButton(bullet++ + ". " + RunMode.GMEDefaults.getTitleName() + " (" + RunMode.GMEDefaults.getAuthor() + ")");
     gmeDefaultsOption.setActionCommand(RunMode.GMEDefaults.toString());
 
-    gmeCleanupOption = new JRadioButton("7. " + RunMode.GMECleanup.getTitleName() + " (" + RunMode.GMECleanup.getAuthor() + ")");
+    gmeCleanupOption = new JRadioButton(bullet++ + ". " + RunMode.GMECleanup.getTitleName() + " (" + RunMode.GMECleanup.getAuthor() + ")");
     gmeCleanupOption.setActionCommand(RunMode.GMECleanup.toString());
 
     // Get the preference setting for mode and set the radio buttons appropriately.
@@ -174,6 +180,8 @@ public class ModeSelectionPanel extends JPanel implements MouseListener, KeyList
     group.add(reviewOption);
     group.add(gmeDefaultsOption);
     group.add(gmeCleanupOption);
+    group.add(conceptInheritanceOption);
+    
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new GridLayout(0, 1));
@@ -184,6 +192,7 @@ public class ModeSelectionPanel extends JPanel implements MouseListener, KeyList
     buttonPanel.add(unannotatedXmiOption);
     buttonPanel.add(roundtripOption);
     buttonPanel.add(annotateOption);
+    buttonPanel.add(conceptInheritanceOption);
     buttonPanel.add(curateOption);
     buttonPanel.add(reviewOption);
     buttonPanel.add(gmeDefaultsOption);
