@@ -127,7 +127,7 @@ class NodeSelectionListener extends MouseAdapter {
         if ( isSelected ) {
           tree.expandPath(path);
         } else {
-          tree.collapsePath(path);
+//           tree.collapsePath(path);
         }
         ((ReviewableUMLNode)node.getUserObject()).setReviewed(isSelected);
         Enumeration enu = node.children();
