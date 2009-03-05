@@ -66,7 +66,7 @@ public class PreferenceDialog extends JDialog implements ActionListener
     centerPanel.add(associationBox); 
     centerPanel.add(umlDescriptionBox);
     centerPanel.add(evsAutoSearchBox);
-    centerPanel.add(privateApiSearchBox);
+//     centerPanel.add(privateApiSearchBox);
     centerPanel.add(orderOfConceptsBox);
     centerPanel.add(showInheritedAttributesBox);
     centerPanel.add(sortElementsBox);
