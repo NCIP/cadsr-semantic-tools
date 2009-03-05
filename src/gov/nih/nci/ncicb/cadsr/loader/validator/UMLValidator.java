@@ -21,16 +21,11 @@ package gov.nih.nci.ncicb.cadsr.loader.validator;
 
 import java.util.*;
 
-import gov.nih.nci.ncicb.cadsr.domain.*;
-
-import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
-import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 public class UMLValidator implements Validator {
 
-  private ElementsLists elements = ElementsLists.getInstance();
   private List<Validator> validators;
 
   public UMLValidator() {
@@ -41,7 +36,6 @@ public class UMLValidator implements Validator {
       val.addProgressListener(l);
   }
   
-  
   /**
    * returns a list of Validation errors.
    */
@@ -51,8 +45,16 @@ public class UMLValidator implements Validator {
     if(noValidation != null && noValidation.equals(true))
       return ValidationItems.getInstance();
 
-    for(Validator val : validators)
+    Map<String, Boolean> validatorChoices = (Map<String, Boolean>)UserSelections.getInstance()
+      .getProperty("VALIDATORS_CHOICES");
+    
+    for(Validator val : validators) {
+      String name = val.getClass().getName();
+      if(validatorChoices != null && validatorChoices.get(name) != null && validatorChoices.get(name).equals(true)) {
+        continue;
+      }
       val.validate();
+    }
 
     
     // !!TODO here we should add validators that we only want to run on subsequent calls 
@@ -62,6 +64,10 @@ public class UMLValidator implements Validator {
 
   public void setValidators(List<Validator> v) {
     this.validators = v;
+  }
+
+  public  List<Validator> getValidators() {
+    return validators;
   }
 
 }
