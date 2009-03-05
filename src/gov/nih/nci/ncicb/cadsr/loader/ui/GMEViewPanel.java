@@ -56,17 +56,6 @@ public class GMEViewPanel extends JPanel implements UserPreferencesListener {
   private void initUI() {
     this.setLayout(new GridBagLayout());
 
-//     gmeNamespaceLabel.setBounds(new Rectangle(0, 0, 175, 20));
-//     gmeNamespaceField.setBounds(new Rectangle(180, 0, 175, 20));
-//     gmeElementLabel.setBounds(new Rectangle(0, 30, 175, 20));
-//     gmeElementField.setBounds(new Rectangle(180, 30, 175, 20));
-//     gmeLocRefLabel.setBounds(new Rectangle(0, 60, 175, 20));
-//     gmeLocRefField.setBounds(new Rectangle(180, 60, 175, 20));
-//     gmeSourceLocRefLabel.setBounds(new Rectangle(0, 90, 175, 20));
-//     gmeSourceLocRefField.setBounds(new Rectangle(180, 90, 175, 20));
-//     gmeTargetLocRefLabel.setBounds(new Rectangle(0, 120, 175, 20));
-//     gmeTargetLocRefField.setBounds(new Rectangle(180, 120, 175, 20));
-
     UIUtil.insertInBag(this, gmeNamespaceLabel, 0, 0);
     UIUtil.insertInBag(this, gmeNamespaceField, 1, 0);
     UIUtil.insertInBag(this, gmeElementLabel, 0, 1);
