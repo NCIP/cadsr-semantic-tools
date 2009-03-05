@@ -22,9 +22,27 @@ package gov.nih.nci.ncicb.cadsr.loader.util;
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
+
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
+
 import java.util.*;
 
-public class ConceptUtil {
+public class ConceptUtil implements CadsrModuleListener {
+
+  private static CadsrModule cadsrModule;
+
+  public static Concept getConceptFromCode(String conceptCode) {
+    ElementsLists elements = ElementsLists.getInstance();
+    List<Concept> concepts = elements.getElements(DomainObjectFactory.newConcept());
+    
+    for(Concept con : concepts) {
+      if(con.getPreferredName().equals(conceptCode))
+        return con;
+    }
+    
+    return null;
+  }
 
   public static String longNameFromConcepts(Concept[] concepts) {
     StringBuffer sb = new StringBuffer();
@@ -56,6 +74,17 @@ public class ConceptUtil {
       sb.insert(0, con.getPreferredName());
     }
     return sb.toString();
+  }
+
+  public static String preferredNameFromConceptDerivationRule(ConceptDerivationRule condr) {
+    if(condr == null) {
+      return "";
+    }
+    List<Concept> concepts = new ArrayList<Concept>();
+    for(ComponentConcept comp : condr.getComponentConcepts()) {
+      concepts.add(comp.getConcept());
+    }
+    return preferredNameFromConcepts(concepts);
   }
 
 
@@ -132,6 +161,63 @@ public class ConceptUtil {
     return condr;
     
 
+  }
+
+  /**
+   * returns the condr for an OC if there's one, build one based on preferredName if none. This is only useful because preferredName is used for concepts with OCs. Should be refactored.
+   * Create One based on publicID if mapped to publicID
+   */
+  public static ConceptDerivationRule findConceptDerivationRule(ObjectClass oc) {
+    ConceptDerivationRule condr = oc.getConceptDerivationRule();
+    
+    if(!StringUtil.isEmpty(oc.getPublicId())) {
+      
+      List<Concept> concepts = cadsrModule.getConcepts(oc);
+      
+      condr = DomainObjectFactory.newConceptDerivationRule();
+      List<ComponentConcept> compCons = new ArrayList<ComponentConcept>();
+      
+      int c = 0;
+      for(Concept concept : concepts) {
+        ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
+        compCon.setConcept(concept);
+        compCon.setOrder(concepts.size() - 1 - c);
+        compCon.setConceptDerivationRule(condr);
+        compCons.add(0, compCon);
+        c++;
+      }
+      condr.setComponentConcepts(compCons);
+    
+      oc.setConceptDerivationRule(condr);
+      
+    } else if(condr == null) {
+      condr = DomainObjectFactory.newConceptDerivationRule();
+      List<ComponentConcept> compCons = new ArrayList<ComponentConcept>();
+      
+      if(!StringUtil.isEmpty(oc.getPreferredName())) {
+        String[] conceptCodes = oc.getPreferredName().split(":");
+        
+        int c = 0;
+        for(String conceptCode : conceptCodes) {
+          ComponentConcept compCon = DomainObjectFactory.newComponentConcept();
+          compCon.setConcept(ConceptUtil.getConceptFromCode(conceptCode));
+          compCon.setOrder(conceptCodes.length - 1 - c);
+          compCon.setConceptDerivationRule(condr);
+          compCons.add(0, compCon);
+          c++;
+        }
+      }
+
+      condr.setComponentConcepts(compCons);
+        
+      oc.setConceptDerivationRule(condr);
+    } 
+
+    return condr;
+  }
+  
+  public void setCadsrModule(CadsrModule cadsrModule) {
+    this.cadsrModule = cadsrModule;
   }
 
 }
