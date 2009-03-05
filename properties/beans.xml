@@ -36,6 +36,14 @@
     <property name="writer"><ref bean="gmeWriter"/></property>
   </bean>
 
+  <bean name="conceptInheritanceAction"
+    class="gov.nih.nci.ncicb.cadsr.loader.ConceptInheritanceAction"
+    >
+    <property name="parser"><ref bean="xmiParser2"/></property>
+    <property name="writer"><ref bean="xmiInOutWriter"/></property>
+    
+  </bean>
+
   
   <bean name="wizardController"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.WizardController"
@@ -62,6 +70,9 @@
     </property>
     <property name="gmeAction">
       <ref bean="gmeAction"/>
+    </property>
+    <property name="conceptInheritanceAction">
+      <ref bean="conceptInheritanceAction"/>
     </property>
   </bean>
 
@@ -147,10 +158,6 @@
   </bean>
 -->
   
-
-
-
-    
   <bean name="usersPreferences"
     class="gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences"
     factory-method="getInstance"
@@ -179,7 +186,9 @@
         <ref bean="inheritanceValidator"/>
         <ref bean="vdViewPanel"/>
         <ref bean="mteVDPanel"/>
-		<ref bean="umlVPFactory"/>
+        <ref bean="umlVPFactory"/>
+        <ref bean="conceptInheritanceAction"/>
+        <ref bean="conceptUtil"/>
       </list>
     </property>
   </bean>
@@ -290,6 +299,9 @@
   </bean>
 
   <!-- Validators -->
+  <bean name="conceptInheritanceValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.ConceptInheritanceValidator">
+  </bean>
   <bean name="gmeValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.GMEValidator">
   </bean>
@@ -313,6 +325,9 @@
 
   <bean name="duplicateValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateValidator"/>
+
+  <bean name="duplicateConceptValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateConceptValidator"/>
 
   <bean name="latestVersionValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.LatestVersionValidator"/>
@@ -341,6 +356,8 @@
         <ref bean="inheritanceValidator"/>
         <ref bean="definitionLengthValidator"/>
         <ref bean="gmeValidator"/>
+        <ref bean="conceptInheritanceValidator"/>
+        <ref bean="duplicateConceptValidator"/>
       </list>
     </property>
   </bean>
@@ -360,6 +377,8 @@
         <ref bean="inheritanceValidator"/>
         <ref bean="definitionLengthValidator"/>
         <ref bean="gmeValidator"/>
+        <ref bean="conceptInheritanceValidator"/>
+        <ref bean="duplicateConceptValidator"/>
       </list>
     </property>
   </bean>
@@ -483,6 +502,9 @@
       </list>
     </property>
   </bean>
-    
+
+  <bean name="conceptUtil"
+    class="gov.nih.nci.ncicb.cadsr.loader.util.ConceptUtil">
+  </bean>
 
 </beans>
