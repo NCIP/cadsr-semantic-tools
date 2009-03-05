@@ -50,7 +50,7 @@ public class ExpertsCacheDialog extends JDialog implements ActionListener, ItemL
         new Integer(6), new Integer(7), new Integer(8), new Integer(9), new Integer(10), new Integer(11),
         new Integer(12), new Integer(13), new Integer(14)};
 
-  private JCheckBox noValidationBox = new JCheckBox("No Validation");
+  private ValidationChoicePanel validationPanel;
   
   public ExpertsCacheDialog() {
     
@@ -97,11 +97,11 @@ public class ExpertsCacheDialog extends JDialog implements ActionListener, ItemL
     closeButton.setActionCommand(CLOSE);
     closeButton.addActionListener(this);
 
-    noValidationBox.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          UserSelections.getInstance().setProperty("NO_VALIDATION", new Boolean(noValidationBox.isSelected()));
-        }
-      });
+//     noValidationBox.addActionListener(new ActionListener() {
+//         public void actionPerformed(ActionEvent evt) {
+//           UserSelections.getInstance().setProperty("NO_VALIDATION", new Boolean(noValidationBox.isSelected()));
+//         }
+//       });
 
     JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     buttonPanel.add(setCacheButton);
@@ -121,10 +121,11 @@ public class ExpertsCacheDialog extends JDialog implements ActionListener, ItemL
     UIUtil.insertInBag(mainPanel, clearCacheButton, 0, 8);
     UIUtil.insertInBag(mainPanel, buttonPanel, 1, 8);
 
-    UIUtil.insertInBag(mainPanel, noValidationBox, 0, 9);
+    validationPanel = new ValidationChoicePanel();
+    UIUtil.insertInBag(mainPanel, validationPanel, 0, 9);
 
     this.add(mainPanel, BorderLayout.CENTER);
-    this.setSize(500, 400);
+    this.setSize(800, 700);
   }
 
   public void actionPerformed(ActionEvent ae) {
@@ -134,8 +135,10 @@ public class ExpertsCacheDialog extends JDialog implements ActionListener, ItemL
     } else if(ae.getActionCommand().equals(SET_CACHE)){
         messageLabel.setForeground(Color.RED);
         messageLabel.setText("<html><B>Cache is Set</B><html>");
-    } else{
-        this.setVisible(false);
+    } else {
+//         this.setVisible(false);
+      UserSelections.getInstance().setProperty("VALIDATORS_CHOICES", validationPanel.getValidatorChoices());
+      this.dispose();
     }
   }
 
