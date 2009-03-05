@@ -28,18 +28,17 @@ import gov.nih.nci.ncicb.cadsr.loader.parser.ElementWriter;
 import gov.nih.nci.ncicb.cadsr.loader.ui.CadsrDialog;
 import gov.nih.nci.ncicb.cadsr.loader.ui.DEReuseDialog;
 import gov.nih.nci.ncicb.cadsr.loader.ui.WizardController;
+import gov.nih.nci.ncicb.cadsr.loader.validator.UMLValidator;
 import gov.nih.nci.ncicb.cadsr.semconn.SemanticConnector;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.*;
-import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 
 public class BeansAccessor {
   
   private static Logger logger = Logger.getLogger(BeansAccessor.class.getName());
 
-//   private static XmlBeanFactory factory = null;
   private static BeanFactory factory = null;
 
   public static ElementWriter getWriter() {
@@ -78,6 +77,10 @@ public class BeansAccessor {
   
   public static Unclassifier getUnclassifier() {
     return (Unclassifier)getFactory().getBean("unclassifier");
+  }
+
+  public static UMLValidator getSiwValidator() {
+    return (UMLValidator)getFactory().getBean("siwValidator");
   }
 
 //   public static RoundtripAction getRoundtripAction() {
