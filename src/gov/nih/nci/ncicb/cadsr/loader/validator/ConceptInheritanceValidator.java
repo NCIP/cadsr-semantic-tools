@@ -34,40 +34,47 @@ public class ConceptInheritanceValidator implements Validator
   public ValidationItems validate() {
 
     List<ObjectClass> ocs = ElementsLists.getInstance().getElements(DomainObjectFactory.newObjectClass());
-
+    
     InheritedAttributeList inheritedList =  InheritedAttributeList.getInstance();
 
     for(ObjectClass oc : ocs) {
 
-      ConceptDerivationRule condr = ConceptUtil.findConceptDerivationRule(oc);
-      ObjectClass parentOc = inheritedList.getParentOc(oc);
-      if(parentOc != null) {
-        ConceptDerivationRule parentCondr = ConceptUtil.findConceptDerivationRule(parentOc);
+      if(!inheritedList.isExcludedFromSemanticInheritance(oc)) {
         
-        try {
-        // check that all parentOC concepts are in the childOC
-        if(condr.getComponentConcepts().size() < parentCondr.getComponentConcepts().size()) {
-          items.addItem(new ValidationConceptError(
-                          PropertyAccessor.getProperty(
-                            "concept.inheritance.error", LookupUtil.lookupFullName(oc), LookupUtil.lookupFullName(parentOc)), oc));
-        } else {
-          for(int i = 0; i < parentCondr.getComponentConcepts().size(); i++) {
-            if(!condr.getComponentConcepts().get(i).getConcept().getPreferredName().equals(
-                 parentCondr.getComponentConcepts().get(i).getConcept().getPreferredName()
-                 )) {
+        ConceptDerivationRule condr = ConceptUtil.findConceptDerivationRule(oc);
+        ObjectClass parentOc = inheritedList.getParentOc(oc);
+        
+        // ignore parents that are excluded from this rule
+        while(parentOc != null && inheritedList.isExcludedFromSemanticInheritance(parentOc)) {
+          parentOc = inheritedList.getParentOc(parentOc);
+        }
+        
+        if(parentOc != null) {
+          ConceptDerivationRule parentCondr = ConceptUtil.findConceptDerivationRule(parentOc);
+          try {
+            // check that all parentOC concepts are in the childOC
+            if(condr.getComponentConcepts().size() < parentCondr.getComponentConcepts().size()) {
               items.addItem(new ValidationConceptError(
                               PropertyAccessor.getProperty(
                                 "concept.inheritance.error", LookupUtil.lookupFullName(oc), LookupUtil.lookupFullName(parentOc)), oc));
-              
-              // break out of for loop
-              i = parentCondr.getComponentConcepts().size();
+            } else {
+              for(int i = 0; i < parentCondr.getComponentConcepts().size(); i++) {
+                if(!condr.getComponentConcepts().get(i).getConcept().getPreferredName().equals(
+                     parentCondr.getComponentConcepts().get(i).getConcept().getPreferredName()
+                     )) {
+                  items.addItem(new ValidationConceptError(
+                                  PropertyAccessor.getProperty(
+                                    "concept.inheritance.error", LookupUtil.lookupFullName(oc), LookupUtil.lookupFullName(parentOc)), oc));
+                  
+                  // break out of for loop
+                  i = parentCondr.getComponentConcepts().size();
+                }
+              }
             }
+          } catch (NullPointerException e) {
+            
           }
         }
-        } catch (NullPointerException e) {
-                System.out.println("hi");
-        }
-
       }
     }
     
