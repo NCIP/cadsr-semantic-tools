@@ -15,7 +15,7 @@ public class InheritedAttributeList
 
   private Map<ObjectClass, String> exclusionReasonMap = new HashMap<ObjectClass, String>();
 
-  private Set<ObjectClass> excludedFromSemanticInheritance = new HashSet<ObjectClass>();
+  private Map<ObjectClass, Boolean> excludedFromSemanticInheritance = new HashMap<ObjectClass, Boolean>();
 
   private InheritedAttributeList() {}
 
@@ -48,12 +48,16 @@ public class InheritedAttributeList
     return ocMap.get(oc);
   }
 
-  public void excludeFromSemanticInheritance(ObjectClass oc) {
-    excludedFromSemanticInheritance.add(oc);
+  public void setExcludedFromSemanticInheritance(ObjectClass oc, boolean state) {
+    excludedFromSemanticInheritance.put(oc, state);
   }
   
   public boolean isExcludedFromSemanticInheritance(ObjectClass oc) {
-    return excludedFromSemanticInheritance.contains(oc);
+    Boolean state = excludedFromSemanticInheritance.get(oc);
+    if(state == null)
+      return false;
+
+    return state;
   }
 
   public String getSemanticExclusionReason(ObjectClass oc) {
