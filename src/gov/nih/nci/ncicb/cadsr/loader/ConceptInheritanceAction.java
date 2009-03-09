@@ -15,16 +15,15 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
 import java.util.*;
 
 public class ConceptInheritanceAction implements CadsrModuleListener {
-
+  
   private Parser parser;
   private ElementWriter writer;
-
+  
   protected ElementsLists elements = ElementsLists.getInstance();
-
+  
   private ProgressListener progressListener = null;
-
+  
   private CadsrModule cadsrModule;
-
 
   public void performConceptInheritance(String input, String output) {
 
@@ -57,7 +56,9 @@ public class ConceptInheritanceAction implements CadsrModuleListener {
       ObjectClass oc = ocs.get(listIndex);
       
       // oc is mapped to a public ID, nothing we can do.
-      if(!StringUtil.isEmpty(oc.getPublicId())) {
+      // or oc is marked as excluded from this rule. 
+      // either way, we skip
+      if(!StringUtil.isEmpty(oc.getPublicId()) || inheritedList.isExcludedFromSemanticInheritance(oc)) {
         ocs.remove(oc);
       } else {
         // See if this one has children still in the list
@@ -78,7 +79,8 @@ public class ConceptInheritanceAction implements CadsrModuleListener {
           condrList.add(condr);
           ObjectClass parentOc = inheritedList.getParentOc(oc);
           while (parentOc != null) {
-            condrList.add(ConceptUtil.findConceptDerivationRule(parentOc));
+            if(!inheritedList.isExcludedFromSemanticInheritance(parentOc))
+              condrList.add(ConceptUtil.findConceptDerivationRule(parentOc));
             parentOc = inheritedList.getParentOc(parentOc);
           }
           
