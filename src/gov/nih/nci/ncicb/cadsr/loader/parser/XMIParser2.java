@@ -552,6 +552,17 @@ public class XMIParser2 implements Parser {
       event.setGmeXmlElement(tv.getValue());
     }
 
+    tv = clazz.getTaggedValue(TV_EXCLUDE_SEMANTIC_INHERITANCE);
+    if(tv != null) {
+      event.setExcludeFromSemanticInheritance(tv.getValue().equals("1")?true:false);
+    }
+    
+    tv = clazz.getTaggedValue(TV_EXCLUDE_SEMANTIC_INHERITANCE_REASON);
+    if(tv != null) {
+      event.setExcludeFromSemanticInheritanceReason(tv.getValue());
+    }
+
+
     if(isInPackageFilter(pName)) {
       listener.newClass(event);
     } else {

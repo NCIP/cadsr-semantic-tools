@@ -132,6 +132,8 @@ public class XMIWriter2 implements ElementWriter {
     List<DataElement> des = cadsrObjects.getElements(DomainObjectFactory.newDataElement());
     List<ValueDomain> vds = cadsrObjects.getElements(DomainObjectFactory.newValueDomain());
     List<ObjectClassRelationship> ocrs = cadsrObjects.getElements(DomainObjectFactory.newObjectClassRelationship());
+
+    InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
     
     int goal = ocs.size() + des.size() + vds.size() + ocrs.size();
     int status = 0;
@@ -157,7 +159,6 @@ public class XMIWriter2 implements ElementWriter {
         changed = changed | changeTracker.get(s);
 
       if(changed) {
-
         // drop all current concept tagged values
         Collection<UMLTaggedValue> allTvs = clazz.getTaggedValues();
         for(UMLTaggedValue tv : allTvs) {
@@ -165,14 +166,26 @@ public class XMIWriter2 implements ElementWriter {
              tv.getName().startsWith("ObjectQualifier"))
             clazz.removeTaggedValue(tv.getName());
         }
+        addConceptTvs(clazz, conceptCodes, XMIParser2.TV_TYPE_CLASS);
+
+        // Replace Description Tv
         clazz.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
         addSplitTaggedValue(clazz, XMIParser2.TV_CADSR_DESCRIPTION, oc.getPreferredDefinition(), "_");
-        addConceptTvs(clazz, conceptCodes, XMIParser2.TV_TYPE_CLASS);
-      }
+
+        // Ignore Semantic Inheritance?
+        clazz.removeTaggedValue(XMIParser2.TV_EXCLUDE_SEMANTIC_INHERITANCE);
+        clazz.removeTaggedValue(XMIParser2.TV_EXCLUDE_SEMANTIC_INHERITANCE_REASON);
         
+        if(inheritedList.isExcludedFromSemanticInheritance(oc)) {
+          clazz.addTaggedValue(XMIParser2.TV_EXCLUDE_SEMANTIC_INHERITANCE, "1");
+          
+          String reason = inheritedList.getSemanticExclusionReason(oc);
+          if(!StringUtil.isEmpty(reason))
+            addSplitTaggedValue(clazz, XMIParser2.TV_EXCLUDE_SEMANTIC_INHERITANCE_REASON, reason, "_");
+        }
+      }
     }
 
-    InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
     for(DataElement de : des) {
       DataElementConcept dec = de.getDataElementConcept();
       String fullPropName = null;
