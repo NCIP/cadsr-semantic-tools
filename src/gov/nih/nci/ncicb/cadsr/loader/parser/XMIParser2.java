@@ -228,6 +228,7 @@ public class XMIParser2 implements Parser {
       try {
         filterClassAndPackages = (Boolean)UserSelections.getInstance().getProperty("FILTER_CLASS_AND_PACKAGES");
       } catch (NullPointerException e) {
+        logger.info("no filter specified");
       }
 
       long start = System.currentTimeMillis();
@@ -290,7 +291,7 @@ public class XMIParser2 implements Parser {
       }
 
 
-      UserSelections.getInstance().setProperty("MARKED_IGNORED", markedAsIgnored);
+      UserSelections.getInstance().setProperty("MARKED_IGNORED", (Object)markedAsIgnored);
 
       UMLModel model = handler.getModel();
       totalNumberOfElements = countNumberOfElements(model);
@@ -408,13 +409,15 @@ public class XMIParser2 implements Parser {
       count = countPackage(pkg, count);
     } 
     
-    for(UMLAssociation assoc : model.getAssociations()) {
-      count++;
-    }
-
-    for(UMLGeneralization gen : model.getGeneralizations()) {
-      count++;
-    }
+    count = count + model.getAssociations().size() + model.getGeneralizations().size();
+//    for(UMLAssociation assoc : model.getAssociations()) {
+//      count++;
+//    }
+//
+//
+//    for(UMLGeneralization gen : model.getGeneralizations()) {
+//      count++;
+//    }
 
     return count;
   }
@@ -424,17 +427,19 @@ public class XMIParser2 implements Parser {
     }
     for(UMLClass clazz : pkg.getClasses()) {
       count++;
-      count = countClass(clazz, count);
+//      count = countClass(clazz, count);
+      count = count + clazz.getAttributes().size();
     }
     return count;
   }
 
-  private int countClass(UMLClass clazz, int count) {
-    for(UMLAttribute att : clazz.getAttributes())
-      count++;
-
-    return count;
-  }
+//  private int countClass(UMLClass clazz, int count) {
+//   
+//    for(UMLAttribute att : clazz.getAttributes())
+//      count++;
+//
+//    return count;
+//  }
 
   private void doPackage(UMLPackage pack) throws ParserException {
     if (packageName.length() == 0) {
@@ -557,9 +562,9 @@ public class XMIParser2 implements Parser {
       event.setExcludeFromSemanticInheritance(tv.getValue().equals("1")?true:false);
     }
     
-    tv = clazz.getTaggedValue(TV_EXCLUDE_SEMANTIC_INHERITANCE_REASON);
-    if(tv != null) {
-      event.setExcludeFromSemanticInheritanceReason(tv.getValue());
+    String reason = getSplitTaggedValue(clazz, TV_EXCLUDE_SEMANTIC_INHERITANCE_REASON, "_");
+    if(!StringUtil.isEmpty(reason)) {
+      event.setExcludeFromSemanticInheritanceReason(reason);
     }
 
 
@@ -627,6 +632,7 @@ public class XMIParser2 implements Parser {
       try {
         event.setMinLength(Integer.parseInt(tv.getValue().trim()));
       } catch (NumberFormatException e) {
+        logger.warn("min length is not a number, ignoring: " + tv.getValue());
       } // end of try-catch
     }
 
@@ -635,6 +641,7 @@ public class XMIParser2 implements Parser {
       try {
         event.setMaxLength(Integer.parseInt(tv.getValue().trim()));
       } catch (NumberFormatException e) {
+        logger.warn("max length is not a number, ignoring: " + tv.getValue());     
       } // end of try-catch
     }
     
@@ -643,6 +650,7 @@ public class XMIParser2 implements Parser {
       try {
         event.setDecimalPlace(Integer.parseInt(tv.getValue().trim()));
       } catch (NumberFormatException e) {
+        logger.warn("decimal place is not a number, ignoring: " + tv.getValue());           
       } // end of try-catch
     }
     
@@ -726,31 +734,6 @@ public class XMIParser2 implements Parser {
   }
 
 
-
-//   private void doInterface(Interface interf) {
-//     className = packageName + "." + interf.getName();
-
-//     //     logger.debug("Class: " + className);
-//     listener.newInterface(new NewInterfaceEvent(className.trim()));
-
-//     Iterator it = interf.getFeature().iterator();
-
-//     while (it.hasNext()) {
-//       Object o = it.next();
-//       if (o instanceof Attribute) {
-//         doAttribute((Attribute) o);
-//       }
-//       else if (o instanceof Operation) {
-//         doOperation((Operation) o);
-//       }
-//       else {
-//         logger.debug("Class child: " + o.getClass());
-//       }
-//     }
-
-//     className = "";
-//   }
-
   private void doAttribute(UMLAttribute att) throws ParserException {
     NewAttributeEvent event = new NewAttributeEvent(att.getName().trim());
     event.setClassName(className);
@@ -818,6 +801,7 @@ public class XMIParser2 implements Parser {
       try {
         event.setPersistenceVersion(new Float(tv.getValue()));
       } catch (NumberFormatException e){
+        logger.warn("de ID is not a number, ignoring: " + tv.getValue());     
       } // end of try-catch
     }
 
@@ -831,6 +815,7 @@ public class XMIParser2 implements Parser {
       try {
         event.setTypeVersion(new Float(tv.getValue()));
       } catch (NumberFormatException e){
+        logger.warn("vd version is not a number, ignoring: " + tv.getValue());     
       } // end of try-catch
     }
 
