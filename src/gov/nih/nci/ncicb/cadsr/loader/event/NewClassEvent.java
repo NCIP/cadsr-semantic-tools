@@ -32,6 +32,9 @@ public class NewClassEvent extends NewConceptualEvent {
   private String gmeNamespace;
   private String gmeXmlElement;
 
+  private boolean excludeFromSemanticInheritance = false;
+  private String excludeFromSemanticInheritanceReason = null;
+
   public NewClassEvent(String name) {
     this.name = name;
   }
@@ -90,5 +93,40 @@ public class NewClassEvent extends NewConceptualEvent {
     this.gmeXmlElement = newGmeXmlElement;
   }
 
+
+  /**
+   * Get the ExcludeFromSemanticInheritanceReason value.
+   * @return the ExcludeFromSemanticInheritanceReason value.
+   */
+  public String getExcludeFromSemanticInheritanceReason() {
+    return excludeFromSemanticInheritanceReason;
+  }
+
+  /**
+   * Set the ExcludeFromSemanticInheritanceReason value.
+   * @param newExcludeFromSemanticInheritanceReason The new ExcludeFromSemanticInheritanceReason value.
+   */
+  public void setExcludeFromSemanticInheritanceReason(String newExcludeFromSemanticInheritanceReason) {
+    this.excludeFromSemanticInheritanceReason = newExcludeFromSemanticInheritanceReason;
+  }
+
+
+  /**
+   * Get the ExcludeFromSemanticInheritance value.
+   * @return the ExcludeFromSemanticInheritance value.
+   */
+  public boolean isExcludeFromSemanticInheritance() {
+    return excludeFromSemanticInheritance;
+  }
+
+  /**
+   * Set the ExcludeFromSemanticInheritance value.
+   * @param newExcludeFromSemanticInheritance The new ExcludeFromSemanticInheritance value.
+   */
+  public void setExcludeFromSemanticInheritance(boolean newExcludeFromSemanticInheritance) {
+    this.excludeFromSemanticInheritance = newExcludeFromSemanticInheritance;
+  }
+
   
+ 
 }
