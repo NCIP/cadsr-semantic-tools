@@ -110,7 +110,7 @@ public class ExcludeFromSemanticInheritancePanel extends JPanel implements Edita
       return;
     
     ObjectClass oc = (ObjectClass)node.getUserObject();
-    inheritedList.excludeFromSemanticInheritance(oc);
+    inheritedList.setExcludedFromSemanticInheritance(oc, excludeBox.isSelected());
 
     if(!StringUtil.isEmpty(reasonTextField.getText()))
       inheritedList.addReasonForSemanticExclusion(oc, reasonTextField.getText());
