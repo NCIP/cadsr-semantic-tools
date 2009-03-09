@@ -390,6 +390,13 @@ public class UMLDefaultHandler
     for(AlternateName an : oc.getAlternateNames()) {
       an.addCsCsi(csCsi);
     }
+
+    if(event.isExcludeFromSemanticInheritance()) {
+      inheritedAttributes.setExcludedFromSemanticInheritance(oc, true);
+    }
+    if(!StringUtil.isEmpty(event.getExcludeFromSemanticInheritanceReason()))
+      inheritedAttributes.addReasonForSemanticExclusion(oc, event.getExcludeFromSemanticInheritanceReason());
+
   }
 
   public void newAttribute(NewAttributeEvent event) {
