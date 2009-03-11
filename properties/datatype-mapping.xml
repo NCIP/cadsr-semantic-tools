@@ -260,6 +260,9 @@
   <alias-list name="ISO21090.TEL.URL.v1.0">
     <alias name="tel.url" />
   </alias-list>
+  <alias-list name="ISO21090.TEL.v1.0">
+    <alias name="tel" />
+  </alias-list>
   <alias-list name="ISO21090.DSET.II.1.0">
     <alias name="dset&lt;ii&gt;" />
   </alias-list>
