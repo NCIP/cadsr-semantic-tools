@@ -169,12 +169,12 @@ public class XMIWriter2 implements ElementWriter {
         addConceptTvs(clazz, conceptCodes, XMIParser2.TV_TYPE_CLASS);
 
         // Replace Description Tv
-        clazz.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
-        addSplitTaggedValue(clazz, XMIParser2.TV_CADSR_DESCRIPTION, oc.getPreferredDefinition(), "_");
+        removeSplitTaggedValue(clazz, XMIParser2.TV_CADSR_DESCRIPTION, "");
+        addSplitTaggedValue(clazz, XMIParser2.TV_CADSR_DESCRIPTION, oc.getPreferredDefinition(), "");
 
         // Ignore Semantic Inheritance?
         clazz.removeTaggedValue(XMIParser2.TV_EXCLUDE_SEMANTIC_INHERITANCE);
-        clazz.removeTaggedValue(XMIParser2.TV_EXCLUDE_SEMANTIC_INHERITANCE_REASON);
+        removeSplitTaggedValue(clazz, XMIParser2.TV_EXCLUDE_SEMANTIC_INHERITANCE_REASON, "_");
         
         if(inheritedList.isExcludedFromSemanticInheritance(oc)) {
           clazz.addTaggedValue(XMIParser2.TV_EXCLUDE_SEMANTIC_INHERITANCE, "1");
@@ -207,13 +207,13 @@ public class XMIWriter2 implements ElementWriter {
 
       if(changed) {
         if((att != null)){
-            att.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
-            for(Definition def : (List<Definition>) de.getDefinitions()) {
-                if(def.getType().equals(Definition.TYPE_UML_DE)) {
-                  addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "_");
-                  break;
-                }
+          removeSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, "");
+          for(Definition def : (List<Definition>) de.getDefinitions()) {
+            if(def.getType().equals(Definition.TYPE_UML_DE)) {
+              addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "");
+              break;
             }
+          }
         }
 
         if(!inheritedList.isInherited(de)) {
@@ -293,7 +293,7 @@ public class XMIWriter2 implements ElementWriter {
       boolean vdChanged = changeTracker.get(LookupUtil.lookupFullName(vd));
       
       if(vdChanged){
-        clazz.removeTaggedValue(XMIParser2.TV_VD_DEFINITION);
+        removeSplitTaggedValue(clazz, XMIParser2.TV_VD_DEFINITION, "_");
         clazz.removeTaggedValue(XMIParser2.TV_VD_DATATYPE); 
         clazz.removeTaggedValue(XMIParser2.TV_VD_TYPE);
         clazz.removeTaggedValue(XMIParser2.TV_CD_ID);
@@ -372,15 +372,15 @@ public class XMIWriter2 implements ElementWriter {
 
         if(changed) {
             if((att != null)){
-                att.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
-                for(Definition def : (List<Definition>) vm.getDefinitions()) {
-                    if(def.getType().equals(Definition.TYPE_UML_VM)) {
-                      addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "_");
-                      break;
-                    }
+              removeSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, "");
+              for(Definition def : (List<Definition>) vm.getDefinitions()) {
+                if(def.getType().equals(Definition.TYPE_UML_VM)) {
+                  addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "");
+                  break;
                 }
+              }
             }
-         // drop all current concept tagged values
+            // drop all current concept tagged values
           Collection<UMLTaggedValue> allTvs = att.getTaggedValues();
           for(UMLTaggedValue tv : allTvs) {
             if(tv.getName().startsWith(XMIParser2.TV_TYPE_VM) ||
@@ -517,7 +517,6 @@ public class XMIWriter2 implements ElementWriter {
 
     if(con.getPreferredDefinition() != null)
       addSplitTaggedValue(elt, tvName, con.getPreferredDefinition(), "_");
-//       elt.addTaggedValue(tvName,con.getPreferredDefinition());
     
     tvName = type + pre + XMIParser2.TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:"");
 
@@ -794,6 +793,16 @@ public class XMIWriter2 implements ElementWriter {
     } else {
       elt.addTaggedValue(tag, value);
     }
+  }
+
+  private void removeSplitTaggedValue(UMLTaggableElement elt, String tag, String separator) {
+    
+    elt.removeTaggedValue(tag);
+    
+    for(int i = 2; elt.getTaggedValue(tag + separator + i) != null; i++) {
+      elt.removeTaggedValue(tag + separator + i);
+    }
+
   }
 
 }
