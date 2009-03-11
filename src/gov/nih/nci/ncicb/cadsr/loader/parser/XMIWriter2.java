@@ -166,7 +166,7 @@ public class XMIWriter2 implements ElementWriter {
             clazz.removeTaggedValue(tv.getName());
         }
         clazz.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
-        addSplitTaggedValue(clazz, XMIParser2.TV_CADSR_DESCRIPTION, oc.getPreferredDefinition(), "_");
+        addSplitTaggedValue(clazz, XMIParser2.TV_CADSR_DESCRIPTION, oc.getPreferredDefinition(), "");
         addConceptTvs(clazz, conceptCodes, XMIParser2.TV_TYPE_CLASS);
       }
         
@@ -197,7 +197,7 @@ public class XMIWriter2 implements ElementWriter {
             att.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
             for(Definition def : (List<Definition>) de.getDefinitions()) {
                 if(def.getType().equals(Definition.TYPE_UML_DE)) {
-                  addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "_");
+                  addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "");
                   break;
                 }
             }
@@ -362,7 +362,7 @@ public class XMIWriter2 implements ElementWriter {
                 att.removeTaggedValue(XMIParser2.TV_CADSR_DESCRIPTION);
                 for(Definition def : (List<Definition>) vm.getDefinitions()) {
                     if(def.getType().equals(Definition.TYPE_UML_VM)) {
-                      addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "_");
+                      addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "");
                       break;
                     }
                 }
