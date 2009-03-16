@@ -7,7 +7,7 @@
   >
   
   <information>
-    <title>Semantic Integration Workbench 4.0.0.3</title>
+    <title>Semantic Integration Workbench 4.1</title>
     <description>The SIW streamlines the process of annotating Domain Model with Evs Concepts, then loading those models to caDSR</description>
     <offline-allowed/>
     <vendor>NCI</vendor>
