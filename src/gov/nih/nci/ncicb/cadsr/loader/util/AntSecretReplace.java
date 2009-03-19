@@ -97,11 +97,11 @@ public class AntSecretReplace
 	catch (Throwable e) {
           throw new RuntimeException(e);
 	}
-        System.exit(0);
     } else if(evt.getActionCommand().equals("Cancel")) {
-      System.exit(0);
     }
     
+    _this.dispose();
+
   }
 
   /**
