@@ -184,7 +184,8 @@ public class DBModule implements LoginModule {
     DataSourceProvider dsp = (DataSourceProvider)Class.forName((String)options.get("dataSourceProvider")).newInstance();
     DataSource ds = dsp.getDataSource((String)options.get("dataSource"));
     System.out.println("USER: " + System.getProperty("db.user") + "PASSWD: " + System.getProperty("db.passwd"));
-    Connection conn = ds.getConnection(System.getProperty("db.user"), System.getProperty("db.passwd"));
+//     Connection conn = ds.getConnection(System.getProperty("db.user"), System.getProperty("db.passwd"));
+    Connection conn = ds.getConnection();
 //     conn.getMetaData();
     Statement stmt = conn.createStatement();
     try {
