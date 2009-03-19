@@ -285,25 +285,26 @@
     </javadoc>
   </target>
 
-  <target name="run" depends="prepare">
+  <target name="prepare-password">
+    <java classname="gov.nih.nci.ncicb.cadsr.loader.util.AntSecretReplace" classpathref="proj.class.path">
+      <arg value="${class.dir}/spring-datasources.xml"/>
+      <arg value="${class.dir}/spring-datasources.xml"/>
+      <arg value="@@DB_PASSWD@@"/>
+    </java>
+  </target>
+  
+  <target name="run" depends="prepare, prepare-password">
     <replace file="${class.dir}/spring-datasources.xml" 
       propertyFile="${config.dir}/db.properties">
       <replacefilter token="@@DB_URL@@" property="db.url.${target.env}"/>
       <replacefilter token="@@DB_USER@@" property="db.loader.user"/>
     </replace>
-    <java classname="gov.nih.nci.ncicb.cadsr.loader.util.AntSecretReplace"
-      classpathref="proj.class.path" 
-      fork="yes" 
-      maxmemory="512m"
-      >
-      <arg value="${class.dir}/spring-datasources.xml"/>
-      <arg value="${class.dir}/spring-datasources.xml"/>
-      <arg value="@@DB_PASSWD@@"/>
-    </java>
+
     <copy file="${config.dir}/log4j-loader.xml"
       tofile="${class.dir}/log4j.xml" overwrite="true"
       >
     </copy>
+
     <java classname="gov.nih.nci.ncicb.cadsr.loader.UMLLoader" classpathref="proj.class.path" 
       fork="yes" 
       maxmemory="512m"
@@ -316,6 +317,9 @@
       <arg value="${projectName}"/>
       <arg value="${projectVersion}"/>
     </java>
+
+    <delete file="${class.dir}/spring-datasources.xml"/>
+    
   </target>
 
   <target name="roundtrip" depends="prepare">
