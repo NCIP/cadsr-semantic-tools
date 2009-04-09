@@ -29,14 +29,22 @@ import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+import gov.nih.nci.ncicb.cadsr.loader.util.AttributeDatatypePair;
+import gov.nih.nci.ncicb.cadsr.loader.util.DEMappingUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+
 import java.util.List;
+
+import org.apache.log4j.Logger;
+
 public class DatatypeValidator implements Validator
 {
   private ElementsLists elements = ElementsLists.getInstance();
   
   private ValidationItems items = ValidationItems.getInstance();
+  private Logger logger = Logger.getLogger(DatatypeValidator.class.getName());
   
   public DatatypeValidator()
   {
@@ -70,22 +78,38 @@ public class DatatypeValidator implements Validator
            de.getValueDomain().getVersion() != null)
           continue;
 
-        String prefName = de.getValueDomain().getLongName();
+        // Don't validate is mapped to LVD
+        if(DEMappingUtil.isMappedToLVD(de))
+            continue;
+
+//        String datatype = de.getValueDomain().getLongName();
+         List<AttributeDatatypePair> attTypesPairs = elements.getElements(new AttributeDatatypePair("", ""));
+         String datatype = null;
+         String attributeName = LookupUtil.lookupFullName(de);
+         for(AttributeDatatypePair pair : attTypesPairs) {
+           if(pair.getAttributeName().equals(attributeName)) {
+             datatype = pair.getDatatype();
+           }
+         }
+        
+        if(StringUtil.isEmpty(datatype)) {
+          logger.error("Datatype is null for attribute: " + LookupUtil.lookupFullName(de));
+        }
 
         // Is the datatype a simple datatype?
-        if(DatatypeMapping.getValues().contains(prefName)) 
+        if(DatatypeMapping.getKeys().contains(datatype)) 
           continue;
         
         // If mapping this DE to a VD Name, check that the VD
         // is in the model
-        ValueDomain vd = LookupUtil.lookupValueDomain(de.getValueDomain().getLongName());
-        if(vd != null)
-          continue;
-        
+//        ValueDomain vd = LookupUtil.lookupValueDomain(de.getValueDomain().getLongName());
+//        if(vd != null)
+//          continue;
+       
         items.addItem(new ValidationError
              (PropertyAccessor.getProperty
               ("validation.type.invalid",
-               new String[] {prefName, 
+               new String[] {datatype, 
                              de.getDataElementConcept().getLongName()})
               ,de));
         
