@@ -21,10 +21,30 @@ package gov.nih.nci.ncicb.cadsr.loader.util;
 
 import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
-public class DEMappingUtil {
+public class DEMappingUtil { 
+
+  private static Map<DataElement, Boolean> lvdMapping = 
+    new HashMap<DataElement, Boolean>();
+
+  
+  
+  public static void setMappedToLVD(DataElement de, Boolean state) {
+    lvdMapping.remove(de);
+    lvdMapping.put(de, state);
+  }
+
+  public static Boolean isMappedToLVD(DataElement de) {
+    if(!lvdMapping.containsKey(de))
+      return false;
+    else return lvdMapping.get(de);
+  }
+
 
   /**
    * This method will check that replacing the current DE
@@ -104,33 +124,33 @@ public class DEMappingUtil {
     return null;
   }
   
-  /**
-   * @return the LVD if mapped to one, null otherwise
-   */
-  public static ValueDomain isMappedToLocalVD(DataElement de) {
-    InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
+//   /**
+//    * @return the LVD if mapped to one, null otherwise
+//    */
+//   public static ValueDomain isMappedToLocalVD(DataElement de) {
+//     InheritedAttributeList inheritedAttributes = InheritedAttributeList.getInstance();
 
-    ValueDomain _vd = de.getValueDomain();
-    ElementsLists elements = ElementsLists.getInstance();
-    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
-//     if(_vd.getPublicId() != null)
-//       return null;
+//     ValueDomain _vd = de.getValueDomain();
+//     ElementsLists elements = ElementsLists.getInstance();
+//     List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+// //     if(_vd.getPublicId() != null)
+// //       return null;
     
-    if(vds != null) {
-      for(ValueDomain currentVd : vds) 
-//         if(currentVd.getLongName().equals(_vd.getLongName())) {
-        if(currentVd == _vd) {
-          // inherited att might be indirectly mapped to LVD. (thru the parent)
-          if(inheritedAttributes.isInherited(de)) { 
-            DataElement parentDE = inheritedAttributes.getParent(de);
-            if(!de.getValueDomain().getLongName().equals(parentDE.getValueDomain().getLongName()))
-              return currentVd;
-            else return null;
-          } else
-            return currentVd;
-        }
-    }
-    return null;
-  }
+//     if(vds != null) {
+//       for(ValueDomain currentVd : vds) 
+// //         if(currentVd.getLongName().equals(_vd.getLongName())) {
+//         if(currentVd == _vd) {
+//           // inherited att might be indirectly mapped to LVD. (thru the parent)
+//           if(inheritedAttributes.isInherited(de)) { 
+//             DataElement parentDE = inheritedAttributes.getParent(de);
+//             if(!de.getValueDomain().getLongName().equals(parentDE.getValueDomain().getLongName()))
+//               return currentVd;
+//             else return null;
+//           } else
+//             return currentVd;
+//         }
+//     }
+//     return null;
+//   }
 
 }
