@@ -35,6 +35,11 @@ public class NewAttributeEvent extends NewConceptualEvent {
 
   private String gmeXmlLocRef;
 
+  /**
+   * Describe localType here.
+   */
+  private String localType;
+
   public NewAttributeEvent(String name) {
     this.name = name;
   }
@@ -65,6 +70,23 @@ public class NewAttributeEvent extends NewConceptualEvent {
     this.typeId = typeId;
   }
 
+  /**
+   * Get the <code>LocalType</code> value.
+   *
+   * @return a <code>String</code> value
+   */
+  public final String getLocalType() {
+    return localType;
+  }
+
+  /**
+   * Set the <code>LocalType</code> value.
+   *
+   * @param newLocalType The new LocalType value.
+   */
+  public final void setLocalType(final String newLocalType) {
+    this.localType = newLocalType;
+  }
 
   public String getTypeId()
   {
