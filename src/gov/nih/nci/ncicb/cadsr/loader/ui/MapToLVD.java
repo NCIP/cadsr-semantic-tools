@@ -47,38 +47,38 @@ public class MapToLVD extends JDialog implements ActionListener{
     private ValueDomain selectedValueDomain = null;
 
     public MapToLVD(List<ValueDomain> lvds) {
-        super((JFrame)null, true);
-        setTitle(PropertyAccessor.getProperty("maptolvd.title"));
-        
-        this.lvds = lvds;
-        this.setLayout(new BorderLayout());
-        this.setSize(300,225);
-
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        
-        textPanel = new JPanel();
-        textPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        textPanel.add(textLabel);
-        
-        if((lvds != null) && (lvds.size() > 0)){
-            lvdScrollPane = new JScrollPane(getLVDValuesList(lvds));
-            MouseListener mouseListener = new MouseAdapter() {
-                public void mouseClicked(MouseEvent mouseEvent) {
-                    JList theList = (JList) mouseEvent.getSource();
-                    if (mouseEvent.getClickCount() == 2) {
-                        selectedIndex = theList.locationToIndex(mouseEvent.getPoint());
-                        setLocalValueDomain(selectedIndex);
-                        setVisible(false);
-                    }
-                }
-            };
-            lvdValueJList.addMouseListener(mouseListener);
-        }
-        else
-            lvdScrollPane = new JScrollPane(new JLabel("<HTML><B color=RED>&nbsp;&nbsp;There are no Local Value Domains "+ 
-                "\n" +"to choose from.  </B></HTML>"));
-        dataPanel = new JPanel();
+      super((JFrame)null, true);
+      setTitle(PropertyAccessor.getProperty("maptolvd.title"));
+      
+      this.lvds = lvds;
+      this.setLayout(new BorderLayout());
+      this.setSize(300,225);
+      
+      mainPanel = new JPanel();
+      mainPanel.setLayout(new BorderLayout());
+      
+      textPanel = new JPanel();
+      textPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+      textPanel.add(textLabel);
+      
+      if((lvds != null) && (lvds.size() > 0)){
+        lvdScrollPane = new JScrollPane(getLVDValuesList(lvds));
+        MouseListener mouseListener = new MouseAdapter() {
+            public void mouseClicked(MouseEvent mouseEvent) {
+              JList theList = (JList) mouseEvent.getSource();
+              if (mouseEvent.getClickCount() == 2) {
+                selectedIndex = theList.locationToIndex(mouseEvent.getPoint());
+                setLocalValueDomain(selectedIndex);
+                setVisible(false);
+              }
+            }
+          };
+        lvdValueJList.addMouseListener(mouseListener);
+      }
+      else
+        lvdScrollPane = new JScrollPane(new JLabel("<HTML><B color=RED>&nbsp;&nbsp;There are no Local Value Domains "+ 
+                                                   "\n" +"to choose from.  </B></HTML>"));
+      dataPanel = new JPanel();
         dataPanel.setLayout(new BorderLayout());
         dataPanel.add(lvdScrollPane, BorderLayout.CENTER);
 
@@ -95,38 +95,40 @@ public class MapToLVD extends JDialog implements ActionListener{
     }
 
     private JList getLVDValuesList(List<ValueDomain> lvdValueList){
-        if(lvdValueList.size() > 0){
-            DefaultListModel lvdValueListModel = new DefaultListModel();
-            lvdValueJList = new JList(lvdValueListModel);
-            lvdValueJList.setCellRenderer(new MyCellRenderer());
-
-            List values = new ArrayList();
-            for(ValueDomain vd : lvdValueList) 
-                values.add(LookupUtil.lookupFullName(vd));
-
-            for(int i=0; i<values.size(); i++){
-                ListItem li = new ListItem(values.get(i).toString());
-                lvdValueListModel.addElement(li);
-            }
-            lvdValueJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      if(lvdValueList.size() > 0){
+        DefaultListModel lvdValueListModel = new DefaultListModel();
+        lvdValueJList = new JList(lvdValueListModel);
+        lvdValueJList.setCellRenderer(new MyCellRenderer());
+        
+        List values = new ArrayList();
+        for(ValueDomain vd : lvdValueList) 
+          values.add(LookupUtil.lookupFullName(vd));
+        
+        for(int i=0; i<values.size(); i++){
+          ListItem li = new ListItem(values.get(i).toString());
+          lvdValueListModel.addElement(li);
         }
-        return lvdValueJList;
+        lvdValueJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      }
+      return lvdValueJList;
     }
-
-    public void setLocalValueDomain(int selectedIndex){
-        selectedValueDomain = lvds.get(selectedIndex);
-    }
-    
-    public ValueDomain getLocalValueDomain(){
-        return selectedValueDomain;
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        selectedIndex = lvdValueJList.getSelectedIndex();
-        if(selectedIndex != -1)
+  
+  public void setLocalValueDomain(int selectedIndex){
+    selectedValueDomain = lvds.get(selectedIndex);
+  }
+  
+  public ValueDomain getLocalValueDomain(){
+    return selectedValueDomain;
+  }
+  
+  public void actionPerformed(ActionEvent e) {
+    if(lvdValueJList != null) {
+      selectedIndex = lvdValueJList.getSelectedIndex();
+      if(selectedIndex != -1)
         setLocalValueDomain(selectedIndex);
-        this.setVisible(false);
     }
+    this.setVisible(false);
+  }
     
     private static class ListItem {
       private String value;
