@@ -103,12 +103,10 @@ import java.awt.event.WindowEvent;
    private JLabel infoLabel = new JLabel(" ");
    private JLabel filePathLabel = new JLabel(" ");
 
- //   private Map<String, UMLElementViewPanel> viewPanels = new HashMap();
    private UMLElementViewPanelFactory umlVPFactory = null;
    private NodeViewPanel viewPanel = null;
-   private Map<String, NodeViewPanel> viewPanels = new HashMap();
+   private Map<String, NodeViewPanel> viewPanels = new HashMap<String, NodeViewPanel>();
    private AssociationViewPanel associationViewPanel = null;
- //   private ValueDomainViewPanel vdViewPanel = null;
 
    private LVDPanel lvdPanel = null;
 
@@ -125,7 +123,6 @@ import java.awt.event.WindowEvent;
    private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
    private UserPreferences prefs = UserPreferences.getInstance();
    private boolean isFrameMaximed;
-   private int oldState;
    private int mainFrameWidth = 0;
    private int mainFrameHeight = 0;
    private int verticleSplit = 0;
@@ -143,7 +140,6 @@ import java.awt.event.WindowEvent;
      
      runMode = (RunMode)(selections.getProperty("MODE"));
 
- //     if(runMode.equals(RunMode.Curator))
      curatorTracker = ReviewTracker.getInstance(ReviewTrackerType.Curator);
      ownerTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner);
 
@@ -162,10 +158,6 @@ import java.awt.event.WindowEvent;
    public void exit() {
      int verticleSplit = jSplitPane1.getDividerLocation();
      int horizontalSplit = jSplitPane2.getDividerLocation();
-
-//      Dimension dim = this.getSize();
-//      int mainFrameWidth = (int) dim.getWidth();
-//      int mainFrameHeight = (int) dim.getHeight();
      
      prefs.setMainFramePreferences(isFrameMaximed, mainFrameWidth, mainFrameHeight, verticleSplit, horizontalSplit);
      
@@ -213,7 +205,6 @@ import java.awt.event.WindowEvent;
    {
        if (file_ != null && file_.length() > 0)
            saveFilename = file_;
-//       this.setTitle(PropertyAccessor.getProperty("siw.title") + " - " + saveFilename + " - " + runMode.getTitleName());
        filePathLabel.setText(saveFilename);
        this.setTitle(PropertyAccessor.getProperty("siw.title") + " - " + runMode.getTitleName() + " - " + 
             saveFilename.substring(saveFilename.lastIndexOf("/")+1, saveFilename.length()));
@@ -318,7 +309,7 @@ import java.awt.event.WindowEvent;
      defaultsMenuItem.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent event) {
            UmlDefaultsPanel dp =  new UmlDefaultsPanel(_this);
-           dp.show();
+           dp.setVisible(true);
            UIUtil.putToCenter(dp);
          }
      });
@@ -576,32 +567,14 @@ import java.awt.event.WindowEvent;
        viewTabbedPane.setSelectedComponent(associationViewPanel);
 
      } else if(event.getType() == ViewChangeEvent.VIEW_VALUE_DOMAIN) {
-       
- //      if(vdViewPanel == null) {
- //        vdViewPanel = new ValueDomainViewPanel((ValueDomain)node.getUserObject(), node);
- //        viewTabbedPane.addTab("ValueDomain", vdViewPanel);
- //        vdViewPanel.setName("ValueDomain");
- //        infoLabel.setText("ValueDomain");
- //      }
- //      else
-       
- //       viewTabbedPane.remove(vdViewPanel);
- //       viewTabbedPane.addTab("ValueDomain", vdViewPanel);
- //       vdViewPanel.update((ValueDomain)node.getUserObject(), node);
- //       infoLabel.setText("ValueDomain");      
-
- //       viewTabbedPane.setSelectedComponent(vdViewPanel);
 
           viewTabbedPane.remove(lvdPanel);
           viewTabbedPane.addTab("ValueDomain."+LookupUtil.lookupFullName((ValueDomain)node.getUserObject()), lvdPanel);
-//          viewTabbedPane.addTab("ValueDomain", lvdPanel);
           lvdPanel.update((ValueDomain)node.getUserObject(), node);
           lvdPanel.addNavigationListener(navigationPanel);
           navigationPanel.addNavigationListener(lvdPanel);
           infoLabel.setText("ValueDomain");      
           viewTabbedPane.setSelectedComponent(lvdPanel);
-
- //    
 
      } else if(event.getType() == ViewChangeEvent.VIEW_PACKAGE) {
        
@@ -644,7 +617,6 @@ import java.awt.event.WindowEvent;
        viewPanel = umlVPFactory.createInheritedAttributeViewPanel(node);
        viewPanel.updateNode(node);
      } else {
-//       viewPanel = new UMLElementViewPanel(node);
         viewPanel = umlVPFactory.createUMLElementViewPanel(node);
         viewPanel.updateNode(node);
      }          
@@ -672,11 +644,7 @@ import java.awt.event.WindowEvent;
      Component c = viewTabbedPane.getComponentAt(index);
      if(c.equals(associationViewPanel))
        associationViewPanel = null;
- //     if(c.equals(vdViewPanel))
- //       vdViewPanel = null;
- //     if(c.equals(lvdPanel))
- //       lvdPanel = null;
-     
+
      if(c.equals(packageViewPanel))
        packageViewPanel = null;
      viewPanels.remove(c.getName());
@@ -710,22 +678,9 @@ import java.awt.event.WindowEvent;
      Dimension dim = this.getSize();
      mainFrameWidth = (int) dim.getWidth();
      mainFrameHeight = (int) dim.getHeight();
-
    }
   
    public void stateChanged(WindowEvent e){
-//      int currentState = e.getNewState();
-//      oldState = e.getOldState();
-//      isFrameMaximed = (currentState == JFrame.MAXIMIZED_BOTH);
-//      if(isFrameMaximed){
-//        this.setExtendedState(MAXIMIZED_BOTH);
-//        setSplitPanesFields();
-//      } else{
-// //        setMainFrameFields();
-//        setSplitPanesFields();
-//        this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));
-//      }
-//      setSplitPanes();
    }
 
      private void putToCenter() {
@@ -735,17 +690,8 @@ import java.awt.event.WindowEvent;
      private void setInitialMainFrameSize(){
        this.setSize(new Dimension(930, 700));
            
-
        setVisible(true);
-//        this.isFrameMaximed = prefs.isMainFrameMaximized();
 
-//        setMainFrameFields();
-
-//        this.setSize(new Dimension(mainFrameWidth, mainFrameHeight));
-       
-//        if(isFrameMaximed){
-//          this.setExtendedState(MAXIMIZED_BOTH);
-//        }
        setSplitPanesFields();
      }
      
@@ -769,19 +715,10 @@ import java.awt.event.WindowEvent;
        jSplitPane1.setDividerLocation(160);
        jSplitPane2.setDividerLocation(450);
 
-
-//          jSplitPane1.setDividerLocation(verticleSplit);
-//          jSplitPane2.setDividerLocation(horizontalSplit);
      }
      
      public void setUmlVPFactory(UMLElementViewPanelFactory umlVPFactory) {
         this.umlVPFactory = umlVPFactory;
      }
 
- //   public void setValueDomainViewPanel(ValueDomainViewPanel vdViewPanel) {
- //     this.vdViewPanel = vdViewPanel;
- //     vdViewPanel.addElementChangeListener(ChangeTracker.getInstance());
- //     vdViewPanel.addPropertyChangeListener(this);
- //   }
-  
  }
