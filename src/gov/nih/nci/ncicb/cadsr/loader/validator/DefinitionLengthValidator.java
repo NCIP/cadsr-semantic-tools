@@ -57,7 +57,10 @@ public class DefinitionLengthValidator implements Validator {
             }
           }
         }
+        if(oc.getPreferredDefinition().length() > 2000)
+          items.addItem(new ValidationError(PropertyAccessor.getProperty("alt.definition.too.long", LookupUtil.lookupFullName(oc)), oc));
       }
+
 
 //     List<Property> props = elements.getElements(DomainObjectFactory.newProperty());
 //     if(props != null)
