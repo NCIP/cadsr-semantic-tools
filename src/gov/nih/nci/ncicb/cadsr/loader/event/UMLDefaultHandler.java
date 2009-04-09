@@ -403,7 +403,6 @@ public class UMLDefaultHandler
     logger.info("Attribute: " + event.getClassName() + "." +
                  event.getName());
 
-
     DataElement de = DomainObjectFactory.newDataElement();
 
     // populate if there is valid existing mapping
@@ -469,7 +468,11 @@ public class UMLDefaultHandler
     if(de.getValueDomain() == null) {
 
       ValueDomain vd = DomainObjectFactory.newValueDomain();
-      vd.setLongName(datatype);
+      if(!StringUtil.isEmpty(event.getLocalType())) {
+        DEMappingUtil.setMappedToLVD(de, true);
+        vd.setLongName(event.getLocalType());
+      } else
+        vd.setLongName(datatype);
       
       if(event.getTypeId() != null) {
         populateExistingVd(vd, event.getTypeId(), event.getTypeVersion(), event.getClassName() + "." + event.getName());
@@ -886,6 +889,7 @@ public class UMLDefaultHandler
             // check local VD mapping
             String localType = event.getDatatypeMapping(propName);
             if(localType != null) {
+              DEMappingUtil.setMappedToLVD(newDe, true);
               ValueDomain vd = DomainObjectFactory.newValueDomain();
               vd.setLongName(localType);
               newDe.setValueDomain(vd);
@@ -1019,16 +1023,14 @@ public class UMLDefaultHandler
 
   public void endParsing() {
     // update all DE that are mapped to LVD with their actual LVD objects
-    {
-      List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
-      List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
-      for(DataElement de : des) {
-        if(StringUtil.isEmpty(de.getPublicId())) {
-          for(ValueDomain vd : vds) {
-            String vdName = LookupUtil.lookupFullName(vd);
-            if(vdName.equals(de.getValueDomain().getLongName()))
-              de.setValueDomain(vd);
-          }
+    List<DataElement> des = elements.getElements(DomainObjectFactory.newDataElement());
+    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+    for(DataElement de : des) {
+      if(StringUtil.isEmpty(de.getPublicId())) {
+        for(ValueDomain vd : vds) {
+          String vdName = LookupUtil.lookupFullName(vd);
+          if(vdName.equals(de.getValueDomain().getLongName()))
+            de.setValueDomain(vd);
         }
       }
     }
