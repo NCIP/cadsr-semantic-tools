@@ -32,7 +32,7 @@ public class ExcludeFromSemanticInheritancePanel extends JPanel implements Edita
   private UMLNode node;
 
   private JTextArea reasonTextField = new JTextArea("");
-  private JCheckBox excludeBox = new JCheckBox("Exclude from Semantic Inheritance");
+  private JCheckBox excludeBox = new JCheckBox("Ignore for Concept Inheritance");
 
   private InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
 
