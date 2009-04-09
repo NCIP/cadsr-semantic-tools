@@ -8,12 +8,9 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.*;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -46,7 +43,6 @@ public class ConceptEditorPanel extends JPanel
   private ConceptUI[] conceptUIs;
   
   private JPanel gridPanel;
-  private JScrollPane scrollPane;
    
   private JLabel conceptLabel = new JLabel();
   private JLabel nameLabel = new JLabel();
@@ -67,6 +63,8 @@ public class ConceptEditorPanel extends JPanel
   }
   
   private UserPreferences prefs = UserPreferences.getInstance();
+
+  private ConceptInheritanceViewPanel conceptInheritanceViewPanel = new ConceptInheritanceViewPanel();
 
   public ConceptEditorPanel(UMLNode node) 
   {
@@ -291,7 +289,7 @@ public class ConceptEditorPanel extends JPanel
           ObjectUpdater.updateByAltName(attName, concepts, newConcepts);
 
           // sent change tracker event for each element
-          List<DataElement> des = (List<DataElement>)ElementsLists.getInstance().getElements(DomainObjectFactory.newDataElement().getClass());
+          List<DataElement> des = ElementsLists.getInstance().getElements(DomainObjectFactory.newDataElement());
           for(DataElement _de : des) {
             if(_de.getDataElementConcept().getProperty().getLongName().equals(attName)) {
               fireElementChangeEvent(new ElementChangeEvent(_de));
@@ -591,6 +589,15 @@ public class ConceptEditorPanel extends JPanel
         vdPanel.applyPressed();
   }
   
+  public void addInheritancePressed() {
+    if(node.getUserObject() instanceof ObjectClass) {
+        ObjectClass oc = (ObjectClass)node.getUserObject();
+        conceptInheritanceViewPanel.update(oc);
+        ConceptInheritanceDialog dialog = new ConceptInheritanceDialog(conceptInheritanceViewPanel);
+        dialog.setVisible(true);
+    }
+  }
+
   public void addPressed() 
   {
     Concept[] newConcepts = new Concept[concepts.length + 1];
@@ -618,12 +625,10 @@ public class ConceptEditorPanel extends JPanel
                 new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false));
   }
   
-  
   public void removePressed() 
   {
     removePressed(0);
   }
-
   
   /**
    * @parameter index index starting with 0, 0 is the primaryConcept. n is conceptQualifierN
