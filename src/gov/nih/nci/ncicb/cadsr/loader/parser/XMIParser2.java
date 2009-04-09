@@ -62,8 +62,6 @@ public class XMIParser2 implements Parser {
   
   private ProgressListener progressListener = null;
 
-//   public final static String VD_STEREOTYPE = "CADSR Value Domain";
-
   public static final String TV_PROP_ID = "CADSR_PROP_ID";
   public static final String TV_PROP_VERSION = "CADSR_PROP_VERSION";
 
@@ -183,8 +181,8 @@ public class XMIParser2 implements Parser {
   public static final String TV_GME_SOURCE_XML_LOC_REFERENCE = "NCI_GME_SOURCE_XML_LOC_REF";
   public static final String TV_GME_TARGET_XML_LOC_REFERENCE = "NCI_GME_TARGET_XML_LOC_REF";
 
-  public static final String TV_EXCLUDE_SEMANTIC_INHERITANCE = "NCI_EXCLUDE_FROM_SEMANTIC_INHERITANCE"; 
-  public static final String TV_EXCLUDE_SEMANTIC_INHERITANCE_REASON = "NCI_REASON_FOR_SEMANTIC_EXCLUSION"; 
+  public static final String TV_EXCLUDE_SEMANTIC_INHERITANCE = "NCI_IGNORE_CONCEPT_INHERITANCE"; 
+  public static final String TV_EXCLUDE_SEMANTIC_INHERITANCE_REASON = "NCI_REASON_FOR_CONCEPT_EXCLUSION"; 
   
   private int totalNumberOfElements = 0, currentElementIndex = 0;
   private boolean filterClassAndPackages = false;
@@ -764,11 +762,12 @@ public class XMIParser2 implements Parser {
     // See if datatype is a simple datatype or a value domain.
     UMLTaggedValue tv = att.getTaggedValue(TV_VALUE_DOMAIN);
     if(tv != null) {       // Use Value Domain
-      event.setType(tv.getValue());
-    } else {               // Use datatype
-      event.setType(att.getDatatype().getName());
+      event.setLocalType(tv.getValue());
     }
-
+    //     } else {               // Use datatype
+    
+    event.setType(att.getDatatype().getName());
+      //     }
 
     String description = getDocumentation(att, TV_CADSR_DESCRIPTION);
     if(description != null) {

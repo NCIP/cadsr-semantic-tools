@@ -251,7 +251,7 @@ public class XMIWriter2 implements ElementWriter {
                                  de.getValueDomain().getVersion().toString());
             }
             else {
-              if(DEMappingUtil.isMappedToLocalVD(de) != null) {
+              if(DEMappingUtil.isMappedToLVD(de)) {
                 att.addTaggedValue(XMIParser2.TV_VALUE_DOMAIN, LookupUtil.lookupFullName(de.getValueDomain()));
               }
             }
