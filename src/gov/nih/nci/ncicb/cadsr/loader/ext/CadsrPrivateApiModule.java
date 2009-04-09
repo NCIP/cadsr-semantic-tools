@@ -143,13 +143,13 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   }
 
-  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
-    findDataElement(Concept[] ocConcepts, Concept[] propConcepts, 
-    String vdLongName) throws Exception {
+//   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
+//     findDataElement(Concept[] ocConcepts, Concept[] propConcepts, 
+//     String vdLongName) throws Exception {
     
-    return DAOAccessor.getDataElementDAO().find(ocConcepts, propConcepts, 
-            vdLongName);
-  }
+//     return DAOAccessor.getDataElementDAO().find(ocConcepts, propConcepts, 
+//             vdLongName);
+//   }
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
     suggestDataElement(String className, String attrName) throws Exception {
@@ -194,24 +194,11 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   }
 
-  
   public List<DataElement> findDEByOCConcepts(Concept[] concepts) {
     List<DataElement> result = DAOAccessor.getDataElementDAO().findByOCConcepts(concepts);
     return result;
   }
-  
-  public List<DataElement> findDEByConcepts(Concept ocPrimaryConcept,
-                                            Concept[] propConcepts) {
-    List<DataElement> result = DAOAccessor.getDataElementDAO().findByConcepts(ocPrimaryConcept, propConcepts);
-    return result;
-  }
-  
-  public List<DataElement> findDEByConcepts(Concept[] ocConcepts,
-                                            Concept[] propConcepts) {
-    List<DataElement> result = DAOAccessor.getDataElementDAO().findByConcepts(ocConcepts, propConcepts);
-    return result;
-  }
-  
+    
   public boolean matchDEToPropertyConcepts(gov.nih.nci.ncicb.cadsr.domain.DataElement de, String[] conceptCodes) throws Exception {
     
     Map<String, Object> queryFields = new HashMap<String, Object>();
@@ -378,11 +365,11 @@ public class CadsrPrivateApiModule implements CadsrModule
       ocConcepts[1].setPreferredName("C42613");
 
       
-      Collection<DataElement> des = testModule.findDEByConcepts(ocConcepts, propConcepts);
-      for(DataElement de : des) {
-        System.out.println(de.getLongName());
-      }
-      
+//      Collection<DataElement> des = testModule.findDEByConcepts(ocConcepts, propConcepts);
+//      for(DataElement de : des) {
+//        System.out.println(de.getLongName());
+//      }
+//      
       
 
     } catch (Exception e) {

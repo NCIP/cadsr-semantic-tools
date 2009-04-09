@@ -20,10 +20,7 @@
 
 package gov.nih.nci.ncicb.cadsr.loader;
 
-import gov.nih.nci.ncicb.cadsr.domain.*;
 import java.util.*;
-
-import org.apache.log4j.Logger;
 
 /**
  * List of cadsr objects to be persisted.<br>
@@ -35,8 +32,6 @@ import org.apache.log4j.Logger;
 public class ElementsLists {
 
   private HashMap objects = new HashMap();
-
-  private Logger logger = Logger.getLogger(ElementsLists.class.getName());
 
   private static ElementsLists instance = new ElementsLists();
 

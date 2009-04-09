@@ -4,7 +4,6 @@ import gov.nih.nci.cadsr.domain.ComponentConcept;
 import gov.nih.nci.cadsr.umlproject.domain.Project;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
-import gov.nih.nci.ncicb.cadsr.domain.Representation;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.system.applicationservice.ApplicationService;
@@ -16,6 +15,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -30,8 +30,6 @@ import org.hibernate.criterion.Projections;
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
 public class CadsrPublicApiModule implements CadsrModule {
-
-  private static String serviceURL = null;
 
   private static ApplicationService service = null;
 
@@ -131,7 +129,6 @@ public class CadsrPublicApiModule implements CadsrModule {
   public Collection<gov.nih.nci.ncicb.cadsr.domain.Property>
     findProperty(Map<String, Object> queryFields) throws Exception {
 
-
     gov.nih.nci.cadsr.domain.Property searchProp = new gov.nih.nci.cadsr.domain.Property();
 
     buildExample(searchProp, queryFields);
@@ -180,7 +177,6 @@ public class CadsrPublicApiModule implements CadsrModule {
   }
   
   private void buildExample(Object o, Map<String, Object> queryFields) {
-
     for(String s : queryFields.keySet()) {
       Object field = queryFields.get(s);
       if(s.equals("publicId")) {
@@ -209,7 +205,6 @@ public class CadsrPublicApiModule implements CadsrModule {
         e.printStackTrace();
       } // end of try-catch
     }
-
   }
 
  
@@ -223,8 +218,7 @@ public class CadsrPublicApiModule implements CadsrModule {
     subCriteria.add(Expression.eq("name", altName.getName()));
     subCriteria.add(Expression.eq("type", altName.getType()));
 
-
-    DetachedCriteria csCsiCriteria = subCriteria.createCriteria("designationClassSchemeItemCollection")
+    subCriteria.createCriteria("designationClassSchemeItemCollection")
       .createCriteria("classSchemeClassSchemeItem")
       .add(Expression.eq("id", csCsi.getId()));
 
@@ -245,8 +239,7 @@ public class CadsrPublicApiModule implements CadsrModule {
     subCriteria.add(Expression.eq("name", altName.getName()));
     subCriteria.add(Expression.eq("type", altName.getType()));
 
-
-    DetachedCriteria csCsiCriteria = subCriteria.createCriteria("designationClassSchemeItemCollection")
+    subCriteria.createCriteria("designationClassSchemeItemCollection")
       .createCriteria("classSchemeClassSchemeItem")
       .add(Expression.eq("id", csCsi.getId()));
 
@@ -258,49 +251,73 @@ public class CadsrPublicApiModule implements CadsrModule {
       return new ArrayList();
   }
 
-  /**
-   * Returns a collection containing the DataElement that has the ObjectClass
-   * and Property specified by the given concepts, and the Value Domain
-   * specified by the given long name. 
-   */
-  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
-    findDataElement(Concept[] ocConcepts, Concept[] propConcepts, 
-    String vdLongName) throws Exception {
 
-    int i = 0;
-    StringBuffer ocNames = new StringBuffer();
-    for(Concept concept : ocConcepts) {
-        if (i++ > 0)  ocNames.append(":");
-        ocNames.append(concept.getPreferredName());
-    }
 
-    int j = 0;
-    StringBuffer propNames = new StringBuffer();
-    for(Concept concept : propConcepts) {
-        if (j++ > 0)  propNames.append(":");
-        propNames.append(concept.getPreferredName());
-    }
-    
-    DetachedCriteria criteria = DetachedCriteria.forClass(
-            gov.nih.nci.cadsr.domain.DataElement.class, "de");
-      
-    DetachedCriteria deCriteria = criteria.createCriteria("dataElementConcept");
-    DetachedCriteria vdCriteria = criteria.createCriteria("valueDomain").
-            add(Expression.eq("longName", vdLongName));
-      
-    DetachedCriteria ocCriteria = deCriteria.createCriteria("objectClass")
-            .createCriteria("conceptDerivationRule")
-            .add(Expression.eq("name", ocNames.toString()));
-      
-    DetachedCriteria propCriteria = deCriteria.createCriteria("property")
-            .createCriteria("conceptDerivationRule")
-            .add(Expression.eq("name", propNames.toString()));
-
-    Collection results = 
-      service.query(deCriteria);
-
-    return CadsrTransformer.deListPublicToPrivate(results);
-  }
+// I will remove the following method which needs to be tested but is never used.
+//
+//  /**
+//   * Returns a collection containing the DataElement that has the ObjectClass
+//   * and Property specified by the given concepts, and the Value Domain
+//   * specified by the given long name. 
+//   */
+//  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
+//    findDataElement(Concept[] ocConcepts, Concept[] propConcepts, 
+//    String vdLongName) throws Exception {
+//
+//    int i = 0;
+//    StringBuffer ocNames = new StringBuffer();
+//    for(Concept concept : ocConcepts) {
+//        if (i++ > 0)  ocNames.append(":");
+//        ocNames.append(concept.getPreferredName());
+//    }
+//
+//    int j = 0;
+//    StringBuffer propNames = new StringBuffer();
+//    for(Concept concept : propConcepts) {
+//        if (j++ > 0)  propNames.append(":");
+//        propNames.append(concept.getPreferredName());
+//    }
+//    
+//    DetachedCriteria criteria = DetachedCriteria.forClass(
+//            gov.nih.nci.cadsr.domain.DataElement.class, "de");
+//      
+//    DetachedCriteria decCriteria = criteria.createCriteria("dataElementConcept");
+//    
+//    criteria.createCriteria("valueDomain").
+//            add(Expression.eq("longName", vdLongName));
+//      
+//    decCriteria.createCriteria("objectClass")
+//            .createCriteria("conceptDerivationRule")
+//            .add(Expression.eq("name", ocNames.toString()));
+//      
+//    decCriteria.createCriteria("property")
+//            .createCriteria("conceptDerivationRule")
+//            .add(Expression.eq("name", propNames.toString()));
+//
+//    ArrayList<gov.nih.nci.cadsr.domain.DataElement> results = 
+//      new ArrayList(service.query(criteria));
+//      
+//    // we found all results where condR.name matches, now check that Comp.Concept.value is empty
+//    ListIterator<gov.nih.nci.cadsr.domain.DataElement> it = results.listIterator();
+//    while(it.hasNext()) {
+//       gov.nih.nci.cadsr.domain.DataElement _de = it.next();
+//       for(gov.nih.nci.cadsr.domain.ComponentConcept comp : _de.getDataElementConcept().getObjectClass().getConceptDerivationRule().getComponentConceptCollection()) {    
+//          if(!StringUtil.isEmpty(comp.getValue())) {
+//            it.remove();
+//            continue;
+//          }
+//       }
+//       for(gov.nih.nci.cadsr.domain.ComponentConcept comp : _de.getDataElementConcept().getProperty().getConceptDerivationRule().getComponentConceptCollection()) {    
+//          if(!StringUtil.isEmpty(comp.getValue())) {
+//            it.remove();
+//            continue;
+//          }
+//       }
+//    }
+//    
+//
+//    return CadsrTransformer.deListPublicToPrivate(results);
+//  }
 
   /**
    * Returns a list containing DataElements that are good candidates for the
@@ -315,7 +332,7 @@ public class CadsrPublicApiModule implements CadsrModule {
 
       DetachedCriteria criteria = DetachedCriteria.forClass(
               gov.nih.nci.cadsr.domain.DataElement.class, "de");
-      DetachedCriteria deCriteria = criteria.createCriteria("designationCollection").
+      criteria.createCriteria("designationCollection").
               add(Expression.eq("name", altName));
 
       Collection results =  
@@ -525,16 +542,7 @@ public class CadsrPublicApiModule implements CadsrModule {
     } catch (Exception e) {
       throw new RuntimeException(e);
     } // end of try-catch
-
-    
-  }
-
-  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept ocPrimaryConcept, gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts) {
-    return null;
-  }
-
-  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept[] ocConcepts, gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts) {
-    return null;
+ 
   }
 
   public List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> getAlternateNames(gov.nih.nci.ncicb.cadsr.domain.AdminComponent ac) {
@@ -621,40 +629,6 @@ public class CadsrPublicApiModule implements CadsrModule {
 
   }
 
-  
-//   public void setServiceURL(String url) {
-//     this.serviceURL = url;
-// //     service = ApplicationService.getRemoteInstance(serviceURL);
-//     try {
-//       service = ApplicationServiceProvider.getApplicationService("CadsrServiceInfo");
-//     } catch (Exception e) {
-//       logger.error("Can't get cadsr publicAPI, contact support");
-//       e.printStackTrace();
-// //       throw new RuntimeException(e);
-//     } // end of try-catch
-//   }
-
-//  private void prepareCriteria(DetachedCriteria criteria, Map<String, Object> queryFields, List<String> eager) {
-//    for(String field : queryFields.keySet()) {
-//      Object o = queryFields.get(field);
-//      if(o instanceof String) {
-//        String s = (String)o;
-//        s = s.replace('*', '%');
-//        if(s.indexOf("%") != -1) {
-//          criteria.add(Expression.like(field, s));
-//          continue;
-//        }
-//      } 
-//      criteria.add(Expression.eq(field, o));
-//    }
-//
-//    if(eager != null) {
-//      for(String s : eager) {
-//        criteria.setFetchMode(s, FetchMode.JOIN);
-//      }
-//    }
-//
-//  }
 
   public static void main(String[] args) {
     CadsrPublicApiModule testModule = new CadsrPublicApiModule("http://cabio.nci.nih.gov/cacore32/http/remoteService");
@@ -750,6 +724,9 @@ public class CadsrPublicApiModule implements CadsrModule {
       for(Project p : result) {
         System.out.println(p.getLongName() + "-- WS: " + p.getClassificationScheme().getWorkflowStatusName() + "-- Context : " + p.getClassificationScheme().getContext().getName());
       }
+
+    
+     // TEST find DE by concept codes and VD.
 
 
     }

@@ -1,9 +1,5 @@
 package gov.nih.nci.ncicb.cadsr.loader.ext;
 
-
-import gov.nih.nci.ncicb.cadsr.domain.Concept;
-import gov.nih.nci.ncicb.cadsr.domain.DataElement;
-
 import gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship;
 
 import java.util.Collection;
@@ -61,9 +57,9 @@ public interface CadsrModule
   public Collection<gov.nih.nci.ncicb.cadsr.domain.ObjectClass> 
     findOCByClassifiedAltName(gov.nih.nci.ncicb.cadsr.domain.AlternateName altName, gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem csCsi) throws Exception;
 
-  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
-    findDataElement(Concept[] ocConcepts, Concept[] propConcepts, 
-    String vdLongName) throws Exception;
+//  public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
+//    findDataElement(Concept[] ocConcepts, Concept[] propConcepts, 
+//    String vdLongName) throws Exception;
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> 
     suggestDataElement(String className, String attrName) throws Exception;
@@ -93,10 +89,6 @@ public interface CadsrModule
   public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByOCConcept(gov.nih.nci.ncicb.cadsr.domain.Concept concept);
 
   public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByOCConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept[] concepts);
-
-  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept ocPrimaryConcept, gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts);
-
-  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDEByConcepts(gov.nih.nci.ncicb.cadsr.domain.Concept[] ocConcepts, gov.nih.nci.ncicb.cadsr.domain.Concept[] propConcepts);
 
   public List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> getAlternateNames(gov.nih.nci.ncicb.cadsr.domain.AdminComponent ac);
 
