@@ -1,34 +1,37 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
+import javax.swing.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
-public class AddButtonPanel extends JPanel implements ActionListener, PropertyChangeListener
+public class AddButtonPanel extends JPanel implements PropertyChangeListener, MouseListener
 {
+  private DropDownButton addButton;
 
-  private JButton addButton;
-
-  static final String ADD = "ADD";
+  static final String ADD = "Add",
+    ADD_INHERITANCE = "Add Inheritance";
 
   private ConceptEditorPanel conceptEditorPanel;
 
   public AddButtonPanel(ConceptEditorPanel p) {
     conceptEditorPanel = p;
 
-    addButton = new JButton("Add");
-    addButton.setActionCommand(ADD);
-    addButton.addActionListener(this);
+    addButton = new DropDownButton(ADD);
+
+    JLabel addLabel = new JLabel(ADD),
+      addInheritanceLabel = new JLabel(ADD_INHERITANCE);
+    
+    addButton.addComponent(addLabel);
+    addButton.addComponent(addInheritanceLabel);
+
+    addLabel.addMouseListener(this);
+    addInheritanceLabel.addMouseListener(this);
 
     this.add(addButton);
 
@@ -40,14 +43,30 @@ public class AddButtonPanel extends JPanel implements ActionListener, PropertyCh
       addButton.setEnabled((Boolean)e.getNewValue());
     }
   }
-
-  public void actionPerformed(ActionEvent evt) {
-    AbstractButton button = (AbstractButton)evt.getSource();
-
-    if(button.getActionCommand().equals(ADD)) 
-        conceptEditorPanel.addPressed();
-    
+  
+  public void mouseClicked(MouseEvent e) {
+//     cadsrVDPanel.setBackground(Color.WHITE);
+//     lvdPanel.setBackground(Color.WHITE);
+    addButton.unfocus();
+    if(((JLabel)e.getSource()).getText().equals(ADD))
+      conceptEditorPanel.addPressed();
+    else if(((JLabel)e.getSource()).getText().equals(ADD_INHERITANCE))
+      conceptEditorPanel.addInheritancePressed();
   }
 
+  public void mousePressed(MouseEvent e) {}
+  public void mouseReleased(MouseEvent e) {}
+  public void mouseEntered(MouseEvent e) {
+//     if(((JLabel)e.getSource()).getText().equals(MAP_CADSR_VD))
+//       cadsrVDPanel.setBackground(Color.LIGHT_GRAY);
+//     else if(((JLabel)e.getSource()).getText().equals(MAP_LOCAL_VD))
+//       lvdPanel.setBackground(Color.LIGHT_GRAY);
+  }
+  public void mouseExited(MouseEvent e) {
+//     if(((JLabel)e.getSource()).getText().equals(MAP_CADSR_VD))
+//       cadsrVDPanel.setBackground(Color.WHITE);
+//     else if(((JLabel)e.getSource()).getText().equals(MAP_LOCAL_VD))
+//       lvdPanel.setBackground(Color.WHITE);
+  }
 
 }
