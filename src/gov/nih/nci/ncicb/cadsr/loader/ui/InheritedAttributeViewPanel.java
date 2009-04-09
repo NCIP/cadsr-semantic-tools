@@ -21,9 +21,6 @@ import javax.swing.*;
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Component;
-import java.awt.Insets;
 
 
 public class InheritedAttributeViewPanel extends JPanel
@@ -35,7 +32,7 @@ public class InheritedAttributeViewPanel extends JPanel
   private ApplyButtonPanel applyButtonPanel;
   private NavigationButtonPanel navButtonPanel;
 
-  private JLabel explainLabel, whyLabel;
+  private JLabel explainLabel;
 
   private UMLNode node;
 
@@ -193,12 +190,6 @@ public class InheritedAttributeViewPanel extends JPanel
       rootNode = tempNode;
       tempNode = tempNode.getParent();
     }
-    String fpath = node.getFullPath();
-    int sd = fpath.lastIndexOf(".");
-    String className = fpath.substring(0, sd);
-    String attributeName = fpath.substring(sd+1);
-    
-    AttributeNode parentNode = findSuper(className, attributeName, rootNode);
 
     DataElement de = (DataElement)node.getUserObject();
     DataElement parentDE = inheritedAttributes.getParent(de);
@@ -209,7 +200,7 @@ public class InheritedAttributeViewPanel extends JPanel
     // if de is already mapped
     if(parentDE != null) {
       dePanel.setVisible(
-        DEMappingUtil.isMappedToLocalVD(de) == null 
+        DEMappingUtil.isMappedToLVD(de) 
         &&
         ( !StringUtil.isEmpty(parentDE.getPublicId())
           || !StringUtil.isEmpty(de.getPublicId())
@@ -229,7 +220,7 @@ public class InheritedAttributeViewPanel extends JPanel
                                   "any Value Domain mapping for this attribute will be cleared.<br>" + 
                                   "Your CDE queries will be filtered to CDEs that match existing<br>" + 
                                   "Object Class or Property mappings</html>");
-    } else if(!dePanel.isVisible() && (DEMappingUtil.isMappedToLocalVD(de) == null)){
+    } else if(!dePanel.isVisible() && DEMappingUtil.isMappedToLVD(de)){
       explainLabel.setToolTipText("<html> You may only map this inherited attribute to a Value Domain.<br>" + 
                                   "If you need to map this inherited attribute to an existing CDE,<br>" + 
                                   " you will need to remove the concept mapping of the parent attribute.</html>");
