@@ -11,11 +11,8 @@ import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -134,27 +131,26 @@ public class DEReuseDialog extends JDialog implements CadsrModuleListener {
             deContextNameValueLabel.setText("None");
             vdLongNameValueLabel.setText("None");
             
-            try {
-                Collection<DataElement> results = cadsrModule.findDataElement(
-                        ocConcepts, propConcepts, vd.getLongName());
-                for(DataElement de : results) {
-                    
-                    deLongNameValueLabel.setText(
-                            de.getLongName());
-                    
-                    deIdValueLabel.setText(
-                            de.getPublicId() + " v" + de.getVersion());
-                    
-                    deContextNameValueLabel.setText(
-                            de.getContext().getName());
-                    
-                    vdLongNameValueLabel.setText(
-                            de.getValueDomain().getLongName());
-                }
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+//            try {
+//                Collection<DataElement> results = cadsrModule.findDataElement(
+//                        ocConcepts, propConcepts, vd.getLongName());
+//                for(DataElement de : results) {         
+//                    deLongNameValueLabel.setText(
+//                            de.getLongName());
+//                    
+//                    deIdValueLabel.setText(
+//                            de.getPublicId() + " v" + de.getVersion());
+//                    
+//                    deContextNameValueLabel.setText(
+//                            de.getContext().getName());
+//                    
+//                    vdLongNameValueLabel.setText(
+//                            de.getValueDomain().getLongName());
+//                }
+//            }
+//            catch (Exception e) {
+//                e.printStackTrace();
+//            }
             
             pack();
         }
