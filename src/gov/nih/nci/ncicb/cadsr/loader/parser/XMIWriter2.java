@@ -28,8 +28,6 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.xmiinout.handler.*;
 import gov.nih.nci.ncicb.xmiinout.domain.*;
 
-import org.apache.log4j.Logger;
-
 import java.util.*;
 
 /**
@@ -58,7 +56,7 @@ public class XMIWriter2 implements ElementWriter {
   private UMLModel model = null;
   private XmiInOutHandler handler = null;
 
-  private Logger logger = Logger.getLogger(XMIWriter2.class.getName());
+//  private Logger logger = Logger.getLogger(XMIWriter2.class.getName());
 
   public XMIWriter2() {
   }
@@ -73,7 +71,6 @@ public class XMIWriter2 implements ElementWriter {
     
       sendProgressEvent(0, 0, "Parsing Model");
       readModel();
-//       doReviewTagLogic();
       sendProgressEvent(0, 0, "Marking Human reviewed");
       markHumanReviewed();
       sendProgressEvent(0, 0, "Updating Elements");
@@ -150,7 +147,7 @@ public class XMIWriter2 implements ElementWriter {
 
       UMLClass clazz = classMap.get(fullClassName);
 
-      String [] conceptCodes = oc.getPreferredName().split(":");
+      String[] conceptCodes = oc.getPreferredName().split(":");
 
       boolean changed = changeTracker.get(fullClassName);
 
@@ -170,7 +167,8 @@ public class XMIWriter2 implements ElementWriter {
 
         // Replace Description Tv
         removeSplitTaggedValue(clazz, XMIParser2.TV_CADSR_DESCRIPTION, "");
-        addSplitTaggedValue(clazz, XMIParser2.TV_CADSR_DESCRIPTION, oc.getPreferredDefinition(), "");
+        DefinitionSplitter.addSplitTaggedValue(clazz, XMIParser2.TV_CADSR_DESCRIPTION, oc.getPreferredDefinition(), "");
+//        addSplitTaggedValue(clazz, XMIParser2.TV_CADSR_DESCRIPTION, oc.getPreferredDefinition(), "");
 
         // Ignore Semantic Inheritance?
         clazz.removeTaggedValue(XMIParser2.TV_EXCLUDE_SEMANTIC_INHERITANCE);
@@ -181,7 +179,7 @@ public class XMIWriter2 implements ElementWriter {
           
           String reason = inheritedList.getSemanticExclusionReason(oc);
           if(!StringUtil.isEmpty(reason))
-            addSplitTaggedValue(clazz, XMIParser2.TV_EXCLUDE_SEMANTIC_INHERITANCE_REASON, reason, "_");
+            DefinitionSplitter.addSplitTaggedValue(clazz, XMIParser2.TV_EXCLUDE_SEMANTIC_INHERITANCE_REASON, reason, "_");
         }
       }
     }
@@ -210,7 +208,7 @@ public class XMIWriter2 implements ElementWriter {
           removeSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, "");
           for(Definition def : (List<Definition>) de.getDefinitions()) {
             if(def.getType().equals(Definition.TYPE_UML_DE)) {
-              addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "");
+              DefinitionSplitter.addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "");
               break;
             }
           }
@@ -315,7 +313,8 @@ public class XMIWriter2 implements ElementWriter {
           clazz.addTaggedValue(XMIParser2.TV_VD_VERSION, vd.getVersion().toString());
         } else {
           if(!StringUtil.isEmpty(vd.getPreferredDefinition()))
-            addSplitTaggedValue(clazz, XMIParser2.TV_VD_DEFINITION, vd.getPreferredDefinition(), "_");
+            DefinitionSplitter.addSplitTaggedValue(clazz, XMIParser2.TV_VD_DEFINITION, vd.getPreferredDefinition(), "_");
+//            addSplitTaggedValue(clazz, XMIParser2.TV_VD_DEFINITION, vd.getPreferredDefinition(), "_");
           
           if(!StringUtil.isEmpty(vd.getDataType()))
             clazz.addTaggedValue(XMIParser2.TV_VD_DATATYPE, vd.getDataType());
@@ -375,7 +374,8 @@ public class XMIWriter2 implements ElementWriter {
               removeSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, "");
               for(Definition def : (List<Definition>) vm.getDefinitions()) {
                 if(def.getType().equals(Definition.TYPE_UML_VM)) {
-                  addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "");
+                  DefinitionSplitter.addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "");
+//                  addSplitTaggedValue(att, XMIParser2.TV_CADSR_DESCRIPTION, def.getDefinition(), "");
                   break;
                 }
               }
@@ -516,7 +516,8 @@ public class XMIWriter2 implements ElementWriter {
     tvName = type + pre + XMIParser2.TV_CONCEPT_DEFINITION + ((n>0)?""+n:"");
 
     if(con.getPreferredDefinition() != null)
-      addSplitTaggedValue(elt, tvName, con.getPreferredDefinition(), "_");
+      DefinitionSplitter.addSplitTaggedValue(elt, tvName, con.getPreferredDefinition(), "_");
+//      addSplitTaggedValue(elt, tvName, con.getPreferredDefinition(), "_");
     
     tvName = type + pre + XMIParser2.TV_CONCEPT_DEFINITION_SOURCE + ((n>0)?""+n:"");
 
@@ -719,13 +720,13 @@ public class XMIWriter2 implements ElementWriter {
           if(st.equalsIgnoreCase(XMIParser2.validVdStereotypes[i])) foundVd = true;
         }
       if(foundVd) {
-        className = "ValueDomains." + clazz.getName();
+        className = "ValueDomains." + clazz.getName().trim();
       } else {
-        className = getPackageName(pkg) + "." + clazz.getName();
+        className = getPackageName(pkg) + "." + clazz.getName().trim();
       }
       classMap.put(className, clazz);
       for(UMLAttribute att : clazz.getAttributes()) {
-        attributeMap.put(className + "." + att.getName(), att);
+        attributeMap.put(className + "." + att.getName().trim(), att);
       }
     }
 
@@ -766,34 +767,34 @@ public class XMIWriter2 implements ElementWriter {
   }
  
 
-  /**
-   * This method moved to DefinitionSplitter. Remove in next version. 
-   * @deprecated
-   */
-  private void addSplitTaggedValue(UMLTaggableElement elt, String tag, String value, String separator) 
-  {  
-
-    final int MAX_TV_SIZE = 255;
-
-    if(value.length() > MAX_TV_SIZE) {
-      int nbOfTags = (int)(Math.ceil((double)value.length() / (double)MAX_TV_SIZE));
-
-      for(int i = 0; i < nbOfTags; i++) {
-        String thisTag = (i==0)?tag:tag + separator + (i+1);
-
-        int index = i*MAX_TV_SIZE;
-        
-        String thisValue = (index + MAX_TV_SIZE > value.length())?value.substring(index):value.substring(index, index + MAX_TV_SIZE);
-        
-        elt.addTaggedValue(thisTag, thisValue);
-      }
-      
-
-
-    } else {
-      elt.addTaggedValue(tag, value);
-    }
-  }
+//  /**
+//   * This method moved to DefinitionSplitter. Remove in next version. 
+//   * @deprecated
+//   */
+//  private void addSplitTaggedValue(UMLTaggableElement elt, String tag, String value, String separator) 
+//  {  
+//
+//    final int MAX_TV_SIZE = 255;
+//
+//    if(value.length() > MAX_TV_SIZE) {
+//      int nbOfTags = (int)(Math.ceil((double)value.length() / (double)MAX_TV_SIZE));
+//
+//      for(int i = 0; i < nbOfTags; i++) {
+//        String thisTag = (i==0)?tag:tag + separator + (i+1);
+//
+//        int index = i*MAX_TV_SIZE;
+//        
+//        String thisValue = (index + MAX_TV_SIZE > value.length())?value.substring(index):value.substring(index, index + MAX_TV_SIZE);
+//        
+//        elt.addTaggedValue(thisTag, thisValue);
+//      }
+//      
+//
+//
+//    } else {
+//      elt.addTaggedValue(tag, value);
+//    }
+//  }
 
   private void removeSplitTaggedValue(UMLTaggableElement elt, String tag, String separator) {
     

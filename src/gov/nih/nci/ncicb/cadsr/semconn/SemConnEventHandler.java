@@ -5,10 +5,11 @@ import gov.nih.nci.ncicb.cadsr.loader.ChangeTracker;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTracker;
 import gov.nih.nci.ncicb.cadsr.loader.ReviewTrackerType;
-import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
 import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -191,6 +192,19 @@ public class SemConnEventHandler implements UMLHandler {
     fullName.setType(AlternateName.TYPE_UML_DE);
     fullName.setName(className + ":" + propName);
     de.addAlternateName(fullName);
+
+    if(!StringUtil.isEmpty(event.getDescription())) {
+      Definition altDef = DomainObjectFactory.newDefinition();
+      altDef.setType(Definition.TYPE_UML_DE);
+      altDef.setDefinition(event.getDescription());
+      de.addDefinition(altDef);
+
+      altDef = DomainObjectFactory.newDefinition();
+      altDef.setType(Definition.TYPE_UML_DEC);
+      altDef.setDefinition(event.getDescription());
+      dec.addDefinition(altDef);
+    }
+
     
     elements.addElement(de);
     elements.addElement(dec);
@@ -230,7 +244,7 @@ public class SemConnEventHandler implements UMLHandler {
         logger.info("Joined with concept consumer thread");
     }
     catch (InterruptedException e) {
-        // ignore
+      throw new RuntimeException(e);
     }
   }
   
@@ -306,7 +320,7 @@ public class SemConnEventHandler implements UMLHandler {
                     {
                       String codes = fname.getName().get();
                       String temp[] = codes.split(":");
-                      List<Concept> listOfConcepts = new ArrayList();
+                      List<Concept> listOfConcepts = new ArrayList<Concept>();
                       for(int i=0; i < temp.length; i++) 
                       {
                         Concept con = DomainObjectFactory.newConcept();
@@ -357,25 +371,25 @@ public class SemConnEventHandler implements UMLHandler {
     progressListener = listener;
   }
   
-  public static void main(String[] args) 
-  {
-    String[] testData = 
-    {
-      "id"
-    };
-    String[] testResults =  
-    {
-      "Gene", "C12345:C45678", "C12345:C45678"
-    };
-    
-    /* KR - API changed, test harness must be rewritten 
-    SemConnEventHandler handler = new SemConnEventHandler();
-    for(int i=0; i<testData.length; i++) 
-    {
-      List<Concept> concepts = handler.termToConcepts(testData[i]);
-      String prefName = ConceptUtil.preferredNameFromConcepts(concepts);
-      System.out.println(prefName.equals(testResults[i]));
-    }
-    */
-  }
+//  public static void main(String[] args) 
+//  {
+//    String[] testData = 
+//    {
+//      "id"
+//    };
+//    String[] testResults =  
+//    {
+//      "Gene", "C12345:C45678", "C12345:C45678"
+//    };
+//    
+//    /* KR - API changed, test harness must be rewritten 
+//    SemConnEventHandler handler = new SemConnEventHandler();
+//    for(int i=0; i<testData.length; i++) 
+//    {
+//      List<Concept> concepts = handler.termToConcepts(testData[i]);
+//      String prefName = ConceptUtil.preferredNameFromConcepts(concepts);
+//      System.out.println(prefName.equals(testResults[i]));
+//    }
+//    */
+//  }
 }
