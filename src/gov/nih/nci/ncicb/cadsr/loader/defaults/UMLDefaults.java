@@ -373,15 +373,18 @@ public class UMLDefaults {
   }
 
   public void updateDefaults(LoaderDefault defaults) {
+      useDefaults(defaults);
+      new AttachedFileDefaultsLoader().saveDefaults(defaults, filename);
+  }
+
+  public void useDefaults(LoaderDefault defaults) {
     try {
       loaderDefault = defaults;
       initParams();
-
-      new AttachedFileDefaultsLoader().saveDefaults(defaults, filename);
-
     } catch (PersisterException e){
+        throw new RuntimeException(e);
     } // end of try-catch
+      
   }
-
 
 }
