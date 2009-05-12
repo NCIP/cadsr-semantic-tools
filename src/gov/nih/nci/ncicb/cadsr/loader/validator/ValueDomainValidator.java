@@ -93,25 +93,45 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
         evt.setStatus(count++);
         fireProgressEvent(evt);
         
-        if(!StringUtil.isEmpty(vd.getPublicId()) && vd.getVersion() != null) {
-          try {
-            List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(vd);
-            List<PermissibleValue> localPVs = vd.getPermissibleValues();
-            
-            if(!comparePVLists(cadsrPVs, localPVs)) {
-//               if(ignoreVD)
-              items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
-//               else {
+          
 
+        if(!StringUtil.isEmpty(vd.getPublicId()) && vd.getVersion() != null) {
+          Map<String, Object> queryFields =
+            new HashMap<String, Object>();
+          queryFields.put(CadsrModule.PUBLIC_ID, vd.getPublicId());
+          queryFields.put(CadsrModule.VERSION, vd.getVersion());
+          List<ValueDomain> queryById = null;
+          try {
+            // if VD.id is populated, no need to go to db again.
+            if(StringUtil.isEmpty(vd.getId()))
+              queryById =  new ArrayList<ValueDomain>(cadsrModule.findValueDomain(queryFields));
+            
+            // vd.id not populated, and can't retrieve from db
+            if(StringUtil.isEmpty(vd.getId()) && (queryById == null | queryById.size() == 0)) {
+              items.addItem(new ValidationError
+                        (PropertyAccessor.getProperty
+                         ("local.vd.doesnt.exist", "",
+                          vd.getPublicId() + "v" + vd.getVersion()), vd));
+              
+            } else {
+              List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(vd);
+              List<PermissibleValue> localPVs = vd.getPermissibleValues();
+              
+              if(!comparePVLists(cadsrPVs, localPVs)) {
+                //               if(ignoreVD)
+                items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
+                //               else {
+                
                 
                 // not doing theoption thing for now
-//                 String[] options = PropertyAccessor.getProperty("local.vd.reuse.options").split("<-->");
-//                 ValidationQuestion question = 
-//                   new ValidationQuestion(
-//                     PropertyAccessor.getProperty("local.vd.reuse.message"),
-//                     vd,
-//                     options);
-//                 items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
+                //                 String[] options = PropertyAccessor.getProperty("local.vd.reuse.options").split("<-->");
+                //                 ValidationQuestion question = 
+                //                   new ValidationQuestion(
+                //                     PropertyAccessor.getProperty("local.vd.reuse.message"),
+                //                     vd,
+                //                     options);
+                //                 items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
+              }
             }
           } catch (Exception e) {
             logger.error(e);
