@@ -6,8 +6,6 @@ import gov.nih.nci.ncicb.cadsr.loader.ReviewTrackerType;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
-import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
-import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.SearchListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
@@ -24,67 +22,74 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 import gov.nih.nci.ncicb.cadsr.loader.validator.*;
 
+public class ValidateConceptsDialog {
+
+  private ConceptValidator conceptValidator;
+
+  private ValidateConceptsDialog2 dialog = null;
+
+  public void init(JFrame owner) {
+    dialog = new ValidateConceptsDialog2(owner);
+    dialog.setConceptValidator(conceptValidator);
+    dialog.init();
+  }
+
+  public void display() {
+    dialog.setVisible(true);
+  }
+
+  public void setConceptValidator(ConceptValidator conceptValidator) {
+    this.conceptValidator = conceptValidator;
+  }
+
+  public void addSearchListener(SearchListener l) {
+    dialog.addSearchListener(l);
+  }
+
+}
 
 
-public class ValidateConceptsDialog extends JDialog 
+// TODO this was not well thought out and will need to be refactored at some point. 
+class ValidateConceptsDialog2 extends JDialog 
   implements ListSelectionListener, ProgressListener
 {
-  private EvsModule module = new EvsModule();
   private Map<Concept, Concept> errorList = new HashMap<Concept, Concept>();
   private Map<Concept, Concept> errorNameList = new HashMap<Concept, Concept>();
 
-  private List<AcListElementWrapper> wrapperList = 
-    new ArrayList<AcListElementWrapper>();
   
   private JSplitPane jSplitPane1 = new JSplitPane();
   private JSplitPane jSplitPaneEvs = new JSplitPane();
+  private JSplitPane leftSplitPane = new JSplitPane();
   
   private JEditorPane elementPane = new JEditorPane("text/html", "");
   private JEditorPane evsByCodePane = new JEditorPane("text/html", "");
   private JEditorPane evsByNamePane = new JEditorPane("text/html", "");
     
-  private DefaultListModel listModel = new DefaultListModel();
-  private JList list;
-  private JScrollPane listScrollPane;
+  private DefaultListModel discrepancyListModel = new DefaultListModel(),
+                        willNotLoadListModel = new DefaultListModel();
+  private JList discrepancyList, willNotLoadList;
+  private JScrollPane discrepancyListScrollPane, willNotLoadListScrollPane;
     
   private List<Concept> highlightDifferentNameByCode = new ArrayList<Concept>();
   private List<Concept> highlightDifferentDefByCode = new ArrayList<Concept> ();
   private List<Concept> highlightDifferentCodeByName = new ArrayList<Concept> ();
   private List<Concept> highlightDifferentDefByName = new ArrayList<Concept> ();
   
-  private AbstractTableModel tableModel = null;
-  private JTable resultTable = null;
-  
   private ProgressPanel progressPanel = new ProgressPanel(100);
-  
-  private String[] columnNames = {
-    "Element Concept", "EVS Concept"
-  };
 
-  private int colWidth[] = {30, 30};
-
-  private static int PAGE_SIZE = 5;
-
-  private int pageIndex = 0;
-  
-  private java.util.List<AdminComponent> resultSet = new ArrayList<AdminComponent>();
-  
   private AcListElementWrapper value;
   
   private JLabel order;
   
-  private List<SearchListener> searchListeners = new ArrayList();
+  private List<SearchListener> searchListeners = new ArrayList<SearchListener>();
   
   private ReviewTracker reviewTracker;
-  
-  private Map<String,EvsResult> cacheByConceptCode = new HashMap<String,EvsResult>();
-  private Map<String,Collection<EvsResult>> cacheByPreferredName = new HashMap<String,Collection<EvsResult>>();
-  
-  public ValidateConceptsDialog(JFrame owner)
-  {
+
+  private ConceptValidator conceptValidator;
+
+  public ValidateConceptsDialog2(JFrame owner) {
     super(owner, "Validate Concepts");
 
     RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
@@ -93,221 +98,288 @@ public class ValidateConceptsDialog extends JDialog
     } else {
       reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner);
     }
+  }
 
+  public void setConceptValidator(ConceptValidator conceptValidator) {
+    this.conceptValidator = conceptValidator;
+  }
+
+  public void init() {
+    
     this.getContentPane().setLayout(new BorderLayout());
-
+    
     SwingWorker worker = new SwingWorker() {
-      public Object construct() {    
-        List<Concept> concepts = ElementsLists.getInstance().
+        public Object construct() {    
+          List<Concept> concepts = ElementsLists.getInstance().
             getElements(DomainObjectFactory.newConcept());
-        
-        ProgressEvent event = new ProgressEvent();
-        event.setGoal(concepts.size() + 1);
-        event.setMessage("Validating Concepts");
-        progressPanel.newProgressEvent(event);
-        
-        ValidationItems.getInstance().clear();
-        
-        ConceptValidator conValidator = new ConceptValidator();
-        conValidator.addProgressListener(progressPanel);
-        ValidationItems vItems = conValidator.validate();
-        
-        List<ValidationItem> items = new ArrayList<ValidationItem>(vItems.getErrors());
-        items.addAll(vItems.getWarnings());
-
-        for(ValidationItem vItem : items) 
-        {
-          if(((ConceptMismatchWrapper)vItem.getRootCause()).getType() == 1) {
-            highlightDifferentNameByCode.add(((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
-            errorList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
-              ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
-          }    
-          if(((ConceptMismatchWrapper)vItem.getRootCause()).getType() == 2) {
-            highlightDifferentDefByCode.add(((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
-            errorList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
-              ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
-          }    
-          if(((ConceptMismatchWrapper)vItem.getRootCause()).getType() == 3) {
-            highlightDifferentCodeByName.add(((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
-            errorNameList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
-              ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
-          }    
-          if(((ConceptMismatchWrapper)vItem.getRootCause()).getType() == 4) {
-            highlightDifferentDefByName.add(((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
-            errorNameList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
-              ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
-          }
-
-        }
-        
-        List<ObjectClass> ocs = ElementsLists.getInstance().
-            getElements(DomainObjectFactory.newObjectClass());
-        
-        List<DataElement> des = ElementsLists.getInstance().
-            getElements(DomainObjectFactory.newDataElement());
-
-        List<ObjectClassRelationship> ocrs = ElementsLists.getInstance().
-            getElements(DomainObjectFactory.newObjectClassRelationship());
-
-        for(ObjectClass oc : ocs)
-          for(Concept concept : errorList.keySet()) {
-            String temp = oc.getPreferredName();
-            String split[] = temp.split(":");
-            for(int i = 0; i < split.length; i++)
-              if(split[i].equals(concept.getPreferredName())) 
-                wrapperList.add(new AcListElementWrapper(oc, concept));
-          }
-        
-        for(DataElement de : des) {
-          DataElementConcept dec = de.getDataElementConcept();
-          String fullName = null;
-          for(AlternateName an : de.getAlternateNames()) {
-            if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
-              fullName = an.getName();
-          }
-          Boolean reviewed = reviewTracker.get(fullName);
-          if(reviewed != null) {
-          for(Concept concept : errorList.keySet()) {
-            String temp = dec.getProperty().getPreferredName();
-            String split[] = temp.split(":");
-            for(int i = 0; i < split.length; i++)
-              if(split[i].equals(concept.getPreferredName()))
-                wrapperList.add(new AcListElementWrapper(dec, concept));
-          }
-          }
-        }
-
-        for(ObjectClass oc : ocs)
-          for(Concept concept : errorNameList.keySet()) {
-            String temp = oc.getLongName();
-              if(temp.equals(concept.getLongName())) 
-                wrapperList.add(new AcListElementWrapper(oc, concept));
-          }
-        
-        for(DataElement de : des) {
-          DataElementConcept dec = de.getDataElementConcept();
-          String fullName = null;
-          for(AlternateName an : de.getAlternateNames()) {
-            if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
-              fullName = an.getName();
-          }
-          Boolean reviewed = reviewTracker.get(fullName);
-          if(reviewed != null) {
-          for(Concept concept : errorNameList.keySet()) {
-            String temp = dec.getProperty().getLongName();
-              if(temp.equals(concept.getLongName()))
-                wrapperList.add(new AcListElementWrapper(dec, concept));
-          }
-          }
-        }
-
-        for(ObjectClassRelationship ocr : ocrs) {
-            
-          ConceptDerivationRule cdr = ocr.getConceptDerivationRule();
-          if(cdr != null)
-          for(ComponentConcept cc : cdr.getComponentConcepts()) {
-              for(Concept concept : errorList.keySet()) {
-                  if (cc.getConcept().getPreferredName().equals(
-                          concept.getPreferredName())) {
-                      wrapperList.add(new AcListElementWrapper(ocr, concept));
-                  }
-              }
-          }
-          cdr = ocr.getSourceRoleConceptDerivationRule();
-          if(cdr != null)
-          for(ComponentConcept cc : cdr.getComponentConcepts()) {
-              for(Concept concept : errorList.keySet()) {
-                  if (cc.getConcept().getPreferredName().equals(
-                          concept.getPreferredName())) {
-                      wrapperList.add(new AcListElementWrapper(ocr, "Source", concept));
-                  }
-              }
-          }
-          cdr = ocr.getTargetRoleConceptDerivationRule();
-          if(cdr != null)
-          for(ComponentConcept cc : cdr.getComponentConcepts()) {
-              for(Concept concept : errorList.keySet()) {
-                  if (cc.getConcept().getPreferredName().equals(
-                          concept.getPreferredName())) {
-                      wrapperList.add(new AcListElementWrapper(ocr, "Target", concept));
-                  }
-              }
-          }
-        }
-        
-        event = new ProgressEvent();
-        event.setMessage("Done ");
-        event.setStatus(100);
-        event.setGoal(100);
-        progressPanel.newProgressEvent(event);
-         
-        for(AcListElementWrapper val : wrapperList)
-          listModel.addElement(val);
           
+          ProgressEvent event = new ProgressEvent();
+          event.setGoal(concepts.size() + 1);
+          event.setMessage("Validating Concepts");
+          progressPanel.newProgressEvent(event);
+          
+          ValidationItems.getInstance().clear();
+          
+          conceptValidator.addProgressListener(progressPanel);
+          ValidationItems vItems = conceptValidator.validate();
+          
+          List<ValidationItem> items = new ArrayList<ValidationItem>(vItems.getErrors());
+          items.addAll(vItems.getWarnings());
+
+          List<Concept> willNotLoadConceptList = new ArrayList<Concept>();
+
+          for(ValidationItem vItem : items) {
+            if(vItem.getRootCause() instanceof ConceptMismatchWrapper) {
+              if(((ConceptMismatchWrapper)vItem.getRootCause()).getType() == 1) {
+                highlightDifferentNameByCode.add(((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+                errorList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
+                              ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+              }    
+              if(((ConceptMismatchWrapper)vItem.getRootCause()).getType() == 2) {
+                highlightDifferentDefByCode.add(((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+                errorList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
+                              ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+              }    
+              if(((ConceptMismatchWrapper)vItem.getRootCause()).getType() == 3) {
+                highlightDifferentCodeByName.add(((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+                errorNameList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
+                                  ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+              }    
+              if(((ConceptMismatchWrapper)vItem.getRootCause()).getType() == 4) {
+                highlightDifferentDefByName.add(((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+                errorNameList.put(((ConceptMismatchWrapper)vItem.getRootCause()).getModelConcept(), 
+                                  ((ConceptMismatchWrapper)vItem.getRootCause()).getEvsConcept());
+              }
+            } else if (vItem.getRootCause() instanceof Concept){
+              Concept _con = (Concept)vItem.getRootCause();
+              willNotLoadConceptList.add(_con);
+            }
+          }
+
+          for(Concept concept : errorList.keySet()) {
+            List<AcListElementWrapper> l = getAcListElementWrappers(concept);
+            for(AcListElementWrapper wrapper : l) {
+              discrepancyListModel.addElement(wrapper);
+            }
+          }
+
+          for(Concept concept : willNotLoadConceptList) {
+            List<AcListElementWrapper> l = getAcListElementWrappers(concept);
+            for(AcListElementWrapper wrapper : l) {
+              willNotLoadListModel.addElement(wrapper);
+            }
+          }
+          
+          event = new ProgressEvent();
+          event.setMessage("Done ");
+          event.setStatus(100);
+          event.setGoal(100);
+          progressPanel.newProgressEvent(event);
+          
+
           return null;
-      }
-    };
+        }
+      };
     worker.start();
-        
-        final int LIST_SIZE = 390;
-        
-        list = new JList(listModel);
-        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        listScrollPane = new JScrollPane(list);        
-        
-        list.addListSelectionListener(this);
-        list.setCellRenderer(new MyCellRenderer());
-        
-        JPanel mainPanel = new JPanel();
-        order = new JLabel("");
-        order.setBounds(new Rectangle(110, 0, 220, 20));
-        mainPanel.setSize(new Dimension(400, 440));
-        mainPanel.setLayout(null);
-        listScrollPane.setBounds(new Rectangle(10, 30, 140, LIST_SIZE));
-        
-        jSplitPane1.setBounds(new Rectangle(160, 30, 220, LIST_SIZE));
+    
+    final int LIST_SIZE = 390;
+    
+    discrepancyList = new JList(discrepancyListModel);
+    discrepancyList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    discrepancyList.setBorder(javax.swing.BorderFactory.createTitledBorder("Discrepancies"));
+    discrepancyListScrollPane = new JScrollPane(discrepancyList);        
 
-        jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+    willNotLoadList = new JList(willNotLoadListModel);
+    willNotLoadList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    willNotLoadList.setBorder(javax.swing.BorderFactory.createTitledBorder("Not in caDSR or EVS"));
+    willNotLoadListScrollPane = new JScrollPane(willNotLoadList);        
+    
+    discrepancyList.addListSelectionListener(this);
+    discrepancyList.setCellRenderer(new MyCellRenderer());
 
-        jSplitPane1.setDividerLocation((int)(LIST_SIZE * 2 / 3));
-        jSplitPaneEvs.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        
-        
-        evsByCodePane.setBorder(javax.swing.BorderFactory.createTitledBorder("EVS Concept By Code"));
-        elementPane.setBorder(javax.swing.BorderFactory.createTitledBorder("Element Concept"));
-        evsByNamePane.setBorder(javax.swing.BorderFactory.createTitledBorder("EVS Concept By Name"));
-        
-        elementPane.setEditable(false);
-        evsByCodePane.setEditable(false);
-        evsByNamePane.setEditable(false);
-        
-        JScrollPane elementScrollPane = new JScrollPane(elementPane);
-        JScrollPane evsByCodeScrollPane = new JScrollPane(evsByCodePane);
-        JScrollPane evsByNameScrollPane = new JScrollPane(evsByNamePane);
-        
-        
-        jSplitPaneEvs.setDividerLocation(LIST_SIZE / 3);
-        jSplitPaneEvs.add(evsByCodeScrollPane, JSplitPane.BOTTOM);
-        jSplitPaneEvs.add(evsByNameScrollPane, JSplitPane.TOP);
-        
-        jSplitPane1.add(elementScrollPane, JSplitPane.BOTTOM);
-        jSplitPane1.add(jSplitPaneEvs, JSplitPane.TOP);
-        
-        mainPanel.add(jSplitPane1, null);
-        mainPanel.add(listScrollPane, null);
-        mainPanel.add(order);
-        
-        
-        this.getContentPane().setLayout(new BorderLayout());
-        this.getContentPane().add(mainPanel, BorderLayout.CENTER);
-            
-        this.getContentPane().add(new JLabel("Select an element from the list to view the concepts' information"));
-        this.setSize(400, 510);
-        this.getContentPane().add(progressPanel, BorderLayout.SOUTH);
-        this.setResizable(false);
-        UIUtil.putToCenter(this);
-        
+    willNotLoadList.addListSelectionListener(new ListSelectionListener() {
+        public void valueChanged(ListSelectionEvent e) {
+          if (e.getValueIsAdjusting() == false) {
+            if(willNotLoadList.getSelectedIndex() != 1) {
+              value = (AcListElementWrapper)willNotLoadList.getSelectedValue();
+              AdminComponent ac = value.getAc();
+              
+              // TODO: this is slightly ugly, is there a better name way?
+              if (ac instanceof ObjectClassRelationship) {
+                ObjectClassRelationship ocr = (ObjectClassRelationship)ac;
+                OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
+                String displayName = nameBuilder.buildDisplayRoleName(ocr);
+                SearchEvent searchEvent = new SearchEvent(displayName, false,false,true);
+                searchEvent.setExactMatch(true);
+                fireSearchEvent(searchEvent);
+                return;
+              }
+              
+              int ind = ac.getLongName().lastIndexOf(".");
+              String className = ac.getLongName().substring(ind + 1);
+              String split[] = className.split(":");
+              if(split.length > 1) {
+                className = split[0];
+                SearchEvent searchEvent = new SearchEvent(className, false,false,true);
+                searchEvent.setExactMatch(true);
+                fireSearchEvent(searchEvent);
+                className = split[1];
+                SearchEvent searchEvent2 = new SearchEvent(className, false,false,false);
+                searchEvent2.setExactMatch(true);
+                fireSearchEvent(searchEvent2);
+              }  
+              else {
+                SearchEvent searchEvent = new SearchEvent(className, false,false,true);
+                searchEvent.setExactMatch(true);
+                fireSearchEvent(searchEvent);
+              }
+            }
+          }
+        }
+      });
+    willNotLoadList.setCellRenderer(new MyCellRenderer());
+    
+    JPanel mainPanel = new JPanel();
+    order = new JLabel("");    
 
+    order.setBounds(new Rectangle(110, 0, 220, 20));
+    mainPanel.setSize(new Dimension(400, 440));
+    mainPanel.setLayout(null);
+
+    leftSplitPane.setBounds(new Rectangle(10, 30, 140, LIST_SIZE));
+    //     listScrollPane.setBounds(new Rectangle(10, 30, 140, LIST_SIZE));
+    
+    jSplitPane1.setBounds(new Rectangle(160, 30, 220, LIST_SIZE));
+    
+    jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+    
+    jSplitPane1.setDividerLocation((int)(LIST_SIZE * 2 / 3));
+    jSplitPaneEvs.setOrientation(JSplitPane.VERTICAL_SPLIT);
+    
+    evsByCodePane.setBorder(javax.swing.BorderFactory.createTitledBorder("EVS Concept By Code"));
+    elementPane.setBorder(javax.swing.BorderFactory.createTitledBorder("Element Concept"));
+    evsByNamePane.setBorder(javax.swing.BorderFactory.createTitledBorder("EVS Concept By Name"));
+    
+    elementPane.setEditable(false);
+    evsByCodePane.setEditable(false);
+    evsByNamePane.setEditable(false);
+    
+    JScrollPane elementScrollPane = new JScrollPane(elementPane);
+    JScrollPane evsByCodeScrollPane = new JScrollPane(evsByCodePane);
+    JScrollPane evsByNameScrollPane = new JScrollPane(evsByNamePane);
+    
+    jSplitPaneEvs.setDividerLocation(LIST_SIZE / 3);
+    jSplitPaneEvs.add(evsByCodeScrollPane, JSplitPane.BOTTOM);
+    jSplitPaneEvs.add(evsByNameScrollPane, JSplitPane.TOP);
+    
+    jSplitPane1.add(elementScrollPane, JSplitPane.BOTTOM);
+    jSplitPane1.add(jSplitPaneEvs, JSplitPane.TOP);
+
+    leftSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+    leftSplitPane.setDividerLocation(230);
+    leftSplitPane.add(discrepancyListScrollPane, JSplitPane.TOP);
+    leftSplitPane.add(willNotLoadListScrollPane, JSplitPane.BOTTOM);
+    
+    mainPanel.add(jSplitPane1, null);
+    mainPanel.add(leftSplitPane, null);
+    mainPanel.add(order);
+    
+    this.getContentPane().setLayout(new BorderLayout());
+    this.getContentPane().add(mainPanel, BorderLayout.CENTER);
+    
+    this.getContentPane().add(new JLabel("Select an element from the list to view the concepts' information"));
+    this.setSize(400, 510);
+    this.getContentPane().add(progressPanel, BorderLayout.SOUTH);
+    this.setResizable(false);
+    UIUtil.putToCenter(this);
+
+  }
+
+  private List<AcListElementWrapper> getAcListElementWrappers(Concept concept) {
+    List<ObjectClass> ocs = ElementsLists.getInstance().
+      getElements(DomainObjectFactory.newObjectClass());
+    
+    List<DataElement> des = ElementsLists.getInstance().
+      getElements(DomainObjectFactory.newDataElement());
+    
+    List<ObjectClassRelationship> ocrs = ElementsLists.getInstance().
+      getElements(DomainObjectFactory.newObjectClassRelationship());
+    
+    List<AcListElementWrapper> result = new ArrayList<AcListElementWrapper>();
+    
+    for(ObjectClass oc : ocs) {
+      String temp = oc.getPreferredName();
+      String split[] = temp.split(":");
+      for(int i = 0; i < split.length; i++)
+        if(split[i].equals(concept.getPreferredName())) 
+          result.add(new AcListElementWrapper(oc, concept));
+    }
+    
+    for(DataElement de : des) {
+      DataElementConcept dec = de.getDataElementConcept();
+      String fullName = null;
+      for(AlternateName an : de.getAlternateNames()) {
+        if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
+          fullName = an.getName();
+      }
+      Boolean reviewed = reviewTracker.get(fullName);
+      if(reviewed != null) {
+        String temp = dec.getProperty().getPreferredName();
+        String split[] = temp.split(":");
+        for(int i = 0; i < split.length; i++)
+          if(split[i].equals(concept.getPreferredName()))
+            result.add(new AcListElementWrapper(dec, concept));
+      }
+    }
+    
+    for(ObjectClass oc : ocs) {
+      String temp = oc.getLongName();
+      if(temp.equals(concept.getLongName())) 
+        result.add(new AcListElementWrapper(oc, concept));
+    }
+    
+    for(DataElement de : des) {
+      DataElementConcept dec = de.getDataElementConcept();
+      String fullName = null;
+      for(AlternateName an : de.getAlternateNames()) {
+        if(an.getType().equals(AlternateName.TYPE_FULL_NAME))
+          fullName = an.getName();
+      }
+      Boolean reviewed = reviewTracker.get(fullName);
+      if(reviewed != null) {
+        String temp = dec.getProperty().getLongName();
+        if(temp.equals(concept.getLongName()))
+          result.add(new AcListElementWrapper(dec, concept));
+      }
+    }
+          
+    for(ObjectClassRelationship ocr : ocrs) {
+      ConceptDerivationRule cdr = ocr.getConceptDerivationRule();
+      if(cdr != null)
+        for(ComponentConcept cc : cdr.getComponentConcepts()) {
+          if (cc.getConcept().getPreferredName().equals(
+                                                        concept.getPreferredName())) {
+            result.add(new AcListElementWrapper(ocr, concept));
+          }
+        }
+      cdr = ocr.getSourceRoleConceptDerivationRule();
+      if(cdr != null)
+        for(ComponentConcept cc : cdr.getComponentConcepts()) {
+          if (cc.getConcept().getPreferredName().equals(
+                                                        concept.getPreferredName())) {
+            result.add(new AcListElementWrapper(ocr, "Source", concept));
+          }
+        }
+      cdr = ocr.getTargetRoleConceptDerivationRule();
+      if(cdr != null)
+        for(ComponentConcept cc : cdr.getComponentConcepts()) {
+          if (cc.getConcept().getPreferredName().equals(
+                                                        concept.getPreferredName())) {
+            result.add(new AcListElementWrapper(ocr, "Target", concept));
+          }
+        }
+    }
+    return result;
   }
   
   public void newProgressEvent(ProgressEvent evt) 
@@ -315,11 +387,10 @@ public class ValidateConceptsDialog extends JDialog
     evt.getStatus();
   }
   
-  public void valueChanged(ListSelectionEvent e) 
-  {
+  public void valueChanged(ListSelectionEvent e) {
     if (e.getValueIsAdjusting() == false) {
-      if (list.getSelectedIndex() != -1) {
-        value = (AcListElementWrapper)list.getSelectedValue();
+      if (discrepancyList.getSelectedIndex() != -1) {
+        value = (AcListElementWrapper)discrepancyList.getSelectedValue();
         order.setText(value.getOrder());
         elementPane.setText(getConceptHtml(value.getConcept()));
         elementPane.setCaretPosition(0);
@@ -328,7 +399,6 @@ public class ValidateConceptsDialog extends JDialog
         evsByNamePane.setText(getHighlightConceptHtmlByName(errorNameList.get(value.getConcept())));
         evsByNamePane.setCaretPosition(0);
                 
-
         AdminComponent ac = value.getAc();
         
         // TODO: this is slightly ugly, is there a better name way?
@@ -533,51 +603,51 @@ public class ValidateConceptsDialog extends JDialog
 }
 class MyCellRenderer extends JLabel implements ListCellRenderer {
   public MyCellRenderer() {
-         setOpaque(true);
-     }
-  public Component getListCellRendererComponent(
-         JList list,
-         Object value,
-         int index,
-         boolean isSelected,
-         boolean cellHasFocus)
-     {
-  
-        AcListElementWrapper acW = (AcListElementWrapper)value;
-        AdminComponent ac = acW.getAc();
-        
-        // TODO: this is slightly ugly, is there a better name way?
-        if (ac instanceof ObjectClassRelationship) {
-            ObjectClassRelationship ocr = (ObjectClassRelationship)ac;
-            OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
-            String displayName = nameBuilder.buildDisplayRoleName(ocr);
-            String subComponent = acW.getSubComponent();
-            if (subComponent != null) {
-                setText(displayName+" "+subComponent);
-            }
-            else {
-                setText(displayName);
-            }
-            
-        }
-        else {
-            int ind = ac.getLongName().lastIndexOf(".");
-            String className = ac.getLongName().substring(ind + 1);
-            setText(className);
-        }
-        
-        if (isSelected) {
-             setBackground(list.getSelectionBackground());
-               setForeground(list.getSelectionForeground());
-           }
-         else {
-               setBackground(list.getBackground());
-               setForeground(list.getForeground());
-           }
-        setEnabled(list.isEnabled());
-        return this;
-     }
-
+    setOpaque(true);
+  }
+  public Component getListCellRendererComponent
+    (
+     JList list,
+     Object value,
+     int index,
+     boolean isSelected,
+     boolean cellHasFocus)
+  {
+    
+    AcListElementWrapper acW = (AcListElementWrapper)value;
+    AdminComponent ac = acW.getAc();
+    
+    // TODO: this is slightly ugly, is there a better name way?
+    if (ac instanceof ObjectClassRelationship) {
+      ObjectClassRelationship ocr = (ObjectClassRelationship)ac;
+      OCRRoleNameBuilder nameBuilder = new OCRRoleNameBuilder();
+      String displayName = nameBuilder.buildDisplayRoleName(ocr);
+      String subComponent = acW.getSubComponent();
+      if (subComponent != null) {
+        setText(displayName+" "+subComponent);
+      }
+      else {
+        setText(displayName);
+      }
+      
+    }
+    else {
+      int ind = ac.getLongName().lastIndexOf(".");
+      String className = ac.getLongName().substring(ind + 1);
+      setText(className);
+    }
+    
+    if (isSelected) {
+      setBackground(list.getSelectionBackground());
+      setForeground(list.getSelectionForeground());
+    }
+    else {
+      setBackground(list.getBackground());
+      setForeground(list.getForeground());
+    }
+    setEnabled(list.isEnabled());
+    return this;
+  }
 }
 
 }
