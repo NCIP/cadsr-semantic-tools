@@ -16,6 +16,8 @@ import gov.nih.nci.ncicb.cadsr.loader.validator.Validator;
 
 import gov.nih.nci.ncicb.cadsr.loader.event.*;
 
+import gov.nih.nci.ncicb.cadsr.loader.persister.PersisterException;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.sql.CallableStatement;
@@ -125,55 +127,60 @@ public class CadsrLoader {
 
 
     fireNewRunMode(mode);
-    
-    for(int i=0; i<filenames.length; i++) {
-      logger.info(PropertyAccessor.getProperty("startingFile", filenames[i]));
 
-      UMLDefaults defaults = UMLDefaults.getInstance();
-      try {
-        defaults.initParams(projectName, projectVersion, username);
-      } catch (Exception e) {
-        logger.error(e);
-        System.exit(1);
-      } // end of try-catch
-//       defaults.initClassifications();
-      defaults.initWithDB();
-      defaults.setUsername(username);
+    try {
+      for(int i=0; i<filenames.length; i++) {
+        logger.info(PropertyAccessor.getProperty("startingFile", filenames[i]));
 
-      parser.parse(fileDir + "/" + filenames[i]);
+        UMLDefaults defaults = UMLDefaults.getInstance();
+        try {
+          defaults.initParams(projectName, projectVersion, username);
+        } catch (Exception e) {
+          logger.error(e);
+          System.exit(1);
+        } // end of try-catch
+        defaults.initWithDB();
+        defaults.setUsername(username);
+
+        parser.parse(fileDir + "/" + filenames[i]);
       
-    }
-
-    ValidationItems items = validator.validate();
-    Set<ValidationError> errors = items.getErrors();
-    if(errors.size() > 0) {
-      for(ValidationError error : errors) {
-        logger.error(error.getMessage());
       }
-      System.exit(1);
-    }
 
-    Set<ValidationWarning> warnings = items.getWarnings();
-    if(warnings.size() > 0) {
-      // Ask user if we should continue
-      for(ValidationWarning warning : warnings) {
-        logger.warn(warning.getMessage());
-      }
-      String answ = JOptionPane.showInputDialog(PropertyAccessor.getProperty("validation.continue"));
-      if(answ == null || !answ.equals("y")) {
+      ValidationItems items = validator.validate();
+      Set<ValidationError> errors = items.getErrors();
+      if(errors.size() > 0) {
+        for(ValidationError error : errors) {
+          logger.error(error.getMessage());
+        }
         System.exit(1);
       }
+
+      Set<ValidationWarning> warnings = items.getWarnings();
+      if(warnings.size() > 0) {
+        // Ask user if we should continue
+        for(ValidationWarning warning : warnings) {
+          logger.warn(warning.getMessage());
+        }
+        String answ = JOptionPane.showInputDialog(PropertyAccessor.getProperty("validation.continue"));
+        if(answ == null || !answ.equals("y")) {
+          System.exit(1);
+        }
+      }
+
+      ProgressFrame progressFrame = new ProgressFrame(100);
+      progressFrame.setVisible(true);
+    
+      persister.setProgressListener(progressFrame);
+
+      persister.persist();
+
+      progressFrame.dispose();
+
+      logger.info("refreshing database views");
+    } catch (PersisterException ex) {
+      logger.error(ex.getMessage());
     }
 
-    ProgressFrame progressFrame = new ProgressFrame(100);
-    progressFrame.setVisible(true);
-    
-    persister.setProgressListener(progressFrame);
-
-    persister.persist();
-
-    logger.info("refreshing database views");
-    
     // Refresh the views
     Connection conn = null;
     CallableStatement cs = null;
@@ -193,7 +200,6 @@ public class CadsrLoader {
 
     logger.info("refreshed databased views");
     
-    progressFrame.dispose();
 
     System.exit(0);
   }
