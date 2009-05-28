@@ -69,21 +69,37 @@ public class CadsrPublicApiModule implements CadsrModule {
     } catch (Exception e) {
       throw new RuntimeException(e);
     } // end of try-catch
+  }
 
+  public gov.nih.nci.ncicb.cadsr.domain.Concept findConceptByCode(String code) {
+    try {
+      gov.nih.nci.cadsr.domain.Concept searchConcept  = new gov.nih.nci.cadsr.domain.Concept();
+      searchConcept.setPreferredName(code);
+      
+      List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.Concept.class.getName(), searchConcept)));
+      
+      if(listResult != null && listResult.size() == 1) {
+        gov.nih.nci.cadsr.domain.Concept con = (gov.nih.nci.cadsr.domain.Concept)listResult.get(0);
+        return CadsrTransformer.conceptPublicToPrivate(con);
+      } else 
+        return null;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    } // end of try-catch
   }
   
-    public Collection<String> getAllDatatypes()  {
-        DetachedCriteria datatypeCriteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.ValueDomain.class, "vd");
-        datatypeCriteria.setProjection( Projections.distinct(Projections.projectionList().add( Projections.property("vd.datatypeName"), "datatypeName" )));
-        try{
-          List listResult = service.query(datatypeCriteria);
-
-          return listResult;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } // end of try-catch
-    }
-
+  public Collection<String> getAllDatatypes()  {
+    DetachedCriteria datatypeCriteria = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.ValueDomain.class, "vd");
+    datatypeCriteria.setProjection( Projections.distinct(Projections.projectionList().add( Projections.property("vd.datatypeName"), "datatypeName" )));
+    try{
+      List listResult = service.query(datatypeCriteria);
+      
+      return listResult;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    } // end of try-catch
+  }
+  
   public Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme>
     findClassificationScheme(Map<String, Object> queryFields) throws Exception {
     return findClassificationScheme(queryFields, null);

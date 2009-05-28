@@ -93,4 +93,6 @@ public interface CadsrModule
   public List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> getAlternateNames(gov.nih.nci.ncicb.cadsr.domain.AdminComponent ac);
 
   public List<ObjectClassRelationship> findOCR(ObjectClassRelationship ocr);
+
+  public gov.nih.nci.ncicb.cadsr.domain.Concept findConceptByCode(String conceptCode);
 }

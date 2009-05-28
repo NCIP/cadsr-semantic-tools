@@ -54,12 +54,15 @@ public class CadsrPrivateApiModule implements CadsrModule
 
   }
 
-
   public Collection<ObjectClass>
     findObjectClass(Map<String, Object> queryFields) throws Exception  {
 
     throw new RuntimeException("Not Implemented");
     
+  }
+
+  public Concept findConceptByCode(String conceptCode) {
+    throw new RuntimeException("Not Implemented");
   }
 
 
