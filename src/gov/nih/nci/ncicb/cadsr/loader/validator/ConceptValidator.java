@@ -4,6 +4,8 @@ import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
+import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
 import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
@@ -23,11 +25,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ConceptValidator implements Validator
+public class ConceptValidator implements Validator, CadsrModuleListener
 {
   private ValidationItems items = ValidationItems.getInstance();
   
-  private EvsModule module;
+  private EvsModule evsModule;
+  private CadsrModule cadsrModule;
   
   private ProgressListener progressListener;
   
@@ -40,13 +43,15 @@ public class ConceptValidator implements Validator
   }
   
   public ValidationItems validate() {
+  
+    items = ValidationItems.getInstance();
 
-    module = new EvsModule(UserPreferences.getInstance().getPreTBox()?"PRE_NCI_Thesaurus":"NCI_Thesaurus");
+    evsModule = new EvsModule(UserPreferences.getInstance().getPreTBox()?"Pre_NCI_Thesaurus":"NCI_Thesaurus");
 
     List<Concept> concepts = ElementsLists.getInstance().
             getElements(DomainObjectFactory.newConcept());
     
-    final ExecutorService executor = Executors.newFixedThreadPool(10);
+    final ExecutorService executor = Executors.newFixedThreadPool(1);
     final BlockingQueue<Future> futures = new LinkedBlockingQueue<Future>();
     final Map<Future,Concept> futureConceptMap = new HashMap<Future,Concept>();
     
@@ -61,10 +66,13 @@ public class ConceptValidator implements Validator
         
         Future<ValidatedConcept> future = executor.submit(new Callable<ValidatedConcept>() {
           public ValidatedConcept call() throws Exception {
-            EvsResult result = module.findByConceptCode(concept.getPreferredName(), false);
+            EvsResult result = evsModule.findByConceptCode(concept.getPreferredName().toUpperCase(), false);
             Collection<EvsResult> nameResult = 
-                module.findByPreferredName(concept.getLongName(), false);
-            return new ValidatedConcept(concept, nameResult, result);
+                evsModule.findBySynonym(concept.getLongName(), false);
+            
+            Concept cadsrConcept = cadsrModule.findConceptByCode(concept.getPreferredName()); 
+                
+            return new ValidatedConcept(concept, nameResult, result, cadsrConcept);
           }
       });
       
@@ -85,41 +93,39 @@ public class ConceptValidator implements Validator
         progressListener.newProgressEvent(event);
       }
 
-      EvsResult result = null;
-      Collection<EvsResult> nameResult = null;
+      EvsResult evsByCodeResult = null;
+      Collection<EvsResult> evsByNameResult = null;
+      Concept cadsrByCodeResult = null;
       try {
         // block until the future is ready
         ValidatedConcept vc = future.get();
-        result = vc.getResult();
-        nameResult = vc.getNameResult();
+        evsByCodeResult = vc.getEvsByCodeResult();
+        evsByNameResult = vc.getEvsByNameResult();
+        cadsrByCodeResult = vc.getCadsrByCode();
       }
       catch (Exception e) {
         e.printStackTrace();
       }
-      if(result != null) {
+      if(evsByCodeResult != null) {
         if(con.getLongName() == null || 
-                !con.getLongName().equals(result.getConcept().getLongName())) {
+                !con.getLongName().equals(evsByCodeResult.getConcept().getLongName())) {
           items.addItem(new ValidationError(
                   PropertyAccessor.getProperty(
                   "mismatch.name.by.code", con.getLongName()),
-                  new ConceptMismatchWrapper(1,result.getConcept(),con)));
-          //highlightDifferentNameByCode.add(result.getConcept());
-          //errorList.put(con, result.getConcept());
+                  new ConceptMismatchWrapper(1,evsByCodeResult.getConcept(),con)));
         }
         if(con.getPreferredDefinition() == null || 
                 !con.getPreferredDefinition().trim().equals(
-                result.getConcept().getPreferredDefinition().trim())) {
+                evsByCodeResult.getConcept().getPreferredDefinition().trim())) {
           items.addItem(new MismatchDefByCodeError(
                   PropertyAccessor.getProperty(
-                  "mismatch.def.by.code", con.getLongName()),new ConceptMismatchWrapper(2,result.getConcept(),con)));
-          //highlightDifferentDefByCode.add(result.getConcept());
-          //errorList.put(con, result.getConcept());
+                  "mismatch.def.by.code", con.getLongName()),new ConceptMismatchWrapper(2,evsByCodeResult.getConcept(),con)));
         }
       }
 
-      if(nameResult != null && nameResult.size() == 1) 
+      if(evsByNameResult != null && evsByNameResult.size() == 1) 
       {
-        for(EvsResult name : nameResult) { 
+        for(EvsResult name : evsByNameResult) { 
           if(con.getPreferredName() == null || 
                   !con.getPreferredName().equals(
                           name.getConcept().getPreferredName())) { 
@@ -127,8 +133,6 @@ public class ConceptValidator implements Validator
                     PropertyAccessor.getProperty(
                     "mismatch.code.by.name", con.getLongName()), 
                     new ConceptMismatchWrapper(3,name.getConcept(),con)));
-              //highlightDifferentCodeByName.add(name.getConcept());
-              //errorNameList.put(con, name.getConcept());
           }
           if(con.getPreferredDefinition() == null || 
                   !con.getPreferredDefinition().trim().equals(
@@ -137,9 +141,28 @@ public class ConceptValidator implements Validator
                     PropertyAccessor.getProperty(
                     "mismatch.def.by.name", con.getLongName()),
                     new ConceptMismatchWrapper(4,name.getConcept(),con)));
-            //highlightDifferentDefByName.add(name.getConcept());      
-            //errorNameList.put(con, name.getConcept());
           }
+        }
+      }
+
+      if(cadsrByCodeResult == null) {
+        if(evsByCodeResult == null) {
+          items.addItem(new ValidationError
+                        (PropertyAccessor.getProperty
+                         ("concept.not.in.cadsr.or.evs", con.getLongName()), 
+                         con));
+        } else {
+          if(!con.getPreferredName().equals(evsByCodeResult.getConcept().getPreferredName())) {
+            items.addItem(new ValidationError
+                          (PropertyAccessor.getProperty
+                           ("concept.not.in.cadsr.different.name", con.getLongName()), 
+                           con));
+          } else if(!con.getPreferredDefinition().equals(evsByCodeResult.getConcept().getPreferredDefinition())) {
+            items.addItem(new ValidationError
+                          (PropertyAccessor.getProperty
+                           ("concept.not.in.cadsr.different.definition", con.getLongName()), 
+                           con));
+          } 
         }
       }
       
@@ -160,23 +183,35 @@ public class ConceptValidator implements Validator
    * These are the EVS query results for a given concept.
    */
   public class ValidatedConcept {
-    private Concept concept;
-    private Collection<EvsResult> nameResult;
-    private EvsResult result;
-    public ValidatedConcept(Concept concept, Collection<EvsResult> nameResult, EvsResult result) {
-        this.concept = concept;
-        this.nameResult = nameResult;
-        this.result = result;
+    private Concept localConcept;
+    private Collection<EvsResult> evsByNameResult;
+    private EvsResult evsByCodeResult;
+    
+    private Concept cadsrByCode;
+
+    public ValidatedConcept(Concept localConcept, Collection<EvsResult> evsByNameResult, EvsResult evsByCodeResult, Concept cadsrByCode) {
+      this.localConcept = localConcept;
+      this.evsByNameResult = evsByNameResult;
+      this.evsByCodeResult = evsByCodeResult;
+      this.cadsrByCode = cadsrByCode;
     }
-    public Concept getConcept() {
-        return concept;
+    public Concept getLocalConcept() {
+      return localConcept;
     }
-    public Collection<EvsResult> getNameResult() {
-        return nameResult;
+    public Collection<EvsResult> getEvsByNameResult() {
+      return evsByNameResult;
     }
-    public EvsResult getResult() {
-        return result;
+    public EvsResult getEvsByCodeResult() {
+      return evsByCodeResult;
+    }
+    public Concept getCadsrByCode() {
+        return cadsrByCode;
     }
 
   }
+  
+  public void setCadsrModule(CadsrModule cadsrModule) {
+      this.cadsrModule = cadsrModule;
+  }
+  
 }
