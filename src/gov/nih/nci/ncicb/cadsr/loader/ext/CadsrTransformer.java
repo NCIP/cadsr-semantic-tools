@@ -1,10 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.ext;
-import gov.nih.nci.cadsr.domain.AdministeredComponentClassSchemeItem;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import java.util.*;
-
-import gov.nih.nci.ncicb.cadsr.evs.*;
 
 /**
  * Transforms cadsr public API to private API and vice versa
@@ -24,18 +20,20 @@ public class CadsrTransformer {
 
     acPublicToPrivate(outDE, inDE);
     
-    gov.nih.nci.cadsr.domain.DataElement otherDE = inDE;
-    
     gov.nih.nci.cadsr.domain.DataElementConcept dec = inDE.getDataElementConcept();
-
-    gov.nih.nci.cadsr.domain.Context ctx = dec.getContext();
 
     outDE.setDataElementConcept(decPublicToPrivate(dec));
     outDE.setValueDomain(vdPublicToPrivate(inDE.getValueDomain()));
 
-
     return outDE;
+  }
 
+  public static gov.nih.nci.ncicb.cadsr.domain.Concept conceptPublicToPrivate(gov.nih.nci.cadsr.domain.Concept inConcept) {
+    
+    gov.nih.nci.ncicb.cadsr.domain.Concept outConcept = DomainObjectFactory.newConcept();    
+    acPublicToPrivate(outConcept, inConcept);
+    
+    return outConcept;
   }
 
   /**
@@ -56,7 +54,6 @@ public class CadsrTransformer {
       outDEC.setConceptualDomain(cdPublicToPrivate(inDEC.getConceptualDomain()));
 
     return outDEC;
-
   }
 
 
@@ -70,7 +67,6 @@ public class CadsrTransformer {
     acPublicToPrivate(outOC, inOC);
 
     return outOC;
-
   }
 
 
@@ -80,11 +76,9 @@ public class CadsrTransformer {
   public static gov.nih.nci.ncicb.cadsr.domain.Property propPublicToPrivate(gov.nih.nci.cadsr.domain.Property inProp) {
 
     gov.nih.nci.ncicb.cadsr.domain.Property outProp = DomainObjectFactory.newProperty();    
-
     acPublicToPrivate(outProp, inProp);
 
     return outProp;
-
   }
   
   /**
@@ -235,7 +229,6 @@ public class CadsrTransformer {
 
     acPublicToPrivate(outCs, inCs);
 
-
     try {
       for(Iterator it = inCs.getClassSchemeClassSchemeItemCollection().iterator(); it.hasNext(); ) {
         gov.nih.nci.cadsr.domain.ClassSchemeClassSchemeItem csCsi = (gov.nih.nci.cadsr.domain.ClassSchemeClassSchemeItem)it.next();
@@ -243,8 +236,9 @@ public class CadsrTransformer {
 
       }
     } catch (org.hibernate.LazyInitializationException e){
-      
-    } // end of try-catch
+      // TODO
+      // these used to be one of those OK exceptions that SDK would throw. Need to check if still true. 
+    } 
 
     return outCs;
 

@@ -764,10 +764,8 @@ public class XMIParser2 implements Parser {
     if(tv != null) {       // Use Value Domain
       event.setLocalType(tv.getValue());
     }
-    //     } else {               // Use datatype
     
     event.setType(att.getDatatype().getName());
-      //     }
 
     String description = getDocumentation(att, TV_CADSR_DESCRIPTION);
     if(description != null) {
