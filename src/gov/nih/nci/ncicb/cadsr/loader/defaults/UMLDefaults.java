@@ -21,7 +21,6 @@ package gov.nih.nci.ncicb.cadsr.loader.defaults;
 
 import gov.nih.nci.ncicb.cadsr.dao.*;
 import gov.nih.nci.ncicb.cadsr.domain.*;
-import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 
 import gov.nih.nci.ncicb.cadsr.loader.persister.PersisterException;
 import gov.nih.nci.ncicb.cadsr.loader.persister.LogUtil;
@@ -34,7 +33,7 @@ import java.util.*;
 
 /**
  * <code>UMLDefaults</code> is a placeholder for UMLLoader's defaults.
- * <br/> Implements the Singleton pattern.
+ * <br> Implements the Singleton pattern.
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
@@ -52,8 +51,6 @@ public class UMLDefaults {
   private Audit audit;
   private Lifecycle lifecycle;
   private Map packageCsCsis = new HashMap();
-
-  private Map params = new HashMap();
 
   private Map packageFilter = new HashMap();
   private String defaultPackage, packageFilterString = null;
@@ -78,11 +75,8 @@ public class UMLDefaults {
   /**
    * Called by the main class to initialize defaults.
    *
-   * @param projectName the project name
-   * @param username the authenticated username
-   * @exception PersisterException if an error occurs
    */
-  public void initParams(String filename) throws PersisterException  {
+  public void initParams(String filename) {
     this.filename = filename;
 
     loaderDefault = new AttachedFileDefaultsLoader().loadDefaults(filename);
@@ -93,14 +87,13 @@ public class UMLDefaults {
     initParams();
   }
 
-  public void initParams(String projectName, Float projectVersion, String username) throws PersisterException {
+  public void initParams(String projectName, Float projectVersion, String username) {
     loaderDefault = new DBDefaultsLoader().loadDefaults(projectName, projectVersion);
 
     initParams();
-
   }
 
-  private void initParams() throws PersisterException {
+  private void initParams() {
 
     audit = DomainObjectFactory.newAudit();
     lifecycle = DomainObjectFactory.newLifecycle();
@@ -181,7 +174,7 @@ public class UMLDefaults {
     }
   }
 
-  public void initWithDB() throws PersisterException {
+  public void initWithDB() {
     ContextDAO contextDAO = DAOAccessor.getContextDAO();
     ConceptualDomainDAO conceptualDomainDAO = DAOAccessor.getConceptualDomainDAO();
 
@@ -189,13 +182,15 @@ public class UMLDefaults {
     context = contextDAO.findByName(cName);
     if (context == null) {
       logger.fatal(PropertyAccessor.getProperty("context.not.found", cName));
-      System.exit(1);
+      throw new PersisterException(PropertyAccessor.getProperty("context.not.found", cName));
     }
     
     mainContext = contextDAO.findByName(PropertyAccessor.getProperty("context.main.name"));
     if (mainContext == null) {
       logger.fatal(PropertyAccessor.getProperty("context.not.found", PropertyAccessor.getProperty("context.main.name")));
-      System.exit(1);
+      throw new PersisterException
+        (PropertyAccessor.getProperty
+         ("context.not.found", PropertyAccessor.getProperty("context.main.name")));
     } 
 
     Context cdContext = contextDAO.findByName(conceptualDomain.getContext().getName());
@@ -219,9 +214,8 @@ public class UMLDefaults {
   /**
    * Creates or loads classifications and CSI that will be used.
    *
-   * @exception PersisterException if an error occurs
    */
-  private void initClassifications() throws PersisterException {
+  private void initClassifications() {
     
     ClassificationSchemeDAO classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
 
@@ -230,7 +224,7 @@ public class UMLDefaults {
     cs.setVersion(projectCs.getVersion());
     cs.setContext(context);
 
-    ArrayList eager = new ArrayList();
+    ArrayList<String> eager = new ArrayList<String>();
     eager.add(EagerConstants.CS_CSI);
     List result = classificationSchemeDAO.find(cs, eager);
 
@@ -242,7 +236,8 @@ public class UMLDefaults {
       List newResult = classificationSchemeDAO.find(cs);
       if(newResult.size() > 0) {
         logger.error(PropertyAccessor.getProperty("cs.longName.already.exists"));
-        System.exit(1);
+        throw new PersisterException
+          (PropertyAccessor.getProperty("cs.longName.already.exists"));
       }
 
       projectCs.setContext(context);
@@ -262,11 +257,10 @@ public class UMLDefaults {
 
       if(!csLongName.equals(projectCs.getLongName())) {
         logger.error(PropertyAccessor.getProperty("cs.longName.already.exists"));
-        System.exit(1);
+        throw new PersisterException
+          (PropertyAccessor.getProperty("cs.longName.already.exists"));
       }
-      
     }
-
   }
 
   /**
@@ -304,9 +298,9 @@ public class UMLDefaults {
   public void refreshProjectCs() {
     ClassificationSchemeDAO classificationSchemeDAO = DAOAccessor.getClassificationSchemeDAO();
 
-    ArrayList eager = new ArrayList();
+    ArrayList<String> eager = new ArrayList<String>();
     eager.add(EagerConstants.CS_CSI);
-    projectCs = (ClassificationScheme)(classificationSchemeDAO.find(projectCs, eager).get(0));
+    projectCs = classificationSchemeDAO.find(projectCs, eager).get(0);
     
   }
   
@@ -378,13 +372,8 @@ public class UMLDefaults {
   }
 
   public void useDefaults(LoaderDefault defaults) {
-    try {
-      loaderDefault = defaults;
-      initParams();
-    } catch (PersisterException e){
-        throw new RuntimeException(e);
-    } // end of try-catch
-      
+    loaderDefault = defaults;
+    initParams();
   }
 
 }
