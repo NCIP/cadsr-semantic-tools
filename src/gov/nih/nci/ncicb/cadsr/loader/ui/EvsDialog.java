@@ -34,8 +34,6 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.*;
-import javax.swing.border.*;
-
 
 /**
  * The EVS Search dialog
@@ -78,7 +76,7 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
     NEXT = "NEXT",
     CLOSE = "CLOSE";
 
-  private java.util.List<EvsResult> resultSet = new ArrayList();
+  private java.util.List<EvsResult> resultSet = new ArrayList<EvsResult>();
 
   private String[] columnNames = {
     "Code", "Concept Name", "Preferred Name", "Synonyms", "Definition", "Source"
@@ -114,7 +112,7 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
           return columnNames[col].toString();
         }
         public int getRowCount() { 
-          return (int)Math.min(resultSet.size(), pageSize); 
+          return Math.min(resultSet.size(), pageSize); 
         }
         public int getColumnCount() { return columnNames.length; }
         public Object getValueAt(int row, int col) {
@@ -163,7 +161,6 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
 
     resultTable = new JTable(tableModel) {
         public String getToolTipText(java.awt.event.MouseEvent e) {
-          String tip = null;
           java.awt.Point p = e.getPoint();
           int rowIndex = rowAtPoint(p);
           int colIndex = columnAtPoint(p);
@@ -288,7 +285,7 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
       String text = searchField.getText() == null ? "" : searchField.getText().trim();
       EvsModule module = new EvsModule();
 
-      resultSet = new ArrayList();
+      resultSet = new ArrayList<EvsResult>();
 
       _this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
@@ -299,8 +296,7 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
             evsResult = module.findByConceptCode(text.toUpperCase(), includeRetiredCB.isSelected());
             if(evsResult != null)
               resultSet.add(evsResult);
-          }
-          else 
+          } else 
             resultSet.addAll(module.findBySynonym(text, includeRetiredCB.isSelected()));
         } else if(selection.equals(CONCEPT_CODE)) {
           EvsResult evsResult = module.findByConceptCode(text.toUpperCase(), includeRetiredCB.isSelected());
@@ -338,7 +334,7 @@ public class EvsDialog extends JDialog implements ActionListener, KeyListener
     } else {
       StringBuilder sb = new StringBuilder();
       int start = pageSize * pageIndex;
-      int end = (int)Math.min(resultSet.size(), start + pageSize); 
+      int end = Math.min(resultSet.size(), start + pageSize); 
       sb.append(start);
       sb.append("-");
       sb.append(end);
