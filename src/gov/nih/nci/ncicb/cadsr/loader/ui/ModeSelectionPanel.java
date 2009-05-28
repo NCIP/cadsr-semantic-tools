@@ -62,7 +62,7 @@ public class ModeSelectionPanel extends JPanel implements MouseListener, KeyList
     reviewOption.addActionListener(l);
     gmeDefaultsOption.addActionListener(l);
     gmeCleanupOption.addActionListener(l);
-    conceptInheritanceOption.addActionListener(l);
+//     conceptInheritanceOption.addActionListener(l);
   }
 
   public String getSelection() {
@@ -119,8 +119,8 @@ public class ModeSelectionPanel extends JPanel implements MouseListener, KeyList
     annotateOption = new JRadioButton(bullet++ + ". " + RunMode.GenerateReport.getTitleName() + " (" + RunMode.GenerateReport.getAuthor() + ")");
     annotateOption.setActionCommand(RunMode.GenerateReport.toString());
         
-    conceptInheritanceOption = new JRadioButton(bullet++ + ". " + RunMode.ConceptInheritance.getTitleName() + " (" + RunMode.ConceptInheritance.getAuthor() + ")");
-    conceptInheritanceOption.setActionCommand(RunMode.ConceptInheritance.toString());
+//     conceptInheritanceOption = new JRadioButton(bullet++ + ". " + RunMode.ConceptInheritance.getTitleName() + " (" + RunMode.ConceptInheritance.getAuthor() + ")");
+//     conceptInheritanceOption.setActionCommand(RunMode.ConceptInheritance.toString());
 
     curateOption = new JRadioButton(bullet++ + ". " + RunMode.Curator.getTitleName() + " (" + RunMode.Curator.getAuthor() + ")");
     curateOption.setActionCommand(RunMode.Curator.toString());
@@ -180,7 +180,7 @@ public class ModeSelectionPanel extends JPanel implements MouseListener, KeyList
     group.add(reviewOption);
     group.add(gmeDefaultsOption);
     group.add(gmeCleanupOption);
-    group.add(conceptInheritanceOption);
+//     group.add(conceptInheritanceOption);
     
 
     JPanel buttonPanel = new JPanel();
@@ -192,7 +192,7 @@ public class ModeSelectionPanel extends JPanel implements MouseListener, KeyList
     buttonPanel.add(unannotatedXmiOption);
     buttonPanel.add(roundtripOption);
     buttonPanel.add(annotateOption);
-    buttonPanel.add(conceptInheritanceOption);
+//     buttonPanel.add(conceptInheritanceOption);
     buttonPanel.add(curateOption);
     buttonPanel.add(reviewOption);
     buttonPanel.add(gmeDefaultsOption);
