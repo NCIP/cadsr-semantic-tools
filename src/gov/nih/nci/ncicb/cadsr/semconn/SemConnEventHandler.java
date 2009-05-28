@@ -115,6 +115,13 @@ public class SemConnEventHandler implements UMLHandler {
      
      vd.addPermissibleValue(pv);
      
+     if(!StringUtil.isEmpty(event.getDescription())) {
+       Definition vmAltDef = DomainObjectFactory.newDefinition();
+       vmAltDef.setType(Definition.TYPE_UML_VM);
+       vmAltDef.setDefinition(event.getDescription());
+       vm.addDefinition(vmAltDef);
+     }
+
      elements.addElement(vm);
      reviewTracker.put("ValueDomains." + event.getValueDomainName() + "." + event.getName(), event.isReviewed());
      ChangeTracker.getInstance().put("ValueDomains." + event.getValueDomainName() + "." + event.getName(), true);
