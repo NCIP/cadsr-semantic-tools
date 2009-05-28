@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class AddButtonPanel extends JPanel implements PropertyChangeListener, MouseListener
+public class AddButtonPanel extends JPanel implements PropertyChangeListener, MouseListener, ActionListener
 {
   private DropDownButton addButton;
 
@@ -32,6 +32,8 @@ public class AddButtonPanel extends JPanel implements PropertyChangeListener, Mo
 
     addLabel.addMouseListener(this);
     addInheritanceLabel.addMouseListener(this);
+
+    addButton.addActionListener(this);
 
     this.add(addButton);
 
@@ -67,6 +69,10 @@ public class AddButtonPanel extends JPanel implements PropertyChangeListener, Mo
 //       cadsrVDPanel.setBackground(Color.WHITE);
 //     else if(((JLabel)e.getSource()).getText().equals(MAP_LOCAL_VD))
 //       lvdPanel.setBackground(Color.WHITE);
+  }
+
+  public void actionPerformed(ActionEvent evt) {
+    conceptEditorPanel.addPressed();
   }
 
 }
