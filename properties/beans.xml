@@ -189,6 +189,7 @@
         <ref bean="umlVPFactory"/>
         <ref bean="conceptInheritanceAction"/>
         <ref bean="conceptUtil"/>
+        <ref bean="conceptValidator"/>
       </list>
     </property>
   </bean>
@@ -326,6 +327,9 @@
   <bean name="duplicateValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateValidator"/>
 
+  <bean name="duplicateClassValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateClassValidator"/>
+
   <bean name="duplicateConceptValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateConceptValidator"/>
 
@@ -341,6 +345,12 @@
   <bean name="definitionLengthValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.DefinitionLengthValidator"/>
 
+  <bean name="conceptValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.ConceptValidator"/>
+
+  <bean name="valueDomainRepTermValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.ValueDomainRepTermValidator"/>
+  
   <bean name="siwValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.UMLValidator">
     <property name="validators">
@@ -358,6 +368,8 @@
         <ref bean="gmeValidator"/>
         <ref bean="conceptInheritanceValidator"/>
         <ref bean="duplicateConceptValidator"/>
+        <ref bean="duplicateClassValidator"/>
+        <ref bean="valueDomainRepTermValidator"/>
       </list>
     </property>
   </bean>
@@ -379,6 +391,8 @@
         <ref bean="gmeValidator"/>
         <ref bean="conceptInheritanceValidator"/>
         <ref bean="duplicateConceptValidator"/>
+        <ref bean="duplicateClassValidator"/>
+        <ref bean="valueDomainRepTermValidator"/>
       </list>
     </property>
   </bean>
@@ -470,6 +484,13 @@
     </property>
   </bean>  
 
+  <bean name="validateConceptDialog"
+    class="gov.nih.nci.ncicb.cadsr.loader.ui.ValidateConceptsDialog">
+    <property name="conceptValidator">
+      <ref bean="conceptValidator"/>
+    </property>
+  </bean>
+
   <bean name="mainFrame"
     class="gov.nih.nci.ncicb.cadsr.loader.ui.MainFrame">
     <property name="logTab">
@@ -483,6 +504,9 @@
     </property>
     <property name="umlVPFactory">
       <ref bean="umlVPFactory"/>
+    </property>
+    <property name="validateConceptDialog">
+      <ref bean="validateConceptDialog"/>
     </property>
   </bean>
 
