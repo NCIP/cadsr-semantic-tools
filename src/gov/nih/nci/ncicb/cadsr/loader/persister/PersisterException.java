@@ -23,7 +23,7 @@ package gov.nih.nci.ncicb.cadsr.loader.persister;
  *
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  */
-public class PersisterException extends Exception {
+public class PersisterException extends RuntimeException {
 
   public PersisterException(String msg) {
     super(msg);

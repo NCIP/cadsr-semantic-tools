@@ -55,7 +55,7 @@ public class OcRecPersister implements Persister {
     initDAOs();
   }
 
-  public void persist() throws PersisterException {
+  public void persist() {
     ObjectClassRelationship ocr = DomainObjectFactory.newObjectClassRelationship();
     List<ObjectClassRelationship> ocrs = elements.getElements(ocr);
 

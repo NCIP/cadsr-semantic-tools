@@ -54,7 +54,7 @@ public class PropertyPersister implements Persister {
    initDAOs();
   }
 
-  public void persist() throws PersisterException {
+  public void persist() {
     Property prop = DomainObjectFactory.newProperty();
     List<Property> props = elements.getElements(prop);
 
@@ -159,7 +159,7 @@ public class PropertyPersister implements Persister {
   }
 
 
-  private Property existingMapping(Property prop) throws PersisterException {
+  private Property existingMapping(Property prop) {
 
     // for now, only classify with one CS_CSI
     ClassSchemeClassSchemeItem csCsi = null;

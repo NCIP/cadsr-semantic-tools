@@ -66,8 +66,7 @@ public class ObjectClassPersister implements Persister {
     initDAOs();
   }
 
-  public void persist() throws PersisterException
-  {
+  public void persist()   {
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     List<ObjectClass> ocs = elements.getElements(oc);
 
@@ -205,9 +204,7 @@ public class ObjectClassPersister implements Persister {
 
   }
 
-  private ObjectClass existingMapping(ObjectClass oc)
-          throws PersisterException
-  {
+  private ObjectClass existingMapping(ObjectClass oc)  {
 
     List<String> eager = new ArrayList<String>();
     eager.add(EagerConstants.AC_CS_CSI);

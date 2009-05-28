@@ -34,6 +34,7 @@ import gov.nih.nci.ncicb.cadsr.loader.event.ProgressListener;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.EvsResult;
 
+import gov.nih.nci.ncicb.cadsr.loader.util.ConceptUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
 
 import java.util.*;
@@ -47,7 +48,7 @@ public class ConceptPersister implements Persister {
 
   private static Logger logger = Logger.getLogger(ConceptPersister.class.getName());
 
-  private EvsModule evsModule = new EvsModule("PRE_NCI_Thesaurus");
+  private EvsModule evsModule = new EvsModule("Pre_NCI_Thesaurus");
 
   private UMLDefaults defaults = UMLDefaults.getInstance();
   private ElementsLists elements = ElementsLists.getInstance();
@@ -80,20 +81,55 @@ public class ConceptPersister implements Persister {
         con.setPreferredName(c.getPreferredName());
         logger.debug("concept name: " + con.getPreferredName());
         sendProgressEvent(count++, consSize, "Concept : " + con.getPreferredName());
+
+        // find out if concept is used by any element. If not, skip this concept. 
+        if(!ConceptUtil.isConceptUsed(c)) {
+          logger.info(PropertyAccessor.getProperty("concept.never.used", c.getPreferredName()));
+          continue;
+        }
+
         List l = conceptDAO.find(con);
 
-        if(l.size() == 0) { // concept does not exist: create it
-          c.setVersion(new Float(1.0f));
-          c.setContext(defaults.getMainContext());
-	  c.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
-	  c.setAudit(defaults.getAudit());
-          c.setOrigin(defaults.getOrigin());
-          c.setEvsSource(PropertyAccessor.getProperty("default.evsSource"));
-          c.setLifecycle(defaults.getLifecycle());
+        if(l.size() == 0) { // concept does not exist
+          // Check if it exists in EVS
 
-          c.setId(conceptDAO.create(c));
-          logger.info(PropertyAccessor.getProperty("created.concept"));
-          LogUtil.logAc(c, logger);
+          EvsResult evsResult = evsModule.findByConceptCode(c.getPreferredName(), false);
+          if(evsResult == null) {
+            logger.error(PropertyAccessor.getProperty
+                         ("cannot.create.concept.not.in.evs", c.getPreferredName())); 
+            throw new PersisterException
+              (PropertyAccessor.getProperty
+               ("cannot.create.concept.not.in.evs", c.getPreferredName()));
+          } else {
+            Concept evsConcept = evsResult.getConcept();
+            if(evsConcept.getLongName() == null || !evsConcept.getLongName().equals(c.getLongName())) {
+              logger.error(PropertyAccessor.getProperty
+                           ("cannot.create.concept.in.evs.different.name", c.getPreferredName())); 
+              throw new PersisterException
+                (PropertyAccessor.getProperty
+                 ("cannot.create.concept.in.evs.different.name", c.getPreferredName()));
+            } else if(evsConcept.getPreferredDefinition() == null || !evsConcept.getPreferredDefinition().equals(c.getPreferredDefinition())) {
+              logger.error(PropertyAccessor.getProperty
+                           ("cannot.create.concept.in.evs.different.definition", c.getPreferredName())); 
+              throw new PersisterException
+                (PropertyAccessor.getProperty
+                 ("cannot.create.concept.in.evs.different.definition", c.getPreferredName()));
+            } else 
+              // create 
+              {
+                c.setVersion(new Float(1.0f));
+                c.setContext(defaults.getMainContext());
+                c.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
+                c.setAudit(defaults.getAudit());
+                c.setOrigin(defaults.getOrigin());
+                c.setEvsSource(PropertyAccessor.getProperty("default.evsSource"));
+                c.setLifecycle(defaults.getLifecycle());
+                
+                c.setId(conceptDAO.create(c));
+                logger.info(PropertyAccessor.getProperty("created.concept"));
+                LogUtil.logAc(c, logger);
+              }
+          }
         } else { // concept exist: See if we need to add alternate def.
           logger.info(PropertyAccessor.getProperty("existed.concept", c.getPreferredName()));
 
@@ -123,6 +159,11 @@ public class ConceptPersister implements Persister {
             } else { // this concept is not in EVS, the names are not the same. Stop the load.
               logger.error(PropertyAccessor.getProperty("cant.validate.concept", 
                                                         new String[]{c.getPreferredName(), "preferred name"}));
+              throw new PersisterException
+                (PropertyAccessor.getProperty
+                 ("cant.validate.concept", 
+                  new String[]{c.getPreferredName(), "preferred name"})
+);
             }
 
           }

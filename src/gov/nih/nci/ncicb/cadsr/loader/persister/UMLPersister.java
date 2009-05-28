@@ -41,7 +41,7 @@ public class UMLPersister implements Persister {
   public UMLPersister() {
   }
 
-  public void persist() throws PersisterException {
+  public void persist() {
 
     for(Persister p : persisters)
       p.persist();

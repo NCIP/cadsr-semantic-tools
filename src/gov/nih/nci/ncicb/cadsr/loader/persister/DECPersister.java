@@ -57,7 +57,7 @@ public class DECPersister implements Persister {
     initDAOs();
   }
 
-  public void persist() throws PersisterException {
+  public void persist() {
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
     List<DataElementConcept> decs = elements.getElements(dec);
 
@@ -211,7 +211,7 @@ public class DECPersister implements Persister {
   }
 
 
-  private DataElementConcept existingMapping(DataElementConcept dec) throws PersisterException {
+  private DataElementConcept existingMapping(DataElementConcept dec) {
 
     List<String> eager = new ArrayList<String>();
     eager.add(EagerConstants.AC_CS_CSI);

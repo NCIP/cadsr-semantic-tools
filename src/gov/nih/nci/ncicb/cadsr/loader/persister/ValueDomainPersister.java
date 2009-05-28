@@ -56,7 +56,7 @@ public class ValueDomainPersister extends UMLPersister {
     initDAOs();
   }
 
-  public void persist() throws PersisterException {
+  public void persist() {
     ValueDomain vd = DomainObjectFactory.newValueDomain();
     List<ValueDomain> vds = elements.getElements(vd);
 

@@ -31,9 +31,8 @@ public interface Persister {
   /**
    * Main persisting method
    *
-   * @exception PersisterException if an error occurs
    */
-  public void persist() throws PersisterException ;
+  public void persist();
 
   public void setProgressListener(ProgressListener listener);
 
