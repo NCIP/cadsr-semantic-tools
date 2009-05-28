@@ -32,6 +32,81 @@ public class ConceptUtil implements CadsrModuleListener {
 
   private static CadsrModule cadsrModule;
 
+  /**
+   * @return true if this concept code is used by at least one element (OC, Prop, etc...)
+   */
+  public static boolean isConceptUsed(Concept con) {
+    ElementsLists elements = ElementsLists.getInstance();
+    
+    List<ObjectClass> ocs = elements.getElements(DomainObjectFactory.newObjectClass());
+    for(ObjectClass oc : ocs) {
+      if(StringUtil.isEmpty(oc.getPublicId())) {
+        String[] codes = oc.getPreferredName().split(":");
+        for(String code : codes) {
+          if(code.equals(con.getPreferredName()))
+            return true;
+        }
+      }
+    }
+
+    List<Property> props = elements.getElements(DomainObjectFactory.newProperty());
+    for(Property prop : props) {
+      if(StringUtil.isEmpty(prop.getPublicId())) {
+        String[] codes = prop.getPreferredName().split(":");
+        for(String code : codes) {
+          if(code.equals(con.getPreferredName()))
+            return true;
+        }
+      }
+    }
+
+    List<ValueMeaning> vms = elements.getElements(DomainObjectFactory.newValueMeaning());
+    for(ValueMeaning vm : vms) {
+      if(vm.getConceptDerivationRule() != null) {
+        for(ComponentConcept comp : vm.getConceptDerivationRule().getComponentConcepts()) {
+          if(comp.getConcept().getPreferredName().equals(con.getPreferredName()))
+            return true;
+        }
+      }
+    }
+
+    List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
+    for(ValueDomain vd : vds) {
+      if(vd.getConceptDerivationRule() != null) {
+        for(ComponentConcept comp : vd.getConceptDerivationRule().getComponentConcepts()) {
+          if(comp.getConcept().getPreferredName().equals(con.getPreferredName()))
+            return true;
+        }
+      }
+    }
+
+    List<ObjectClassRelationship> ocrs = elements.getElements(DomainObjectFactory.newObjectClassRelationship());
+    for(ObjectClassRelationship ocr : ocrs) {
+      ConceptDerivationRule conDR = ocr.getConceptDerivationRule();
+      if(conDR != null) {
+        for(ComponentConcept comp : conDR.getComponentConcepts())
+          if(comp.getConcept().getPreferredName().equals(con.getPreferredName()))
+            return true;
+      }
+
+      conDR = ocr.getSourceRoleConceptDerivationRule();
+      if(conDR != null) {
+        for(ComponentConcept comp : conDR.getComponentConcepts())
+          if(comp.getConcept().getPreferredName().equals(con.getPreferredName()))
+            return true;
+      }
+
+      conDR = ocr.getTargetRoleConceptDerivationRule();
+      if(conDR != null) {
+        for(ComponentConcept comp : conDR.getComponentConcepts())
+          if(comp.getConcept().getPreferredName().equals(con.getPreferredName()))
+            return true;
+      }
+    }
+
+    return false;
+  }
+
   public static Concept getConceptFromCode(String conceptCode) {
     ElementsLists elements = ElementsLists.getInstance();
     List<Concept> concepts = elements.getElements(DomainObjectFactory.newConcept());
