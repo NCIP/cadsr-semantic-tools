@@ -303,6 +303,42 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
             }
           }
           
+          if(!StringUtil.isEmpty(vd.getRepresentation().getPublicId())) {
+            if (cadsrVD != null ) {
+              if(cadsrVD.getRepresentation() == null ||
+                 StringUtil.isEmpty(cadsrVD.getRepresentation().getPublicId())) {
+                items.addItem
+                  (new ValidationError
+                   (PropertyAccessor.getProperty
+                    ("cadsrvd.missing.repTerm", vd.getLongName()), vd));
+              } else if(!cadsrVD.getRepresentation().getPublicId().equals(vd.getRepresentation().getPublicId())
+                        ) {
+                if(ignoreVD)
+                  items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.repterm.id.mismatch", vd.getLongName()), vd));
+                else
+                  items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.repterm.id.mismatch", vd.getLongName()), vd));
+              }
+            }
+          }
+          if(vd.getRepresentation().getVersion() != null) {
+            if (cadsrVD != null ) {
+              if(cadsrVD.getRepresentation() == null ||
+                 StringUtil.isEmpty(cadsrVD.getRepresentation().getPublicId())) {
+                items.addItem
+                  (new ValidationError
+                   (PropertyAccessor.getProperty
+                    ("cadsrvd.missing.repTerm", vd.getLongName()), vd));
+              } else if(!cadsrVD.getRepresentation().getVersion().equals(vd.getRepresentation().getVersion())
+                        ) {
+                if(ignoreVD)
+                  items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.repterm.version.mismatch", vd.getLongName()), vd));
+                else
+                  items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.repterm.version.mismatch", vd.getLongName()), vd));
+              }
+            }
+          }
+          
+
           if(StringUtil.isEmpty(vd.getConceptualDomain().getPublicId())) {
             items.addItem
               (new ValidationError
@@ -332,50 +368,6 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
                 items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.cd.version.mismatch", vd.getLongName()), vd));
             }
           }
-
-          if(StringUtil.isEmpty(vd.getRepresentation().getPublicId())) {
-            items.addItem
-              (new ValidationError
-               (PropertyAccessor.getProperty
-                ("vd.missing.repTermId", vd.getLongName()), vd));
-          } else if (cadsrVD != null ) {
-            if(cadsrVD.getRepresentation() == null ||
-               StringUtil.isEmpty(cadsrVD.getRepresentation().getPublicId())) {
-              items.addItem
-                (new ValidationError
-                 (PropertyAccessor.getProperty
-                  ("cadsrvd.missing.repTerm", vd.getLongName()), vd));
-            } else if(!cadsrVD.getRepresentation().getPublicId().equals(vd.getRepresentation().getPublicId())
-                      ) {
-              if(ignoreVD)
-                items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.repterm.id.mismatch", vd.getLongName()), vd));
-              else
-                items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.repterm.id.mismatch", vd.getLongName()), vd));
-            }
-          }
-          
-
-          if(vd.getRepresentation().getVersion() == null) {
-            items.addItem
-              (new ValidationError
-               (PropertyAccessor.getProperty
-                ("vd.missing.repTermVersion", vd.getLongName()), vd));
-          } else if (cadsrVD != null ) {
-            if(cadsrVD.getRepresentation() == null ||
-               StringUtil.isEmpty(cadsrVD.getRepresentation().getPublicId())) {
-              items.addItem
-                (new ValidationError
-                 (PropertyAccessor.getProperty
-                  ("cadsrvd.missing.repTerm", vd.getLongName()), vd));
-            } else if(!cadsrVD.getRepresentation().getVersion().equals(vd.getRepresentation().getVersion())
-                      ) {
-              if(ignoreVD)
-                items.addItem(new ValidationWarning(PropertyAccessor.getProperty("vd.repterm.version.mismatch", vd.getLongName()), vd));
-              else
-                items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.repterm.version.mismatch", vd.getLongName()), vd));
-            }
-          }
-        
 
 
           if(vd.getConceptualDomain().getVersion() != null && 
