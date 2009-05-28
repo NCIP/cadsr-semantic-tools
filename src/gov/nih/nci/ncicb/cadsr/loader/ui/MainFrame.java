@@ -129,6 +129,8 @@ import java.awt.event.WindowEvent;
    private int horizontalSplit = 0;
    private List<String> mainFramePrefs = null;
 
+   private ValidateConceptsDialog validateConceptDialog;
+
    private static Logger logger = Logger.getLogger(MainFrame.class);
 
    public MainFrame()
@@ -411,9 +413,9 @@ import java.awt.event.WindowEvent;
            "This process may take some time. Would you like to continue? ",
            "Validate Concepts", JOptionPane.YES_NO_OPTION);
          if(n == JOptionPane.YES_OPTION) {
-           ValidateConceptsDialog vcd = new ValidateConceptsDialog(_this);
-           vcd.addSearchListener(navigationPanel);
-           vcd.setVisible(true);
+           validateConceptDialog.init(_this);
+           validateConceptDialog.addSearchListener(navigationPanel);
+           validateConceptDialog.display();
          }
        }
      });
@@ -683,42 +685,44 @@ import java.awt.event.WindowEvent;
    public void stateChanged(WindowEvent e){
    }
 
-     private void putToCenter() {
-       this.setLocation((screenSize.width - this.getSize().width) / 2, (screenSize.height - this.getSize().height) / 2);
-     }
-
-     private void setInitialMainFrameSize(){
-       this.setSize(new Dimension(930, 700));
-           
-       setVisible(true);
-
-       setSplitPanesFields();
-     }
+   private void putToCenter() {
+     this.setLocation((screenSize.width - this.getSize().width) / 2, (screenSize.height - this.getSize().height) / 2);
+   }
+   
+   private void setInitialMainFrameSize(){
+     this.setSize(new Dimension(930, 700));
      
-     private void setMainFrameFields(){
-         mainFramePrefs = prefs.getMainFramePreferences();
-         mainFrameWidth = ((mainFramePrefs == null || mainFramePrefs.get(0) == null) ? 930 : 
-             Integer.parseInt(mainFramePrefs.get(0)));
-         mainFrameHeight = ((mainFramePrefs == null || mainFramePrefs.get(1) == null) ? 700 : 
-             Integer.parseInt(mainFramePrefs.get(1)));
-     }
+     setVisible(true);
      
-     private void setSplitPanesFields(){
-         verticleSplit = ((mainFramePrefs == null || mainFramePrefs.get(2) == null) ? 160 : 
-             Integer.parseInt(mainFramePrefs.get(2)));
-         horizontalSplit = ((mainFramePrefs == null || mainFramePrefs.get(3) == null) ? 450 : 
-             Integer.parseInt(mainFramePrefs.get(3)));
-     }
-
-     private void setSplitPanes(){
-       
-       jSplitPane1.setDividerLocation(160);
-       jSplitPane2.setDividerLocation(450);
-
-     }
-     
-     public void setUmlVPFactory(UMLElementViewPanelFactory umlVPFactory) {
-        this.umlVPFactory = umlVPFactory;
-     }
-
+     setSplitPanesFields();
+   }
+   
+   private void setMainFrameFields(){
+     mainFramePrefs = prefs.getMainFramePreferences();
+     mainFrameWidth = ((mainFramePrefs == null || mainFramePrefs.get(0) == null) ? 930 : 
+                       Integer.parseInt(mainFramePrefs.get(0)));
+     mainFrameHeight = ((mainFramePrefs == null || mainFramePrefs.get(1) == null) ? 700 : 
+                        Integer.parseInt(mainFramePrefs.get(1)));
+   }
+   
+   private void setSplitPanesFields(){
+     verticleSplit = ((mainFramePrefs == null || mainFramePrefs.get(2) == null) ? 160 : 
+                      Integer.parseInt(mainFramePrefs.get(2)));
+     horizontalSplit = ((mainFramePrefs == null || mainFramePrefs.get(3) == null) ? 450 : 
+                        Integer.parseInt(mainFramePrefs.get(3)));
+   }
+   
+   private void setSplitPanes(){
+     jSplitPane1.setDividerLocation(160);
+     jSplitPane2.setDividerLocation(450);
+   }
+   
+   public void setUmlVPFactory(UMLElementViewPanelFactory umlVPFactory) {
+     this.umlVPFactory = umlVPFactory;
+   }
+  
+   public void setValidateConceptDialog(ValidateConceptsDialog validateConceptDialog) {
+     this.validateConceptDialog = validateConceptDialog;
+   }
+ 
  }
