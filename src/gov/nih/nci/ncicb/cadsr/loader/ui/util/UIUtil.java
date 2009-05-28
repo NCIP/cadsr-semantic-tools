@@ -109,4 +109,14 @@ public class UIUtil {
 
     bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
   }
+
+  public static void insertInBag(JPanel bagComp, Component comp, int x, int y, int width, int height, int anchor) {
+    JPanel p = new JPanel();
+    p.add(comp);
+
+    bagComp.add(p, new GridBagConstraints(x, y, width, height, 0.0, 0.0, anchor, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+  }
+
+  
+  
 }
