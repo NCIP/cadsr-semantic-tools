@@ -55,20 +55,22 @@ public class ValueDomainRepTermValidator implements Validator {
         evt.setMessage(" Validating " + vd.getLongName());
         evt.setStatus(count++);
         fireProgressEvent(evt);
-        
-        if(StringUtil.isEmpty(vd.getRepresentation().getPublicId())) {
-          items.addItem
-            (new ValidationError
-             (PropertyAccessor.getProperty
-              ("vd.missing.repTermId", vd.getLongName()), vd));
-        } 
-        
-        if(vd.getRepresentation().getVersion() == null) {
-          items.addItem
-            (new ValidationError
-             (PropertyAccessor.getProperty
-              ("vd.missing.repTermVersion", vd.getLongName()), vd));
-        } 
+
+        if(vd.getRepresentation() != null) {
+          if(StringUtil.isEmpty(vd.getRepresentation().getPublicId())) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.missing.repTermId", vd.getLongName()), vd));
+          } 
+          
+          if(vd.getRepresentation().getVersion() == null) {
+            items.addItem
+              (new ValidationError
+               (PropertyAccessor.getProperty
+                ("vd.missing.repTermVersion", vd.getLongName()), vd));
+          } 
+        }
       }
     }
     return items;
