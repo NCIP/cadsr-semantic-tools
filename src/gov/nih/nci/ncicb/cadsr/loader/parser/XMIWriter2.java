@@ -284,9 +284,9 @@ public class XMIWriter2 implements ElementWriter {
 
     for(ValueDomain vd : vds) {
       sendProgressEvent(status++, goal, "Value Domain: " + vd.getLongName());
-      String fullClassName = "ValueDomains." + LookupUtil.lookupFullName(vd);
+      String fullVDName = "ValueDomains." + LookupUtil.lookupFullName(vd);
 
-      UMLClass clazz = classMap.get(fullClassName);
+      UMLClass clazz = classMap.get(fullVDName);
       
       boolean vdChanged = changeTracker.get(LookupUtil.lookupFullName(vd));
       
@@ -360,7 +360,7 @@ public class XMIWriter2 implements ElementWriter {
 
       for(PermissibleValue pv : vd.getPermissibleValues()) {
         ValueMeaning vm = pv.getValueMeaning();
-        String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getLongName();
+        String fullPropName = fullVDName + "." + vm.getLongName();
         UMLAttribute att = attributeMap.get(fullPropName);
         boolean changed = changeTracker.get(fullPropName);
 
@@ -634,7 +634,7 @@ public class XMIWriter2 implements ElementWriter {
 
         for(PermissibleValue pv : vd.getPermissibleValues()) {
           ValueMeaning vm = pv.getValueMeaning();
-          String fullPropName = "ValueDomains." + vd.getLongName() + "." + vm.getLongName();
+          String fullPropName = "ValueDomains." + LookupUtil.lookupFullName(vd) + "." + vm.getLongName();
 
           Boolean reviewed = ownerReviewTracker.get(fullPropName);
           UMLAttribute umlAtt = null;
