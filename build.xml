@@ -2,6 +2,7 @@
 <project name="UML Loader / SIW" default="compile" basedir=".">
   <property file="build.properties"/>
   <property name="src.dir" value="src"/>
+  <property name="test.src.dir" value="test/src"/>
   <property name="class.dir" value="./classes"/>
   <property name="lib.dir" value="./lib"/>
   <property name="dist.dir" value="./dist" />
@@ -115,6 +116,15 @@
       <!--
            <compilerarg value="-Xlint"/>
       -->
+      <classpath refid="proj.class.path"/>
+    </javac>
+    <javac
+      destdir="${class.dir}"
+      debug="on"
+      srcdir="${test.src.dir}"
+      deprecation="false"
+      fork="yes"
+      >
       <classpath refid="proj.class.path"/>
     </javac>
   </target>
@@ -433,6 +443,32 @@
       <arg value="${rw}"/>
     </java>
 
+  </target>
+
+  <target name="unitTest" depends="compile">
+    <mkdir dir="${class.dir}"/>
+
+    <copy todir="${class.dir}" overwrite="true">
+      <fileset dir="test/data">
+        <include name="test-data-setup.xls"/>
+        <include name="test-cadsr.sql"/>
+        <include name="test-datasource.properties"/>
+      </fileset>
+    </copy>
+
+    <junit 
+      printsummary="on"
+      showoutput="true"
+      haltonerror="on">
+
+      <formatter type="brief" usefile="false" />
+      <formatter type="xml" />
+
+      <classpath refid="proj.class.path"/>
+      
+      <test name="gov.nih.nci.ncicb.cadsr.loader.test.generic.GenericTestCase"/>
+      <test name="gov.nih.nci.ncicb.cadsr.loader.test.persister.ConceptPersisterTest"/>
+    </junit>
   </target>
 
 </project>
