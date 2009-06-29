@@ -269,6 +269,7 @@ public class XMIWriter2 implements ElementWriter {
           clazz.removeTaggedValue(XMIParser2.TV_INHERITED_DE_VERSION.replace("{1}", attributeName));
           clazz.removeTaggedValue(XMIParser2.TV_INHERITED_VD_ID.replace("{1}", attributeName));
           clazz.removeTaggedValue(XMIParser2.TV_INHERITED_VD_VERSION.replace("{1}", attributeName));
+          clazz.removeTaggedValue(XMIParser2.TV_INHERITED_VALUE_DOMAIN.replace("{1}", attributeName));
           
           if(!StringUtil.isEmpty(de.getPublicId())) {
             clazz.addTaggedValue(XMIParser2.TV_INHERITED_DE_ID.replace("{1}", attributeName), de.getPublicId());
@@ -276,6 +277,10 @@ public class XMIWriter2 implements ElementWriter {
           } else if(!StringUtil.isEmpty(de.getValueDomain().getPublicId())) {
             clazz.addTaggedValue(XMIParser2.TV_INHERITED_VD_ID.replace("{1}", attributeName), de.getValueDomain().getPublicId());
             clazz.addTaggedValue(XMIParser2.TV_INHERITED_VD_VERSION.replace("{1}", attributeName), de.getValueDomain().getVersion().toString());
+          } else if(DEMappingUtil.isMappedToLVD(de)) {
+              clazz.addTaggedValue(XMIParser2.TV_INHERITED_VALUE_DOMAIN.replace("{1}", attributeName)
+                , LookupUtil.lookupFullName(de.getValueDomain()));
+        
           }
         }
 
