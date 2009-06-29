@@ -48,6 +48,12 @@ public class GenericTestCase extends MainTestCase {
     prefs.getInstance().setUsePrivateApi(false);
   
   }
+
+
+  public void testGF21590() {
+    
+  }
+  
  
   public void testGF21871() {
   
