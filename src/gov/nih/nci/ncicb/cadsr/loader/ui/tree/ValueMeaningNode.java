@@ -27,28 +27,34 @@ import javax.swing.ImageIcon;
 public class ValueMeaningNode 
   extends AbstractUMLNode 
   implements ReviewableUMLNode          
-  {
-
+{
+  
   static final Icon REVIEWED_ICON = 
     new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-attribute-checked.gif"));
-
+  
   static final Icon DEFAULT_ICON = 
     new ImageIcon(Thread.currentThread().getContextClassLoader().getResource("tree-attribute.gif"));
-
-
+  
+  
   private boolean reviewed = false;
-
-
-    public ValueMeaningNode(ValueMeaning vm, String vdName) {
+  
+  private String vdName;
+  
+  public ValueMeaningNode(ValueMeaning vm, String vdName) {
     display = vm.getLongName();
-
+    
+    this.vdName = vdName;
     fullPath = "ValueDomains." + vdName + "." + vm.getLongName();
-
+    
     userObject = vm;
     
     icon = DEFAULT_ICON;
   }
 
+  public String getVdName() {
+    return vdName;
+  }
+  
   public void setReviewed(boolean currentStatus) {
     reviewed = currentStatus;
 
