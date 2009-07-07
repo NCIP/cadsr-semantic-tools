@@ -99,13 +99,9 @@ public class BeansAccessor {
     return (DEReuseDialog)getFactory().getBean("deReuseDialog");
   }
 
-//   public static Validator getValidator() {
-//     return (Validator)getFactory().getBean("mainValidator");
-//   }
-
-//   public static UMLHandler getUMLHandler() {
-//     return (UMLHandler)getFactory().getBean("umlEventHandler");
-//   }
+  public static Object getBeanByName(String name) {
+    return getFactory().getBean(name);
+  }
 
   private static BeanFactory getFactoryForSiw() {
     try {
