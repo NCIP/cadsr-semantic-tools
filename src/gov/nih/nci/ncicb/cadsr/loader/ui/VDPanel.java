@@ -42,10 +42,14 @@ public class VDPanel extends JPanel implements MouseListener, ActionListener {
   private JToolBar toolbar = new JToolBar();
   private DropDownButton dropDownButton;
   
-  private JLabel cadsrVDLabel = new JLabel("Search caDSR Value Domain");
-  private JLabel mapToLVDLabel = new JLabel("Map to Local Value Domain");
-  private static final String MAP_CADSR_VD = "Search caDSR Value Domain";
-  private static final String MAP_LOCAL_VD = "Map to Local Value Domain";
+  private static final String MAP_CADSR_VD = "Search caDSR Value Domain",
+    MAP_LOCAL_VD = "Map to Local Value Domain",
+    CLEAR_VD = "Clear Value Domain";
+
+  private JLabel cadsrVDLabel = new JLabel(MAP_CADSR_VD),
+    mapToLVDLabel = new JLabel(MAP_LOCAL_VD),
+    clearVDLabel = new JLabel(CLEAR_VD);
+
   private List<PropertyChangeListener> propChangeListeners = new ArrayList<PropertyChangeListener>(); 
   
   private List<ElementChangeListener> changeListeners = new ArrayList<ElementChangeListener>();
@@ -57,8 +61,7 @@ public class VDPanel extends JPanel implements MouseListener, ActionListener {
   private boolean modified = false;
   private boolean isLVD = false;
   private ValueDomain selectedLVD = null;
-  private JPanel cadsrVDPanel;
-  private JPanel lvdPanel;
+  private JPanel cadsrVDPanel, lvdPanel, clearVDPanel;
   private JPanel mainPanel;
   
   public VDPanel(UMLNode node) {
@@ -98,7 +101,13 @@ public class VDPanel extends JPanel implements MouseListener, ActionListener {
     lvdPanel.setBackground(Color.WHITE);
     lvdPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
     lvdPanel.add(mapToLVDLabel);
-      
+    
+    clearVDPanel = new JPanel();
+    clearVDPanel.setBackground(Color.WHITE);
+    clearVDPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    clearVDPanel.add(clearVDLabel);
+
+    dropDownButton.addComponent(clearVDPanel);
     dropDownButton.addComponent(cadsrVDPanel);
     dropDownButton.addComponent(lvdPanel);
     toolbar.add(dropDownButton);
@@ -109,6 +118,7 @@ public class VDPanel extends JPanel implements MouseListener, ActionListener {
       
     cadsrVDLabel.addMouseListener(this);
     mapToLVDLabel.addMouseListener(this);
+    clearVDLabel.addMouseListener(this);
       
     this.add(mainPanel);
     this.setSize(300, 300);
@@ -178,14 +188,55 @@ public class VDPanel extends JPanel implements MouseListener, ActionListener {
     }
   }
 
+  private void clearVDMapping() {
+    DataElement de = null;
+    if(node.getUserObject() instanceof DataElement) {
+      de = (DataElement)node.getUserObject();
+      vd = de.getValueDomain();
+    }    
+
+    String datatype = null;
+    if(de != null) {
+      List<AttributeDatatypePair> attTypesPairs = elements.getElements(new AttributeDatatypePair("", ""));
+      String attributeName = LookupUtil.lookupFullName(de);
+      for(AttributeDatatypePair pair : attTypesPairs) {
+        if(pair.getAttributeName().equals(attributeName)) {
+          datatype = pair.getDatatype();
+        }
+      }
+    }
+    removeAll();
+
+    mainPanel = new JPanel(new GridBagLayout());
+    UIUtil.insertInBag(mainPanel, vdDatatypeTitleLabel, 0, 1);
+    UIUtil.insertInBag(mainPanel, vdDatatypeValueLabel, 1, 1);
+    vdDatatypeTitleLabel.setVisible(true);
+    vdDatatypeValueLabel.setVisible(true);
+    setMainPanel();
+
+    vdDatatypeValueLabel.setText(datatype);
+
+    tempVD = DomainObjectFactory.newValueDomain();
+    tempVD.setLongName(datatype);
+
+
+    firePropertyChangeEvent(new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true));
+    
+    modified = true;
+    isLVD = false;
+  }
+
   public void mouseClicked(MouseEvent e) {
     cadsrVDPanel.setBackground(Color.WHITE);
     lvdPanel.setBackground(Color.WHITE);
+    clearVDPanel.setBackground(Color.WHITE);
     dropDownButton.unfocus();
     if(((JLabel)e.getSource()).getText().equals(MAP_CADSR_VD))
       showCADSRSearchDialog();        
     else if(((JLabel)e.getSource()).getText().equals(MAP_LOCAL_VD))
       showLVDSearchDialog();
+    else if(((JLabel)e.getSource()).getText().equals(CLEAR_VD))
+      clearVDMapping();
   }
 
   public void mousePressed(MouseEvent e) {}
@@ -195,12 +246,16 @@ public class VDPanel extends JPanel implements MouseListener, ActionListener {
       cadsrVDPanel.setBackground(Color.LIGHT_GRAY);
     else if(((JLabel)e.getSource()).getText().equals(MAP_LOCAL_VD))
       lvdPanel.setBackground(Color.LIGHT_GRAY);
+    else if(((JLabel)e.getSource()).getText().equals(CLEAR_VD))
+      clearVDPanel.setBackground(Color.LIGHT_GRAY);
   }
   public void mouseExited(MouseEvent e) {
     if(((JLabel)e.getSource()).getText().equals(MAP_CADSR_VD))
       cadsrVDPanel.setBackground(Color.WHITE);
     else if(((JLabel)e.getSource()).getText().equals(MAP_LOCAL_VD))
       lvdPanel.setBackground(Color.WHITE);
+    else if(((JLabel)e.getSource()).getText().equals(CLEAR_VD))
+      clearVDPanel.setBackground(Color.WHITE);
   }
 
 
@@ -273,6 +328,8 @@ public class VDPanel extends JPanel implements MouseListener, ActionListener {
   public void removeAll() {
     this.remove(mainPanel);
   }
+
+  
   
   public void addDatatype() {
     mainPanel = new JPanel(new GridBagLayout());
