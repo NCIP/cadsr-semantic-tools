@@ -18,7 +18,7 @@ import javax.swing.*;
 public class DatatypePanel extends JPanel 
 {
   private JTextField datatypeField = new JTextField(20);
-  private JComboBox associateComboBox = new JComboBox(new Vector(new HashSet(DatatypeMapping.getValues())));
+  private JComboBox associateComboBox = new JComboBox(new Vector(new TreeSet(DatatypeMapping.getValues())));
   private JButton addButton = new JButton("Add");
   private JButton addToListButton = new JButton("Add to List");
   private JButton removeButton = new JButton("Remove");
@@ -91,6 +91,7 @@ public class DatatypePanel extends JPanel
       public void actionPerformed(ActionEvent event) 
       {     
         userMap.put(datatypeField.getText().toLowerCase(), (String) associateComboBox.getSelectedItem());
+        datatypeField.setText("");
         updateUserList();
       }
     });
@@ -100,6 +101,7 @@ public class DatatypePanel extends JPanel
       {     
         associateComboBox.addItem(datatypeField.getText());
         datatypeField.setText("");
+        associateComboBox.setSelectedIndex(associateComboBox.getItemCount() - 1);
       }
     });
     
