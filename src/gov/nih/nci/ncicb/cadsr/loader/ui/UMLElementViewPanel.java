@@ -30,13 +30,17 @@ public class UMLElementViewPanel extends JPanel
   private ExcludeFromSemanticInheritancePanel excludeSemPanel;
   private UMLNode node;
 
+  private InfoPanel cannotMapVMInfoPanel;
+
   private JPanel cardPanel;
   
   private JPanel displayedPanel;
 
   static final String DE_PANEL_KEY = "dePanel", 
     OC_PANEL_KEY = "ocPanel",
-    CONCEPT_PANEL_KEY = "conceptPanel";
+    CONCEPT_PANEL_KEY = "conceptPanel",
+    CANNOT_MAP_VM_KEY = "cannotMapVm";
+  
     
   private Map<String, JPanel> panelKeyMap = new HashMap<String, JPanel>();
 
@@ -50,6 +54,9 @@ public class UMLElementViewPanel extends JPanel
     gmePanel= new GMEViewPanel(node);
     dsp = new DescriptionPanel(node);
     excludeSemPanel = new ExcludeFromSemanticInheritancePanel(node);
+
+    cannotMapVMInfoPanel = new InfoPanel();
+    cannotMapVMInfoPanel.setOutputText("This Permissible Value cannot be modified because<br>the owning Value Domain is mapped to a caDSR Value Domain");
 
     if(node instanceof AttributeNode){
       buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);}
@@ -77,6 +84,7 @@ public class UMLElementViewPanel extends JPanel
     cardPanel.add(conceptEditorPanel, CONCEPT_PANEL_KEY);
     cardPanel.add(dePanel, DE_PANEL_KEY);
     cardPanel.add(ocPanel, OC_PANEL_KEY);
+    cardPanel.add(cannotMapVMInfoPanel, CANNOT_MAP_VM_KEY);
     
     panelKeyMap.put(CONCEPT_PANEL_KEY, conceptEditorPanel);
     panelKeyMap.put(DE_PANEL_KEY, dePanel);
@@ -137,6 +145,7 @@ public class UMLElementViewPanel extends JPanel
   {
   
     this.node = node;
+    buttonPanel.setVisible(true);
     // is UMLNode a de?
     Object o = node.getUserObject();
     if(o instanceof DataElement) { //if it is, does it have pubID
@@ -158,7 +167,17 @@ public class UMLElementViewPanel extends JPanel
         switchCards(CONCEPT_PANEL_KEY);
       }
     } else if (o instanceof ValueMeaning) { 
-      switchCards(CONCEPT_PANEL_KEY);
+      ValueMeaningNode vmNode = (ValueMeaningNode)node;
+      AlternateName fullName = DomainObjectFactory.newAlternateName();
+      fullName.setType(AlternateName.TYPE_FULL_NAME);
+      fullName.setName(vmNode.getVdName());
+
+      if(StringUtil.isEmpty(LookupUtil.lookupValueDomain(fullName).getPublicId()))  {
+        switchCards(CONCEPT_PANEL_KEY);
+      } else {
+        switchCards(CANNOT_MAP_VM_KEY);
+        buttonPanel.setVisible(false);
+      }
     }
       
     conceptEditorPanel.updateNode(node);
