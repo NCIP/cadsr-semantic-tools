@@ -200,7 +200,7 @@ public class InheritedAttributeViewPanel extends JPanel
     // if de is already mapped
     if(parentDE != null) {
       dePanel.setVisible(
-        DEMappingUtil.isMappedToLVD(de) 
+        !DEMappingUtil.isMappedToLVD(de) 
         &&
         ( !StringUtil.isEmpty(parentDE.getPublicId())
           || !StringUtil.isEmpty(de.getPublicId())
