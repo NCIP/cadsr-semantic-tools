@@ -511,7 +511,6 @@ import java.awt.event.WindowEvent;
      previewReuseMenuItem.setEnabled(false);
 
      if(event.getType() == ViewChangeEvent.VIEW_CONCEPTS
-        || event.getType() == ViewChangeEvent.VIEW_VALUE_MEANING
         || event.getType() == ViewChangeEvent.VIEW_INHERITED) {
        
        // If concept is already showing, just bring it up front
@@ -545,6 +544,16 @@ import java.awt.event.WindowEvent;
          newTab(event, node);
 
        }
+
+     } else if(event.getType() == ViewChangeEvent.VIEW_VALUE_MEANING) {
+       if(viewPanels.containsKey(node.getFullPath())) {
+         NodeViewPanel pa = viewPanels.get(node.getFullPath());
+         viewTabbedPane.setSelectedComponent((JPanel)pa);
+         viewTabbedPane.remove(viewTabbedPane.getSelectedIndex());
+         viewPanels.remove(pa.getName());
+       } 
+
+       newTab(event, node);
 
      } else if(event.getType() == ViewChangeEvent.VIEW_ASSOCIATION) {
 
