@@ -1,0 +1,127 @@
+<uml version="6">
+  <argo version="6">
+    <documentation>
+      <authorname />
+      <authoremail />
+      <version>0.28</version>
+      <description />
+    </documentation>
+    <settings>
+      <notationlanguage>UML 1.4</notationlanguage>
+      <showboldnames>false</showboldnames>
+      <useguillemots>false</useguillemots>
+      <showassociationnames>true</showassociationnames>
+      <showvisibility>false</showvisibility>
+      <showmultiplicity>false</showmultiplicity>
+      <showinitialvalue>false</showinitialvalue>
+      <showproperties>false</showproperties>
+      <showtypes>true</showtypes>
+      <showstereotypes>false</showstereotypes>
+      <showsingularmultiplicities>true</showsingularmultiplicities>
+      <defaultshadowwidth>1</defaultshadowwidth>
+      <hidebidirectionalarrows>true</hidebidirectionalarrows>
+      <fontname>Dialog</fontname>
+      <fontsize>12</fontsize>
+      <defaultstereotypeview>0</defaultstereotypeview>
+      <activediagram>Use Case Diagram</activediagram>
+    </settings>
+    <searchpath href="PROJECT_DIR" />
+    <members>
+      <member type="profile" name="GF19710_profile.profile" />
+      <member type="xmi" name="GF19710.xmi" />
+      <member type="pgml" name="GF19710_ClassDiagram.pgml" diagramclass="org.argouml.uml.diagram.static_structure.ui.UMLClassDiagram" diagramname="Class Diagram" />
+      <member type="pgml" name="GF19710_UseCaseDiagram.pgml" diagramclass="org.argouml.uml.diagram.use_case.ui.UMLUseCaseDiagram" diagramname="Use Case Diagram" />
+      <member type="todo" name="GF19710.todo" />
+    </members>
+    <historyfile name="" />
+  </argo>
+  <profile>
+    <plugin>UML 1.4</plugin>
+  </profile>
+  <XMI xmlns:UML="org.omg.xmi.namespace.UML" xmi.version="1.2" timestamp="Thu Jul 02 18:02:36 GMT 2009">
+    <XMI.header>
+      <XMI.documentation>
+        <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
+        <XMI.exporterVersion>0.28(6) revised on $Date: 2009-07-07 18:13:30 $</XMI.exporterVersion>
+      </XMI.documentation>
+      <XMI.metamodel xmi.name="UML" xmi.version="1.4" />
+    </XMI.header>
+    <XMI.content>
+      <UML:Model xmi.id="127-0-1-1-73d307b7:1223c9a68c2:-8000:0000000000000B36" name="untitledModel" isSpecification="false" isRoot="false" isLeaf="false" isAbstract="false">
+        <UML:Namespace.ownedElement>
+          <UML:Package xmi.id="127-0-1-1-73d307b7:1223c9a68c2:-8000:0000000000000CDE" name="test" isSpecification="false" isRoot="false" isLeaf="false" isAbstract="false">
+            <UML:Namespace.ownedElement>
+              <UML:Class xmi.id="127-0-1-1-73d307b7:1223c9a68c2:-8000:0000000000000CDF" name="A" visibility="public" isSpecification="false" isRoot="false" isLeaf="false" isAbstract="false" isActive="false">
+                <UML:Classifier.feature>
+                  <UML:Attribute xmi.id="127-0-1-1-73d307b7:1223c9a68c2:-8000:0000000000000CE3" name="id" visibility="public" isSpecification="false" ownerScope="instance" changeability="changeable" targetScope="instance">
+                    <UML:StructuralFeature.multiplicity>
+                      <UML:Multiplicity xmi.id="127-0-1-1-73d307b7:1223c9a68c2:-8000:0000000000000CE4">
+                        <UML:Multiplicity.range>
+                          <UML:MultiplicityRange xmi.id="127-0-1-1-73d307b7:1223c9a68c2:-8000:0000000000000CE5" lower="1" upper="1" />
+                        </UML:Multiplicity.range>
+                      </UML:Multiplicity>
+                    </UML:StructuralFeature.multiplicity>
+                    <UML:StructuralFeature.type>
+                      <UML:Class xmi.idref="127-0-1-1-73d307b7:1223c9a68c2:-8000:00000000000011FC" />
+                    </UML:StructuralFeature.type>
+                    <UML:ModelElement.taggedValue>
+                      <UML:TaggedValue xmi.id="364C781E_B245_40E8_A763_064D17980181">
+                        <UML:TaggedValue.dataValue>0</UML:TaggedValue.dataValue>
+                        <UML:TaggedValue.type>
+                          <UML:TagDefinition xmi.idref="8BDAA73E_ECD9_4D67_98F8_C4C2B5FB6850" />
+                        </UML:TaggedValue.type>
+                      </UML:TaggedValue>
+                      <UML:TaggedValue xmi.id="22CCA15B_8777_4530_89FC_9E0F3A9E76DE">
+                        <UML:TaggedValue.dataValue>This description will be too long. This description will be too long. This description will be too long. This description will be too long. This description will be too long. This description will be too long. This description will be too long. This descr</UML:TaggedValue.dataValue>
+                        <UML:TaggedValue.type>
+                          <UML:TagDefinition xmi.idref="6911FE68_60AA_4242_9B30_019FCEF9986F" />
+                        </UML:TaggedValue.type>
+                      </UML:TaggedValue>
+                      <UML:TaggedValue xmi.id="32D887AA_A022_49AC_A0AD_EEE1FE22EE5A">
+                        <UML:TaggedValue.dataValue>iption will be too long. This description will be too long. This description will be too long.</UML:TaggedValue.dataValue>
+                        <UML:TaggedValue.type>
+                          <UML:TagDefinition xmi.idref="160BE55E_A754_4C03_896C_C507624667DD" />
+                        </UML:TaggedValue.type>
+                      </UML:TaggedValue>
+                    </UML:ModelElement.taggedValue>
+                  </UML:Attribute>
+                </UML:Classifier.feature>
+                <UML:ModelElement.taggedValue>
+                  <UML:TaggedValue xmi.id="7295E0F4_5CB8_466F_9EB4_6BC38B9162B9">
+                    <UML:TaggedValue.dataValue>0</UML:TaggedValue.dataValue>
+                    <UML:TaggedValue.type>
+                      <UML:TagDefinition xmi.idref="8BDAA73E_ECD9_4D67_98F8_C4C2B5FB6850" />
+                    </UML:TaggedValue.type>
+                  </UML:TaggedValue>
+                </UML:ModelElement.taggedValue>
+              </UML:Class>
+            </UML:Namespace.ownedElement>
+          </UML:Package>
+          <UML:Package xmi.id="127-0-1-1-73d307b7:1223c9a68c2:-8000:00000000000011FB" name="datatypes" isSpecification="false" isRoot="false" isLeaf="false" isAbstract="false">
+            <UML:Namespace.ownedElement>
+              <UML:Class xmi.id="127-0-1-1-73d307b7:1223c9a68c2:-8000:00000000000011FC" name="int" visibility="public" isSpecification="false" isRoot="false" isLeaf="false" isAbstract="false" isActive="false">
+                <UML:ModelElement.taggedValue>
+                  <UML:TaggedValue xmi.id="04424C4F_C103_4E10_87F9_3888D67D9017">
+                    <UML:TaggedValue.dataValue>0</UML:TaggedValue.dataValue>
+                    <UML:TaggedValue.type>
+                      <UML:TagDefinition xmi.idref="8BDAA73E_ECD9_4D67_98F8_C4C2B5FB6850" />
+                    </UML:TaggedValue.type>
+                  </UML:TaggedValue>
+                </UML:ModelElement.taggedValue>
+              </UML:Class>
+            </UML:Namespace.ownedElement>
+          </UML:Package>
+          <UML:TagDefinition xmi.id="8BDAA73E_ECD9_4D67_98F8_C4C2B5FB6850" name="OWNER_REVIEWED" />
+          <UML:TagDefinition xmi.id="6911FE68_60AA_4242_9B30_019FCEF9986F" name="CADSR_Description" />
+          <UML:TagDefinition xmi.id="160BE55E_A754_4C03_896C_C507624667DD" name="CADSR_Description2" />
+        </UML:Namespace.ownedElement>
+      </UML:Model>
+    </XMI.content>
+  </XMI>
+  <pgml description="org.argouml.uml.diagram.static_structure.ui.UMLClassDiagram|127-0-1-1-73d307b7:1223c9a68c2:-8000:0000000000000B36" name="Class Diagram" />
+  <pgml description="org.argouml.uml.diagram.use_case.ui.UMLUseCaseDiagram|127-0-1-1-73d307b7:1223c9a68c2:-8000:0000000000000B36" name="Use Case Diagram" />
+  <todo>
+    <todolist />
+    <resolvedcritics />
+  </todo>
+</uml>
