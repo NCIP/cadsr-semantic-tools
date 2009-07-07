@@ -51,7 +51,7 @@ public class UMLDefaultHandler
   private Logger logger = Logger.getLogger(UMLDefaultHandler.class.getName());
   private List packageList = new ArrayList();
   
-  private ReviewTracker reviewTracker;
+  private ReviewTracker reviewTracker = ReviewTracker.getInstance(ReviewTrackerType.Owner);
 
   private CadsrModule cadsrModule;
 
@@ -874,6 +874,7 @@ public class UMLDefaultHandler
           DataElement newDe = DomainObjectFactory.newDataElement();
           newDe.setDataElementConcept(newDec);
           newDe.setLongName(newDec.getLongName() + " " + de.getValueDomain().getLongName());
+
           
           inheritedAttributes.add(newDe, de);
           // check existing de mapping
@@ -925,6 +926,19 @@ public class UMLDefaultHandler
               newDe.addDefinition(newDef);
             }
           }
+
+
+          // We need to add the dataytype for the inherited attribute. 
+          List<AttributeDatatypePair> attTypesPairs = elements.getElements(new AttributeDatatypePair("", ""));
+          String datatype = null;
+          String attributeName = LookupUtil.lookupFullName(de);
+          for(AttributeDatatypePair pair : attTypesPairs) {
+            if(pair.getAttributeName().equals(attributeName)) {
+              datatype = pair.getDatatype();
+            }
+          }
+          
+          elements.addElement(new AttributeDatatypePair(packageName + "." + className + "." + propName, datatype));
 
           AlternateName fullName = DomainObjectFactory.newAlternateName();
           fullName.setType(AlternateName.TYPE_FULL_NAME);
