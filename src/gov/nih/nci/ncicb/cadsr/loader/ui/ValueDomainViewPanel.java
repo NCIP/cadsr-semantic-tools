@@ -416,20 +416,20 @@ public class ValueDomainViewPanel extends JPanel
       vdDisplayFormatValueCombobox.setSelectedIndex(index == -1 ? 0 : index);
     }
 
-    if(tempVD.getMinimumLength() != Integer.MAX_VALUE)
-      vdMinimumLengthValueTextField.setText(setTextFieldValue(tempVD.getMinimumLength()));
-    else 
-      vdMinimumLengthValueTextField.setText("");
+    if(tempVD.getMinimumLength() != null)
+      vdMinimumLengthValueTextField.setText(tempVD.getMinimumLength().toString());
+   else 
+     vdMinimumLengthValueTextField.setText("");
 
-    if(tempVD.getMaximumLength() != Integer.MAX_VALUE)
-      vdMaximumLengthValueTextField.setText(setTextFieldValue(tempVD.getMaximumLength()));
-    else 
-      vdMaximumLengthValueTextField.setText("");
+    if(tempVD.getMaximumLength() != null)
+      vdMaximumLengthValueTextField.setText(tempVD.getMaximumLength().toString());
+   else 
+     vdMaximumLengthValueTextField.setText("");
 
-    if(tempVD.getDecimalPlace() != Integer.MAX_VALUE)
-      vdDecimalPlaceValueTextField.setText(setTextFieldValue(tempVD.getDecimalPlace()));
-    else 
-      vdDecimalPlaceValueTextField.setText("");
+    if(tempVD.getDecimalPlace() != null)
+      vdDecimalPlaceValueTextField.setText(tempVD.getDecimalPlace().toString());
+   else 
+     vdDecimalPlaceValueTextField.setText("");
 
     vdHighValueTextField.setText(tempVD.getHighValue());
     vdLowValueTextField.setText(tempVD.getLowValue());
@@ -505,17 +505,16 @@ public class ValueDomainViewPanel extends JPanel
 
     if(!checkForNullOrZero(vdMinimumLengthValueTextField.getText()))
       vd.setMinimumLength(Integer.parseInt(vdMinimumLengthValueTextField.getText()));
-    else // Can't come up with anything better than this:
-      // we need to check for this logic when writing. Not good to carry logic around like this...
-      vd.setMinimumLength(Integer.MAX_VALUE);
+    else
+      vd.setMinimumLength(null);
     if(!checkForNullOrZero(vdMaximumLengthValueTextField.getText()))
       vd.setMaximumLength(Integer.parseInt(vdMaximumLengthValueTextField.getText()));
     else
-      vd.setMaximumLength(Integer.MAX_VALUE);
+      vd.setMaximumLength(null);
     if(!checkForNullOrZero(vdDecimalPlaceValueTextField.getText()))
       vd.setDecimalPlace(Integer.parseInt(vdDecimalPlaceValueTextField.getText()));
     else
-      vd.setDecimalPlace(Integer.MAX_VALUE);
+      vd.setDecimalPlace(null);
     vd.setHighValue(vdHighValueTextField.getText());
     vd.setLowValue(vdLowValueTextField.getText());
     
@@ -535,11 +534,11 @@ public class ValueDomainViewPanel extends JPanel
       this.cadsrModule = cadsrModule;
     }
     
-  private String setTextFieldValue(int value){
-    
-    return value == 0 ? "" : Integer.toString(value);
-    
-  }
+//  private String setTextFieldValue(int value){
+//    
+//    return value == 0 ? "" : Integer.toString(value);
+//    
+//  }
   
   /**
    * Returns true if the value is null.

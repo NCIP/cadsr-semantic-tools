@@ -38,9 +38,9 @@ public class NewValueDomainEvent extends NewConceptualEvent {
   private Float vdVersion;
   private String unitOfMeasure;
   private String displayFormat;
-  private int minLength;
-  private int maxLength;
-  private int decimalPlace;
+  private Integer minLength;
+  private Integer maxLength;
+  private Integer decimalPlace;
   private String highValue;
   private String lowValue;
 
@@ -225,27 +225,27 @@ public class NewValueDomainEvent extends NewConceptualEvent {
         return displayFormat;
     }
 
-    public void setMinLength(int minLength) {
+    public void setMinLength(Integer minLength) {
         this.minLength = minLength;
     }
 
-    public int getMinLength() {
+    public Integer getMinLength() {
         return minLength;
     }
 
-    public void setMaxLength(int maxLength) {
+    public void setMaxLength(Integer maxLength) {
         this.maxLength = maxLength;
     }
 
-    public int getMaxLength() {
+    public Integer getMaxLength() {
         return maxLength;
     }
 
-    public void setDecimalPlace(int decimalPlace) {
+    public void setDecimalPlace(Integer decimalPlace) {
         this.decimalPlace = decimalPlace;
     }
 
-    public int getDecimalPlace() {
+    public Integer getDecimalPlace() {
         return decimalPlace;
     }
 
