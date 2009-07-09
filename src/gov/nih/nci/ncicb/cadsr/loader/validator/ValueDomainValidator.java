@@ -217,7 +217,7 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
             }
           }
           
-          if(vd.getMinimumLength() != Integer.MAX_VALUE) {
+          if(vd.getMinimumLength() != null) {
             if(vd.getMinimumLength() > 9999999) {
               items.addItem
                 (new ValidationError
@@ -226,7 +226,7 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
             }
           }            
           
-          if(vd.getMaximumLength() != Integer.MAX_VALUE) {
+          if(vd.getMaximumLength() != null) {
             if(vd.getMaximumLength() > 9999999) {
               items.addItem
                 (new ValidationError
@@ -235,14 +235,16 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
             }
           }
           
-          if(vd.getMaximumLength() < vd.getMinimumLength()) {
-            items.addItem
-              (new ValidationError
-               (PropertyAccessor.getProperty
-                ("vd.min.higher.than.max.validation.msg"), vd));
-          }
+          if(vd.getMaximumLength() != null && vd.getMinimumLength() != null) {
+            if(vd.getMaximumLength() < vd.getMinimumLength()) {
+              items.addItem
+                (new ValidationError
+                 (PropertyAccessor.getProperty
+                  ("vd.min.higher.than.max.validation.msg"), vd));
+            }
+          }            
           
-          if(vd.getDecimalPlace() != Integer.MAX_VALUE) {
+          if(vd.getDecimalPlace() != null) {
             if(vd.getDecimalPlace() > 99) {
               items.addItem
                 (new ValidationError

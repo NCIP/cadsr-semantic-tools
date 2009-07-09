@@ -350,11 +350,11 @@ public class XMIWriter2 implements ElementWriter {
             clazz.addTaggedValue(XMIParser2.TV_VD_UOM, vd.getUOMName());
           if(!StringUtil.isEmpty(vd.getFormatName()))
             clazz.addTaggedValue(XMIParser2.TV_VD_DISPLAY_FORMAT, vd.getFormatName());
-          if(vd.getMinimumLength() != Integer.MAX_VALUE)
+          if(vd.getMinimumLength() != null)
             clazz.addTaggedValue(XMIParser2.TV_VD_MINIMUM_LENGTH, Integer.toString(vd.getMinimumLength()));
-          if(vd.getMaximumLength() != Integer.MAX_VALUE)
+          if(vd.getMaximumLength() != null)
             clazz.addTaggedValue(XMIParser2.TV_VD_MAXIMUM_LENGTH, Integer.toString(vd.getMaximumLength()));
-          if(vd.getDecimalPlace() != Integer.MAX_VALUE)
+          if(vd.getDecimalPlace() != null)
             clazz.addTaggedValue(XMIParser2.TV_VD_DECIMAL_PLACE, Integer.toString(vd.getDecimalPlace()));
           if(!StringUtil.isEmpty(vd.getHighValue()))
             clazz.addTaggedValue(XMIParser2.TV_VD_HIGH_VALUE, vd.getHighValue());
