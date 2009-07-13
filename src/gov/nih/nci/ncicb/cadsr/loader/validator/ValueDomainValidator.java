@@ -114,6 +114,8 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
                           vd.getPublicId() + "v" + vd.getVersion()), vd));
               
             } else {
+            	vd.setId(queryById.get(0).getId());
+            }
               List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(vd);
               List<PermissibleValue> localPVs = vd.getPermissibleValues();
               
@@ -132,7 +134,6 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
                 //                     options);
                 //                 items.addItem(new ValidationError(PropertyAccessor.getProperty("vd.already.exist", vd.getLongName()), vd));
               }
-            }
           } catch (Exception e) {
             logger.error(e);
             e.printStackTrace();
