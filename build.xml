@@ -466,6 +466,8 @@
 
       <classpath refid="proj.class.path"/>
       
+      <test name="gov.nih.nci.ncicb.cadsr.loader.test.validator.DatatypeValidatorTest"/>
+      <test name="gov.nih.nci.ncicb.cadsr.loader.test.parser.XMIWriterTest"/>
       <test name="gov.nih.nci.ncicb.cadsr.loader.test.generic.GenericTestCase"/>
       <test name="gov.nih.nci.ncicb.cadsr.loader.test.persister.ConceptPersisterTest"/>
     </junit>
