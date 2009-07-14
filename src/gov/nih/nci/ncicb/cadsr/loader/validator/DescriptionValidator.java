@@ -37,14 +37,15 @@ public class DescriptionValidator implements Validator
     if(des != null) {  
       for(DataElement de : des) {  
         if(!inheritedAttributes.isInherited(de))
-          if(de.getDefinitions() == null || de.getDefinitions().size() == 0)
+          if(de.getDefinitions() == null || de.getDefinitions().size() == 0) {
             items.addItem(new ValidationError
                           (PropertyAccessor.getProperty
                            ("attribute.no.description",
                             de.getDataElementConcept().getLongName()), de));
+          }          
       }
     }
     
     return items; 
-    }
+  }
 }
