@@ -56,6 +56,7 @@ public class GenericTestCase extends MainTestCase {
   
  
   public void testGF21871() {
+    ElementsLists.getInstance().clear();
   
     String filename = "/home/ludetc/dev/umlclassdiagramloader/2.0.0/test/data/xmi/GF21871.xmi";
     XmiInOutHandler handler = null;
