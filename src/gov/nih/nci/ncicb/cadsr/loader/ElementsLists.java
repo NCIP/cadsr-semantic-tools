@@ -42,6 +42,15 @@ public class ElementsLists {
   }
 
   /**
+   *
+   * The singleton needs to go. Until then, this method allows to clear it so this can run in jUnit
+   * 
+   */
+  public void clear() {
+    objects = new HashMap();
+  }
+
+  /**
    * remove an element from this list.
    *
    * @param o an <code>Object</code> 
