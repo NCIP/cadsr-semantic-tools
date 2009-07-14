@@ -92,6 +92,17 @@ public class DefinitionLengthValidator implements Validator {
         evt.setStatus(count++);
         fireProgressEvent(evt);
 
+        if(de.getDefinitions() == null || de.getDefinitions().size() == 0) {
+          
+        } else {
+          Definition def = de.getDefinitions().get(0);
+          if(def.getDefinition().length() > 2000) {
+            ValidationItem vItem = new ValidationError(PropertyAccessor.getProperty("alt.definition.too.long", LookupUtil.lookupFullName(de)), de);
+            vItem.setIncludeInInherited(true);
+            items.addItem(vItem);
+          }
+        }
+
         DataElementConcept dec = de.getDataElementConcept();
         if(StringUtil.isEmpty(de.getPublicId()) || de.getVersion() == null) {
           String ocDef = "";
@@ -128,7 +139,9 @@ public class DefinitionLengthValidator implements Validator {
           }
           // the +2 is for the underscores between OC / ProP and VD
           if((ocDef + propDef + vdDefinition + 2).length() > 2000) {
-            items.addItem(new ValidationConceptError(PropertyAccessor.getProperty("attribute.definition.too.long", dec.getProperty().getLongName()), de));
+            ValidationItem vItem = new ValidationConceptError(PropertyAccessor.getProperty("attribute.definition.too.long", dec.getProperty().getLongName()), de);
+            vItem.setIncludeInInherited(true);
+            items.addItem(vItem);
           }
         }
       }
