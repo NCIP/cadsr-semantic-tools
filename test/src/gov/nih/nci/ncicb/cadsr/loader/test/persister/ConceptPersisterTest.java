@@ -20,32 +20,33 @@ public class ConceptPersisterTest extends MainTestCase {
     }
     
     public void testConceptNotInCadsrNotInEVS() {
-        ElementsLists elements = ElementsLists.getInstance();
-        
-        Concept concept = DomainObjectFactory.newConcept();
-        concept.setPreferredName("W_00001");
-        concept.setLongName("Not a real concept");
-        concept.setPreferredDefinition("bad concept");
-        concept.setDefinitionSource("NCI");
-        
-        elements.addElement(concept);
-
-        ObjectClass oc = DomainObjectFactory.newObjectClass();
-        oc.setPreferredName("W_00001");
-        elements.addElement(oc);
-        
-        ConceptPersister persister = new ConceptPersister();
-        persister.setPersisterUtil(new PersisterUtil());
-
-        boolean exceptionCaught = false;
-        try {
-          persister.persist();
-        } catch (PersisterException ex) {
-          exceptionCaught = true;    
-        }
-        
-        assertTrue(exceptionCaught);
-        
+      ElementsLists elements = ElementsLists.getInstance();
+      elements.clear();
+      
+      Concept concept = DomainObjectFactory.newConcept();
+      concept.setPreferredName("W_00001");
+      concept.setLongName("Not a real concept");
+      concept.setPreferredDefinition("bad concept");
+      concept.setDefinitionSource("NCI");
+      
+      elements.addElement(concept);
+      
+      ObjectClass oc = DomainObjectFactory.newObjectClass();
+      oc.setPreferredName("W_00001");
+      elements.addElement(oc);
+      
+      ConceptPersister persister = new ConceptPersister();
+      persister.setPersisterUtil(new PersisterUtil());
+      
+      boolean exceptionCaught = false;
+      try {
+        persister.persist();
+      } catch (PersisterException ex) {
+        exceptionCaught = true;    
+      }
+      
+      assertTrue(exceptionCaught);
+      
     }
     
     
