@@ -53,7 +53,7 @@ public abstract class ValidationItem {
   }
 
   public void setIncludeInInherited(boolean b) {
-    includeInInherited = true;
+    includeInInherited = b;
   }
 
 }
