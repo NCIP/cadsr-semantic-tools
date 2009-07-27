@@ -46,7 +46,7 @@ public class ConceptValidator implements Validator, CadsrModuleListener
   
     items = ValidationItems.getInstance();
 
-    evsModule = new EvsModule(UserPreferences.getInstance().getPreTBox()?"Pre_NCI_Thesaurus":"NCI_Thesaurus");
+    evsModule = new EvsModule(UserPreferences.getInstance().getPreTBox()?"Pre NCI Thesaurus":"NCI_Thesaurus");
 
     List<Concept> concepts = ElementsLists.getInstance().
             getElements(DomainObjectFactory.newConcept());
