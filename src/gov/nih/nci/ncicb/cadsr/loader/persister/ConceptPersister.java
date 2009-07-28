@@ -108,7 +108,15 @@ public class ConceptPersister implements Persister {
               throw new PersisterException
                 (PropertyAccessor.getProperty
                  ("cannot.create.concept.in.evs.different.name", c.getPreferredName()));
-            } else if(evsConcept.getPreferredDefinition() == null || !evsConcept.getPreferredDefinition().equals(c.getPreferredDefinition())) {
+              
+              
+              
+              
+            } else if(
+                      (evsConcept.getPreferredDefinition() == null && !c.getPreferredDefinition().equals(PropertyAccessor.getProperty("default.evs.definition"))) 
+                      || 
+                      (evsConcept.getPreferredDefinition() != null && !evsConcept.getPreferredDefinition().equals(c.getPreferredDefinition()))) {
+              
               logger.error(PropertyAccessor.getProperty
                            ("cannot.create.concept.in.evs.different.definition", c.getPreferredName())); 
               throw new PersisterException
