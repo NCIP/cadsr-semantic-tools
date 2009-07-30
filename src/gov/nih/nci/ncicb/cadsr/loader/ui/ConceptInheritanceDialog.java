@@ -25,7 +25,6 @@ public class ConceptInheritanceDialog extends JDialog implements ActionListener 
     this.viewPanel = viewPanel;
     
     initUI();
-
   }
 
   private void initUI() {
