@@ -458,14 +458,20 @@
 
     <junit 
       printsummary="on"
-      showoutput="true"
-      haltonerror="on">
+      showoutput="false"
+      haltonerror="on"
+      fork="yes"
+      >
+
+      <jvmarg value="-XX:MaxPermSize=128M"/>
+      
 
       <formatter type="brief" usefile="false" />
       <formatter type="xml" />
 
       <classpath refid="proj.class.path"/>
       
+      <test name="gov.nih.nci.ncicb.cadsr.loader.test.parser.XMIParserTest"/>
       <test name="gov.nih.nci.ncicb.cadsr.loader.test.validator.DuplicateClassValidatorTest"/>
       <test name="gov.nih.nci.ncicb.cadsr.loader.test.validator.DatatypeValidatorTest"/>
       <test name="gov.nih.nci.ncicb.cadsr.loader.test.parser.XMIWriterTest"/>
