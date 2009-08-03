@@ -113,6 +113,8 @@ public class ObjectUpdater {
     if(ac instanceof ObjectClass) {
       ObjectClass oc = (ObjectClass)ac;
       oc.setPreferredName(preferredNameFromConcepts(newConcepts));
+
+      oc.setConceptDerivationRule(newConDR(newConcepts));
     } else if(ac instanceof DataElement) {
       DataElement de = (DataElement)ac;
 

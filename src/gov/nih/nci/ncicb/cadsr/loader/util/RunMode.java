@@ -26,7 +26,7 @@ package gov.nih.nci.ncicb.cadsr.loader.util;
  */
 public enum RunMode {
   GenerateReport("Run Semantic Connector", "Model Owner"), 
-  AnnotateXMI("Review Annotated XMI", "Model Owner"), 
+    AnnotateXMI("Review Annotated XMI", "Model Owner"), 
     Curator("Curate XMI File", "Vocabulary Reviewer"), 
     Reviewer("Review Annotated XMI File", "Model Owner"), 
     Roundtrip("Perform XMI Roundtrip", "Model Owner"),
@@ -35,7 +35,8 @@ public enum RunMode {
     UnannotatedXmi("Review Unannotated XMI File", "Model Owner"),
     GMEDefaults("Generate Default GME Tags", "Model Owner"),
     GMECleanup("GME Cleanup", "Model Owner"),
-    ConceptInheritance("Perform Automatic Concept Inheritance", "Model Owner")
+    ConceptInheritance("Perform Automatic Concept Inheritance", "Model Owner"),
+    Other("Other Mode", "Other")
     ;
 
   private String titleName;
