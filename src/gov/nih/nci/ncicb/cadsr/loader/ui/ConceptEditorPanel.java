@@ -56,7 +56,8 @@ public class ConceptEditorPanel extends JPanel
   private JPanel[] conceptPanels;
     
   private static boolean editable = false;
-  private boolean verify;
+  private boolean verify, inheritanceUpdate;
+
   static {
     UserSelections selections = UserSelections.getInstance();
     editable = selections.getProperty("MODE").equals(RunMode.Curator);
@@ -278,8 +279,9 @@ public class ConceptEditorPanel extends JPanel
       }
     }
     
-    update = orderChanged | update;
-    
+    update = orderChanged | update | inheritanceUpdate;
+    inheritanceUpdate = false;
+
     if(update) {
       Object o = node.getUserObject();
       if(toAll) {
@@ -447,9 +449,6 @@ public class ConceptEditorPanel extends JPanel
           downButton.setVisible(false);
       }
 
-//       if(concepts.length <= 1)
-//         deleteButton.setVisible(false);
-      
       deleteButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           removePressed(index);
@@ -485,13 +484,10 @@ public class ConceptEditorPanel extends JPanel
 
           firePropertyChangeEvent(
             new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, areAllFieldEntered()));          
-          //setSaveButtonState(areAllFieldEntered());
           firePropertyChangeEvent(
             new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false));
-          //reviewButton.setEnabled(false);
           firePropertyChangeEvent(
             new PropertyChangeEvent(this, AddButtonPanel.ADD, null, false)); 
-          //addButton.setEnabled(false);
         }
       };
       
@@ -555,13 +551,7 @@ public class ConceptEditorPanel extends JPanel
       UIUtil.insertInBag(gridPanel, vdPanel, 0, concepts.length + 1);
     updateHeaderLabels();
     
-//     if(prefs.getUmlDescriptionOrder().equals("last"))
-//       UIUtil.insertInBag(gridPanel, UIUtil.createDescriptionPanel(node), 0, concepts.length + 2); 
-
-//     this.add(scrollPane, BorderLayout.CENTER);
     this.add(gridPanel, BorderLayout.CENTER);
-
-    
   }
   
 
@@ -595,6 +585,28 @@ public class ConceptEditorPanel extends JPanel
         conceptInheritanceViewPanel.update(oc);
         ConceptInheritanceDialog dialog = new ConceptInheritanceDialog(conceptInheritanceViewPanel);
         dialog.setVisible(true);
+
+        ConceptDerivationRule conDR = dialog.getConceptDerivationRule();
+        if(conDR != null) {
+          Concept[] newConcepts = new Concept[conDR.getComponentConcepts().size()];
+          for(int i = 0; i < newConcepts.length; i++) {
+            newConcepts[i] = conDR.getComponentConcepts().get(i).getConcept();
+          }
+          concepts = newConcepts;
+          
+          this.remove(gridPanel);
+          initViewPanel();
+          this.updateUI();
+          
+          firePropertyChangeEvent
+            (new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, areAllFieldEntered()));
+          firePropertyChangeEvent(
+                                  new PropertyChangeEvent(this, AddButtonPanel.ADD, null, false));
+          firePropertyChangeEvent(
+                                  new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false));
+
+          inheritanceUpdate = true;
+        }
     }
   }
 
@@ -612,7 +624,6 @@ public class ConceptEditorPanel extends JPanel
       newConcepts[newConcepts.length - 1] = concept;
       concepts = newConcepts;
 
-//       this.remove(scrollPane);
       this.remove(gridPanel);
       initViewPanel();
       this.updateUI();
@@ -645,7 +656,6 @@ public class ConceptEditorPanel extends JPanel
       }
       concepts = newConcepts;
       
-//       _this.remove(scrollPane);
       _this.remove(gridPanel);
       initViewPanel();
       
@@ -661,9 +671,6 @@ public class ConceptEditorPanel extends JPanel
       firePropertyChangeEvent(
                 new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false));
       
-//       if(concepts.length < 2)
-//         firePropertyChangeEvent(
-//                 new PropertyChangeEvent(this, ButtonPanel.DELETE, null, false));
       this.updateUI();
 
       remove = true;
@@ -808,10 +815,6 @@ class ConceptUI {
     name.setEnabled(enabled);
     def.setEnabled(enabled);
     defSource.setEnabled(enabled);
-    //       evsButton.setEnabled(enabled);
-    //       deleteButton.setEnabled(enabled);
-    //       downButton.setEnabled(enabled);
-    //       upButton.setEnabled(enabled);
   }
  
   class TextFieldLimiter extends PlainDocument

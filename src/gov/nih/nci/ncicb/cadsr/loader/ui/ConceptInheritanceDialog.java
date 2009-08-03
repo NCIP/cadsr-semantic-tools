@@ -1,5 +1,7 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
+import gov.nih.nci.ncicb.cadsr.domain.ConceptDerivationRule;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -16,6 +18,9 @@ public class ConceptInheritanceDialog extends JDialog implements ActionListener 
   private JButton okButton = new JButton("Proceed"),
     cancelButton = new JButton("Cancel");
 
+  private String OK_COMMAND = "OK",
+    CANCEL_COMMAND = "CANCEL";
+
   private ConceptInheritanceViewPanel viewPanel;
   private JScrollPane mainScrollPane;
 
@@ -27,6 +32,10 @@ public class ConceptInheritanceDialog extends JDialog implements ActionListener 
     initUI();
   }
 
+  public ConceptDerivationRule getConceptDerivationRule() {
+    return viewPanel.getConceptDerivationRule();
+  }
+  
   private void initUI() {
     this.setSize(400, 500);
 
@@ -42,12 +51,18 @@ public class ConceptInheritanceDialog extends JDialog implements ActionListener 
 
     add(buttonPanel, BorderLayout.SOUTH);
 
+    okButton.setActionCommand(OK_COMMAND);
+    cancelButton.setActionCommand(CANCEL_COMMAND);
+
     okButton.addActionListener(this);
     cancelButton.addActionListener(this);
-
   }
 
   public void actionPerformed(ActionEvent event) {
+    if(event.getActionCommand().equals(OK_COMMAND)) {
+      viewPanel.applyInheritance();
+    }
+
     this.dispose();
   }
 }
