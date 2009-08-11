@@ -368,7 +368,7 @@
         <ref bean="gmeValidator"/>
         <ref bean="conceptInheritanceValidator"/>
         <ref bean="duplicateConceptValidator"/>
-        <ref bean="duplicateClassValidator"/>
+        <!--ref bean="duplicateClassValidator"/-->
         <ref bean="valueDomainRepTermValidator"/>
       </list>
     </property>
