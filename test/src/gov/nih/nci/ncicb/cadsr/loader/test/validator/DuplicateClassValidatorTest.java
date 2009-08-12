@@ -10,7 +10,7 @@ import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
 import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 
-//import gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateClassValidator;
+import gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateClassValidator;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationError;
 import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItems;
 
@@ -67,7 +67,7 @@ public class DuplicateClassValidatorTest extends MainTestCase {
       ex.printStackTrace();
     }
     
-   /* DuplicateClassValidator duplicateClassValidator = new DuplicateClassValidator();
+    DuplicateClassValidator duplicateClassValidator = new DuplicateClassValidator();
     ValidationItems items = duplicateClassValidator.validate();
     
     Set<ValidationError> errors = items.getErrors();
@@ -79,7 +79,7 @@ public class DuplicateClassValidatorTest extends MainTestCase {
         errorFound = true;
       }
     }
-    assertTrue(errorFound);*/
+    assertTrue(errorFound);
   }
 
   public boolean runInRealContainer() {

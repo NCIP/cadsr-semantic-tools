@@ -327,8 +327,8 @@
   <bean name="duplicateValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateValidator"/>
 
-  <!--bean name="duplicateClassValidator"
-    class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateClassValidator"/-->
+  <bean name="duplicateClassValidator"
+    class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateClassValidator"/>
 
   <bean name="duplicateConceptValidator"
     class="gov.nih.nci.ncicb.cadsr.loader.validator.DuplicateConceptValidator"/>
@@ -368,7 +368,7 @@
         <ref bean="gmeValidator"/>
         <ref bean="conceptInheritanceValidator"/>
         <ref bean="duplicateConceptValidator"/>
-        <!--ref bean="duplicateClassValidator"/-->
+        <ref bean="duplicateClassValidator"/>
         <ref bean="valueDomainRepTermValidator"/>
       </list>
     </property>
@@ -391,7 +391,7 @@
         <ref bean="gmeValidator"/>
         <ref bean="conceptInheritanceValidator"/>
         <ref bean="duplicateConceptValidator"/>
-        <!--ref bean="duplicateClassValidator"/-->
+        <ref bean="duplicateClassValidator"/>
         <ref bean="valueDomainRepTermValidator"/>
       </list>
     </property>
