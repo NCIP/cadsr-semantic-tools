@@ -103,19 +103,20 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
           List<ValueDomain> queryById = null;
           try {
             // if VD.id is populated, no need to go to db again.
-            if(StringUtil.isEmpty(vd.getId()))
-              queryById =  new ArrayList<ValueDomain>(cadsrModule.findValueDomain(queryFields));
-            
-            // vd.id not populated, and can't retrieve from db
-            if(StringUtil.isEmpty(vd.getId()) && (queryById == null | queryById.size() == 0)) {
-              items.addItem(new ValidationError
-                        (PropertyAccessor.getProperty
-                         ("local.vd.doesnt.exist", "",
-                          vd.getPublicId() + "v" + vd.getVersion()), vd));
-              
-            } else {
-            	vd.setId(queryById.get(0).getId());
-            }
+        	  if(StringUtil.isEmpty(vd.getId())) {
+              	queryById =  new ArrayList<ValueDomain>(cadsrModule.findValueDomain(queryFields));
+                  
+                  // vd.id not populated, and can't retrieve from db
+                  if(StringUtil.isEmpty(vd.getId()) && (queryById == null | queryById.size() == 0)) {
+                    items.addItem(new ValidationError
+                              (PropertyAccessor.getProperty
+                               ("local.vd.doesnt.exist", "",
+                                vd.getPublicId() + "v" + vd.getVersion()), vd));
+                    
+                  } else {
+                  	vd.setId(queryById.get(0).getId());
+                  }
+              }
             if(vd.getId() != null) {
               List<PermissibleValue> cadsrPVs = cadsrModule.getPermissibleValues(vd);
               List<PermissibleValue> localPVs = vd.getPermissibleValues();
