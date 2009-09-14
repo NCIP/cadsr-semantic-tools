@@ -11,6 +11,7 @@ import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DataElementConcept;
 import gov.nih.nci.ncicb.cadsr.domain.Definition;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
+import gov.nih.nci.ncicb.cadsr.domain.ReferenceDocument;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
 import gov.nih.nci.ncicb.cadsr.loader.util.DAOAccessor;
@@ -375,6 +376,31 @@ public class PersisterUtil {
             ));
       }
     } 
+  }
+  
+  public void updateRefDocs(final AdminComponent ac, List<ReferenceDocument> refDocs) {
+	  List<ReferenceDocument> existingRDs = adminComponentDAO.getReferenceDocuments(ac);
+	  if (existingRDs != null && existingRDs.size() > 0) {
+		  ReferenceDocument prefExistingRD = getPreferred(existingRDs);
+		  if (prefExistingRD != null) {
+			  ReferenceDocument prefRDToAdd = getPreferred(refDocs);
+			  if (prefRDToAdd != null && prefRDToAdd.getId() == null) {
+				  logger.info("Changing the type of the Reference Document ["+prefRDToAdd.getName()+"] to [Alternate Question Text]");
+				  prefRDToAdd.setType("Alternate Question Text");
+			  }
+		  }
+	  }
+	  
+	  adminComponentDAO.updateRefDocs(ac, refDocs);
+  }
+  
+  private ReferenceDocument getPreferred(List<ReferenceDocument> refDocs) {
+	  for (ReferenceDocument refDoc: refDocs) {
+		  if (refDoc.getType().equalsIgnoreCase("Preferred Question Text")) {
+			  return refDoc;
+		  }
+	  }
+	  return null;
   }
 
   DataElementConcept lookupDec(String id) {

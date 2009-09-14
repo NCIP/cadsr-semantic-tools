@@ -170,6 +170,13 @@ public class DEPersister implements Persister {
           for(Definition def : de.getDefinitions()) {
             persisterUtil.addAlternateDefinition(de, def);
           }
+          
+          /**
+           *  update the reference docs
+           */
+          if (de.getReferenceDocuments() != null) {
+        	  persisterUtil.updateRefDocs(de, de.getReferenceDocuments());
+          }
 
           it.set(newDe);
         }

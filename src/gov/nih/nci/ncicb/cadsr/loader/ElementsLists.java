@@ -95,7 +95,7 @@ public class ElementsLists {
    * @return a <code>List</code> of objects of class <code>type</code>
    * @deprecated use <T> List<T> getElements(T obj) instead
    */
-  public List getElements(Class type) {
+  public <T> List getElements(Class<T> type) {
     List l = (List)objects.get(type.getName());
     if(l != null)
       return l;
