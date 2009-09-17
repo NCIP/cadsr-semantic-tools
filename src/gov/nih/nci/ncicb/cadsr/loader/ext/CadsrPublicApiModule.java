@@ -7,15 +7,16 @@ import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.system.applicationservice.ApplicationService;
-import gov.nih.nci.system.client.*;
+import gov.nih.nci.system.client.ApplicationServiceProvider;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -402,7 +403,9 @@ public class CadsrPublicApiModule implements CadsrModule {
       gov.nih.nci.cadsr.domain.ObjectClass resOc = (gov.nih.nci.cadsr.domain.ObjectClass)ocs.iterator().next();
       Collection<gov.nih.nci.cadsr.domain.ComponentConcept> comps = resOc.getConceptDerivationRule().getComponentConceptCollection();
 
-      for(gov.nih.nci.cadsr.domain.ComponentConcept comp : comps) {
+      Collection<gov.nih.nci.cadsr.domain.ComponentConcept> sortedComps = sortCompConcepts(comps);
+      
+      for(gov.nih.nci.cadsr.domain.ComponentConcept comp : sortedComps) {
         gov.nih.nci.cadsr.domain.Concept conc = comp.getConcept();
         gov.nih.nci.ncicb.cadsr.domain.Concept concept = DomainObjectFactory.newConcept();
         CadsrTransformer.acPublicToPrivate(concept, conc);
@@ -437,7 +440,9 @@ public class CadsrPublicApiModule implements CadsrModule {
       gov.nih.nci.cadsr.domain.Property resProp = (gov.nih.nci.cadsr.domain.Property)props.iterator().next();
       Collection<gov.nih.nci.cadsr.domain.ComponentConcept> comps = resProp.getConceptDerivationRule().getComponentConceptCollection();
 
-      for(gov.nih.nci.cadsr.domain.ComponentConcept comp : comps) {
+      Collection<gov.nih.nci.cadsr.domain.ComponentConcept> sortedComps = sortCompConcepts(comps);
+      
+      for(gov.nih.nci.cadsr.domain.ComponentConcept comp : sortedComps) {
         gov.nih.nci.cadsr.domain.Concept conc = comp.getConcept();
         gov.nih.nci.ncicb.cadsr.domain.Concept concept = DomainObjectFactory.newConcept();
         CadsrTransformer.acPublicToPrivate(concept, conc);
@@ -448,6 +453,18 @@ public class CadsrPublicApiModule implements CadsrModule {
     } // end of try-catch
 
     return result;
+  }
+  
+  private Collection<gov.nih.nci.cadsr.domain.ComponentConcept> sortCompConcepts(Collection<gov.nih.nci.cadsr.domain.ComponentConcept> compConcepts) {
+	  ArrayList<gov.nih.nci.cadsr.domain.ComponentConcept> compsList = new ArrayList<gov.nih.nci.cadsr.domain.ComponentConcept>(compConcepts);
+      
+      Collections.sort(compsList, new Comparator<gov.nih.nci.cadsr.domain.ComponentConcept>() {
+		public int compare(ComponentConcept o1, ComponentConcept o2) {
+			return o1.getDisplayOrder() - o2.getDisplayOrder();
+		} 
+      });
+      
+      return compsList;
   }
 
 
