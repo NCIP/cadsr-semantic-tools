@@ -136,15 +136,17 @@ public class ConceptInheritanceViewPanel extends JPanel {
     StringBuilder sb = new StringBuilder();
     sb.append("<html><body>");
 
-    String[] codes = oc.getPreferredName().split(":");
-    for(String code : codes) {
-      Concept con = ConceptUtil.getConceptFromCode(code);
-      sb.append("<br>");
-      sb.append(con.getPreferredName());
-      sb.append(": ");
-      sb.append(con.getLongName());
+    if (oc.getPreferredName() != null && !oc.getPreferredName().trim().equals("")) {
+    	String[] codes = oc.getPreferredName().split(":");
+        for(String code : codes) {
+          Concept con = ConceptUtil.getConceptFromCode(code);
+          sb.append("<br>");
+          sb.append(con.getPreferredName());
+          sb.append(": ");
+          sb.append(con.getLongName());
+        }
     }
-
+    
     sb.append("</body></html>");
 
     return sb.toString();
