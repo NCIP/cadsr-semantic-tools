@@ -19,43 +19,54 @@
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
 import gov.nih.nci.ncicb.cadsr.domain.DataElement;
+import gov.nih.nci.ncicb.cadsr.domain.bean.DataElementBean;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeListener;
 import gov.nih.nci.ncicb.cadsr.loader.event.ReviewListener;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationEvent;
 import gov.nih.nci.ncicb.cadsr.loader.ui.event.NavigationListener;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AssociationNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.PackageNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValidationNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueDomainNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ValueMeaningNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.WarningNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.TreeUtil;
-
-import gov.nih.nci.ncicb.cadsr.loader.util.*;
-import java.io.File;
-import java.io.FileWriter;
-import javax.swing.*;
-
-//import java.awt.*;
-import java.awt.event.*;
-
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-
-import gov.nih.nci.ncicb.cadsr.loader.validator.*;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.*;
-
-//import java.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.util.InheritedAttributeList;
+import gov.nih.nci.ncicb.cadsr.loader.util.RunMode;
+import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationConceptError;
+import gov.nih.nci.ncicb.cadsr.loader.validator.ValidationItem;
 
 import java.awt.BorderLayout;
-
 import java.awt.Dimension;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.AbstractButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.jdom.*;
+import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
@@ -358,6 +369,13 @@ public class ErrorPanel extends JPanel implements MouseListener, NodeViewPanel {
         DefaultMutableTreeNode newNode = 
           new DefaultMutableTreeNode(valNode);
         
+        Object usrObject = umlNode.getUserObject();
+        if (usrObject instanceof DataElementBean) {
+        	InheritedAttributeList inheritedList = InheritedAttributeList.getInstance();
+        	if (inheritedList.isInherited((DataElement)usrObject) && !((ValidationItem)valNode.getUserObject()).includeInInherited()) {
+        		continue;
+        	}
+        }
         node.add(newNode);
       }
       
