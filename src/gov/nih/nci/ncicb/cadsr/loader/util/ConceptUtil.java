@@ -62,7 +62,7 @@ public class ConceptUtil implements CadsrModuleListener {
 
     List<ValueMeaning> vms = elements.getElements(DomainObjectFactory.newValueMeaning());
     for(ValueMeaning vm : vms) {
-      if(vm.getConceptDerivationRule() != null) {
+      if(StringUtil.isEmpty(vm.getPublicId()) && vm.getConceptDerivationRule() != null) {
         for(ComponentConcept comp : vm.getConceptDerivationRule().getComponentConcepts()) {
           if(comp.getConcept().getPreferredName().equals(con.getPreferredName()))
             return true;
@@ -72,7 +72,7 @@ public class ConceptUtil implements CadsrModuleListener {
 
     List<ValueDomain> vds = elements.getElements(DomainObjectFactory.newValueDomain());
     for(ValueDomain vd : vds) {
-      if(vd.getConceptDerivationRule() != null) {
+      if(StringUtil.isEmpty(vd.getPublicId()) && vd.getConceptDerivationRule() != null) {
         for(ComponentConcept comp : vd.getConceptDerivationRule().getComponentConcepts()) {
           if(comp.getConcept().getPreferredName().equals(con.getPreferredName()))
             return true;
@@ -83,7 +83,7 @@ public class ConceptUtil implements CadsrModuleListener {
     List<ObjectClassRelationship> ocrs = elements.getElements(DomainObjectFactory.newObjectClassRelationship());
     for(ObjectClassRelationship ocr : ocrs) {
       ConceptDerivationRule conDR = ocr.getConceptDerivationRule();
-      if(conDR != null) {
+      if(StringUtil.isEmpty(ocr.getPublicId()) && conDR != null) {
         for(ComponentConcept comp : conDR.getComponentConcepts())
           if(comp.getConcept().getPreferredName().equals(con.getPreferredName()))
             return true;
