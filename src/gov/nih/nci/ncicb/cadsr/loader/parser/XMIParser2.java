@@ -38,6 +38,8 @@ import gov.nih.nci.ncicb.xmiinout.util.ModelUtil;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterClass;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.FilterPackage;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -96,7 +98,7 @@ public class XMIParser2 implements Parser {
   public static final String TV_INHERITED_VD_ID = "CADSR_Inherited.{1}.VD_ID";
   public static final String TV_INHERITED_VD_VERSION = "CADSR_Inherited.{1}.VD_VERSION";
   public static final String TV_INHERITED_VALUE_DOMAIN = "CADSR_Inherited.{1}.Local Value Domain";
-
+  
   /**
    * Tagged Value name for Concept Code
    */
@@ -198,6 +200,9 @@ public class XMIParser2 implements Parser {
   private List<FilterPackage> filterPackages = new ArrayList<FilterPackage>();
 
   private List markedAsIgnored = new ArrayList();
+  
+  private HandlerEnum handlerType;
+  private UserSelections userSelections = UserSelections.getInstance();
 
   public void setEventHandler(LoaderHandler handler) {
     this.listener = (UMLHandler) handler;
@@ -209,27 +214,11 @@ public class XMIParser2 implements Parser {
   public void parse(String filename) throws ParserException {
     try {
 
-      RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
-      if(runMode == null)
-        runMode = RunMode.Reviewer;
-      if(runMode.equals(RunMode.Curator) || (runMode.equals(RunMode.GenerateReport))) {
-        reviewTag = TV_CURATOR_REVIEWED;
-        inheritedReviewTag = TV_INHERITED_CURATOR_REVIEWED;
-      } else {
-        reviewTag = TV_OWNER_REVIEWED;
-        inheritedReviewTag = TV_INHERITED_OWNER_REVIEWED;
-      }
-
-      FilterPackage p = new FilterPackage("");
-      filterPackages = ElementsLists.getInstance().getElements(p);
-
-      FilterClass c = new FilterClass("", "");
-      filterClasses = ElementsLists.getInstance().getElements(c);
-      try {
-        filterClassAndPackages = (Boolean)UserSelections.getInstance().getProperty("FILTER_CLASS_AND_PACKAGES");
-      } catch (NullPointerException e) {
-        logger.info("no filter specified");
-      }
+      RunMode runMode = getRunModeFromUserSelections();
+      setReviewAndInheritedReviewtags(runMode);
+      setFilterPackages();
+      setFilterClasses();
+      setFilterClassAndPackages();
 
       long start = System.currentTimeMillis();
       
@@ -239,77 +228,40 @@ public class XMIParser2 implements Parser {
       evt.setMessage("Parsing ...");
       fireProgressEvent(evt);
 
-      XmiInOutHandler handler = (XmiInOutHandler)UserSelections.getInstance().getProperty("XMI_HANDLER");
+      XmiInOutHandler handler = getXmiHandler();
 
       if(handler == null) {
-        // find extension
-        String ext = null;
-        if(filename.indexOf(".") > 0)
-          ext = filename.substring(filename.lastIndexOf(".") + 1);
-
-        String s = filename.replaceAll("\\ ", "%20");
-        
-        // Some file systems use absolute URIs that do 
-        // not start with '/'. 
-        if(!s.startsWith("/"))
-          s = "/" + s;    
-        java.net.URI uri = new java.net.URI("file://" + s);
-
-
-        HandlerEnum handlerEnum = null;
-        if(ext != null && ext.equals("uml")) 
-          handlerEnum = HandlerEnum.ArgoUMLDefault;
-        else
-          handlerEnum = HandlerEnum.EADefault;
-
-        handler = XmiHandlerFactory.getXmiHandler(handlerEnum);
+        handler = createXmiHandler(filename);
+        java.net.URI uri = getURI(filename);
         handler.load(uri);
         UMLModel model = handler.getModel();
+        
         if(model == null) {
           logger.info("Can't open file with expected parser, will try another");
-          if(handlerEnum.equals(HandlerEnum.EADefault))
-            handlerEnum = HandlerEnum.ArgoUMLDefault;
-          else
-            handlerEnum = HandlerEnum.EADefault;
-          
-          handler = XmiHandlerFactory.getXmiHandler(handlerEnum);
+          handler = switchHandlerType();
           handler.load(uri);
           model = handler.getModel();
           if(model == null) {
             throw new Exception("Can't open file. Unknown format.");
           } 
-        } 
-
-        UserSelections userSelections = UserSelections.getInstance();
-        if(handlerEnum == HandlerEnum.ArgoUMLDefault) {
-          userSelections.setProperty("FILE_TYPE", "ARGO");
-        } else if(handlerEnum == HandlerEnum.EADefault){
-          userSelections.setProperty("FILE_TYPE", "EA");
         }
-        // save in memory for fast-save
-        userSelections.setProperty("XMI_HANDLER", handler);
+        setFileType();
+        saveHandlerToMemory(handler);
       }
+      
+      setMarkIgnored();
 
-
-      UserSelections.getInstance().setProperty("MARKED_IGNORED", (Object)markedAsIgnored);
-
-      UMLModel model = handler.getModel();
-      totalNumberOfElements = countNumberOfElements(model);
+      setTotalNoOfElements(handler);
       
       evt.setMessage("Parsing ...");
       evt.setGoal(totalNumberOfElements);
       fireProgressEvent(evt);
 
-      for(UMLPackage pkg : model.getPackages()) {
-        doPackage(pkg);
-      }
-      for(UMLAssociation assoc : model.getAssociations()) {
-        doAssociation(assoc);
-      }
-
-      for (UMLGeneralization g : model.getGeneralizations()) {
-        doGeneralization(g);
-      }
+      UMLModel model = handler.getModel();
+      
+      doPackages(model);
+      doAssociations(model);
+      doGeneralizations(model);
       
       fireLastEvents();
       
@@ -321,6 +273,132 @@ public class XMIParser2 implements Parser {
     } // end of try-catch
   }
 
+  private RunMode getRunModeFromUserSelections() {
+	  
+	  RunMode runMode = (RunMode)(UserSelections.getInstance().getProperty("MODE"));
+      if(runMode == null) {
+    	  runMode = RunMode.Reviewer;
+      }
+      
+      return runMode;
+  }
+
+  private URI getURI(String filename) throws ParserException{
+	  try {
+		String s = filename.replaceAll("\\ ", "%20");
+		  
+		  if(!s.startsWith("/")) //Some file systems use absolute URIs that do not start with '/'
+		    s = "/" + s;    
+		  java.net.URI uri = new java.net.URI("file://" + s);
+		  
+		  return uri;
+	} catch (URISyntaxException e) {
+		throw new ParserException(e);
+	}
+  }
+
+  private XmiInOutHandler createXmiHandler(String filename) {
+	// find extension
+      String ext = null;
+      if(filename.indexOf(".") > 0)
+        ext = filename.substring(filename.lastIndexOf(".") + 1);
+      
+      if(ext != null && ext.equals("uml")) 
+        handlerType = HandlerEnum.ArgoUMLDefault;
+      else
+    	  handlerType = HandlerEnum.EADefault;
+
+      XmiInOutHandler handler = XmiHandlerFactory.getXmiHandler(handlerType);
+      return handler;
+}
+
+  private void setFilterClassAndPackages() {
+	  try {
+        filterClassAndPackages = (Boolean)UserSelections.getInstance().getProperty("FILTER_CLASS_AND_PACKAGES");
+      } catch (NullPointerException e) {
+        logger.info("no filter specified");
+      }
+  }
+  
+  private void setReviewAndInheritedReviewtags(RunMode runMode) {
+	  if(runMode.equals(RunMode.Curator) || (runMode.equals(RunMode.GenerateReport))) {
+        reviewTag = TV_CURATOR_REVIEWED;
+        inheritedReviewTag = TV_INHERITED_CURATOR_REVIEWED;
+      } else {
+        reviewTag = TV_OWNER_REVIEWED;
+        inheritedReviewTag = TV_INHERITED_OWNER_REVIEWED;
+      }
+  }
+  
+  private void setFilterPackages() {
+	  FilterPackage p = new FilterPackage("");
+      filterPackages = ElementsLists.getInstance().getElements(p);
+  }
+  
+  private void setFilterClasses() {
+	  FilterClass c = new FilterClass("", "");
+      filterClasses = ElementsLists.getInstance().getElements(c);
+  }
+  
+  private XmiInOutHandler getXmiHandler() {
+	  XmiInOutHandler handler = (XmiInOutHandler)UserSelections.getInstance().getProperty("XMI_HANDLER");
+	  
+	  return handler;
+  }
+  
+  private XmiInOutHandler switchHandlerType() {
+	  if(handlerType != null && handlerType.equals(HandlerEnum.EADefault)) {
+		  handlerType = HandlerEnum.ArgoUMLDefault;
+	  }
+	  else {
+		  handlerType = HandlerEnum.EADefault;
+	  } 
+	  XmiInOutHandler handler = XmiHandlerFactory.getXmiHandler(handlerType);
+	  
+	  return handler;
+  }  
+  
+  private void setFileType() {
+	  
+	  if(handlerType == HandlerEnum.ArgoUMLDefault) {
+          userSelections.setProperty("FILE_TYPE", "ARGO");
+        } else if(handlerType == HandlerEnum.EADefault){
+          userSelections.setProperty("FILE_TYPE", "EA");
+        }
+  }
+  
+  private void saveHandlerToMemory(XmiInOutHandler handler) {
+	// save in memory for fast-save
+      userSelections.setProperty("XMI_HANDLER", handler);
+  }
+  
+  private void setMarkIgnored() {
+	  UserSelections.getInstance().setProperty("MARKED_IGNORED", (Object)markedAsIgnored);
+  }  
+
+  private void setTotalNoOfElements(XmiInOutHandler handler) {
+	  UMLModel model = handler.getModel();
+      totalNumberOfElements = countNumberOfElements(model);
+  }
+  
+  private void doPackages(UMLModel model) throws ParserException{
+	  for(UMLPackage pkg : model.getPackages()) {
+        doPackage(pkg);
+      }
+  }
+  
+  private void doAssociations(UMLModel model) throws ParserException{
+	  for(UMLAssociation assoc : model.getAssociations()) {
+        doAssociation(assoc);
+      }
+  }
+  
+  private void doGeneralizations(UMLModel model) throws ParserException{
+		for (UMLGeneralization g : model.getGeneralizations()) {
+	    doGeneralization(g);
+	  }
+	}
+  
   private void doGeneralization(UMLGeneralization g) {
     UMLGeneralizable gener = g.getSupertype();
     
