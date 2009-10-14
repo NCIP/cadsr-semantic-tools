@@ -40,16 +40,16 @@ public class ObjectClassDAOTestCase extends MainTestCase {
 	
 	public void testGF6757() {
 		ObjectClassDAO ocDAO = (ObjectClassDAO)DAOAccessor.getObjectClassDAO();
-		List<ObjectClass> ocList = ocDAO.findByConceptCodes(new String[]{"C1234","C2345"}, null);
+		List<ObjectClass> ocList = ocDAO.findByConceptCodes(new String[]{"C111", "C000"}, null);
 		assertNotNull(ocList);
-		assertTrue (ocList.size() == 1);
+		assertTrue (ocList.size() == 0);
 	}
 	
-	public void testGF6757_2() {
+	/*public void testGF6757_2() {
 		PropertyDAO propDAO = (PropertyDAO)DAOAccessor.getPropertyDAO();
-		List<Property> propList = propDAO.findByConceptCodes(new String[]{"C1234","C2345"}, new ArrayList<String>());
+		List<Property> propList = propDAO.findByConceptCodes(new String[]{"Cabc","Cxyz"}, new ArrayList<String>());
 		assertNotNull(propList);
-		assertTrue (propList.size() == 1);
-	}
+		assertTrue (propList.size() == 0);
+	}*/
 
 }
