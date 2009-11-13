@@ -79,6 +79,8 @@ public class DECPersister implements Persister {
         List<Definition> modelDefinitions = new ArrayList<Definition>();
         for(Definition _def : dec.getDefinitions()) 
             modelDefinitions.add(_def);
+        
+        List<AdminComponentClassSchemeClassSchemeItem> passedACCSCSI = dec.getAcCsCsis();
             
         dec.removeDefinitions();
         dec.removeAlternateNames();
@@ -199,6 +201,7 @@ public class DECPersister implements Persister {
                                  newDec.getProperty().getLongName()));
 
 
+	dec.setAcCsCsis(passedACCSCSI);
         persisterUtil.addPackageClassification(dec);
 	it.set(newDec);
 
