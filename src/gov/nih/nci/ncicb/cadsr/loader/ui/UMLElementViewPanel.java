@@ -56,7 +56,7 @@ public class UMLElementViewPanel extends JPanel
     excludeSemPanel = new ExcludeFromSemanticInheritancePanel(node);
 
     cannotMapVMInfoPanel = new InfoPanel();
-    cannotMapVMInfoPanel.setOutputText("This Permissible Value cannot be modified because<br>the owning Value Domain is mapped to a caDSR Value Domain");
+    cannotMapVMInfoPanel.setOutputText("This Permissible Value cannot be modified because the Value Domain where it is included is mapped to a caDSR Value Domain");
 
     if(node instanceof AttributeNode){
       buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);}
@@ -109,6 +109,7 @@ public class UMLElementViewPanel extends JPanel
 
     UIUtil.insertInBag(editPanel, cardPanel, 0, 1);
     UIUtil.insertInBag(editPanel, gmePanel, 0, 2);
+    
     UIUtil.insertInBag(editPanel, excludeSemPanel, 0, 3);
 
     JScrollPane scrollPane = new JScrollPane(editPanel);
