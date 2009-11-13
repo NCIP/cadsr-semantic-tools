@@ -378,29 +378,78 @@ public class PersisterUtil {
     } 
   }
   
-  public void updateRefDocs(final AdminComponent ac, List<ReferenceDocument> refDocs) {
+  public void updateRefDocs(final AdminComponent ac) {
 	  List<ReferenceDocument> existingRDs = adminComponentDAO.getReferenceDocuments(ac);
-	  if (existingRDs != null && existingRDs.size() > 0) {
-		  ReferenceDocument prefExistingRD = getPreferred(existingRDs);
-		  if (prefExistingRD != null) {
-			  ReferenceDocument prefRDToAdd = getPreferred(refDocs);
-			  if (prefRDToAdd != null && prefRDToAdd.getId() == null) {
-				  logger.info("Changing the type of the Reference Document ["+prefRDToAdd.getName()+"] to [Alternate Question Text]");
-				  prefRDToAdd.setType("Alternate Question Text");
+	  List<ReferenceDocument> newRDs = filterNewRefDocs(existingRDs, ac.getReferenceDocuments());
+	  
+	  if (!newRDs.isEmpty()) {
+		  markPreferred(existingRDs, newRDs);
+		  existingRDs.addAll(newRDs);
+		  
+		  setRDACIdsAndContext(ac.getId(), existingRDs);
+		  
+		  ac.setReferenceDocuments(existingRDs);
+		  
+		  adminComponentDAO.updateRefDocs(ac);
+	  }
+  }
+  
+  private void setRDACIdsAndContext(String acId, List<ReferenceDocument> refDocs) {
+	  for (ReferenceDocument refDoc: refDocs) {
+		  refDoc.setAcId(acId);
+		  refDoc.setContext(defaults.getContext());
+	  }
+  }
+  
+  private void markPreferred(List<ReferenceDocument> existingRDs, List<ReferenceDocument> newRDs) {
+	  if (hasPreferredRD(existingRDs)) {
+		  for (ReferenceDocument newRD: newRDs) {
+			  newRD.setType("Alternate Question Text");
+		  }
+	  }
+	  else {
+		  boolean preferredMarked = false;
+		  for (ReferenceDocument newRD: newRDs) {
+			  if (preferredMarked) {
+				  newRD.setType("Alternate Question Text");
+			  }
+			  
+			  if (!preferredMarked && newRD.getType().equalsIgnoreCase("Preferred Question Text")) {
+				  preferredMarked = true;
 			  }
 		  }
 	  }
-	  
-	  adminComponentDAO.updateRefDocs(ac, refDocs);
   }
   
-  private ReferenceDocument getPreferred(List<ReferenceDocument> refDocs) {
-	  for (ReferenceDocument refDoc: refDocs) {
+  private boolean hasPreferredRD(List<ReferenceDocument> refDocs) {
+	  for(ReferenceDocument refDoc: refDocs) {
 		  if (refDoc.getType().equalsIgnoreCase("Preferred Question Text")) {
-			  return refDoc;
+			  return true;
 		  }
 	  }
-	  return null;
+	  return false;
+  }
+  
+  private List<ReferenceDocument> filterNewRefDocs(List<ReferenceDocument> existingRDs, List<ReferenceDocument> newRDs) {
+	  List<ReferenceDocument> newRefDocs = new ArrayList<ReferenceDocument>();
+	  List<String> existingRefDocNames = getRefDocNames(existingRDs);
+	  
+	  for (ReferenceDocument newRD: newRDs) {
+		  String newRefDocName = newRD.getName();
+		  if (!existingRefDocNames.contains(newRefDocName)) {
+			  newRefDocs.add(newRD);
+		  }
+	  }
+	  return newRefDocs;
+  }
+  
+  private List<String> getRefDocNames(List<ReferenceDocument> refDocs) {
+	  List<String> refDocNames = new ArrayList<String>();
+	  for (ReferenceDocument refDoc: refDocs) {
+		  refDocNames.add(refDoc.getName());
+	  }
+	  
+	  return refDocNames;
   }
 
   DataElementConcept lookupDec(String id) {
