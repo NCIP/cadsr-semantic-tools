@@ -173,93 +173,111 @@
     </replace>
 
   </target>
-
-  <target name="dist" depends="prepare">
-    <mkdir dir="${dist.dir}"/>
-    <mkdir dir="${dist.dir}/lib"/>
-    <jar destfile="${dist.dir}/lib/uml-loader.jar"
-      manifest="MANIFEST.MF">
-      <fileset dir="${class.dir}">
-      </fileset>
-    </jar>
-    <copy file="${jnlp.dir}/siw.jnlp"
-      tofile="${dist.dir}/siw.jnlp"
-      >
-    </copy>
-    <copy file="${images.dir}/siw-logo3_2.gif"
-      tofile="${dist.dir}/siw-logo3_2.gif"
-      >
-    </copy>
-    <replace file="${dist.dir}/siw.jnlp" 
-      propertyFile="${jnlp.dir}/jnlp.properties">
-      <replacefilter token="@@CODEBASE@@" property="codebase.${target.env}"/>
-    </replace>
-    <copy todir="${dist.dir}/lib">
-      <fileset dir="${lib.dir}/cacore">
-        <include name="caDSR-beans.jar"/>
-        <include name="castor-1.0.2.jar"/>
-        <include name="dlbadapter.jar"/>
-        <include name="evsapi41-beans.jar"/>
-        <include name="evsapi41-framework.jar"/>
-        <include name="lbAdmin.jar"/>
-        <include name="lbImpl.jar"/>
-        <include name="lbInterfaces.jar"/>
-        <include name="lbModel.jar"/>
-        <include name="lgConverter.jar"/>
-        <include name="lgIndexer.jar"/>
-        <include name="lgModel.emf.jar"/>
-        <include name="lgModel.jar"/>
-        <include name="lgRDFConverter.jar"/>
-        <include name="lgResourceReader.jar"/>
-        <include name="lgUtility.jar"/>
-        <include name="lucene-core-2.0.0.jar"/>
-        <include name="lucene-regex-10-9-06-nightly.jar"/>
-        <include name="lucene-snowball-9-26-06-nightly.jar"/>
-        <include name="MSSOUserValidator.jar"/>
-        <include name="sdk-client-framework.jar"/>
-      </fileset>
-    </copy>
-    <copy file="${config.dir}/datatype-mapping.xml"
-      tofile="${dist.dir}/datatype-mapping.xml">
-    </copy>
-    <copy todir="${dist.dir}/lib">
-      <fileset dir="${lib.dir}">
-        <include name="acegi-security-1.0.4.jar"/>
-        <include name="activation.jar"/>
-        <include name="antlr-2.7.6.jar"/>
-        <include name="aopalliance.jar"/>
-        <include name="asm.jar"/>
-        <include name="cadsr-api.jar"/>
-        <include name="cglib-2.1.3.jar"/>
-        <include name="commons-collections-3.2.jar"/>
-        <include name="commons-logging-1.1.jar"/>
-        <include name="commons-pool-1.3.jar"/>
-        <include name="datafile.jar"/>
-        <include name="dom4j-1.4.jar"/>
-        <include name="ehcache-1.2.3.jar"/>
-        <include name="freemarker.jar"/>
-        <include name="freestylesearch.jar"/>
-        <include name="hibernate3.jar"/>
-        <include name="jakarta-oro-2.0.8.jar"/>
-        <include name="jaxen-core.jar"/>
-        <include name="jaxen-jdom.jar"/>
-        <include name="jdom.jar"/>
-        <include name="jmi.jar"/>
-        <include name="jmiutils.jar"/>
-        <include name="jta.jar"/>
-        <include name="log4j-1.2.8.jar"/>
-        <include name="mail.jar"/>
-        <include name="odmg-3.0.jar"/>
-        <include name="ojdbc14.jar"/>
-        <include name="openide-util.jar"/>
-        <include name="spring-aop.jar"/>
-        <include name="spring-core.jar"/>
-        <include name="spring-hibernate3.jar"/>
-        <include name="spring.jar"/>
-        <include name="xmi.in.out.jar"/>
-      </fileset>
-    </copy>
-  </target>
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: prepare-for-bl                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="prepare-for-bulkloader" depends="prepare">
+		<delete>
+			<fileset dir="${class.dir}">
+			    <include name="spring-datasources.xml"/>
+			</fileset>
+		</delete>
+    </target>
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: package                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="package">
+    	<mkdir dir="${dist.dir}"/>
+	    <mkdir dir="${dist.dir}/lib"/>
+	    <jar destfile="${dist.dir}/lib/uml-loader.jar"
+	      manifest="MANIFEST.MF">
+	      <fileset dir="${class.dir}">
+	      </fileset>
+	    </jar>
+	    <copy file="${jnlp.dir}/siw.jnlp"
+	      tofile="${dist.dir}/siw.jnlp"
+	      >
+	    </copy>
+	    <copy file="${images.dir}/siw-logo3_2.gif"
+	      tofile="${dist.dir}/siw-logo3_2.gif"
+	      >
+	    </copy>
+	    <replace file="${dist.dir}/siw.jnlp" 
+	      propertyFile="${jnlp.dir}/jnlp.properties">
+	      <replacefilter token="@@CODEBASE@@" property="codebase.${target.env}"/>
+	    </replace>
+	    <copy todir="${dist.dir}/lib">
+	      <fileset dir="${lib.dir}/cacore">
+	        <include name="caDSR-beans.jar"/>
+	        <include name="castor-1.0.2.jar"/>
+	        <include name="dlbadapter.jar"/>
+	        <include name="evsapi41-beans.jar"/>
+	        <include name="evsapi41-framework.jar"/>
+	        <include name="lbAdmin.jar"/>
+	        <include name="lbImpl.jar"/>
+	        <include name="lbInterfaces.jar"/>
+	        <include name="lbModel.jar"/>
+	        <include name="lgConverter.jar"/>
+	        <include name="lgIndexer.jar"/>
+	        <include name="lgModel.emf.jar"/>
+	        <include name="lgModel.jar"/>
+	        <include name="lgRDFConverter.jar"/>
+	        <include name="lgResourceReader.jar"/>
+	        <include name="lgUtility.jar"/>
+	        <include name="lucene-core-2.0.0.jar"/>
+	        <include name="lucene-regex-10-9-06-nightly.jar"/>
+	        <include name="lucene-snowball-9-26-06-nightly.jar"/>
+	        <include name="MSSOUserValidator.jar"/>
+	        <include name="sdk-client-framework.jar"/>
+	      </fileset>
+	    </copy>
+	    <copy file="${config.dir}/datatype-mapping.xml"
+	      tofile="${dist.dir}/datatype-mapping.xml">
+	    </copy>
+	    <copy todir="${dist.dir}/lib">
+	      <fileset dir="${lib.dir}">
+	        <include name="acegi-security-1.0.4.jar"/>
+	        <include name="activation.jar"/>
+	        <include name="antlr-2.7.6.jar"/>
+	        <include name="aopalliance.jar"/>
+	        <include name="asm.jar"/>
+	        <include name="cadsr-api.jar"/>
+	        <include name="cglib-2.1.3.jar"/>
+	        <include name="commons-collections-3.2.jar"/>
+	        <include name="commons-logging-1.1.jar"/>
+	        <include name="commons-pool-1.3.jar"/>
+	        <include name="datafile.jar"/>
+	        <include name="dom4j-1.4.jar"/>
+	        <include name="ehcache-1.2.3.jar"/>
+	        <include name="freemarker.jar"/>
+	        <include name="freestylesearch.jar"/>
+	        <include name="hibernate3.jar"/>
+	        <include name="jakarta-oro-2.0.8.jar"/>
+	        <include name="jaxen-core.jar"/>
+	        <include name="jaxen-jdom.jar"/>
+	        <include name="jdom.jar"/>
+	        <include name="jmi.jar"/>
+	        <include name="jmiutils.jar"/>
+	        <include name="jta.jar"/>
+	        <include name="log4j-1.2.8.jar"/>
+	        <include name="mail.jar"/>
+	        <include name="odmg-3.0.jar"/>
+	        <include name="ojdbc14.jar"/>
+	        <include name="openide-util.jar"/>
+	        <include name="spring-aop.jar"/>
+	        <include name="spring-core.jar"/>
+	        <include name="spring-hibernate3.jar"/>
+	        <include name="spring.jar"/>
+	        <include name="xmi.in.out.jar"/>
+	      </fileset>
+	    </copy>
+    </target>
+	
+	<target name="dist" depends="prepare, package" />
+	
+	<target name="dist-for-bulkloader" depends="clean, prepare-for-bulkloader, package" />
 
   <target name="dist_lib" depends="prepare">
     <mkdir dir="${dist.dir}"/>
