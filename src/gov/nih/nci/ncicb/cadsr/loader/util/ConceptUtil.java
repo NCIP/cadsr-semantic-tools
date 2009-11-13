@@ -103,6 +103,17 @@ public class ConceptUtil implements CadsrModuleListener {
             return true;
       }
     }
+    
+    List<Representation> reps = elements.getElements(DomainObjectFactory.newRepresentation());
+    for(Representation rep : reps) {
+        if(StringUtil.isEmpty(rep.getPublicId())) {
+          String[] codes = rep.getPreferredName().split(":");
+          for(String code : codes) {
+            if(code.equals(con.getPreferredName()))
+              return true;
+          }
+        }
+      }
 
     return false;
   }
