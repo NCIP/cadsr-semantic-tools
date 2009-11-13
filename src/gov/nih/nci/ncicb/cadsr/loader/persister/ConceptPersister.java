@@ -132,6 +132,7 @@ public class ConceptPersister implements Persister {
                 c.setOrigin(defaults.getOrigin());
                 c.setEvsSource(PropertyAccessor.getProperty("default.evsSource"));
                 c.setLifecycle(defaults.getLifecycle());
+                c.setDefinitionSource(evsConcept.getDefinitionSource());
                 
                 c.setId(conceptDAO.create(c));
                 logger.info(PropertyAccessor.getProperty("created.concept"));
@@ -142,13 +143,17 @@ public class ConceptPersister implements Persister {
           logger.info(PropertyAccessor.getProperty("existed.concept", c.getPreferredName()));
 
 
-
+          Concept userConcept = c;
           String newSource = c.getDefinitionSource();
           String newDef = c.getPreferredDefinition();
           String newName = c.getLongName();
           c = (Concept)l.get(0);
 
-          EvsResult evsResult = null;
+          if(!newName.equalsIgnoreCase(c.getLongName())) {
+        	  userConcept.setLongName(c.getLongName());
+          }
+          
+          /*EvsResult evsResult = null;
           // verify that name in input and name in caDSR are the same
           if(!newName.equalsIgnoreCase(c.getLongName())) {
             // the names are not the same. 
@@ -174,9 +179,9 @@ public class ConceptPersister implements Persister {
 );
             }
 
-          }
+          }*/
 
-          if(!newSource.equalsIgnoreCase(c.getDefinitionSource())) { // Add alt def.
+          if(newSource != null && !newSource.equalsIgnoreCase(c.getDefinitionSource())) { // Add alt def.
 
             logger.debug("Concept " + c.getPreferredName() + " had different definition source. ");
             Definition def = DomainObjectFactory.newDefinition();
