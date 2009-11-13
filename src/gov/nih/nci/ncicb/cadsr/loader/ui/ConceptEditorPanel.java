@@ -257,11 +257,16 @@ public class ConceptEditorPanel extends JPanel
     
     for(int i = 0; i<concepts.length; i++) {
       newConcepts[i] = concepts[i];
+      String preferredName = concepts[i].getPreferredName()==null?"":concepts[i].getPreferredName();
+      String preferredDefinition = concepts[i].getPreferredDefinition()==null?"":concepts[i].getPreferredDefinition();
+      String longName = concepts[i].getLongName()==null?"":concepts[i].getLongName();
+      String defSource = concepts[i].getDefinitionSource()==null?"":concepts[i].getDefinitionSource();
+      
       // concept code has not changed
-      if(conceptUIs[i].code.getText().equals(concepts[i].getPreferredName())) {
-        if(!concepts[i].getLongName().equals(conceptUIs[i].name.getText())
-           || !concepts[i].getPreferredDefinition().equals(conceptUIs[i].def.getText())
-           || !concepts[i].getDefinitionSource().equals(conceptUIs[i].defSource.getText()))
+      if(conceptUIs[i].code.getText().equals(preferredName)) {
+        if(!longName.equals(conceptUIs[i].name.getText())
+           || !preferredDefinition.equals(conceptUIs[i].def.getText())
+           || !defSource.equals(conceptUIs[i].defSource.getText()))
             // if a field has changed, mark this concept as changed.
             fireElementChangeEvent(new ElementChangeEvent(concepts[i]));
 
@@ -606,6 +611,9 @@ public class ConceptEditorPanel extends JPanel
                                   new PropertyChangeEvent(this, ApplyButtonPanel.REVIEW, null, false));
 
           inheritanceUpdate = true;
+          
+          firePropertyChangeEvent(
+                  new PropertyChangeEvent(this, ApplyButtonPanel.SAVE, null, true)); 
         }
     }
   }
