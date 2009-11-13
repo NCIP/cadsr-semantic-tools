@@ -39,182 +39,186 @@ import java.util.*;
  */
 public class PropertyPersister implements Persister {
 
-  private static Logger logger = Logger.getLogger(PropertyPersister.class.getName());
+	private static Logger logger = Logger.getLogger(PropertyPersister.class.getName());
 
-  private UMLDefaults defaults = UMLDefaults.getInstance();
-  private ElementsLists elements = ElementsLists.getInstance();
+	private UMLDefaults defaults = UMLDefaults.getInstance();
+	private ElementsLists elements = ElementsLists.getInstance();
 
-  private PersisterUtil persisterUtil;
+	private PersisterUtil persisterUtil;
 
-  private ProgressListener progressListener = null;
+	private ProgressListener progressListener = null;
 
-  private PropertyDAO propertyDAO;
+	private PropertyDAO propertyDAO;
 
-  public PropertyPersister() {
-   initDAOs();
-  }
-
-  public void persist() {
-    Property prop = DomainObjectFactory.newProperty();
-    List<Property> props = elements.getElements(prop);
-
-    int count = 0;
-    sendProgressEvent(count++, props.size(), "Properties");
-
-    if (props != null) {
-      for (ListIterator<Property> it = props.listIterator(); it.hasNext();) {
-	prop = it.next();
-        logger.debug(prop.getLongName());
-        logger.debug(prop.getPreferredName());
-
-        sendProgressEvent(count++, props.size(), "Property : " + prop.getLongName());
-
-
-        Property newProp = null;
-
-	prop.setContext(defaults.getMainContext());
-
-        String[] conceptCodes = prop.getPreferredName().split(":");
-        
-        if(!StringUtil.isEmpty(prop.getPublicId()) && prop.getVersion() != null) {
-          logger.debug("mapping to existing Prop");
-          newProp = existingMapping(prop);
-          it.set(newProp);
-          prop.setId(newProp.getId());
-          for(AlternateName an : prop.getAlternateNames()) {
-            persisterUtil.addAlternateName(prop, an);
-          }
-          persisterUtil.addPackageClassification(prop);
-	  logger.info(PropertyAccessor.getProperty("mapped.to.existing.prop"));
-          continue;
-        }
-
-
-	List<String> eager = new ArrayList<String>();
-	eager.add(EagerConstants.AC_CS_CSI);
-
-        List<Property> l = propertyDAO.findByConceptCodes(conceptCodes, prop.getContext(), eager);
-
-        Concept[] concepts = new Concept[conceptCodes.length];
-        for(int i=0; i<concepts.length; 
-            concepts[i] = LookupUtil.lookupConcept(conceptCodes[i++])
-            );
-
-        Concept primaryConcept = concepts[concepts.length - 1];
-
-	if (l.size() == 0) {
-          prop.setLongName(ConceptUtil.longNameFromConcepts(concepts));
-	  prop.setPreferredDefinition(ConceptUtil.preferredDefinitionFromConcepts(concepts));
-          prop.setDefinitionSource(primaryConcept.getDefinitionSource());
-
-	  prop.setVersion(1.0f);
-	  prop.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
-	  prop.setAudit(defaults.getAudit());
-          prop.setOrigin(defaults.getOrigin());
-          prop.setLifecycle(defaults.getLifecycle());
-
-          logger.debug("property: " + prop.getLongName());
-
-          try {
-            // remove for persistence
-            prop.setAcCsCsis(null);
-
-            logger.debug("Saving Property with " + prop.getPreferredName() + "v" + prop.getVersion() + " in context " + prop.getContext().getName());
-
-            prop.removeAlternateNames();
-            prop.removeDefinitions();
-
-            newProp = propertyDAO.create(prop, conceptCodes);
-            logger.info(PropertyAccessor.getProperty("created.prop"));
-          } catch (DAOCreateException e){
-            logger.error(PropertyAccessor.getProperty("created.prop.failed", e.getMessage()));
-            e.printStackTrace();
-          } 
-
-	} else {
-	  newProp = l.get(0);
-	  logger.info(PropertyAccessor.getProperty("existed.prop"));
-          
+	public PropertyPersister() {
+		initDAOs();
 	}
 
-        prop.setId(newProp.getId());
+	public void persist() {
+		Property prop = DomainObjectFactory.newProperty();
+		List<Property> props = elements.getElements(prop);
 
-	LogUtil.logAc(newProp, logger);
-        logger.info("-- Public ID: " + newProp.getPublicId());
+		int count = 0;
+		sendProgressEvent(count++, props.size(), "Properties");
 
-        for(AlternateName an : prop.getAlternateNames()) {
-           persisterUtil.addAlternateName(prop, an);            
-        }
+		if (props != null) {
+			for (ListIterator<Property> it = props.listIterator(); it.hasNext();) {
+				prop = it.next();
+				logger.debug(prop.getLongName());
+				logger.debug(prop.getPreferredName());
 
-	it.set(newProp);
-
-        persisterUtil.addPackageClassification(prop);
-
-        // This object still reference in DEC, update long_name to real long name
-        prop.setLongName(newProp.getLongName());
-        prop.setPreferredName(newProp.getPreferredName());
-      }
-    }
-
-  }
+				sendProgressEvent(count++, props.size(), "Property : " + prop.getLongName());
 
 
-  private Property existingMapping(Property prop) {
+				Property newProp = null;
 
-    // for now, only classify with one CS_CSI
-    ClassSchemeClassSchemeItem csCsi = null;
-    for(AdminComponentClassSchemeClassSchemeItem acCsCsi : prop.getAcCsCsis()) {
-      csCsi = acCsCsi.getCsCsi();
-      String packageName = csCsi.getCsi().getLongName();
-      if(!StringUtil.isEmpty(packageName)) {
-        break;
-      }
-    }
-    
-    List<String> eager = new ArrayList<String>();
-    eager.add(EagerConstants.AC_CS_CSI);
-    
-    List<Property> l = propertyDAO.find(prop, eager);
+				prop.setContext(defaults.getMainContext());
 
-    if(l.size() == 0)
-      throw new PersisterException(PropertyAccessor.getProperty("prop.existing.error", ConventionUtil.publicIdVersion(prop)));
-    
-    Property existingProp = l.get(0);
+				String[] conceptCodes = prop.getPreferredName().split(":");
 
-    Property newProp = DomainObjectFactory.newProperty();
-    newProp.setLongName(existingProp.getLongName());
-    newProp.setId(existingProp.getId());
-    if(csCsi != null)
-    newProp.addCsCsi(csCsi);
-
-    return existingProp;
-
-  }
+				if(!StringUtil.isEmpty(prop.getPublicId()) && prop.getVersion() != null) {
+					logger.debug("mapping to existing Prop");
+					newProp = existingMapping(prop);
+					it.set(newProp);
+					prop.setId(newProp.getId());
+					for(AlternateName an : prop.getAlternateNames()) {
+						persisterUtil.addAlternateName(prop, an);
+					}
+					persisterUtil.addPackageClassification(prop);
+					logger.info(PropertyAccessor.getProperty("mapped.to.existing.prop"));
+					continue;
+				}
 
 
-  protected void sendProgressEvent(int status, int goal, String message) {
-    if(progressListener != null) {
-      ProgressEvent pEvent = new ProgressEvent();
-      pEvent.setMessage(message);
-      pEvent.setStatus(status);
-      pEvent.setGoal(goal);
-      
-      progressListener.newProgressEvent(pEvent);
+				List<String> eager = new ArrayList<String>();
+				eager.add(EagerConstants.AC_CS_CSI);
 
-    }
-  }
+				List<Property> l = propertyDAO.findByConceptCodes(conceptCodes, prop.getContext(), eager);
 
-  public void setProgressListener(ProgressListener listener) {
-    progressListener = listener;
-  }
-  
-  public void setPersisterUtil(PersisterUtil pu) {
-    persisterUtil = pu;
-  }
-  
-  private void initDAOs()  {
-    propertyDAO = DAOAccessor.getPropertyDAO();
-  }
+				Concept[] concepts = new Concept[conceptCodes.length];
+				for(int i=0; i<concepts.length; 
+				concepts[i] = LookupUtil.lookupConcept(conceptCodes[i++])
+				);
+
+				Concept primaryConcept = concepts[concepts.length - 1];
+				
+				List<AdminComponentClassSchemeClassSchemeItem> savedAcCSCSIs = prop.getAcCsCsis(); //save classifications before persisting
+
+				if (l.size() == 0) {
+					prop.setLongName(ConceptUtil.longNameFromConcepts(concepts));
+					prop.setPreferredDefinition(ConceptUtil.preferredDefinitionFromConcepts(concepts));
+					prop.setDefinitionSource(primaryConcept.getDefinitionSource());
+
+					prop.setVersion(1.0f);
+					prop.setWorkflowStatus(AdminComponent.WF_STATUS_RELEASED);
+					prop.setAudit(defaults.getAudit());
+					prop.setOrigin(defaults.getOrigin());
+					prop.setLifecycle(defaults.getLifecycle());
+
+					logger.debug("property: " + prop.getLongName());
+
+					try {
+						// remove for persistence
+						prop.setAcCsCsis(null);
+
+						logger.debug("Saving Property with " + prop.getPreferredName() + "v" + prop.getVersion() + " in context " + prop.getContext().getName());
+
+						prop.removeAlternateNames();
+						prop.removeDefinitions();
+
+						newProp = propertyDAO.create(prop, conceptCodes);
+						logger.info(PropertyAccessor.getProperty("created.prop"));
+					} catch (DAOCreateException e){
+						logger.error(PropertyAccessor.getProperty("created.prop.failed", e.getMessage()));
+						e.printStackTrace();
+					} 
+
+				} else {
+					newProp = l.get(0);
+					logger.info(PropertyAccessor.getProperty("existed.prop"));
+
+				}
+
+				prop.setId(newProp.getId());
+
+				LogUtil.logAc(newProp, logger);
+				logger.info("-- Public ID: " + newProp.getPublicId());
+
+				for(AlternateName an : prop.getAlternateNames()) {
+					persisterUtil.addAlternateName(prop, an);            
+				}
+
+				it.set(newProp);
+				
+				prop.setAcCsCsis(savedAcCSCSIs); //set the classifications back
+
+				persisterUtil.addPackageClassification(prop);
+
+				// This object still reference in DEC, update long_name to real long name
+				prop.setLongName(newProp.getLongName());
+				prop.setPreferredName(newProp.getPreferredName());
+			}
+		}
+
+	}
+
+
+	private Property existingMapping(Property prop) {
+
+		// for now, only classify with one CS_CSI
+		ClassSchemeClassSchemeItem csCsi = null;
+		for(AdminComponentClassSchemeClassSchemeItem acCsCsi : prop.getAcCsCsis()) {
+			csCsi = acCsCsi.getCsCsi();
+			String packageName = csCsi.getCsi().getLongName();
+			if(!StringUtil.isEmpty(packageName)) {
+				break;
+			}
+		}
+
+		List<String> eager = new ArrayList<String>();
+		eager.add(EagerConstants.AC_CS_CSI);
+
+		List<Property> l = propertyDAO.find(prop, eager);
+
+		if(l.size() == 0)
+			throw new PersisterException(PropertyAccessor.getProperty("prop.existing.error", ConventionUtil.publicIdVersion(prop)));
+
+		Property existingProp = l.get(0);
+
+		Property newProp = DomainObjectFactory.newProperty();
+		newProp.setLongName(existingProp.getLongName());
+		newProp.setId(existingProp.getId());
+		if(csCsi != null)
+			newProp.addCsCsi(csCsi);
+
+		return existingProp;
+
+	}
+
+
+	protected void sendProgressEvent(int status, int goal, String message) {
+		if(progressListener != null) {
+			ProgressEvent pEvent = new ProgressEvent();
+			pEvent.setMessage(message);
+			pEvent.setStatus(status);
+			pEvent.setGoal(goal);
+
+			progressListener.newProgressEvent(pEvent);
+
+		}
+	}
+
+	public void setProgressListener(ProgressListener listener) {
+		progressListener = listener;
+	}
+
+	public void setPersisterUtil(PersisterUtil pu) {
+		persisterUtil = pu;
+	}
+
+	private void initDAOs()  {
+		propertyDAO = DAOAccessor.getPropertyDAO();
+	}
 
 
 }
