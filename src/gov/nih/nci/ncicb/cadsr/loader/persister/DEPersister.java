@@ -175,7 +175,7 @@ public class DEPersister implements Persister {
            *  update the reference docs
            */
           if (de.getReferenceDocuments() != null) {
-        	  persisterUtil.updateRefDocs(de, de.getReferenceDocuments());
+        	  persisterUtil.updateRefDocs(de);
           }
 
           it.set(newDe);
