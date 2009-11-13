@@ -15,6 +15,8 @@ public interface CadsrModule
   public static final String CONTEXT = "context";
   public static final String WORKFLOW_STATUS = "workflowStatus";
 
+  
+  public boolean isPublic();
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.Context> 
     getAllContexts();

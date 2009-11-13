@@ -58,6 +58,10 @@ public class CadsrPublicApiModule implements CadsrModule {
       e.printStackTrace();
     } // end of try-catch
   }
+  
+  public boolean isPublic() {
+	  return true;
+  }
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.Context> 
     getAllContexts() {

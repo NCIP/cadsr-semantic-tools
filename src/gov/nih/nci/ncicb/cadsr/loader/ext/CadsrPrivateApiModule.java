@@ -19,6 +19,10 @@ public class CadsrPrivateApiModule implements CadsrModule
   {
 
   }
+  
+  public boolean isPublic() {
+	  return false;
+  }
 
   public Collection<gov.nih.nci.ncicb.cadsr.domain.Context> 
     getAllContexts() {
