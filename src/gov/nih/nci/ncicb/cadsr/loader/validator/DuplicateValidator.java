@@ -77,6 +77,9 @@ public class DuplicateValidator implements Validator, CadsrModuleListener
             String conceptConcat = null;
             if(!StringUtil.isEmpty(de.getDataElementConcept().getProperty().getPublicId())) {
               List<Concept> concepts = cadsrModule.getConcepts(de.getDataElementConcept().getProperty());
+              if (cadsrModule.isPublic()) {
+            	  Collections.reverse(concepts); //order of concepts returned by the public and private apis is reversed. reverse collection to make them same
+              }
               conceptConcat = ConceptUtil.preferredNameFromConcepts(concepts);
             } else {
               conceptConcat = de.getDataElementConcept().getProperty().getPreferredName();
