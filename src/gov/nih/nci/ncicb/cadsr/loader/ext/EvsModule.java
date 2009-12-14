@@ -20,12 +20,16 @@
 package gov.nih.nci.ncicb.cadsr.loader.ext;
 import gov.nih.nci.ncicb.cadsr.domain.Concept;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.evs.EVSConcept;
+import gov.nih.nci.ncicb.cadsr.evs.LexEVSQueryService;
+import gov.nih.nci.ncicb.cadsr.evs.LexEVSQueryServiceImpl;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import gov.nih.nci.ncicb.cadsr.evs.*;
+import org.LexGrid.commonTypes.Source;
+import org.LexGrid.concepts.Definition;
 import org.apache.log4j.Logger;
 
 /**
@@ -38,7 +42,7 @@ public class EvsModule
 
   private Logger logger = Logger.getLogger(EvsModule.class.getName());
 
-  private static EVSQueryService evsService = new EVSQueryService();
+  private static LexEVSQueryService evsService = new LexEVSQueryServiceImpl();
 
   private String vocabName = null;
 
@@ -108,18 +112,23 @@ public class EvsModule
     c.setPreferredName(evsConcept.getCode());
     c.setLongName(evsConcept.getPreferredName());
 
-    gov.nih.nci.evs.domain.Definition def = null;
-
+    Definition def = null;
+    Source src = null;
 
     // if there's an NCI definition, pick that
     // Otherwise, first one that comes
     for(java.util.Iterator it = evsConcept.getDefinitions().iterator(); it.hasNext();) {
-      gov.nih.nci.evs.domain.Definition d = (gov.nih.nci.evs.domain.Definition)it.next();      
+      Definition d = (Definition)it.next();      
 
       if(def == null)
         def = d;
-      if(d.getSource().getAbbreviation().equals("NCI"))
-        def = d;
+      Source[] sources = d.getSource();
+      for (Source source: sources) {
+    	  if (source.getContent().equals("NCI")) {
+    		  def = d;
+    		  src = source;
+    	  }
+      }
     }
 
 //     if(evsConcept.getDefinitions().size() > 0) {
@@ -127,8 +136,8 @@ public class EvsModule
 //     }
 
     if(def != null) {
-      c.setPreferredDefinition(def.getDefinition());
-      c.setDefinitionSource(def.getSource().getAbbreviation());
+      c.setPreferredDefinition(def.getValue().getContent());
+      c.setDefinitionSource(src.getContent());
     } else 
       c.setPreferredDefinition("");
     

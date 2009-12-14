@@ -1,12 +1,9 @@
 package gov.nih.nci.ncicb.cadsr.semconn;
 
-import gov.nih.nci.evs.domain.*;
-import gov.nih.nci.evs.query.*;
+import gov.nih.nci.ncicb.cadsr.evs.EVSConcept;
+import gov.nih.nci.ncicb.cadsr.evs.LexEVSQueryService;
+import gov.nih.nci.ncicb.cadsr.evs.LexEVSQueryServiceImpl;
 import gov.nih.nci.ncicb.cadsr.loader.event.ProgressEvent;
-import gov.nih.nci.system.applicationservice.*;
-import gov.nih.nci.system.client.*;
-
-import org.apache.log4j.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,16 +14,19 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.LexGrid.commonTypes.Source;
+import org.LexGrid.concepts.Definition;
+import org.apache.log4j.Logger;
+
 
 public class EVSImpl extends SubjectClass{
   private static String vocabularyName;
   private static Logger log = Logger.getLogger(EVSImpl.class.getName());
   private ArrayList evsValues;
-  private EVSQuery evsQuery;
   private String serverURL;
   private ArrayList possibleOptions;
   private ArrayList separateWords;
-  private EVSApplicationService appService;
+  private LexEVSQueryService evsQueryService;
 
   //private Configuration properties;
   public EVSImpl() {
@@ -34,7 +34,7 @@ public class EVSImpl extends SubjectClass{
     serverURL = Configuration.getServerURL();
 //     appService = ApplicationService.getRemoteInstance(serverURL);
     try {
-      appService = (EVSApplicationService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
+    	evsQueryService = new LexEVSQueryServiceImpl();
     } catch (Exception e) {
       log.error("Can't get cadsr publicAPI, contact support");
       e.printStackTrace();
@@ -53,7 +53,6 @@ public class EVSImpl extends SubjectClass{
     throws Exception {
 
     evsValues = new ArrayList();
-    evsQuery = new EVSQueryImpl();
     possibleOptions = new ArrayList();
     separateWords = new ArrayList();
     
@@ -137,28 +136,19 @@ public class EVSImpl extends SubjectClass{
    * @return
    */
   private String getConceptCode(String name) throws Exception {
-    //System.out.println("EVSImpl - getConceptCode..."+name);
     String code = null;
 
     try {
-      //getting concept code
-      evsQuery = new EVSQueryImpl();
+      List<String> conceptNames = new ArrayList<String>();
+      conceptNames.add(name);
+      List<EVSConcept> evsConcepts = evsQueryService.findConceptDetailsByName(conceptNames, false, vocabularyName);
 
-      //System.out.println("evsQuery.getConceptCodeByName " + name);
-      evsQuery.getConceptCodeByName(vocabularyName, name);
-
-      code = (String) getObject(evsQuery);
-
-      //System.out.println("Getting concept code for "+name);
-      if (code != null) {
-        //System.out.println("Concept code = "+ code );
-      }
-
-      else {
-        //System.out.println("Cannot locate concept code...");
+      if (evsConcepts != null && evsConcepts.size() > 0) {
+    	  EVSConcept evsConcept = evsConcepts.get(0);
+    	  
+    	  code =  evsConcept.getCode();
       }
     }
-
     catch (Exception e) {
       log.error(
         "Exception occured while getting concept code: " + e.getMessage());
@@ -415,21 +405,16 @@ public class EVSImpl extends SubjectClass{
     String[] codes = null;
 
     try {
-      //getting concept code
-      evsQuery.getConceptCodeByName(vocabularyName, name);
-
-      //System.out.println("Getting concept code for "+name);
-      codes = (String[]) getObjects(evsQuery);
-
-      /*
-         if(getObjects(evsQuery)!=null){
-                 codes = (String[])getObjects(evsQuery);
-                 System.out.println("Concept code = "+ codes );
-                 }
-         else{
-                 System.out.println("Cannot locate concept code...");
-                 }
-       */
+      List<String> conceptNames = new ArrayList<String>();
+      conceptNames.add(name);
+      
+      List<EVSConcept> evsConcepts = evsQueryService.findConceptDetailsByName(conceptNames, false, vocabularyName);
+      if (evsConcepts != null) {
+    	  codes = new String[evsConcepts.size()];
+    	  for (int i=0;i<evsConcepts.size();i++) {
+    		  codes[i] = evsConcepts.get(i).getCode();
+    	  }
+      }
     }
 
     catch (Exception e) {
@@ -451,23 +436,15 @@ public class EVSImpl extends SubjectClass{
    * @return
    */
   private String[] getSynonyms(String name) throws Exception {
-    //System.out.println("getSynonyms...");
     String[] concepts = null;
 
     try {
-      //evsQuery.getConceptWithPropertyMatching(vocabularyName, "Synonym", name, Configuration.getLimit());
-      evsQuery.getConceptWithPropertyMatching(
-        vocabularyName, "Synonym", name, 3);
-
-      //List results = getResults(evsQuery);
-      Object[] results = getObjects(evsQuery);
-
-      concepts = new String[results.length];
-
-      for (int i = 0; i < results.length; i++) {
-        concepts[i] = (String) results[i];
-
-        //System.out.println(concepts[i]);
+      List<EVSConcept> evsConcepts = evsQueryService.findConceptsBySynonym(name, false, 0, vocabularyName);
+      if (evsConcepts != null) {
+    	  concepts = new String[evsConcepts.size()];
+    	  for (int i=0;i<evsConcepts.size();i++) {
+    		  concepts[i] = evsConcepts.get(i).getCode();
+    	  }
       }
     }
 
@@ -491,114 +468,40 @@ public class EVSImpl extends SubjectClass{
   private void getProperties(
     String name,
     HashMap entitiesMap) throws Exception {
-    //System.out.println("EVSImpl getProperties...");
-    try {
-      evsQuery = new EVSQueryImpl();
-
-      evsQuery.getPropertiesByConceptName(vocabularyName, name);
-
-      //System.out.println("Getting properties for "+name);
-      //Property[] properties =  null;//(Property [])getObjects(evsQuery);
-      List prop = getResults(evsQuery);
-
-      Property[] properties = new Property[prop.size()];
-
-      for (int i = 0; i < prop.size(); i++) {
-        properties[i] = (Property) prop.get(i);
-      }
-
-      String propName = null;
-
-      String propValue = null;
-
-      HashMap definitionsHash = new HashMap();
-
-      String preferredName = null;
-
-      String hashKey = null;
-
-      String hashValue = null;
-
-      for (int i = 0; i < properties.length; i++) {
-        propName = properties[i].getName();
-
-        propValue = properties[i].getValue();
-
-        //System.out.println("Name: "+propName);
-        //System.out.println("Value: "+propValue);
-
-        /**
-         * Future enhancement for multiple concept codes Assuming that we get
-         * secondary concept codes with some classifications to it.. then add
-         * this as a new entry in the list..
-         */
-        Vector valueVector = null;
-
-        //Definitions
-        if (propName.equalsIgnoreCase("DEFINITION")) {
-          hashKey = null;
-
-          hashValue = null;
-
-          valueVector = getPropertyElements(propValue);
-
-          for (int j = 0; j < valueVector.size(); j++) {
-            String key = (String) valueVector.elementAt(j);
-
-            String value = getPropertyElementValue(key, propValue);
-
-            //System.out.println("\t\tkey: "+key);
-            //System.out.println("\t\tvalue: "+value);
-            if (key.equalsIgnoreCase("DEF-SOURCE")) {
-              hashKey = value;
-            }
-
-            else if (key.equalsIgnoreCase("DEF-DEFINITION")) {
-              hashValue = value;
-            }
-          }
-
-          definitionsHash.put(hashKey, hashValue);
-        }
-
-        //Preferred Name
-        if (propName.equalsIgnoreCase("PREFERRED_NAME")) {
-          entitiesMap.put(Configuration.getPreferredNameCol(), propValue);
-        }
-      }
-
-      //add definition, definitionsource to the map
-      String definition = null;
-
-      String definitionSource = null;
-
-      if (definitionsHash != null) {
-        //If there is a NCI,, add it..
-        //else add the next one..(whatever we got)
-        if (definitionsHash.containsKey("NCI")) {
-          definitionSource = "NCI";
-
-          definition = (String) definitionsHash.get("NCI");
-        }
-
-        else {
-          Iterator iter = definitionsHash.keySet().iterator();
-
-          while (iter.hasNext()) {
-            definitionSource = (String) iter.next();
-
-            definition = (String) definitionsHash.get(definitionSource);
-
-            break;
-          }
-        }
-
-        //add this to map
-        entitiesMap.put(
-          Configuration.getDefinitionSourceCol(), definitionSource);
-
-        entitiesMap.put(Configuration.getDefinitionCol(), definition);
-      }
+    try {    	
+    	List<String> conceptNames = new ArrayList<String>();
+    	conceptNames.add(name);
+    	
+    	List<EVSConcept> evsConcepts = evsQueryService.findConceptDetailsByName(conceptNames, false, vocabularyName);
+    	if (evsConcepts != null && evsConcepts.size() > 0) {
+    		EVSConcept evsConcept = evsConcepts.get(0);
+    		String preferredName = evsConcept.getPreferredName();
+    		
+    		entitiesMap.put(Configuration.getPreferredNameCol(), preferredName);
+    		
+    		List<Definition> definitions = evsConcept.getDefinitions();
+    		String definition = null;
+    		String definitionSource = null;
+    		Definition nciDefinition = getNCIDefinition(definitions);
+    		if (nciDefinition != null) {
+    			definition = nciDefinition.getValue().getContent();
+    			definitionSource = "NCI";
+    		}
+    		else {
+    			if (definitions != null && definitions.size() > 0) {
+    				Definition defaultDef = definitions.get(definitions.size()-1);
+    				
+    				definition = defaultDef.getValue().getContent();
+    				Source[] defaultSources = defaultDef.getSource();
+    				if (defaultSources != null && defaultSources.length > 0) {
+    					definitionSource = defaultSources[defaultSources.length-1].getContent();
+    				}
+    			}
+    		}
+    		
+    		entitiesMap.put(Configuration.getDefinitionSourceCol(), definitionSource);
+			entitiesMap.put(Configuration.getDefinitionCol(), definition);
+    	}
     }
     catch (Exception e) {
       log.error(
@@ -607,6 +510,30 @@ public class EVSImpl extends SubjectClass{
       throw new Exception(
         "Exception occured while getting properties: " + e.getMessage());
     }
+  }
+  
+  private Definition getNCIDefinition(List<Definition> definitions) {
+	  if (definitions != null) {
+		  for (Definition def: definitions) {
+			if (isNCIDefinition(def)) {
+				return def;
+			}
+		}
+	  }
+	  return null;
+  }
+  
+  private boolean isNCIDefinition(Definition definition) {
+	  Source[] sources = definition.getSource();
+		if (sources != null && sources.length > 0) {
+			for (Source defSource: sources) {
+				if (defSource.getContent().equalsIgnoreCase("NCI")) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
   }
 
   /**
@@ -918,89 +845,5 @@ public class EVSImpl extends SubjectClass{
     }
   }
 
-  private Object getObject(EVSQuery evsQuery) throws Exception {
-    //System.out.println("EVSImpl - getObject");
-    Object object = null;
-
-    try {
-      List resultList = getResults(evsQuery);
-
-      if (resultList.size() > 0) {
-        object = resultList.get(0);
-
-        //System.out.println("Object - "+ object);
-      }
-    }
-    catch (Exception ex) {
-      log.error("Exception: " + ex.getMessage());
-
-      throw new Exception(ex.getMessage());
-    }
-
-    return object;
-  }
-
-  private Object[] getObjects(EVSQuery evsQuery) throws Exception {
-    //System.out.println("EVSImpl - getObjects");
-    Object[] objectArray = null;
-
-    try {
-      List resultList = getResults(evsQuery);
-
-      objectArray = new Object[resultList.size()];
-
-      if (resultList.size() == 1) {
-        objectArray[0] = resultList.get(0);
-      }
-
-      else {
-        for (int i = 0; i < resultList.size(); i++) {
-          if (resultList.get(i) != null) {
-            objectArray[i] = resultList.get(i);
-          }
-        }
-      }
-    }
-    catch (Exception ex) {
-      log.error("Exception: " + ex.getMessage());
-
-      throw new Exception(ex.getMessage());
-    }
-
-    //System.out.println("Object array size = "+ objectArray.length);
-    return objectArray;
-  }
-
-  private List getResults(EVSQuery evsQuery) throws Exception {
-    List results = new ArrayList();
-
-    try {
-      if (serverURL == null) {
-        if (Configuration.getServerURL() == null) {
-          //System.out.println("Cannot locate serverURL in semantic properties");
-          throw new Exception("Cannot locate serverURL in semantic properties");
-        }
-
-        serverURL = Configuration.getServerURL();
-      }
-
-      if (appService == null) {
-        appService = (EVSApplicationService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
-      }
-
-      //System.out.println("calling appService.eveSearch()");
-      results = appService.evsSearch(evsQuery);
-
-      //System.out.println("Application service returned "+ results.size());
-    }
-    catch (Exception ex) {
-      log.error("Exception: " + ex.getMessage());
-
-      ex.printStackTrace();
-
-      throw new Exception(ex.getMessage());
-    }
-
-    return results;
-  }
+ 
 }

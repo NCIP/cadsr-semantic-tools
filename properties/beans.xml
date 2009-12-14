@@ -366,7 +366,8 @@
         <ref bean="inheritanceValidator"/>
         <ref bean="definitionLengthValidator"/>
         <ref bean="gmeValidator"/>
-        <ref bean="conceptInheritanceValidator"/>
+        <!-- uncomment to enable concept inheritance -->
+        <!-- ref bean="conceptInheritanceValidator"/ -->
         <ref bean="duplicateConceptValidator"/>
         <ref bean="duplicateClassValidator"/>
         <ref bean="valueDomainRepTermValidator"/>
@@ -389,7 +390,8 @@
         <ref bean="inheritanceValidator"/>
         <ref bean="definitionLengthValidator"/>
         <ref bean="gmeValidator"/>
-        <ref bean="conceptInheritanceValidator"/>
+        <!-- uncomment to enable concept inheritance -->
+        <!-- ref bean="conceptInheritanceValidator"/ -->
         <ref bean="duplicateConceptValidator"/>
         <ref bean="duplicateClassValidator"/>
         <ref bean="valueDomainRepTermValidator"/>
