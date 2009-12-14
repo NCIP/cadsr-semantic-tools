@@ -76,6 +76,7 @@ public class ConceptPersister implements Persister {
 
     int count = 1;
     if (cons != null) {
+    	HashMap<Concept, Concept> conceptsToReplace = new HashMap<Concept, Concept>();
       for(Iterator it = cons.iterator(); it.hasNext();) {
         Concept c = (Concept)it.next();
         con.setPreferredName(c.getPreferredName());
@@ -153,6 +154,8 @@ public class ConceptPersister implements Persister {
         	  userConcept.setLongName(c.getLongName());
           }
           
+          conceptsToReplace.put(c, userConcept);
+          
           /*EvsResult evsResult = null;
           // verify that name in input and name in caDSR are the same
           if(!newName.equalsIgnoreCase(c.getLongName())) {
@@ -196,7 +199,20 @@ public class ConceptPersister implements Persister {
           }
         }
       }
+      
+      replaceConcepts(conceptsToReplace, cons);
     }
+  }
+  
+  private List<Concept> replaceConcepts(HashMap<Concept, Concept> conceptsToReplace, List<Concept> conList) {
+	  if (conceptsToReplace != null && conceptsToReplace.size() > 0 && conList != null) {
+		  for (Concept con: conceptsToReplace.keySet()) {
+			  conList.remove(con);
+			  conList.add(conceptsToReplace.get(con));
+		  }
+	  }
+	  
+	  return conList;
   }
 
   private void addAlternateName(Concept con, String newName, String type) 

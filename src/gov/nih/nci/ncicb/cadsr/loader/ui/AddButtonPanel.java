@@ -12,7 +12,10 @@ import java.beans.PropertyChangeListener;
 
 public class AddButtonPanel extends JPanel implements PropertyChangeListener, MouseListener, ActionListener
 {
-  private DropDownButton addButton;
+	// TODO uncomment to enable concept inheritance feature
+  //private DropDownButton addButton;
+	
+	private JButton addButton;
 
   static final String ADD = "Add",
     ADD_INHERITANCE = "Add Inheritance";
@@ -22,9 +25,13 @@ public class AddButtonPanel extends JPanel implements PropertyChangeListener, Mo
   public AddButtonPanel(ConceptEditorPanel p) {
     conceptEditorPanel = p;
 
-    addButton = new DropDownButton(ADD);
+ // TODO uncomment to enable concept inheritance feature
+    //addButton = new DropDownButton(ADD);
+    
+    addButton = new JButton(ADD);
 
-    JLabel addLabel = new JLabel(ADD),
+ // TODO uncomment to enable concept inheritance feature
+/*    JLabel addLabel = new JLabel(ADD),
       addInheritanceLabel = new JLabel(ADD_INHERITANCE);
     
     addButton.addComponent(addLabel);
@@ -32,9 +39,9 @@ public class AddButtonPanel extends JPanel implements PropertyChangeListener, Mo
 
     addLabel.addMouseListener(this);
     addInheritanceLabel.addMouseListener(this);
-
+*/
     addButton.addActionListener(this);
-
+    
     this.add(addButton);
 
   }
@@ -49,7 +56,7 @@ public class AddButtonPanel extends JPanel implements PropertyChangeListener, Mo
   public void mouseClicked(MouseEvent e) {
 //     cadsrVDPanel.setBackground(Color.WHITE);
 //     lvdPanel.setBackground(Color.WHITE);
-    addButton.unfocus();
+    //addButton.unfocus();
     if(((JLabel)e.getSource()).getText().equals(ADD))
       conceptEditorPanel.addPressed();
     else if(((JLabel)e.getSource()).getText().equals(ADD_INHERITANCE))

@@ -27,7 +27,9 @@ public class UMLElementViewPanel extends JPanel
   private ButtonPanel buttonPanel;
   private GMEViewPanel gmePanel;
   private DescriptionPanel dsp;
-  private ExcludeFromSemanticInheritancePanel excludeSemPanel;
+
+  //TODO uncomment to enable concept inheritance feature
+  //private ExcludeFromSemanticInheritancePanel excludeSemPanel;
   private UMLNode node;
 
   private InfoPanel cannotMapVMInfoPanel;
@@ -53,7 +55,9 @@ public class UMLElementViewPanel extends JPanel
     ocPanel = new OCPanel(node);
     gmePanel= new GMEViewPanel(node);
     dsp = new DescriptionPanel(node);
-    excludeSemPanel = new ExcludeFromSemanticInheritancePanel(node);
+    
+    // TODO uncomment to enable concept inheritance feature
+    //excludeSemPanel = new ExcludeFromSemanticInheritancePanel(node);
 
     cannotMapVMInfoPanel = new InfoPanel();
     cannotMapVMInfoPanel.setOutputText("This Permissible Value cannot be modified because the Value Domain where it is included is mapped to a caDSR Value Domain");
@@ -70,7 +74,9 @@ public class UMLElementViewPanel extends JPanel
     ocPanel.addPropertyChangeListener(buttonPanel);
     gmePanel.addPropertyChangeListener(buttonPanel);
     dsp.addPropertyChangeListener(buttonPanel);
-    excludeSemPanel.addPropertyChangeListener(buttonPanel);
+    
+    // TODO uncomment to enable concept inheritance feature
+    //excludeSemPanel.addPropertyChangeListener(buttonPanel);
 
     cardPanel = new JPanel();
     initUI();
@@ -109,8 +115,9 @@ public class UMLElementViewPanel extends JPanel
 
     UIUtil.insertInBag(editPanel, cardPanel, 0, 1);
     UIUtil.insertInBag(editPanel, gmePanel, 0, 2);
-    
-    UIUtil.insertInBag(editPanel, excludeSemPanel, 0, 3);
+
+    // TODO uncomment to enable concept inheritance feature
+    //UIUtil.insertInBag(editPanel, excludeSemPanel, 0, 3);
 
     JScrollPane scrollPane = new JScrollPane(editPanel);
     scrollPane.getVerticalScrollBar().setUnitIncrement(30);
@@ -185,7 +192,9 @@ public class UMLElementViewPanel extends JPanel
     dePanel.updateNode(node);
     ocPanel.updateNode(node);
     gmePanel.updateNode(node);
-    excludeSemPanel.updateNode(node);
+    
+ // TODO uncomment to enable concept inheritance feature
+//    excludeSemPanel.updateNode(node);
     
     if(node instanceof AttributeNode)
       buttonPanel.setEditablePanel(dePanel);
@@ -229,11 +238,15 @@ public class UMLElementViewPanel extends JPanel
     conceptEditorPanel.addElementChangeListener(listener);
     dePanel.addElementChangeListener(listener);
     dsp.addElementChangeListener(listener);
-    excludeSemPanel.addElementChangeListener(listener);
+    
+ // TODO uncomment to enable concept inheritance feature
+//    excludeSemPanel.addElementChangeListener(listener);
   }
 
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    excludeSemPanel.addPropertyChangeListener(l);
+	  
+	// TODO uncomment to enable concept inheritance feature	  
+//    excludeSemPanel.addPropertyChangeListener(l);
     dsp.addPropertyChangeListener(l);
     conceptEditorPanel.addPropertyChangeListener(l);
     buttonPanel.addPropertyChangeListener(l);
@@ -248,7 +261,9 @@ public class UMLElementViewPanel extends JPanel
      ((Editable)displayedPanel).applyPressed();
     }
     dsp.applyPressed();
-    excludeSemPanel.applyPressed();
+    
+ // TODO uncomment to enable concept inheritance feature
+//    excludeSemPanel.applyPressed();
   }
     
   public ConceptEditorPanel getConceptEditorPanel() {
