@@ -73,6 +73,7 @@
     <jar href="lib/commons-discovery-0.2.jar"/>
     <jar href="lib/LexEVS_50_localRuntime.jar"/>
     <jar href="lib/LexEVS_50_localRuntime_dependencies.jar"/>
+    <jar href="lib/lgModel.jar"/>
 
   </resources>
   <application-desc main-class="gov.nih.nci.ncicb.cadsr.loader.SIW"/>

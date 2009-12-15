@@ -228,6 +228,7 @@
 	      	<include name="commons-discovery-0.2.jar"/>
 	      	<include name="LexEVS_50_localRuntime.jar"/>
 	      	<include name="LexEVS_50_localRuntime_dependencies.jar"/>
+	      	<include name="lgModel.jar"/>
 	      </fileset>
 	    </copy>
 	    <copy file="${config.dir}/datatype-mapping.xml"
