@@ -265,6 +265,7 @@
 	        <include name="spring-hibernate3.jar"/>
 	        <include name="spring.jar"/>
 	        <include name="xmi.in.out.jar"/>
+	      	<include name="axis.jar"/>
 	      </fileset>
 	    </copy>
     </target>

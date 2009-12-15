@@ -28,7 +28,6 @@
     <jar href="lib/MSSOUserValidator.jar"/>
     <jar href="lib/caDSR-beans.jar"/>
     <jar href="lib/jdom.jar"/>
-    <jar href="lib/lgModel.emf.jar"/>
     <jar href="lib/commons-logging-1.1.jar"/>
     <jar href="lib/dlbadapter.jar"/>
     <jar href="lib/acegi-security-1.0.4.jar"/>
@@ -70,6 +69,7 @@
     <jar href="lib/LexEVSSecurity.jar"/>
     <jar href="lib/cog-jglobus.jar"/>
     <jar href="lib/caGrid-CQL-cql.1.0-1.2.jar"/>
+    <jar href="lib/axis.jar"/>
 
   </resources>
   <application-desc main-class="gov.nih.nci.ncicb.cadsr.loader.SIW"/>
