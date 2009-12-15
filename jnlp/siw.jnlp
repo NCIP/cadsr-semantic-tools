@@ -70,6 +70,7 @@
     <jar href="lib/cog-jglobus.jar"/>
     <jar href="lib/caGrid-CQL-cql.1.0-1.2.jar"/>
     <jar href="lib/axis.jar"/>
+    <jar href="lib/jaxrpc.jar"/>
 
   </resources>
   <application-desc main-class="gov.nih.nci.ncicb.cadsr.loader.SIW"/>

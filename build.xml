@@ -225,6 +225,7 @@
 	      	<include name="lexevsapi50-framework.jar"/>
 	      	<include name="LexEVSSecurity.jar"/>
 	      	<include name="caGrid-CQL-cql.1.0-1.2.jar"/>
+	      	<include name="jaxrpc.jar"/>
 	      </fileset>
 	    </copy>
 	    <copy file="${config.dir}/datatype-mapping.xml"
