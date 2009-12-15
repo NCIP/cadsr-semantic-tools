@@ -63,7 +63,6 @@
     <jar href="lib/jmiutils.jar"/>
     <jar href="lib/antlr-2.7.6.jar"/>
     <jar href="lib/sdk-security.jar"/>
-    <jar href="lib/lexbig.jar"/>
     <jar href="lib/LexEVS_50_client.jar"/>
     <jar href="lib/lexevsapi50-framework.jar"/>
     <jar href="lib/LexEVSSecurity.jar"/>
@@ -72,7 +71,8 @@
     <jar href="lib/axis.jar"/>
     <jar href="lib/jaxrpc.jar"/>
     <jar href="lib/commons-discovery-0.2.jar"/>
-    <jar href="lib/lgModel.jar"/>
+    <jar href="lib/LexEVS_50_localRuntime.jar"/>
+    <jar href="lib/LexEVS_50_localRuntime_dependencies.jar"/>
 
   </resources>
   <application-desc main-class="gov.nih.nci.ncicb.cadsr.loader.SIW"/>
