@@ -72,7 +72,7 @@
           target: remote-delete                      
          - - - - - - - - - - - - - - - - - -->
     <target name="remote-delete">
-		<ftp action="del" 
+		<myFTP action="del" 
 			password="${SCP.PASSPHRASE}" 
 			server="${SCP.HOST}" 
 			userid="${SCP.USER}">
@@ -81,9 +81,12 @@
     			<include name="**"/>
 			</fileset>
 
-		</ftp>
+		</myFTP>
     </target>
 
+	<taskdef name="myFTP" classname="org.apache.tools.ant.taskdefs.optional.net.FTP">
+		<classpath refid="proj.class.path" />
+	</taskdef>
 
 
   <target name="sign" if="keystore">
