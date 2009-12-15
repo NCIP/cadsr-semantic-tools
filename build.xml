@@ -226,6 +226,7 @@
 	      	<include name="LexEVSSecurity.jar"/>
 	      	<include name="caGrid-CQL-cql.1.0-1.2.jar"/>
 	      	<include name="jaxrpc.jar"/>
+	      	<include name="commons-discovery-0.2.jar"/>
 	      </fileset>
 	    </copy>
 	    <copy file="${config.dir}/datatype-mapping.xml"
