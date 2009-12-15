@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.LexGrid.LexBIG.DataModel.Collections.ResolvedConceptReferenceList;
 import org.LexGrid.LexBIG.DataModel.Core.ResolvedConceptReference;
+import org.LexGrid.LexBIG.Impl.codedNodeSetOperations.GetAllConcepts;
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet;
 import org.LexGrid.LexBIG.LexBIGService.LexBIGService;
 import org.LexGrid.LexBIG.Utility.Constructors;
@@ -32,6 +33,8 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 			log.error("Error accessing EVS Service", e);
 			throw new EVSRuntimeException("Error connecting to EVS. Please check the configuration and try again",e);
 		}
+		
+		System.out.println(GetAllConcepts.class.getClassLoader().getResource("org/LexGrid/LexBIG/Impl/codedNodeSetOperations/GetAllConcepts.class").getFile());
 	}
 	
 	public List findConceptsByCode(String conceptCode, boolean includeRetiredConcepts, int rowCount, String vocabName)
