@@ -56,7 +56,7 @@
     
   </target>
 
-  <target name="remote-deploy" depends="dist, sign">
+  <target name="remote-deploy" depends="dist, sign, remote-delete">
     <echo>Deploying binaries to remote file system "${SCP.USER}@${SCP.HOST}:${scpPath.dir}"</echo>
     <scp todir="${SCP.USER}@${SCP.HOST}:${TOOL.ROOT.DIR}" port="${SCP.PORT}" passphrase="${SCP.PASSPHRASE}" keyfile="${SCP.KEYFILE}" trust="true" verbose="true">
       <fileset dir="${dist.dir}">
@@ -67,6 +67,23 @@
       </fileset>
     </scp>
   </target>
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: remote-delete                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="remote-delete">
+		<ftp action="del" 
+			password="${SCP.PASSPHRASE}" 
+			server="${SCP.HOST}" 
+			userid="${SCP.USER}">
+			
+			<fileset dir="${TOOL.ROOT.DIR}">
+    			<include name="**"/>
+			</fileset>
+
+		</ftp>
+    </target>
+
 
 
   <target name="sign" if="keystore">
