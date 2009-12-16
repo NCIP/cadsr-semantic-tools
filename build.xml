@@ -78,7 +78,7 @@
 			username="${SCP.USER}"
 			keyfile="${SCP.KEYFILE}"
 			trust="yes"
-			command="rm -rf ${TOOL.ROOT.DIR}" >
+			command="rm -rf ${TOOL.ROOT.DIR}/**/*.jar" >
 		</sshexec>
     </target>
 
