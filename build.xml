@@ -56,7 +56,7 @@
     
   </target>
 
-  <target name="remote-deploy" depends="dist, sign">
+  <target name="remote-deploy" depends="dist, sign, remote-delete">
     <echo>Deploying binaries to remote file system "${SCP.USER}@${SCP.HOST}:${scpPath.dir}"</echo>
     <scp todir="${SCP.USER}@${SCP.HOST}:${TOOL.ROOT.DIR}" port="${SCP.PORT}" passphrase="${SCP.PASSPHRASE}" keyfile="${SCP.KEYFILE}" trust="true" verbose="true">
       <fileset dir="${dist.dir}">
@@ -67,6 +67,20 @@
       </fileset>
     </scp>
   </target>
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: remote-delete                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="remote-delete">
+		<sshexec
+			password="${SCP.PASSPHRASE}" 
+			host="${SCP.HOST}" 
+			username="${SCP.USER}"
+			keyfile="${SCP.KEYFILE}"
+			trust="yes"
+			command="rm -rf ${TOOL.ROOT.DIR}/**/*.jar" >
+		</sshexec>
+    </target>
 
 
   <target name="sign" if="keystore">
@@ -220,10 +234,15 @@
 	        <include name="sdk-client-framework.jar"/>
 	      	<include name="sdk-security.jar"/>
 	      	<include name="cog-jglobus.jar"/>
-	      	<include name="lexbig.jar"/>
 	      	<include name="LexEVS_50_client.jar"/>
 	      	<include name="lexevsapi50-framework.jar"/>
 	      	<include name="LexEVSSecurity.jar"/>
+	      	<include name="caGrid-CQL-cql.1.0-1.2.jar"/>
+	      	<include name="jaxrpc.jar"/>
+	      	<include name="commons-discovery-0.2.jar"/>
+	      	<include name="LexEVS_50_localRuntime.jar"/>
+	      	<include name="LexEVS_50_localRuntime_dependencies.jar"/>
+	      	<include name="lgModel.jar"/>
 	      </fileset>
 	    </copy>
 	    <copy file="${config.dir}/datatype-mapping.xml"
@@ -264,6 +283,7 @@
 	        <include name="spring-hibernate3.jar"/>
 	        <include name="spring.jar"/>
 	        <include name="xmi.in.out.jar"/>
+	      	<include name="axis.jar"/>
 	      </fileset>
 	    </copy>
     </target>
