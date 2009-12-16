@@ -72,21 +72,15 @@
           target: remote-delete                      
          - - - - - - - - - - - - - - - - - -->
     <target name="remote-delete">
-		<myFTP action="del" 
+		<sshexec
 			password="${SCP.PASSPHRASE}" 
-			server="${SCP.HOST}" 
-			userid="${SCP.USER}">
-			
-			<fileset dir="${TOOL.ROOT.DIR}">
-    			<include name="**"/>
-			</fileset>
-
-		</myFTP>
+			host="${SCP.HOST}" 
+			username="${SCP.USER}"
+			keyfile="${SCP.KEYFILE}"
+			trust="yes"
+			command="rm -rf ${TOOL.ROOT.DIR}" >
+		</sshexec>
     </target>
-
-	<taskdef name="myFTP" classname="org.apache.tools.ant.taskdefs.optional.net.FTP">
-		<classpath refid="proj.class.path" />
-	</taskdef>
 
 
   <target name="sign" if="keystore">
