@@ -217,7 +217,7 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 			termAndMatchAlgorithm[0][0] = searchTerm.substring(1);
 			termAndMatchAlgorithm[0][1] = MatchAlgorithms.contains.name();
 		}
-		if (searchTerm.endsWith("*")) {
+		else if (searchTerm.endsWith("*")) {
 			termAndMatchAlgorithm[0][0] = searchTerm.substring(0, searchTerm.length()-1);
 			termAndMatchAlgorithm[0][1] = MatchAlgorithms.startsWith.name();
 		}
