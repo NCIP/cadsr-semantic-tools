@@ -33,8 +33,6 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 			log.error("Error accessing EVS Service", e);
 			throw new EVSRuntimeException("Error connecting to EVS. Please check the configuration and try again",e);
 		}
-		
-		System.out.println(GetAllConcepts.class.getClassLoader().getResource("org/LexGrid/LexBIG/Impl/codedNodeSetOperations/GetAllConcepts.class").getFile());
 	}
 	
 	public List findConceptsByCode(String conceptCode, boolean includeRetiredConcepts, int rowCount, String vocabName)
@@ -195,12 +193,13 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		
 			CodedNodeSet.PropertyType[] types = new CodedNodeSet.PropertyType[1];
 			types[0] = CodedNodeSet.PropertyType.PRESENTATION;
-		
+
+			String[][] termAndMatchAlgorithmName = getTermAndMatchAlgorithmName(searchTerm);
 			cns = cns.restrictToMatchingProperties(
 					Constructors.createLocalNameList("FULL_SYN"), 
 					types, 
-					searchTerm, 
-					MatchAlgorithms.exactMatch.name(), 
+					termAndMatchAlgorithmName[0][0], 
+					termAndMatchAlgorithmName[0][1],
 					null
 				);
 			ResolvedConceptReferenceList results = cns.resolveToList(null, null, null, -1);
@@ -211,4 +210,27 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		}
 		return evsConcepts;
 	}
+	
+	private String[][] getTermAndMatchAlgorithmName(String searchTerm) {
+		String[][] termAndMatchAlgorithm = new String[1][2];
+		if (searchTerm.startsWith("*")) {
+			termAndMatchAlgorithm[0][0] = searchTerm.substring(1);
+			termAndMatchAlgorithm[0][1] = MatchAlgorithms.contains.name();
+		}
+		if (searchTerm.endsWith("*")) {
+			termAndMatchAlgorithm[0][0] = searchTerm.substring(0, searchTerm.length()-1);
+			termAndMatchAlgorithm[0][1] = MatchAlgorithms.startsWith.name();
+		}
+		else if (searchTerm.contains("*")) {
+			termAndMatchAlgorithm[0][0] = searchTerm;
+			termAndMatchAlgorithm[0][1] = MatchAlgorithms.LuceneQuery.name();
+		}
+		else {
+			termAndMatchAlgorithm[0][0] = searchTerm;
+			termAndMatchAlgorithm[0][1] = MatchAlgorithms.exactMatch.name();
+		}
+		
+		return termAndMatchAlgorithm;
+	}
+	
 }
