@@ -48,7 +48,7 @@ public class ConceptPersister implements Persister {
 
   private static Logger logger = Logger.getLogger(ConceptPersister.class.getName());
 
-  private EvsModule evsModule = new EvsModule("Pre NCI Thesaurus");
+  private EvsModule evsModule = new EvsModule();
 
   private UMLDefaults defaults = UMLDefaults.getInstance();
   private ElementsLists elements = ElementsLists.getInstance();
