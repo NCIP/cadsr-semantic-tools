@@ -17,7 +17,10 @@ public class LexEVSTestCase extends TestCase{
 	public void testGetByConceptCode() {
 		try {
 			LexEVSQueryService evsModule = new LexEVSQueryServiceImpl();
-			evsModule.findConceptsByCode("C23368", true, 0, "NCI_Thesaurus");
+			List<EVSConcept> evsConcepts = evsModule.findConceptsByCode("C43614", false, 100, "NCI_Thesaurus");
+			for (EVSConcept evsConcept: evsConcepts) {
+				System.out.println("Code: "+evsConcept.getCode()+", Name: "+evsConcept.getPreferredName());
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -27,7 +30,7 @@ public class LexEVSTestCase extends TestCase{
 	public void testGetBySynonym() {
 		try {
 			LexEVSQueryService evsModule = new LexEVSQueryServiceImpl();
-			List<EVSConcept> evsConcepts = evsModule.findConceptsBySynonym("Cis-1,1-diamino-methylcyclohexane sulfato-platinum", true, 0, "NCI_Thesaurus");
+			List<EVSConcept> evsConcepts = evsModule.findConceptsBySynonym("*address", true, 0, "NCI_Thesaurus");
 			for (EVSConcept evsConcept: evsConcepts) {
 				System.out.println("Code: "+evsConcept.getCode()+", Name: "+evsConcept.getPreferredName());
 			}
