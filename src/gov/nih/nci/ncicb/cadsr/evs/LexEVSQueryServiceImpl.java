@@ -11,6 +11,7 @@ import org.LexGrid.LexBIG.DataModel.Core.ResolvedConceptReference;
 import org.LexGrid.LexBIG.Impl.codedNodeSetOperations.GetAllConcepts;
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet;
 import org.LexGrid.LexBIG.LexBIGService.LexBIGService;
+import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet.SearchDesignationOption;
 import org.LexGrid.LexBIG.Utility.Constructors;
 import org.LexGrid.LexBIG.Utility.LBConstants.MatchAlgorithms;
 import org.LexGrid.commonTypes.Property;
@@ -190,15 +191,11 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
 		try {
 			CodedNodeSet cns = service.getCodingSchemeConcepts(vocabName, null);
-		
-			CodedNodeSet.PropertyType[] types = new CodedNodeSet.PropertyType[1];
-			types[0] = CodedNodeSet.PropertyType.PRESENTATION;
 
 			String[][] termAndMatchAlgorithmName = getTermAndMatchAlgorithmName(searchTerm);
-			cns = cns.restrictToMatchingProperties(
-					Constructors.createLocalNameList("FULL_SYN"), 
-					types, 
+			cns = cns.restrictToMatchingDesignations(
 					termAndMatchAlgorithmName[0][0], 
+					SearchDesignationOption.ALL, 
 					termAndMatchAlgorithmName[0][1],
 					null
 				);
