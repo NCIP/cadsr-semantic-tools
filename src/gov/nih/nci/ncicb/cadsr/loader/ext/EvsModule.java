@@ -137,7 +137,7 @@ public class EvsModule
 
     if(def != null) {
       c.setPreferredDefinition(def.getValue().getContent());
-      c.setDefinitionSource(src.getContent());
+      if (src!=null) c.setDefinitionSource(src.getContent());
     } else 
       c.setPreferredDefinition("");
     
