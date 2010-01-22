@@ -132,17 +132,21 @@
       -->
       <classpath refid="proj.class.path"/>
     </javac>
-    <javac
-      destdir="${class.dir}"
-      debug="on"
-      srcdir="${test.src.dir}"
-      deprecation="false"
-      fork="yes"
-      >
-      <classpath refid="proj.class.path"/>
-    </javac>
+    
   </target>
 
+	<target name="compile-test" depends="compile">
+		<javac
+	      destdir="${class.dir}"
+	      debug="on"
+	      srcdir="${test.src.dir}"
+	      deprecation="false"
+	      fork="yes"
+	      >
+	      <classpath refid="proj.class.path"/>
+	    </javac>
+	</target>
+	
   <target name="prepare"
     depends="compile">
     <copy todir="${class.dir}" overwrite="true">
@@ -476,7 +480,7 @@
 
   </target>
 
-  <target name="unitTest" depends="compile">
+  <target name="unitTest" depends="compile-test">
     <mkdir dir="${class.dir}"/>
 
     <copy todir="${class.dir}" overwrite="true">
