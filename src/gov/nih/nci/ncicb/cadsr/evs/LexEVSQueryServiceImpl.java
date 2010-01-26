@@ -147,8 +147,6 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 				}
 				else if (propName.equalsIgnoreCase("Preferred_Name")) {
 					evsConcept.setPreferredName(propValue);
-				}
-				else if (propName.equalsIgnoreCase("Display_Name")) {
 					evsConcept.setName(propValue);
 				}
 			}
