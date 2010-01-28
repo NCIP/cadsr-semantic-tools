@@ -229,16 +229,41 @@
 	    <copy todir="${dist.dir}/lib">
 	      <fileset dir="${lib.dir}/cacore">
 	      	<include name="caDSR-beans.jar" />
+	      	<include name="caGrid-CQL-cql.1.0-1.2.jar" />
 	      	<include name="castor-1.0.2.jar" />
 	      	<include name="cglib-2.1.3.jar" />
+	      	<include name="cog-jglobus.jar" />
+	      	<include name="commons-cli-1.0.jar" />
+	      	<include name="commons-codec-1.3.jar" />
+	      	<include name="commons-discovery-0.2.jar" />
+	      	<include name="commons-lang-2.2.jar" />
 	      	<include name="dlbadapter.jar" />
+	      	<include name="jakarta-regexp-1.4.jar" />
+	      	<include name="jaxrpc.jar" />
+	      	<include name="lexbig.jar" />
+	      	<include name="lexevsapi51-client.jar" />
+	      	<include name="lexevsapi51-framework.jar" />
+	      	<include name="LexEVSSecurity.jar" />
+	      	<include name="lucene-core-2.4.0.jar" />
+	      	<include name="lucene-regex-2.4.0.jar" />
+	      	<include name="lucene-snowball-2.4.0.jar" />
 	      	<include name="MSSOUserValidator.jar" />
 	      	<include name="sdk-client-framework.jar" />
+	      	<include name="sdk-security.jar" />
+	      </fileset>
+	    </copy>
+	    <copy file="${config.dir}/datatype-mapping.xml"
+	      tofile="${dist.dir}/datatype-mapping.xml">
+	    </copy>
+	    <copy todir="${dist.dir}/lib">
+	      <fileset dir="${lib.dir}">
 	      	<include name="acegi-security-1.0.4.jar" />
 	      	<include name="activation.jar" />
 	      	<include name="antlr-2.7.6.jar" />
 	      	<include name="aopalliance.jar" />
 	      	<include name="asm.jar" />
+	      	<include name="axis.jar" />
+	      	<include name="cadsr-api.jar" />
 	      	<include name="cglib-2.1.3.jar" />
 	      	<include name="commons-collections-3.2.jar" />
 	      	<include name="commons-logging-1.1.jar" />
@@ -268,67 +293,8 @@
 	      	<include name="slf4j-api-1.5.6.jar" />
 	      	<include name="slf4j-simple-1.5.6.jar" />
 	      	<include name="spring-test.jar" />
-	      	<include name="xmi.in.out.jar" />
-	      	<include name="LexEVSSecurity.jar" />
-	      	<include name="caGrid-CQL-cql.1.0-1.2.jar" />
-	      	<include name="commons-cli-1.0.jar" />
-	      	<include name="commons-codec-1.3.jar" />
-	      	<include name="commons-discovery-0.2.jar" />
-	      	<include name="commons-lang-2.2.jar" />
-	      	<include name="jakarta-regexp-1.4.jar" />
-	      	<include name="jaxrpc.jar" />
 	      	<include name="spring.jar" />
-	      	<include name="axis.jar" />
-	      	<include name="sdk-security.jar" />
-	      	<include name="lucene-core-2.4.0.jar" />
-	      	<include name="lucene-regex-2.4.0.jar" />
-	      	<include name="lucene-snowball-2.4.0.jar" />
-	      	<include name="cog-jglobus.jar" />
-	      	<include name="cadsr-api.jar" />
-	      	<include name="lexevsapi51-client.jar" />
-	      	<include name="lexevsapi51-framework.jar" />
-	      	<include name="lexbig.jar" />
-	      </fileset>
-	    </copy>
-	    <copy file="${config.dir}/datatype-mapping.xml"
-	      tofile="${dist.dir}/datatype-mapping.xml">
-	    </copy>
-	    <copy todir="${dist.dir}/lib">
-	      <fileset dir="${lib.dir}">
-	        <include name="acegi-security-1.0.4.jar"/>
-	        <include name="activation.jar"/>
-	        <include name="antlr-2.7.6.jar"/>
-	        <include name="aopalliance.jar"/>
-	        <include name="asm.jar"/>
-	        <include name="cadsr-api.jar"/>
-	        <include name="cglib-2.1.3.jar"/>
-	        <include name="commons-collections-3.2.jar"/>
-	        <include name="commons-logging-1.1.jar"/>
-	        <include name="commons-pool-1.3.jar"/>
-	        <include name="datafile.jar"/>
-	        <include name="dom4j-1.4.jar"/>
-	        <include name="ehcache-1.2.3.jar"/>
-	        <include name="freemarker.jar"/>
-	        <include name="freestylesearch.jar"/>
-	        <include name="hibernate3.jar"/>
-	        <include name="jakarta-oro-2.0.8.jar"/>
-	        <include name="jaxen-core.jar"/>
-	        <include name="jaxen-jdom.jar"/>
-	        <include name="jdom.jar"/>
-	        <include name="jmi.jar"/>
-	        <include name="jmiutils.jar"/>
-	        <include name="jta.jar"/>
-	        <include name="log4j-1.2.8.jar"/>
-	        <include name="mail.jar"/>
-	        <include name="odmg-3.0.jar"/>
-	        <include name="ojdbc14.jar"/>
-	        <include name="openide-util.jar"/>
-	        <include name="spring-aop.jar"/>
-	        <include name="spring-core.jar"/>
-	        <include name="spring-hibernate3.jar"/>
-	        <include name="spring.jar"/>
-	        <include name="xmi.in.out.jar"/>
-	      	<include name="axis.jar"/>
+	      	<include name="xmi.in.out.jar" />
 	      </fileset>
 	    </copy>
     </target>
