@@ -40,7 +40,7 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 			throws EVSException {
 		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
 		try {
-			CodedNodeSet cns = service.getCodingSchemeConcepts(vocabName, null);
+			CodedNodeSet cns = service.getNodeSet(vocabName, null, null);
 			cns = cns.restrictToMatchingProperties(
 							Constructors.createLocalNameList("conceptCode"), 
 							null, 
@@ -163,7 +163,7 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 	public List<EVSConcept> findConceptsByPreferredName(String searchTerm, boolean includeRetiredConcepts, String vocabName) throws EVSException {
 		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
 		try {
-			CodedNodeSet cns = service.getCodingSchemeConcepts(vocabName, null);
+			CodedNodeSet cns = service.getNodeSet(vocabName, null, null);
 			cns = cns.restrictToMatchingDesignations(
 					searchTerm, 
 					CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, 
@@ -188,7 +188,7 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 			throws EVSException {
 		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
 		try {
-			CodedNodeSet cns = service.getCodingSchemeConcepts(vocabName, null);
+			CodedNodeSet cns = service.getNodeSet(vocabName, null, null);
 
 			String[][] termAndMatchAlgorithmName = getTermAndMatchAlgorithmName(searchTerm);
 			cns = cns.restrictToMatchingDesignations(
