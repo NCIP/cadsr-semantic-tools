@@ -47,7 +47,7 @@
     <jar href="lib/uml-loader.jar"/>
     <jar href="lib/asm.jar"/>
     <jar href="lib/sdk-client-framework.jar"/>
-    <jar href="lib/lucene-core-2.0.0.jar"/>
+    <jar href="lib/lucene-core-2.4.0.jar"/>
     <jar href="lib/hibernate3.jar"/>
     <jar href="lib/mail.jar"/>
     <jar href="lib/commons-collections-3.2.jar"/>
