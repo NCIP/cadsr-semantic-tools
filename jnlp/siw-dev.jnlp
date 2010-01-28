@@ -64,7 +64,7 @@
     <jar href="lib/lexevsapi51-framework.jar" />
     <jar href="lib/LexEVSSecurity.jar"/>
     <jar href="lib/cog-jglobus.jar"/>
-
+	<jar href="lib/caGrid-CQL-cql.1.0-1.2.jar" />
   </resources>
   <application-desc main-class="gov.nih.nci.ncicb.cadsr.loader.SIW"/>
   
