@@ -41,10 +41,8 @@
     <jar href="lib/jaxen-jdom.jar"/>
     <jar href="lib/datafile.jar"/>
     <jar href="lib/cadsr-api.jar"/>
-    <jar href="lib/lbImpl.jar"/>
     <jar href="lib/jakarta-oro-2.0.8.jar"/>
     <jar href="lib/aopalliance.jar"/>
-    <jar href="lib/evsapi41-beans.jar"/>
     <jar href="lib/freestylesearch.jar"/>
     <jar href="lib/lgConverter.jar"/>
     <jar href="lib/xmi.in.out.jar"/>
@@ -65,8 +63,8 @@
     <jar href="lib/antlr-2.7.6.jar"/>
     <jar href="lib/sdk-security.jar"/>
     <jar href="lib/lexbig.jar"/>
-    <jar href="lib/LexEVS_50_client.jar"/>
-    <jar href="lib/lexevsapi50-framework.jar"/>
+    <jar href="lib/lexevsapi51-client.jar"/>
+    <jar href="lib/lexevsapi51-framework.jar" />
     <jar href="lib/LexEVSSecurity.jar"/>
     <jar href="lib/cog-jglobus.jar"/>
 
