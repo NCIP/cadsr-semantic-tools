@@ -6,9 +6,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.LexGrid.LexBIG.DataModel.Collections.ConceptReferenceList;
 import org.LexGrid.LexBIG.DataModel.Collections.ResolvedConceptReferenceList;
+import org.LexGrid.LexBIG.DataModel.Core.ConceptReference;
+import org.LexGrid.LexBIG.DataModel.Core.NameAndValue;
 import org.LexGrid.LexBIG.DataModel.Core.ResolvedConceptReference;
-import org.LexGrid.LexBIG.Impl.codedNodeSetOperations.GetAllConcepts;
+import org.LexGrid.LexBIG.Exceptions.LBException;
+import org.LexGrid.LexBIG.Extensions.Generic.LexBIGServiceConvenienceMethods;
+import org.LexGrid.LexBIG.LexBIGService.CodedNodeGraph;
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet;
 import org.LexGrid.LexBIG.LexBIGService.LexBIGService;
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet.SearchDesignationOption;
@@ -17,6 +22,7 @@ import org.LexGrid.LexBIG.Utility.LBConstants.MatchAlgorithms;
 import org.LexGrid.commonTypes.Property;
 import org.LexGrid.concepts.Definition;
 import org.LexGrid.concepts.Entity;
+import org.LexGrid.concepts.Presentation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -24,12 +30,25 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 
 	private static LexBIGService service;
 	private static final String NCIT_SCHEME_NAME = "NCI_Thesaurus";
+	private ResolvedConceptReference retiredRootCon = null;
+	private LexBIGServiceConvenienceMethods  conMthds = null;
+	
+	private static final int maxReturn = 5000;
 	
 	private static Log log = LogFactory.getLog(LexEVSQueryServiceImpl.class);
+	private static List<String> retiredStatuses = null;
 	
 	static {
 		try {
 			service = (LexBIGService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
+			
+			retiredStatuses = new ArrayList<String>();
+			retiredStatuses.add("Retired");
+			retiredStatuses.add("retired");
+			retiredStatuses.add("Deprecated");
+			retiredStatuses.add("deprecated");
+			retiredStatuses.add("Removed");
+			retiredStatuses.add("removed");
 		} catch (Exception e) {
 			log.error("Error accessing EVS Service", e);
 			throw new EVSRuntimeException("Error connecting to EVS. Please check the configuration and try again",e);
@@ -80,7 +99,7 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		return findConceptsByCode(conceptCode, includeRetiredConcepts, rowCount, NCIT_SCHEME_NAME);
 	}
 	
-	private List<EVSConcept> getEVSConcepts(ResolvedConceptReferenceList rcRefList, boolean includeRetiredConcepts) {
+	private List<EVSConcept> getEVSConcepts(ResolvedConceptReferenceList rcRefList, boolean includeRetiredConcepts) throws Exception {
 		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
 		if (rcRefList != null) {
 			Iterator<ResolvedConceptReference> iter = rcRefList.iterateResolvedConceptReference();
@@ -95,13 +114,15 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		return evsConcepts;
 	}
 	
-	private boolean doIncludeConcept(ResolvedConceptReference conceptRef, boolean includeRetiredConcepts) {
-		Entity entity = conceptRef.getEntity();
-		if (entity.isIsActive()) {
+	private boolean doIncludeConcept(ResolvedConceptReference conceptRef, boolean includeRetiredConcepts) throws Exception {
+		if (includeRetiredConcepts) {
 			return true;
 		}
 		else {
-			if (includeRetiredConcepts && entity.getStatus().equalsIgnoreCase("Retired_Concept")) {
+			Entity entity = conceptRef.getEntity();
+			if (entity.isIsActive() 
+					&& !isRetiredStatus(entity) 
+					&& !isRetiredConcept(conceptRef)) {
 				return true;
 			}
 		}
@@ -109,6 +130,31 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		return false;
 	}
 	
+	private boolean isRetiredStatus(Entity entity) {
+		
+		if (((entity.getStatus() != null 
+				&& retiredStatuses.contains(entity.getStatus()))
+				||
+				hasConceptStatusRetiredProperty(entity))) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean hasConceptStatusRetiredProperty(Entity entity) {
+		Property[] props = entity.getAllProperties();
+		for (Property prop: props) {
+			if (prop.getPropertyName().equalsIgnoreCase("Concept_Status")) {
+				String statusVal = prop.getValue().getContent();
+				if (statusVal != null && retiredStatuses.contains(statusVal)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private EVSConcept getEVSConcept(ResolvedConceptReference rcRef) {
 		EVSConcept evsConcept = new EVSConcept();
 		evsConcept.setCode(rcRef.getCode());
@@ -204,6 +250,61 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 			throw new EVSException("Error finding concepts for synonym ["+searchTerm+"]", e);
 		}
 		return evsConcepts;
+	}
+	
+	public boolean isRetiredConcept(ConceptReference conRef) throws Exception {
+		ConceptReference retiredCon = getRetiredRootConcept();
+		
+		if (retiredCon != null) {
+			CodedNodeGraph cng = service.getNodeGraph(NCIT_SCHEME_NAME, null, null);
+			ConceptReferenceList refList = cng.listCodeRelationships(conRef, retiredCon, false);
+			for (int i=0;i<refList.getConceptReferenceCount();i++) {
+				if(refList.getConceptReference(i).getConceptCode().equalsIgnoreCase("subClassOf")) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	private ConceptReference getRetiredRootConcept() throws Exception {
+		if (retiredRootCon == null) {
+			ResolvedConceptReferenceList rootConcepts = getRootConcepts();
+			for (int i=0;i<rootConcepts.getResolvedConceptReferenceCount();i++) {
+				ResolvedConceptReference resConRef = rootConcepts.getResolvedConceptReference(i);
+				Presentation[] presentations = resConRef.getEntity().getPresentation();
+				for (Presentation pres: presentations) {
+					if (pres.getIsPreferred() && pres.getValue().getContent().contains("Retired")) {
+						retiredRootCon = resConRef;
+						break;
+					}
+				}
+				
+				if (retiredRootCon != null) break;
+			}
+		}
+		
+		return retiredRootCon;
+	}
+	
+	private ResolvedConceptReferenceList getRootConcepts() throws Exception {
+		LexBIGServiceConvenienceMethods  conMthds = getConvenienceMethods();
+		
+		String[] hirearchyIds = conMthds.getHierarchyIDs(NCIT_SCHEME_NAME, null);
+		ResolvedConceptReferenceList rootConcepts = conMthds.getHierarchyRoots(NCIT_SCHEME_NAME, null, hirearchyIds[0]);
+		
+		return rootConcepts;
+	}
+	
+	private LexBIGServiceConvenienceMethods getConvenienceMethods() throws Exception {
+		
+		if(conMthds == null) {
+			conMthds = (LexBIGServiceConvenienceMethods)service.getGenericExtension("LexBIGServiceConvenienceMethods");
+			conMthds.setLexBIGService(service);
+		}
+		
+		return conMthds;
 	}
 	
 	private String[][] getTermAndMatchAlgorithmName(String searchTerm) {
