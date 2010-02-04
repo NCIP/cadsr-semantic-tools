@@ -5,13 +5,14 @@ import gov.nih.nci.system.client.ApplicationServiceProvider;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import org.LexGrid.LexBIG.DataModel.Collections.ConceptReferenceList;
+import org.LexGrid.LexBIG.DataModel.Collections.LocalNameList;
+import org.LexGrid.LexBIG.DataModel.Collections.NameAndValueList;
 import org.LexGrid.LexBIG.DataModel.Collections.ResolvedConceptReferenceList;
 import org.LexGrid.LexBIG.DataModel.Core.ConceptReference;
-import org.LexGrid.LexBIG.DataModel.Core.NameAndValue;
 import org.LexGrid.LexBIG.DataModel.Core.ResolvedConceptReference;
-import org.LexGrid.LexBIG.Exceptions.LBException;
 import org.LexGrid.LexBIG.Extensions.Generic.LexBIGServiceConvenienceMethods;
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeGraph;
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet;
@@ -243,6 +244,7 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 					termAndMatchAlgorithmName[0][1],
 					null
 				);
+			cns = restrictToSource(cns, "NCI");
 			ResolvedConceptReferenceList results = cns.resolveToList(null, null, null, -1);
 			evsConcepts = getEVSConcepts(results, includeRetiredConcepts);
 		} catch (Exception e) {
@@ -307,10 +309,48 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		return conMthds;
 	}
 	
+	public static CodedNodeSet restrictToSource(CodedNodeSet cns, String source) {
+		if (cns == null) return cns;
+		if (source == null || source.compareTo("*") == 0 || source.compareTo("") == 0 || source.compareTo("ALL") == 0) return cns;
+
+		LocalNameList contextList = null;
+		LocalNameList sourceLnL = null;
+		NameAndValueList qualifierList = null;
+
+		Vector<String> w2 = new Vector<String>();
+		w2.add(source);
+		sourceLnL = vector2LocalNameList(w2);
+		LocalNameList propertyLnL = null;
+		CodedNodeSet.PropertyType[] types = new CodedNodeSet.PropertyType[] {CodedNodeSet.PropertyType.PRESENTATION};
+		try {
+			cns = cns.restrictToProperties(propertyLnL, types, sourceLnL, contextList, qualifierList);
+		} catch (Exception ex) {
+			System.out.println("restrictToSource throws exceptions.");
+			return null;
+		}
+		return cns;
+	}
+	
+	public static LocalNameList vector2LocalNameList(Vector<String> v) {
+		if (v == null)
+			return null;
+		LocalNameList list = new LocalNameList();
+		for (int i = 0; i < v.size(); i++) {
+			String vEntry = (String) v.elementAt(i);
+			list.addEntry(vEntry);
+		}
+		return list;
+	}
+	
 	private String[][] getTermAndMatchAlgorithmName(String searchTerm) {
 		String[][] termAndMatchAlgorithm = new String[1][2];
 		if (searchTerm.startsWith("*")) {
-			termAndMatchAlgorithm[0][0] = searchTerm.substring(1);
+			if (searchTerm.endsWith("*")) {
+				termAndMatchAlgorithm[0][0] = searchTerm.substring(1, searchTerm.length()-1);
+			}
+			else {
+				termAndMatchAlgorithm[0][0] = searchTerm.substring(1);
+			}
 			termAndMatchAlgorithm[0][1] = findBestContainsAlgorithm(searchTerm);
 		}
 		else if (searchTerm.endsWith("*")) {
