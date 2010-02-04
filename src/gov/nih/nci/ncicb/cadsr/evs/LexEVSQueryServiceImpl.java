@@ -311,7 +311,7 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		String[][] termAndMatchAlgorithm = new String[1][2];
 		if (searchTerm.startsWith("*")) {
 			termAndMatchAlgorithm[0][0] = searchTerm.substring(1);
-			termAndMatchAlgorithm[0][1] = MatchAlgorithms.contains.name();
+			termAndMatchAlgorithm[0][1] = findBestContainsAlgorithm(searchTerm);
 		}
 		else if (searchTerm.endsWith("*")) {
 			termAndMatchAlgorithm[0][0] = searchTerm.substring(0, searchTerm.length()-1);
@@ -327,6 +327,17 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		}
 		
 		return termAndMatchAlgorithm;
+	}
+	
+	private String findBestContainsAlgorithm(String matchText) {
+		if (matchText == null) return "nonLeadingWildcardLiteralSubString";
+		matchText = matchText.trim();
+		if (matchText.length() == 0) return "nonLeadingWildcardLiteralSubString"; // or null
+		if (matchText.length() > 1) return "nonLeadingWildcardLiteralSubString";
+		char ch = matchText.charAt(0);
+		if (Character.isDigit(ch)) return "literal";
+		else if (Character.isLetter(ch)) return "LuceneQuery";
+		else return "literalContains";
 	}
 	
 }
