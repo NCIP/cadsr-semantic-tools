@@ -8,6 +8,10 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.LexGrid.LexBIG.DataModel.Collections.AssociatedConceptList;
+import org.LexGrid.LexBIG.DataModel.Collections.AssociationList;
+import org.LexGrid.LexBIG.DataModel.Core.AssociatedConcept;
+import org.LexGrid.LexBIG.DataModel.Core.Association;
 import org.LexGrid.commonTypes.Source;
 import org.LexGrid.concepts.Definition;
 
@@ -17,7 +21,7 @@ public class LexEVSTestCase extends TestCase{
 	public void testGetByConceptCode() {
 		try {
 			LexEVSQueryService evsModule = new LexEVSQueryServiceImpl();
-			List<EVSConcept> evsConcepts = evsModule.findConceptsByCode("C43614", false, 100, "NCI_Thesaurus");
+			List<EVSConcept> evsConcepts = evsModule.findConceptsByCode("C80736", false, 100, "NCI Thesaurus");
 			for (EVSConcept evsConcept: evsConcepts) {
 				System.out.println("Code: "+evsConcept.getCode()+", Name: "+evsConcept.getPreferredName());
 			}
@@ -30,7 +34,7 @@ public class LexEVSTestCase extends TestCase{
 	public void testGetBySynonym() {
 		try {
 			LexEVSQueryService evsModule = new LexEVSQueryServiceImpl();
-			List<EVSConcept> evsConcepts = evsModule.findConceptsBySynonym("*address", true, 0, "NCI_Thesaurus");
+			List<EVSConcept> evsConcepts = evsModule.findConceptsBySynonym("*clinical*", true, 0, "NCI Thesaurus");
 			for (EVSConcept evsConcept: evsConcepts) {
 				System.out.println("Code: "+evsConcept.getCode()+", Name: "+evsConcept.getPreferredName());
 			}
@@ -43,7 +47,7 @@ public class LexEVSTestCase extends TestCase{
 	public void testGetByPreferredName() {
 		try {
 			LexEVSQueryService evsModule = new LexEVSQueryServiceImpl();
-			List<EVSConcept> evsConcepts = evsModule.findConceptsByPreferredName("Spiroplatin", true,  "NCI_Thesaurus");
+			List<EVSConcept> evsConcepts = evsModule.findConceptsByPreferredName("blood", false,  "NCI Thesaurus");
 			for (EVSConcept evsConcept: evsConcepts) {
 				System.out.println("Code: "+evsConcept.getCode()+", Name: "+evsConcept.getPreferredName());
 				List<Definition> defs = evsConcept.getDefinitions();

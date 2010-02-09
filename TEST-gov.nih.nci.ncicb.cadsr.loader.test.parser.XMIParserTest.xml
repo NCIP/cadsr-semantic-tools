@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="1" failures="0" hostname="NCI-MATHURA2-1" name="gov.nih.nci.ncicb.cadsr.loader.test.parser.XMIParserTest" tests="1" time="0.0" timestamp="2010-01-22T15:17:36">
+  <properties>
+    <property name="java.vendor" value="Sun Microsystems Inc." />
+    <property name="lib.dir" value="./lib" />
+    <property name="db.db.url.prod" value="jdbc:oracle:thin:@cbdb-d1001.nci.nih.gov:1551:DSRPROD" />
+    <property name="db.db.siw.user" value="THE_SIW" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="eclipse.pdebuild.templates" value="/C:/eclipse/plugins/org.eclipse.pde.build_3.4.0.v20080604/templates/" />
+    <property name="sun.management.compiler" value="HotSpot Client Compiler" />
+    <property name="docs.dir" value="./javadoc" />
+    <property name="jnlp.dir" value="./jnlp" />
+    <property name="target.env" value="default" />
+    <property name="os.name" value="Windows XP" />
+    <property name="db.db.siw.passwd.prod" value="d2iw9prd1" />
+    <property name="sun.boot.class.path" value="C:\Program Files\Java\jdk1.5.0_14\jre\lib\rt.jar;C:\Program Files\Java\jdk1.5.0_14\jre\lib\i18n.jar;C:\Program Files\Java\jdk1.5.0_14\jre\lib\sunrsasign.jar;C:\Program Files\Java\jdk1.5.0_14\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.5.0_14\jre\lib\jce.jar;C:\Program Files\Java\jdk1.5.0_14\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.5.0_14\jre\classes" />
+    <property name="sun.desktop" value="windows" />
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="ant.home" value="C:\apache-ant-1.7.0" />
+    <property name="java.runtime.version" value="1.5.0_14-b03" />
+    <property name="scpPath.dir" value="C:\work\code\SIW-UMLLoader\${SCP.PATH}\siw" />
+    <property name="user.name" value="mathura2" />
+    <property name="user.language" value="en" />
+    <property name="class.dir" value="./classes" />
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk1.5.0_14\jre\bin" />
+    <property name="ant.project.name" value="UML Loader / SIW" />
+    <property name="java.version" value="1.5.0_14" />
+    <property name="user.timezone" value="" />
+    <property name="ant.file.UML Loader / SIW" value="C:\work\code\SIW-UMLLoader\build.xml" />
+    <property name="sun.arch.data.model" value="32" />
+    <property name="test.src.dir" value="test/src" />
+    <property name="db.db.siw.passwd.qa" value="THE_SIW" />
+    <property name="java.endorsed.dirs" value="C:\Program Files\Java\jdk1.5.0_14\jre\lib\endorsed" />
+    <property name="sun.cpu.isalist" value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86" />
+    <property name="sun.jnu.encoding" value="Cp1252" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="file.separator" value="\" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="db.db.siw.passwd.local" value="THE_SIW" />
+    <property name="java.class.version" value="49.0" />
+    <property name="db.db.loader.user" value="UMLLDR" />
+    <property name="user.country" value="US" />
+    <property name="java.home" value="C:\Program Files\Java\jdk1.5.0_14\jre" />
+    <property name="dist.dir" value="./dist" />
+    <property name="PROP.FILE" value="C:\work\code\SIW-UMLLoader\default.properties" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="ant.file" value="C:\work\code\SIW-UMLLoader\build.xml" />
+    <property name="os.version" value="5.1" />
+    <property name="path.separator" value=";" />
+    <property name="java.vm.version" value="1.5.0_14-b03" />
+    <property name="user.variant" value="" />
+    <property name="ant.library.dir" value="C:\apache-ant-1.7.0\lib" />
+    <property name="sqlsuite.dir" value="./test/sqlsuite" />
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit" />
+    <property name="eclipse.pdebuild.scripts" value="/C:/eclipse/plugins/org.eclipse.pde.build_3.4.0.v20080604/scripts/" />
+    <property name="user.home" value="C:\Documents and Settings\mathura2" />
+    <property name="java.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="java.library.path" value="C:\Program Files\Java\jdk1.5.0_14\jre\bin;.;C:\WINDOWS\system32;C:\WINDOWS;C:/Program Files/Java/jdk1.6.0_07/bin/../jre/bin/client;C:/Program Files/Java/jdk1.6.0_07/bin/../jre/bin;C:\oracle\product\10.2.0\db_1\bin;C:\Program Files\Java\jdk1.6.0_07\bin;C:\apache-ant-1.7.0\bin;C:\Program Files\QuickTime\QTSystem\;C:\Program Files\Quest Software\Toad for Oracle;Z:." />
+    <property name="java.vendor.url" value="http://java.sun.com/" />
+    <property name="java.vm.vendor" value="Sun Microsystems Inc." />
+    <property name="java.runtime.name" value="Java(TM) 2 Runtime Environment, Standard Edition" />
+    <property name="java.class.path" value="C:\work\code\SIW-UMLLoader\classes;C:\work\code\SIW-UMLLoader\lib\acegi-security-1.0.4.jar;C:\work\code\SIW-UMLLoader\lib\activation.jar;C:\work\code\SIW-UMLLoader\lib\antlr-2.7.6.jar;C:\work\code\SIW-UMLLoader\lib\aopalliance.jar;C:\work\code\SIW-UMLLoader\lib\asm.jar;C:\work\code\SIW-UMLLoader\lib\axis.jar;C:\work\code\SIW-UMLLoader\lib\cacore\LexEVSSecurity.jar;C:\work\code\SIW-UMLLoader\lib\cacore\LexEVS_50_client.jar;C:\work\code\SIW-UMLLoader\lib\cacore\LexEVS_50_localRuntime.jar;C:\work\code\SIW-UMLLoader\lib\cacore\LexEVS_50_localRuntime_dependencies.jar;C:\work\code\SIW-UMLLoader\lib\cacore\MSSOUserValidator.jar;C:\work\code\SIW-UMLLoader\lib\cacore\caDSR-beans.jar;C:\work\code\SIW-UMLLoader\lib\cacore\caGrid-CQL-cql.1.0-1.2.jar;C:\work\code\SIW-UMLLoader\lib\cacore\castor-1.0.2.jar;C:\work\code\SIW-UMLLoader\lib\cacore\cglib-2.1.3.jar;C:\work\code\SIW-UMLLoader\lib\cacore\cog-jglobus.jar;C:\work\code\SIW-UMLLoader\lib\cacore\commons-cli-1.0.jar;C:\work\code\SIW-UMLLoader\lib\cacore\commons-codec-1.3.jar;C:\work\code\SIW-UMLLoader\lib\cacore\commons-discovery-0.2.jar;C:\work\code\SIW-UMLLoader\lib\cacore\commons-lang-2.2.jar;C:\work\code\SIW-UMLLoader\lib\cacore\dlbadapter.jar;C:\work\code\SIW-UMLLoader\lib\cacore\jakarta-regexp-1.4.jar;C:\work\code\SIW-UMLLoader\lib\cacore\jaxrpc.jar;C:\work\code\SIW-UMLLoader\lib\cacore\lexevsapi50-framework.jar;C:\work\code\SIW-UMLLoader\lib\cacore\lgModel.jar;C:\work\code\SIW-UMLLoader\lib\cacore\lucene-core-2.4.0.jar;C:\work\code\SIW-UMLLoader\lib\cacore\lucene-regex-2.4.0.jar;C:\work\code\SIW-UMLLoader\lib\cacore\lucene-snowball-2.4.0.jar;C:\work\code\SIW-UMLLoader\lib\cacore\sdk-client-framework.jar;C:\work\code\SIW-UMLLoader\lib\cacore\sdk-security.jar;C:\work\code\SIW-UMLLoader\lib\cadsr-api.jar;C:\work\code\SIW-UMLLoader\lib\cglib-2.1.3.jar;C:\work\code\SIW-UMLLoader\lib\commons-collections-3.2.jar;C:\work\code\SIW-UMLLoader\lib\commons-logging-1.1.jar;C:\work\code\SIW-UMLLoader\lib\commons-pool-1.3.jar;C:\work\code\SIW-UMLLoader\lib\datafile.jar;C:\work\code\SIW-UMLLoader\lib\dbunit-2.4.3-jdk15.jar;C:\work\code\SIW-UMLLoader\lib\dom4j-1.4.jar;C:\work\code\SIW-UMLLoader\lib\ehcache-1.2.3.jar;C:\work\code\SIW-UMLLoader\lib\freemarker.jar;C:\work\code\SIW-UMLLoader\lib\freestylesearch.jar;C:\work\code\SIW-UMLLoader\lib\hibernate3.jar;C:\work\code\SIW-UMLLoader\lib\jakarta-oro-2.0.8.jar;C:\work\code\SIW-UMLLoader\lib\jaxen-core.jar;C:\work\code\SIW-UMLLoader\lib\jaxen-jdom.jar;C:\work\code\SIW-UMLLoader\lib\jcs-1.2.7.9.2.jar;C:\work\code\SIW-UMLLoader\lib\jdom.jar;C:\work\code\SIW-UMLLoader\lib\jmi.jar;C:\work\code\SIW-UMLLoader\lib\jmiutils.jar;C:\work\code\SIW-UMLLoader\lib\jta.jar;C:\work\code\SIW-UMLLoader\lib\junit-4.4.jar;C:\work\code\SIW-UMLLoader\lib\log4j-1.2.8.jar;C:\work\code\SIW-UMLLoader\lib\mail.jar;C:\work\code\SIW-UMLLoader\lib\odmg-3.0.jar;C:\work\code\SIW-UMLLoader\lib\ojdbc14.jar;C:\work\code\SIW-UMLLoader\lib\openide-util.jar;C:\work\code\SIW-UMLLoader\lib\poi-3.2-FINAL-20081019.jar;C:\work\code\SIW-UMLLoader\lib\slf4j-api-1.5.6.jar;C:\work\code\SIW-UMLLoader\lib\slf4j-simple-1.5.6.jar;C:\work\code\SIW-UMLLoader\lib\spring-test.jar;C:\work\code\SIW-UMLLoader\lib\spring.jar;C:\work\code\SIW-UMLLoader\lib\xmi.in.out.jar;C:\work\code\SIW-UMLLoader;C:\Program Files\Java\jdk1.6.0_07\lib\tools.jar;C:\Program Files\Java\jre1.6.0_07\lib\ext\QTJava.zip;C:\apache-ant-1.7.0\lib\ant-launcher.jar;C:\apache-ant-1.7.0\lib\ant.jar;C:\apache-ant-1.7.0\lib\ant-junit.jar" />
+    <property name="ant.version" value="Apache Ant version 1.7.0 compiled on December 13 2006" />
+    <property name="db.db.url.qa" value="jdbc:oracle:thin:@cbiodb530.nci.nih.gov:1521:DSRQA" />
+    <property name="db.db.loader.passwd" value="${db.passwd}" />
+    <property name="db.db.siw.passwd.sandbox" value="THE_SIW" />
+    <property name="db.db.siw.passwd.dev" value="THE_SIW" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="java.vm.specification.version" value="1.0" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="sun.os.patch.level" value="Service Pack 2" />
+    <property name="java.io.tmpdir" value="C:\DOCUME~1\mathura2\LOCALS~1\Temp\" />
+    <property name="eclipse.pdebuild.home" value="/C:/eclipse/plugins/org.eclipse.pde.build_3.4.0.v20080604/./" />
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi" />
+    <property name="db.db.url.sandbox" value="jdbc:oracle:thin:@cbiodb20.nci.nih.gov:1521:UMLSTG" />
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment" />
+    <property name="os.arch" value="x86" />
+    <property name="java.ext.dirs" value="C:\Program Files\Java\jdk1.5.0_14\jre\lib\ext" />
+    <property name="user.dir" value="C:\work\code\SIW-UMLLoader" />
+    <property name="db.db.url.dev" value="jdbc:oracle:thin:@cbiodb540.nci.nih.gov:1551:DSRDEV" />
+    <property name="available.cadsr" value="true" />
+    <property name="db.db.url.local" value="jdbc:oracle:thin:@cbvdb-c1001.nci.nih.gov:1521:MDRSB" />
+    <property name="db.db.siw.passwd.stg" value="d21w4stg" />
+    <property name="line.separator" value="
+" />
+    <property name="java.vm.name" value="Java HotSpot(TM) Client VM" />
+    <property name="basedir" value="C:\work\code\SIW-UMLLoader" />
+    <property name="ant.java.version" value="1.5" />
+    <property name="config.dir" value="properties" />
+    <property name="ant.core.lib" value="C:\apache-ant-1.7.0\lib\ant.jar" />
+    <property name="file.encoding" value="Cp1252" />
+    <property name="java.specification.version" value="1.5" />
+    <property name="src.dir" value="src" />
+    <property name="images.dir" value="./images" />
+    <property name="db.db.url.stg" value="jdbc:oracle:thin:@cbdb-s1001.nci.nih.gov:1551:DSRSTG" />
+  </properties>
+  <error message="gov.nih.nci.ncicb.cadsr.loader.test.parser.XMIParserTest" type="java.lang.ClassNotFoundException">java.lang.ClassNotFoundException: gov.nih.nci.ncicb.cadsr.loader.test.parser.XMIParserTest
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:200)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:188)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:306)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:268)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:251)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:319)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:164)
+</error>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
