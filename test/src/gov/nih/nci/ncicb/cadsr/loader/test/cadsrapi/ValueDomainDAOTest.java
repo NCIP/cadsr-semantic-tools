@@ -124,9 +124,10 @@ public class ValueDomainDAOTest extends MainTestCase
 	  
 	  List<PermissibleValue> pvs = new ArrayList<PermissibleValue>();
 	  
-	  pvs.add(getPV("Doxorubicin/Filgrastim", new String[][]{{"C99997", "Doxorubicin/Filgrastim"}}));
+	  pvs.add(getPV("Doxorubicin/Filgrastim", new String[][]{}));
 	  pvs.add(getPV("Moderate Adverse Event", new String[][]{{"C41339","Moderate Adverse Event"}, {"C25284","Type"}}));
 	  pvs.add(getPV("Short", new String[][]{{"C73939", "Short"}}));
+	  pvs.add(getPV("Other", new String[][]{}));
 	  
 	  vd.setPermissibleValues(pvs);
 	  
@@ -136,16 +137,16 @@ public class ValueDomainDAOTest extends MainTestCase
 		
 		Connection con = getDataSource().getConnection();
 		Statement st = con.createStatement();
-		ResultSet rs = st.executeQuery("select * from VALUE_MEANINGS where short_meaning = 'Short'");
+		ResultSet rs = st.executeQuery("select * from VALUE_MEANINGS where upper(short_meaning) in ('SHORT', 'OTHER')");
 		
 		assertTrue(compareResultSet(rs, "VALUE_MEANINGS"));
 		
 		List<PermissibleValue> createdPVs = DAOAccessor.getValueDomainDAO().getPermissibleValues(createdVD.getId());
 		
 		assertNotNull(createdPVs);
-		assertEquals(new Integer(createdPVs.size()), new Integer(3));
+		assertEquals(new Integer(createdPVs.size()), new Integer(4));
 		boolean containsShort = false;
-		for (PermissibleValue pv: pvs) {
+		for (PermissibleValue pv: createdPVs) {
 			if (pv.getValue().equals("Short")) {
 				containsShort = true;
 				ValueMeaning shortVM = pv.getValueMeaning();
@@ -165,6 +166,83 @@ public class ValueDomainDAOTest extends MainTestCase
 	} catch (Exception e) {
 		e.printStackTrace();
 	}
+  }
+  
+  public void testValueDomainSaveGF25444_41_122_1()
+  {
+	  try
+	  {
+		  gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser2 parser = new gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser2();
+		  gov.nih.nci.ncicb.cadsr.loader.event.UMLDefaultHandler handler = new gov.nih.nci.ncicb.cadsr.loader.event.UMLDefaultHandler();
+
+		  parser.setEventHandler(handler);
+
+		  String xmiFileName = "gov/nih/nci/ncicb/cadsr/loader/test/cadsrapi/GF25444_41_112_1.xmi";
+		  String path = getClass().getClassLoader().getResource(xmiFileName).getPath();
+		  java.io.File file = new java.io.File(path);
+
+		  parser.parse(file.getAbsolutePath().replace("\\", "/"));
+
+		  gov.nih.nci.ncicb.cadsr.loader.ElementsLists elementsList = gov.nih.nci.ncicb.cadsr.loader.ElementsLists.getInstance();
+		  java.util.List<ValueDomainBean> valueDomainList = elementsList.getElements(new ValueDomainBean());
+		  assertNotNull(valueDomainList);
+		  assertEquals(new Integer(valueDomainList.size()), new Integer(1));
+
+		  ValueDomain valueDomain = valueDomainList.get(0);
+		  valueDomain.setVersion(new Float(1.0));
+		  valueDomain.setContext(getContext());
+		  ConceptualDomain cd = new ConceptualDomainBean();
+		  cd.setPublicId("1111");
+		  cd.setVersion(new Float(1.0));
+		  
+		  valueDomain.setConceptualDomain(cd);
+		  
+		  for (PermissibleValue pv: valueDomain.getPermissibleValues()) {
+			  pv.getValueMeaning().setContext(getContext());
+		  }
+		  
+		  ValueDomain createdVD = DAOAccessor.getValueDomainDAO().create(valueDomain);
+		  assertNotNull(createdVD);
+		  
+		  List<PermissibleValue> createdPVs = DAOAccessor.getValueDomainDAO().getPermissibleValues(createdVD.getId());
+		  for (PermissibleValue pv: createdPVs) {
+			  if (pv.getValue().equalsIgnoreCase("Other")) {
+				  assertNotNull(pv.getValueMeaning());
+				  assertNotNull(pv.getValueMeaning().getId());
+				  assertNull(pv.getValueMeaning().getConceptDerivationRule());
+			  }
+		  }
+
+		  Connection con = getDataSource().getConnection();
+		  Statement st = con.createStatement();
+		  ResultSet resultSet = st.executeQuery("SELECT COUNT(*) FROM VALUE_MEANINGS WHERE short_meaning = 'Doxorubicin/Filgrastim' AND CONDR_IDSEQ IS NULL");
+
+		  int count = 0;
+
+		  while (resultSet.next() == true)
+		  {
+			  count++;
+		  }
+
+		  assertTrue((count == 1));
+
+		  st = con.createStatement();
+		  resultSet = st.executeQuery("SELECT COUNT(*) FROM VALUE_MEANINGS WHERE short_meaning = 'Other'");
+
+		  count = 0;
+
+		  while (resultSet.next() == true)
+		  {
+			  count = resultSet.getInt(1);
+		  }
+
+		  assertTrue((count == 2));
+	  }	  
+	  catch(Throwable t)
+	  {
+		  t.printStackTrace();
+		  fail(t.getMessage());
+	  }
   }
   
   private Context getContext() {
