@@ -160,6 +160,9 @@ public class ValueDomainDAOTest extends MainTestCase
 				assertNotNull(shortCon);
 				assertEquals(shortCon.getPreferredName(), "C73939");
 			}
+			else if (pv.getValue().equals("Doxorubicin/Filgrastim")) {
+				assertNull(pv.getValueMeaning().getConceptDerivationRule());
+			}
 		}
 		
 		assertTrue(containsShort);
