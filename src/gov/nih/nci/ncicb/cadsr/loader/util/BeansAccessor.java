@@ -103,31 +103,27 @@ public class BeansAccessor {
     return getFactory().getBean(name);
   }
 
-  private static BeanFactory getFactoryForSiw() {
-    try {
-      if(factory != null) {
-        return factory;
-      }
-      ClassPathXmlApplicationContext cpCtx = new ClassPathXmlApplicationContext(new String[]{"beans.xml"});
-
-//       GenericApplicationContext genCtx = new GenericApplicationContext();
-//       XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(genCtx);
-
-//       cpCtx.initBeanDefinitionReader(xmlReader);
-
-//       cpCtx.refresh();
-      
-      factory = cpCtx;
-
-
-//       factory = new XmlBeanFactory(new InputStreamResource(Thread.currentThread().getContextClassLoader().getResourceAsStream("beans.xml")));
-
-      return factory;
-    } catch (Exception e){
-      logger.error(e.getMessage());
-    } // end of try-catch
-    return null;
+  private static BeanFactory getFactoryForSiw()
+  {
+    if (factory == null)
+    {
+        try
+        {
+            factory = new ClassPathXmlApplicationContext(new String[]{"beans.xml"});
+        }
+        catch (Throwable e)
+        {
+            //log error usixng logger.
+            //wrapping exception in RuntimeException
+            //throw RuntimeException
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+       
+    return factory;
   }
+
 
 
   private static BeanFactory getFactory() {
