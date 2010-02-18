@@ -40,10 +40,10 @@ public class ValueDomainDAOTest extends MainTestCase
 	private static String dataURL = "/gov/nih/nci/ncicb/cadsr/loader/test/cadsrapi/GF25444_41_6.xls";
 	protected static Log log = LogFactory.getLog(ValueDomainDAOTest.class.getName());
   
-  public ValueDomainDAOTest()
-  {
+	public ValueDomainDAOTest()
+	{
 	  super("ValueDomainDAOTest", ValueDomainDAOTest.class, dataURL);
-  }
+	}
   
   	@Override
 	protected void containerSetUp() throws Exception {
@@ -97,7 +97,7 @@ public class ValueDomainDAOTest extends MainTestCase
     assertTrue("ValueDomain has too few PVs: " + pvs.size(), pvs.size() > (new Integer(TestCaseProperties.getTestData("testFindPermissibleValues.result")).intValue()));
 */
   }
-  
+
   public void testSave() {
 	  ValueDomain vd = new ValueDomainBean();
 	  ConceptualDomain cd = new ConceptualDomainBean();
@@ -170,6 +170,63 @@ public class ValueDomainDAOTest extends MainTestCase
 		e.printStackTrace();
 	}
   }
+
+  public void testValueDomainSaveGF25444_41_122_1()
+  {
+	  try
+	  {
+		  gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser2 parser = new gov.nih.nci.ncicb.cadsr.loader.parser.XMIParser2();
+		  gov.nih.nci.ncicb.cadsr.loader.event.UMLDefaultHandler handler = new gov.nih.nci.ncicb.cadsr.loader.event.UMLDefaultHandler();
+
+		  parser.setEventHandler(handler);
+
+		  String xmiFileName = "gov/nih/nci/ncicb/cadsr/loader/test/cadsrapi/GF25444_41_112_1.xmi";
+		  String path = getClass().getClassLoader().getResource(xmiFileName).getPath();
+		  java.io.File file = new java.io.File(path);
+
+		  parser.parse(file.getAbsolutePath().replace("\\", "/"));
+
+		  gov.nih.nci.ncicb.cadsr.loader.ElementsLists elementsList = gov.nih.nci.ncicb.cadsr.loader.ElementsLists.getInstance();
+		  java.util.List<ValueDomainBean> valueDomainList = elementsList.getElements(new ValueDomainBean());
+		  assertNotNull(valueDomainList);
+		  assertEquals(new Integer(valueDomainList.size()), new Integer(1));
+
+		  ValueDomain valueDomain = valueDomainList.get(0);
+		  ValueDomain createdVD = DAOAccessor.getValueDomainDAO().create(valueDomain);
+		  assertNotNull(createdVD);
+
+		  Connection con = getDataSource().getConnection();
+		  Statement st = con.createStatement();
+		  ResultSet resultSet = st.executeQuery("SELECT COUNT(*) FROM VALUE_MEANINGS WHERE short_meaning = 'Doxorubicin/Filgrastim' AND CON_IDSEQ IS NULL");
+
+		  int count = 0;
+
+		  while (resultSet.next() == true)
+		  {
+			  count++;
+		  }
+
+		  assertTrue((count == 1));
+
+		  st = con.createStatement();
+		  resultSet = st.executeQuery("SELECT COUNT(*) FROM VALUE_MEANINGS WHERE short_meaning = 'Other'");
+
+		  count = 2;
+
+		  while (resultSet.next() == true)
+		  {
+			  count++;
+		  }
+
+		  assertTrue((count == 2));
+	  }	  
+	  catch(Throwable t)
+	  {
+		  t.printStackTrace();
+		  fail(t.getMessage());
+	  }
+  }
+
   
   public void testValueDomainSaveGF25444_41_122_1()
   {
@@ -306,6 +363,5 @@ public class ValueDomainDAOTest extends MainTestCase
   public static void main(String[] args) {
     TestRunner.run(ValueDomainDAOTest.class);
   }
-
 
 }
