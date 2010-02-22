@@ -571,13 +571,16 @@
 
 	</target>
 
+	<!--  we need to pull this out into a separate build file to
+	support ant hill pro
 	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
 
-	<target name="findbugs" depends="dist">
+	<target name="findbugs" >
 		<findbugs home="${findbugs.home}" output="html" outputFile="findbugs.html" >
 			<sourcePath path="${src.dir}" />
 			<class location="${dist.dir}/lib/uml-loader.jar" />
 		</findbugs>
 	</target>
+	-->
 
 </project>
