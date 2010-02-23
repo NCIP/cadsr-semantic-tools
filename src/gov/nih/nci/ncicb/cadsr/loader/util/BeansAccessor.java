@@ -110,13 +110,11 @@ public class BeansAccessor {
         try
 	{
 	    System.out.println("Bediako trying to create factory");
-            factory = new ClassPathXmlApplicationContext(new String[]{"beans.xml"});
+	    factory = new ClassPathXmlApplicationContext(new String[]{"beans.xml"});
+	    System.out.println("Bediako factory created.");
         }
         catch (Throwable e)
         {
-            //log error usixng logger.
-            //wrapping exception in RuntimeException
-            //throw RuntimeException
             logger.error(e.getMessage());
             throw new RuntimeException(e);
         }
