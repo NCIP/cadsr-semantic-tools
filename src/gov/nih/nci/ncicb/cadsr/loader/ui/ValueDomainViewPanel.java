@@ -117,6 +117,7 @@ public class ValueDomainViewPanel extends JPanel
   }
 
   public ValueDomainViewPanel() {
+      System.out.println("Value Domain View Panel creation thread is: " + Thread.currentThread().getName());
       System.out.println("Bediako a vdViewPanel was created");
   }
   

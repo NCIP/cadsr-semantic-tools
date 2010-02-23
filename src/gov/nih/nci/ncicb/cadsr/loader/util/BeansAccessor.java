@@ -109,6 +109,7 @@ public class BeansAccessor {
     {
         try
 	{
+	    System.out.println("Factory thread is: " + Thread.currentThread().getName());
 	    System.out.println("Bediako trying to create factory");
 	    factory = new ClassPathXmlApplicationContext(new String[]{"beans.xml"});
 	    System.out.println("Bediako factory created.");
