@@ -135,6 +135,7 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   }
   
   public void setMteVDPanel(MapToExistingVDPanel mteVDPanel) {
+    System.out.println("Setting the Mte View Panel Bediako");  
     this.mteVDPanel = mteVDPanel;
   }
 
@@ -147,11 +148,13 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
       super.addPropertyChangeListener(l);;
 
       if (vdViewPanel == null) { System.out.println("Bediako vdViewPanel is null"); }
+      else { System.out.println("Bediako vdViewPanel is NOT null in addPropertyChangeListener"); }
+      
       if (mteVDPanel == null) { System.out.println("Bediako mteVDPanel is null"); }
+      else { System.out.println("Bediako mteViewPanel is NOT null in addPropertyChangeListener"); }
       
       vdViewPanel.addPropertyChangeListener(l);
-      
-    mteVDPanel.addPropertyChangeListener(l);
+      mteVDPanel.addPropertyChangeListener(l);
   }
 
   public void addReviewListener(ReviewListener l) {
