@@ -148,6 +148,17 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
       super.addPropertyChangeListener(l);;
 
       System.out.println("Property change listener thread is: " + Thread.currentThread().getName());
+
+      try
+      {
+	  throw new RuntimeException();
+      }
+      catch(Throwable t)
+      {
+	  System.out.println("Printing stack trace");
+	  t.printStackTrace();
+	  System.out.println("Done printing stack trace");
+      }
       
       if (vdViewPanel == null) { System.out.println("Bediako vdViewPanel is null"); }
       else { System.out.println("Bediako vdViewPanel is NOT null in addPropertyChangeListener"); }
