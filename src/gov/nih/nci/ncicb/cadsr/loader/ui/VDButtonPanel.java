@@ -37,11 +37,7 @@ public class VDButtonPanel extends JPanel implements ActionListener,
   }
   
   public VDButtonPanel(Editable viewPanel) 
-  {
-
-      System.out.println("Bediako Creating a VDButton Panel");
-      System.out.flush();
-      
+  {      
     this.viewPanel = viewPanel;
     
     switchButton = new JButton(SWITCH_TO_VD_SEARCH);

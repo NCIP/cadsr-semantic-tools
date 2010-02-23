@@ -43,11 +43,6 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   private JPanel displayedPanel;
     
   public LVDPanel() {
-      System.out.println("Creating a new LVDPanel");
-      
-      if (vdViewPanel == null) { System.out.println("Bediako vdViewPanel is null in the constructor"); }
-      else { System.out.println("Bediako vdViewPanel is NOT null in the constructor!!!"); }
-      
       vdButtonPanel = new VDButtonPanel(this);
   }
   
@@ -130,12 +125,10 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   }
 
   public void setVdViewPanel(ValueDomainViewPanel vdViewPanel) {
-    System.out.println("Setting the VD View Panel Bediako");
     this.vdViewPanel = vdViewPanel;
   }
   
   public void setMteVDPanel(MapToExistingVDPanel mteVDPanel) {
-    System.out.println("Setting the Mte View Panel Bediako");  
     this.mteVDPanel = mteVDPanel;
   }
 
@@ -146,26 +139,7 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
       super.addPropertyChangeListener(l);;
-
-      System.out.println("Property change listener thread is: " + Thread.currentThread().getName());
-
-      try
-      {
-	  throw new RuntimeException();
-      }
-      catch(Throwable t)
-      {
-	  System.out.println("Printing stack trace");
-	  t.printStackTrace();
-	  System.out.println("Done printing stack trace");
-      }
-      
-      if (vdViewPanel == null) { System.out.println("Bediako vdViewPanel is null"); }
-      else { System.out.println("Bediako vdViewPanel is NOT null in addPropertyChangeListener"); }
-      
-      if (mteVDPanel == null) { System.out.println("Bediako mteVDPanel is null"); }
-      else { System.out.println("Bediako mteViewPanel is NOT null in addPropertyChangeListener"); }
-      
+            
       vdViewPanel.addPropertyChangeListener(l);
       mteVDPanel.addPropertyChangeListener(l);
   }
