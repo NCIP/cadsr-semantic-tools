@@ -43,7 +43,12 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   private JPanel displayedPanel;
     
   public LVDPanel() {
-    vdButtonPanel = new VDButtonPanel(this);
+      System.out.println("Creating a new LVDPanel");
+      
+      if (vdViewPanel == null) { System.out.println("Bediako vdViewPanel is null in the constructor"); }
+      else { System.out.println("Bediako vdViewPanel is NOT null in the constructor!!!"); }
+      
+      vdButtonPanel = new VDButtonPanel(this);
   }
   
   private void initUI() {
@@ -125,6 +130,7 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   }
 
   public void setVdViewPanel(ValueDomainViewPanel vdViewPanel) {
+    System.out.println("Setting the VD View Panel Bediako");
     this.vdViewPanel = vdViewPanel;
   }
   
@@ -138,8 +144,13 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   }
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    super.addPropertyChangeListener(l);;
-    vdViewPanel.addPropertyChangeListener(l);
+      super.addPropertyChangeListener(l);;
+
+      if (vdViewPanel == null) { System.out.println("Bediako vdViewPanel is null"); }
+      if (mteVDPanel == null) { System.out.println("Bediako mteVDPanel is null"); }
+      
+      vdViewPanel.addPropertyChangeListener(l);
+      
     mteVDPanel.addPropertyChangeListener(l);
   }
 

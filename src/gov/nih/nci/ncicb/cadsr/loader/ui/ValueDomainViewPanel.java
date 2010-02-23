@@ -117,7 +117,7 @@ public class ValueDomainViewPanel extends JPanel
   }
 
   public ValueDomainViewPanel() {
-
+      System.out.println("Bediako a vdViewPanel was created");
   }
   
   public void update(ValueDomain vd, UMLNode umlNode) 

@@ -108,7 +108,8 @@ public class BeansAccessor {
     if (factory == null)
     {
         try
-        {
+	{
+	    System.out.println("Bediako trying to create factory");
             factory = new ClassPathXmlApplicationContext(new String[]{"beans.xml"});
         }
         catch (Throwable e)
