@@ -138,10 +138,15 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   }
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
-      super.addPropertyChangeListener(l);;
-            
-      vdViewPanel.addPropertyChangeListener(l);
-      mteVDPanel.addPropertyChangeListener(l);
+      super.addPropertyChangeListener(l);
+
+      if (vdViewPanel != null) {
+	  vdViewPanel.addPropertyChangeListener(l);
+      }
+
+      if (mteVDPanel != null) {
+	  mteVDPanel.addPropertyChangeListener(l);
+      }
   }
 
   public void addReviewListener(ReviewListener l) {
