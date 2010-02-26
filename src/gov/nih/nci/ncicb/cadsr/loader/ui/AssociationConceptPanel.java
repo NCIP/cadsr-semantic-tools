@@ -84,8 +84,8 @@ public class AssociationConceptPanel extends JPanel
   }
 
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    conceptEditorPanel.addPropertyChangeListener(l);
-    buttonPanel.addPropertyChangeListener(l);
+    if (conceptEditorPanel != null) { conceptEditorPanel.addPropertyChangeListener(l); }
+    if (buttonPanel != null) { buttonPanel.addPropertyChangeListener(l); }
   }
   
   public void applyPressed() throws ApplyException {

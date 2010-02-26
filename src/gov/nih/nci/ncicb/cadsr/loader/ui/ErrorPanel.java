@@ -104,7 +104,7 @@ public class ErrorPanel extends JPanel implements MouseListener, NodeViewPanel {
   }
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    propChangeListeners.add(l);
+    if (propChangeListeners != null) { propChangeListeners.add(l); }
   }
 
   public void update(UMLNode rootNode) {
