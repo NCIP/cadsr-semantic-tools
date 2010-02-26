@@ -61,8 +61,7 @@ import java.awt.event.WindowEvent;
  public class MainFrame extends JFrame 
    implements ViewChangeListener, CloseableTabbedPaneListener,
               PropertyChangeListener
- {
-
+ {     
    private JMenuBar mainMenuBar = new JMenuBar();
    private JMenu fileMenu = new JMenu("File");
    private JMenuItem saveMenuItem = new JMenuItem("Save");
@@ -579,6 +578,7 @@ import java.awt.event.WindowEvent;
 
      } else if(event.getType() == ViewChangeEvent.VIEW_VALUE_DOMAIN) {
 
+	 logger.error("Bediako is looking for log info here");
           viewTabbedPane.remove(lvdPanel);
           viewTabbedPane.addTab("ValueDomain."+LookupUtil.lookupFullName((ValueDomain)node.getUserObject()), lvdPanel);
           lvdPanel.update((ValueDomain)node.getUserObject(), node);
