@@ -172,7 +172,7 @@ public class ApplyButtonPanel extends JPanel implements ActionListener, Property
   }
 
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    propChangeListeners.add(l);
+    if (propChangeListeners != null) {  propChangeListeners.add(l); }
   }
 
 

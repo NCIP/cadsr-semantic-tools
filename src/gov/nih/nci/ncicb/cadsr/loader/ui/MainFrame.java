@@ -61,8 +61,7 @@ import java.awt.event.WindowEvent;
  public class MainFrame extends JFrame 
    implements ViewChangeListener, CloseableTabbedPaneListener,
               PropertyChangeListener
- {
-
+ {     
    private JMenuBar mainMenuBar = new JMenuBar();
    private JMenu fileMenu = new JMenu("File");
    private JMenuItem saveMenuItem = new JMenuItem("Save");
@@ -137,7 +136,38 @@ import java.awt.event.WindowEvent;
    {
    }
 
+   private java.io.PrintWriter printWriter = null;
+
+   private void log(String _message)
+   {
+       try
+       {
+	   this.printWriter.println(_message);
+       }
+       catch(Throwable t)
+       {
+	   throw new RuntimeException(t);
+       }
+       finally
+       {
+	   if (this.printWriter != null) { this.printWriter.flush(); }
+       }
+   }
+   
    public void init() {
+
+       try
+       {
+	   java.io.File file = new java.io.File("/home/georgebn/Bediako.log");
+	   if (file.exists() == true) { file.delete(); }
+	   this.printWriter = new java.io.PrintWriter(file);
+       }
+       catch (Throwable t)
+       {
+	   throw new RuntimeException(t);
+       }
+
+     log("Hullo Bediako");
      UserSelections selections = UserSelections.getInstance();
      
      runMode = (RunMode)(selections.getProperty("MODE"));
@@ -512,6 +542,8 @@ import java.awt.event.WindowEvent;
 
      if(event.getType() == ViewChangeEvent.VIEW_CONCEPTS
         || event.getType() == ViewChangeEvent.VIEW_INHERITED) {
+	 log("Hullo Bediako its Concepts");
+	 log("Event: " + event);
        
        // If concept is already showing, just bring it up front
        if(viewPanels.containsKey(node.getFullPath())) {
@@ -546,6 +578,10 @@ import java.awt.event.WindowEvent;
        }
 
      } else if(event.getType() == ViewChangeEvent.VIEW_VALUE_MEANING) {
+
+	 log("Hullo Bediako its Value meaning");
+	 log("Event: " + event);
+	 
        if(viewPanels.containsKey(node.getFullPath())) {
          NodeViewPanel pa = viewPanels.get(node.getFullPath());
          viewTabbedPane.setSelectedComponent((JPanel)pa);
@@ -614,20 +650,32 @@ import java.awt.event.WindowEvent;
    }
 
    private void newTab(ViewChangeEvent event, UMLNode node) {
+	log("node is: "  + node + " and Event in new tab: " + event);
+
      String tabTitle = node.getDisplay();
      if(node instanceof AttributeNode) {
-         if(event.getType() == ViewChangeEvent.VIEW_INHERITED) 
+	 log("node is instance of attribute node");
+	 if(event.getType() == ViewChangeEvent.VIEW_INHERITED)
+	 {
+	     log("node is of type inherited");
              tabTitle = node.getParent().getParent().getDisplay() 
-             + "." + tabTitle;
-         else
+			+ "." + tabTitle;
+	 }
+	 else
+	 {
+	     log("node is not of type inherited");
              tabTitle = node.getParent().getDisplay() 
-             + "." + tabTitle;
+			+ "." + tabTitle;
+
+	 }
      }
      
      if(event.getType() == ViewChangeEvent.VIEW_INHERITED) {
+	 log("creating inherited viewpanel");
        viewPanel = umlVPFactory.createInheritedAttributeViewPanel(node);
        viewPanel.updateNode(node);
      } else {
+	 log("creating uml element view panel viewpanel");
         viewPanel = umlVPFactory.createUMLElementViewPanel(node);
         viewPanel.updateNode(node);
      }          
@@ -645,6 +693,8 @@ import java.awt.event.WindowEvent;
      viewTabbedPane.setSelectedComponent((JPanel)viewPanel);
      
      viewPanel.setName(node.getFullPath());
+
+     log("putting view panel in panels");
      viewPanels.put(viewPanel.getName(), viewPanel);
      
      infoLabel.setText(tabTitle);
