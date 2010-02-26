@@ -43,7 +43,39 @@ public class UMLElementViewPanel extends JPanel
     CONCEPT_PANEL_KEY = "conceptPanel",
     CANNOT_MAP_VM_KEY = "cannotMapVm";
   
-    
+
+  private static java.io.PrintWriter printWriter = null;
+
+  static {
+
+      try
+      {
+	  java.io.File file = new java.io.File("/home/georgebn/UMLElementViewPanelFactory.log");
+	  if (file.exists() == true) { file.delete(); }
+	  printWriter = new java.io.PrintWriter(file);
+      }
+      catch (Throwable t)
+      {
+	  throw new RuntimeException(t);
+      }
+  }
+  
+  private void log(String _message)
+  {
+      try
+      {
+	  this.printWriter.println(_message);
+      }
+      catch(Throwable t)
+      {
+	  throw new RuntimeException(t);
+      }
+      finally
+      {
+	  if (this.printWriter != null) { this.printWriter.flush(); }
+      }
+  }
+  
   private Map<String, JPanel> panelKeyMap = new HashMap<String, JPanel>();
 
   public UMLElementViewPanel(UMLNode node) 
@@ -247,11 +279,11 @@ public class UMLElementViewPanel extends JPanel
 	  
 	// TODO uncomment to enable concept inheritance feature	  
 //    excludeSemPanel.addPropertyChangeListener(l);
-    dsp.addPropertyChangeListener(l);
-    conceptEditorPanel.addPropertyChangeListener(l);
-    buttonPanel.addPropertyChangeListener(l);
-    dePanel.addPropertyChangeListener(l);
-    ocPanel.addPropertyChangeListener(l);
+    if (dsp != null) { dsp.addPropertyChangeListener(l); }
+    if (conceptEditorPanel != null) { conceptEditorPanel.addPropertyChangeListener(l); }
+    if (buttonPanel != null) { buttonPanel.addPropertyChangeListener(l); }
+    if (dePanel != null) { dePanel.addPropertyChangeListener(l); }
+    if (ocPanel != null) { ocPanel.addPropertyChangeListener(l); }
   }
   
   public void applyPressed() throws ApplyException
