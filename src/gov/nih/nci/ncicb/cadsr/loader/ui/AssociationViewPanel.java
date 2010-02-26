@@ -139,9 +139,9 @@ public class AssociationViewPanel extends JTabbedPane
   }
 
   public void addCustomPropertyChangeListener(PropertyChangeListener l) {
-    roleConceptPanel.addPropertyChangeListener(l);
-    sourceConceptPanel.addPropertyChangeListener(l);
-    targetConceptPanel.addPropertyChangeListener(l);
+    if (roleConceptPanel != null) { roleConceptPanel.addPropertyChangeListener(l); }
+    if (sourceConceptPanel != null) { sourceConceptPanel.addPropertyChangeListener(l); }
+    if (targetConceptPanel != null) { targetConceptPanel.addPropertyChangeListener(l); }
   }
 
   public void navigate(NavigationEvent evt) {

@@ -43,43 +43,93 @@ public class UMLElementViewPanel extends JPanel
     CONCEPT_PANEL_KEY = "conceptPanel",
     CANNOT_MAP_VM_KEY = "cannotMapVm";
   
-    
+
+  private static java.io.PrintWriter printWriter = null;
+
+  static {
+
+      try
+      {
+	  java.io.File file = new java.io.File("/home/georgebn/UMLElementViewPanel.log");
+	  if (file.exists() == true) { file.delete(); }
+	  printWriter = new java.io.PrintWriter(file);
+      }
+      catch (Throwable t)
+      {
+	  throw new RuntimeException(t);
+      }
+  }
+  
+  private void log(String _message)
+  {
+      try
+      {
+	  printWriter.println(_message);
+      }
+      catch(Throwable t)
+      {
+	  throw new RuntimeException(t);
+      }
+      finally
+      {
+	  if (this.printWriter != null) { this.printWriter.flush(); }
+      }
+  }
+  
   private Map<String, JPanel> panelKeyMap = new HashMap<String, JPanel>();
 
   public UMLElementViewPanel(UMLNode node) 
   {
+     log("in constructor for UMLElementViewPanel");
     this.node = node;
-  
+    log("assigned node");  
     conceptEditorPanel = new ConceptEditorPanel(node);
+    log("got concept editor");
     dePanel = new DEPanel(node);
+    log("got de panel");
     ocPanel = new OCPanel(node);
+    log("got oc panel");
     gmePanel= new GMEViewPanel(node);
+    log("got GMEViewPanel");
     dsp = new DescriptionPanel(node);
-    
+    log("got description panel");
     // TODO uncomment to enable concept inheritance feature
     //excludeSemPanel = new ExcludeFromSemanticInheritancePanel(node);
 
     cannotMapVMInfoPanel = new InfoPanel();
+    log("got info panel");
     cannotMapVMInfoPanel.setOutputText("This Permissible Value cannot be modified because the Value Domain where it is included is mapped to a caDSR Value Domain");
 
     if(node instanceof AttributeNode){
+	log("this is an attribute node");
       buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);}
     else if(node instanceof ValueMeaningNode)
-      buttonPanel = new ButtonPanel(conceptEditorPanel, this, null);
-    else 
-      buttonPanel = new ButtonPanel(conceptEditorPanel, this, ocPanel);
+    {
+	log("this is a value meaning node"); 
+	buttonPanel = new ButtonPanel(conceptEditorPanel, this, null);
+    }
+    else
+    {
+	log ("this is some other kind of node");
+	
+	buttonPanel = new ButtonPanel(conceptEditorPanel, this, ocPanel);
+    }
 
-    conceptEditorPanel.addPropertyChangeListener(buttonPanel);
-    dePanel.addPropertyChangeListener(buttonPanel);
-    ocPanel.addPropertyChangeListener(buttonPanel);
-    gmePanel.addPropertyChangeListener(buttonPanel);
-    dsp.addPropertyChangeListener(buttonPanel);
-    
+    log ("adding listeners for all the panels"); 
+    if (conceptEditorPanel != null) { conceptEditorPanel.addPropertyChangeListener(buttonPanel); }
+    if (dePanel != null) { dePanel.addPropertyChangeListener(buttonPanel); }
+    if (ocPanel != null) { ocPanel.addPropertyChangeListener(buttonPanel); }
+    if (gmePanel != null) { gmePanel.addPropertyChangeListener(buttonPanel); }
+    if (dsp != null) { dsp.addPropertyChangeListener(buttonPanel); }
+    log("done adding listeners");
     // TODO uncomment to enable concept inheritance feature
     //excludeSemPanel.addPropertyChangeListener(buttonPanel);
 
+    
     cardPanel = new JPanel();
+    log("created a card panel");
     initUI();
+    log("finished initializing ui");
   }
   
   private void initUI() {
@@ -247,11 +297,11 @@ public class UMLElementViewPanel extends JPanel
 	  
 	// TODO uncomment to enable concept inheritance feature	  
 //    excludeSemPanel.addPropertyChangeListener(l);
-    dsp.addPropertyChangeListener(l);
-    conceptEditorPanel.addPropertyChangeListener(l);
-    buttonPanel.addPropertyChangeListener(l);
-    dePanel.addPropertyChangeListener(l);
-    ocPanel.addPropertyChangeListener(l);
+    if (dsp != null) { dsp.addPropertyChangeListener(l); }
+    if (conceptEditorPanel != null) { conceptEditorPanel.addPropertyChangeListener(l); }
+    if (buttonPanel != null) { buttonPanel.addPropertyChangeListener(l); }
+    if (dePanel != null) { dePanel.addPropertyChangeListener(l); }
+    if (ocPanel != null) { ocPanel.addPropertyChangeListener(l); }
   }
   
   public void applyPressed() throws ApplyException
