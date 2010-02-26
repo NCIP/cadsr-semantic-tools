@@ -247,11 +247,11 @@ public class UMLElementViewPanel extends JPanel
 	  
 	// TODO uncomment to enable concept inheritance feature	  
 //    excludeSemPanel.addPropertyChangeListener(l);
-    dsp.addPropertyChangeListener(l);
-    conceptEditorPanel.addPropertyChangeListener(l);
-    buttonPanel.addPropertyChangeListener(l);
-    dePanel.addPropertyChangeListener(l);
-    ocPanel.addPropertyChangeListener(l);
+    if (dsp != null) { dsp.addPropertyChangeListener(l); }
+    if (conceptEditorPanel != null) { conceptEditorPanel.addPropertyChangeListener(l); }
+    if (buttonPanel != null) { buttonPanel.addPropertyChangeListener(l); }
+    if (dePanel != null) { dePanel.addPropertyChangeListener(l); }
+    if (ocPanel != null) { ocPanel.addPropertyChangeListener(l); }
   }
   
   public void applyPressed() throws ApplyException
