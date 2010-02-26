@@ -16,14 +16,47 @@ public class UMLElementViewPanelFactory implements CadsrModuleListener {
 
     private CadsrModule cadsrModule;
 
-    public UMLElementViewPanelFactory() {
+    private static java.io.PrintWriter printWriter = null;
+
+    private void log(String _message)
+    {
+	try
+	{
+	    this.printWriter.println(_message);
+	}
+	catch(Throwable t)
+	{
+	    throw new RuntimeException(t);
+	}
+	finally
+	{
+	    if (this.printWriter != null) { this.printWriter.flush(); }
+	}
     }
 
+    public UMLElementViewPanelFactory() {
+	try
+	{
+	    java.io.File file = new java.io.File("/home/georgebn/UMLElementViewPanelFactory.log");
+	    if (file.exists() == true) { file.delete(); }
+	    this.printWriter = new java.io.PrintWriter(file);
+	}
+	catch (Throwable t)
+	{
+	    throw new RuntimeException(t);
+	}
+
+    }
+
+
     public UMLElementViewPanel createUMLElementViewPanel(UMLNode node) {
-       
-        UMLElementViewPanel vp = new UMLElementViewPanel(node);
-        vp.setCadsrModule(cadsrModule);
-        umlVPList.add(vp);
+        log("Creating UMLElementViewPanel");
+	UMLElementViewPanel vp = new UMLElementViewPanel(node);
+	log("Created UMLElementViewPanel");
+	vp.setCadsrModule(cadsrModule);
+	log("Set Cadsr module");
+	umlVPList.add(vp);
+	log("Added to list");
         return vp;
         
     }
