@@ -42,20 +42,17 @@ public class UMLElementViewPanel extends JPanel
     OC_PANEL_KEY = "ocPanel",
     CONCEPT_PANEL_KEY = "conceptPanel",
     CANNOT_MAP_VM_KEY = "cannotMapVm";
-  
     
   private Map<String, JPanel> panelKeyMap = new HashMap<String, JPanel>();
 
   public UMLElementViewPanel(UMLNode node) 
   {
     this.node = node;
-  
     conceptEditorPanel = new ConceptEditorPanel(node);
     dePanel = new DEPanel(node);
     ocPanel = new OCPanel(node);
     gmePanel= new GMEViewPanel(node);
     dsp = new DescriptionPanel(node);
-    
     // TODO uncomment to enable concept inheritance feature
     //excludeSemPanel = new ExcludeFromSemanticInheritancePanel(node);
 
@@ -65,19 +62,23 @@ public class UMLElementViewPanel extends JPanel
     if(node instanceof AttributeNode){
       buttonPanel = new ButtonPanel(conceptEditorPanel, this, dePanel);}
     else if(node instanceof ValueMeaningNode)
-      buttonPanel = new ButtonPanel(conceptEditorPanel, this, null);
-    else 
-      buttonPanel = new ButtonPanel(conceptEditorPanel, this, ocPanel);
+    {
+	buttonPanel = new ButtonPanel(conceptEditorPanel, this, null);
+    }
+    else
+    {
+	buttonPanel = new ButtonPanel(conceptEditorPanel, this, ocPanel);
+    }
 
-    conceptEditorPanel.addPropertyChangeListener(buttonPanel);
-    dePanel.addPropertyChangeListener(buttonPanel);
-    ocPanel.addPropertyChangeListener(buttonPanel);
-    gmePanel.addPropertyChangeListener(buttonPanel);
-    dsp.addPropertyChangeListener(buttonPanel);
-    
+    if (conceptEditorPanel != null) { conceptEditorPanel.addPropertyChangeListener(buttonPanel); }
+    if (dePanel != null) { dePanel.addPropertyChangeListener(buttonPanel); }
+    if (ocPanel != null) { ocPanel.addPropertyChangeListener(buttonPanel); }
+    if (gmePanel != null) { gmePanel.addPropertyChangeListener(buttonPanel); }
+    if (dsp != null) { dsp.addPropertyChangeListener(buttonPanel); }
     // TODO uncomment to enable concept inheritance feature
     //excludeSemPanel.addPropertyChangeListener(buttonPanel);
 
+    
     cardPanel = new JPanel();
     initUI();
   }
@@ -247,11 +248,11 @@ public class UMLElementViewPanel extends JPanel
 	  
 	// TODO uncomment to enable concept inheritance feature	  
 //    excludeSemPanel.addPropertyChangeListener(l);
-    dsp.addPropertyChangeListener(l);
-    conceptEditorPanel.addPropertyChangeListener(l);
-    buttonPanel.addPropertyChangeListener(l);
-    dePanel.addPropertyChangeListener(l);
-    ocPanel.addPropertyChangeListener(l);
+    if (dsp != null) { dsp.addPropertyChangeListener(l); }
+    if (conceptEditorPanel != null) { conceptEditorPanel.addPropertyChangeListener(l); }
+    if (buttonPanel != null) { buttonPanel.addPropertyChangeListener(l); }
+    if (dePanel != null) { dePanel.addPropertyChangeListener(l); }
+    if (ocPanel != null) { ocPanel.addPropertyChangeListener(l); }
   }
   
   public void applyPressed() throws ApplyException

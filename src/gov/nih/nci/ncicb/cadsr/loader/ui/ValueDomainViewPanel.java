@@ -113,7 +113,7 @@ public class ValueDomainViewPanel extends JPanel
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
       super.addPropertyChangeListener(l);;
-      propChangeListeners.add(l);
+      if (propChangeListeners != null) {  propChangeListeners.add(l); }
   }
 
   public ValueDomainViewPanel() {

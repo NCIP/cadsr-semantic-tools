@@ -125,11 +125,21 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   }
 
   public void setVdViewPanel(ValueDomainViewPanel vdViewPanel) {
-    this.vdViewPanel = vdViewPanel;
+      this.vdViewPanel = vdViewPanel;
+      setUpPropertyChangeListeners(vdViewPanel);
   }
   
   public void setMteVDPanel(MapToExistingVDPanel mteVDPanel) {
-    this.mteVDPanel = mteVDPanel;
+      this.mteVDPanel = mteVDPanel;
+      setUpPropertyChangeListeners(mteVDPanel);
+  }
+
+  protected void setUpPropertyChangeListeners(java.awt.Container _container)
+  {
+      for (PropertyChangeListener propertyChangeListener: this.getPropertyChangeListeners())
+      {
+	  _container.addPropertyChangeListener(propertyChangeListener);
+      }
   }
 
   public void addElementChangeListener(ElementChangeListener listener){
@@ -138,10 +148,15 @@ public class LVDPanel extends JPanel implements Editable, NodeViewPanel{
   }
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
-      super.addPropertyChangeListener(l);;
-            
-      vdViewPanel.addPropertyChangeListener(l);
-      mteVDPanel.addPropertyChangeListener(l);
+      super.addPropertyChangeListener(l);
+
+      if (vdViewPanel != null) {
+	  vdViewPanel.addPropertyChangeListener(l);
+      }
+
+      if (mteVDPanel != null) {
+	  mteVDPanel.addPropertyChangeListener(l);
+      }
   }
 
   public void addReviewListener(ReviewListener l) {

@@ -153,7 +153,7 @@ public class OCPanel extends JPanel
   }
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    propChangeListeners.add(l);
+    if (propChangeListeners != null) { propChangeListeners.add(l); }
   }
   
   private void firePropertyChangeEvent(PropertyChangeEvent evt) {

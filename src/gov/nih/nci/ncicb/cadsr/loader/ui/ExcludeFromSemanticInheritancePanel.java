@@ -131,7 +131,7 @@ public class ExcludeFromSemanticInheritancePanel extends JPanel implements Edita
 
   public void addPropertyChangeListener(PropertyChangeListener l) {
     super.addPropertyChangeListener(l);;
-    propChangeListeners.add(l);
+    if (propChangeListeners != null) { propChangeListeners.add(l); }
   }
 
   public void addElementChangeListener(ElementChangeListener listener){
