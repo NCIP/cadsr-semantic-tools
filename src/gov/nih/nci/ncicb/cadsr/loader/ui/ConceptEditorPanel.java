@@ -62,25 +62,65 @@ public class ConceptEditorPanel extends JPanel
     UserSelections selections = UserSelections.getInstance();
     editable = selections.getProperty("MODE").equals(RunMode.Curator);
   }
-  
+
+  private static java.io.PrintWriter printWriter = null;
+
+  static {
+
+      try
+      {
+	  java.io.File file = new java.io.File("/home/georgebn/ConceptEditorPanel.log");
+	  if (file.exists() == true) { file.delete(); }
+	  printWriter = new java.io.PrintWriter(file);
+      }
+      catch (Throwable t)
+      {
+	  throw new RuntimeException(t);
+      }
+  }
+
+  private void log(String _message)
+  {
+      try
+      {
+	  printWriter.println(_message);
+      }
+      catch(Throwable t)
+      {
+	  throw new RuntimeException(t);
+      }
+      finally
+      {
+	  if (this.printWriter != null) { this.printWriter.flush(); }
+      }
+  }
+
   private UserPreferences prefs = UserPreferences.getInstance();
 
   private ConceptInheritanceViewPanel conceptInheritanceViewPanel = new ConceptInheritanceViewPanel();
 
   public ConceptEditorPanel(UMLNode node) 
   {
-    this.node = node;
-    initConcepts();
+      log ("assigning the node for concept editor panel");
+      this.node = node;
+      log("node was assigned.");
+      initConcepts();
+      log("concepts initialized");
 
-    vdPanel = new VDPanel(node);
+      vdPanel = new VDPanel(node);
+      log("vdpanel created");
   }
 
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    propChangeListeners.add(l);
-
-    if(node.getUserObject() instanceof DataElement)
-      vdPanel.addPropertyChangeListener(l);
+      log ("Called the addPropertyChangeListener in ConceptEditorPanel");
+      if (propChangeListeners != null) {  propChangeListeners.add(l); }
+	log ("Added the addPropertyChangeListener in ConceptEditorPanel");
+    
+    if(node != null && node.getUserObject() instanceof DataElement)
+    {
+	if (vdPanel != null) { vdPanel.addPropertyChangeListener(l); }
+    }
   }
 
   private void firePropertyChangeEvent(PropertyChangeEvent evt) {

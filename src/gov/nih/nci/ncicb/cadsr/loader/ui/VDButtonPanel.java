@@ -31,9 +31,9 @@ public class VDButtonPanel extends JPanel implements ActionListener,
     SWITCH_TO_VD_FIELDS = "Enter VD Details";
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    propChangeListeners.add(l);
-
-    applyButtonPanel.addPropertyChangeListener(l);
+      if (propChangeListeners != null) { propChangeListeners.add(l); }
+      
+      if (propChangeListeners != null) { applyButtonPanel.addPropertyChangeListener(l); }
   }
   
   public VDButtonPanel(Editable viewPanel) 
