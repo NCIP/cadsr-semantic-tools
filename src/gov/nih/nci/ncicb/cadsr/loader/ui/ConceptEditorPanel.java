@@ -80,7 +80,9 @@ public class ConceptEditorPanel extends JPanel
     propChangeListeners.add(l);
 
     if(node.getUserObject() instanceof DataElement)
-      vdPanel.addPropertyChangeListener(l);
+    {
+	if (vdPanel != null) { vdPanel.addPropertyChangeListener(l); }
+    }
   }
 
   private void firePropertyChangeEvent(PropertyChangeEvent evt) {
