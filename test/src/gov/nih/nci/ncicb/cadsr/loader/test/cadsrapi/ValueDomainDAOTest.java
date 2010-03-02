@@ -228,7 +228,7 @@ public class ValueDomainDAOTest extends MainTestCase
   }
 
   
-  public void testValueDomainSaveGF25444_41_122_1()
+  public void testValueDomainSaveGF25444_41_122_2()
   {
 	  try
 	  {
