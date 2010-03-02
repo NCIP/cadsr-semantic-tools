@@ -64,9 +64,8 @@ public class ButtonPanel extends JPanel implements ActionListener,
     
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    propChangeListeners.add(l);
-
-    applyButtonPanel.addPropertyChangeListener(l);
+    if (propChangeListeners != null) { propChangeListeners.add(l); }
+    if (applyButtonPanel != null) { applyButtonPanel.addPropertyChangeListener(l); }
   }
   
   public ButtonPanel(ConceptEditorPanel conceptEditorPanel, 

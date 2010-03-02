@@ -47,7 +47,7 @@ public class UserSelections
   }
 
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    propChangeListeners.add(l);
+    if (propChangeListeners != null) { propChangeListeners.add(l); }
   }
 
   public void propertyChange(PropertyChangeEvent evt) {

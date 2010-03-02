@@ -19,11 +19,11 @@ public class UMLElementViewPanelFactory implements CadsrModuleListener {
     public UMLElementViewPanelFactory() {
     }
 
+
     public UMLElementViewPanel createUMLElementViewPanel(UMLNode node) {
-       
-        UMLElementViewPanel vp = new UMLElementViewPanel(node);
-        vp.setCadsrModule(cadsrModule);
-        umlVPList.add(vp);
+	UMLElementViewPanel vp = new UMLElementViewPanel(node);
+	vp.setCadsrModule(cadsrModule);
+	umlVPList.add(vp);
         return vp;
         
     }

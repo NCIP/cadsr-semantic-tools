@@ -284,7 +284,7 @@ public class DEPanel extends JPanel
   }
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    propChangeListeners.add(l);
+    if (propChangeListeners != null) { propChangeListeners.add(l); }
   }
 
   public void addElementChangeListener(ElementChangeListener listener) {

@@ -61,8 +61,7 @@ import java.awt.event.WindowEvent;
  public class MainFrame extends JFrame 
    implements ViewChangeListener, CloseableTabbedPaneListener,
               PropertyChangeListener
- {
-
+ {     
    private JMenuBar mainMenuBar = new JMenuBar();
    private JMenu fileMenu = new JMenu("File");
    private JMenuItem saveMenuItem = new JMenuItem("Save");
@@ -136,8 +135,9 @@ import java.awt.event.WindowEvent;
    public MainFrame()
    {
    }
-
+   
    public void init() {
+
      UserSelections selections = UserSelections.getInstance();
      
      runMode = (RunMode)(selections.getProperty("MODE"));
@@ -546,6 +546,7 @@ import java.awt.event.WindowEvent;
        }
 
      } else if(event.getType() == ViewChangeEvent.VIEW_VALUE_MEANING) {
+	 
        if(viewPanels.containsKey(node.getFullPath())) {
          NodeViewPanel pa = viewPanels.get(node.getFullPath());
          viewTabbedPane.setSelectedComponent((JPanel)pa);
@@ -614,24 +615,30 @@ import java.awt.event.WindowEvent;
    }
 
    private void newTab(ViewChangeEvent event, UMLNode node) {
+
      String tabTitle = node.getDisplay();
      if(node instanceof AttributeNode) {
-         if(event.getType() == ViewChangeEvent.VIEW_INHERITED) 
+	 if(event.getType() == ViewChangeEvent.VIEW_INHERITED)
+	 {
              tabTitle = node.getParent().getParent().getDisplay() 
-             + "." + tabTitle;
-         else
+			+ "." + tabTitle;
+	 }
+	 else
+	 {
              tabTitle = node.getParent().getDisplay() 
-             + "." + tabTitle;
+			+ "." + tabTitle;
+
+	 }
      }
      
      if(event.getType() == ViewChangeEvent.VIEW_INHERITED) {
        viewPanel = umlVPFactory.createInheritedAttributeViewPanel(node);
        viewPanel.updateNode(node);
      } else {
-        viewPanel = umlVPFactory.createUMLElementViewPanel(node);
-        viewPanel.updateNode(node);
+	 viewPanel = umlVPFactory.createUMLElementViewPanel(node);
+	 viewPanel.updateNode(node);
      }          
-     
+
      viewPanel.addPropertyChangeListener(this);
      viewPanel.addReviewListener(navigationPanel);
      viewPanel.addReviewListener(ownerTracker);
@@ -640,11 +647,11 @@ import java.awt.event.WindowEvent;
      viewPanel.addNavigationListener(navigationPanel);
      navigationPanel.addNavigationListener(viewPanel);
      
-     
      viewTabbedPane.addTab(tabTitle, (JPanel)viewPanel);
      viewTabbedPane.setSelectedComponent((JPanel)viewPanel);
      
      viewPanel.setName(node.getFullPath());
+
      viewPanels.put(viewPanel.getName(), viewPanel);
      
      infoLabel.setText(tabTitle);

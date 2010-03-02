@@ -62,25 +62,28 @@ public class ConceptEditorPanel extends JPanel
     UserSelections selections = UserSelections.getInstance();
     editable = selections.getProperty("MODE").equals(RunMode.Curator);
   }
-  
+
+  private static java.io.PrintWriter printWriter = null;
+
   private UserPreferences prefs = UserPreferences.getInstance();
 
   private ConceptInheritanceViewPanel conceptInheritanceViewPanel = new ConceptInheritanceViewPanel();
 
   public ConceptEditorPanel(UMLNode node) 
   {
-    this.node = node;
-    initConcepts();
-
-    vdPanel = new VDPanel(node);
+      this.node = node;
+      initConcepts();
+      vdPanel = new VDPanel(node);
   }
 
   
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    propChangeListeners.add(l);
-
-    if(node.getUserObject() instanceof DataElement)
-      vdPanel.addPropertyChangeListener(l);
+      if (propChangeListeners != null) {  propChangeListeners.add(l); }
+    
+	if(node != null && node.getUserObject() instanceof DataElement)
+	{
+	    if (vdPanel != null) { vdPanel.addPropertyChangeListener(l); }
+	}
   }
 
   private void firePropertyChangeEvent(PropertyChangeEvent evt) {

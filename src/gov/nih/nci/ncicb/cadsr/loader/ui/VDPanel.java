@@ -419,7 +419,7 @@ public class VDPanel extends JPanel implements MouseListener, ActionListener {
   }
 
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    propChangeListeners.add(l);
+    if (propChangeListeners != null) { propChangeListeners.add(l); }
   }
   public void addElementChangeListener(ElementChangeListener listener) {
     changeListeners.add(listener);

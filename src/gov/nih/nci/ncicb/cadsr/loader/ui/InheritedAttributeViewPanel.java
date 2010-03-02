@@ -143,9 +143,9 @@ public class InheritedAttributeViewPanel extends JPanel
   }
 
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    applyButtonPanel.addPropertyChangeListener(l);
-    dePanel.addPropertyChangeListener(l);
-    dsp.addPropertyChangeListener(l);
+    if (applyButtonPanel != null) { applyButtonPanel.addPropertyChangeListener(l); }
+    if (dePanel != null) { dePanel.addPropertyChangeListener(l); }
+    if (dsp != null) { dsp.addPropertyChangeListener(l); }
   }
 
   public void navigate(NavigationEvent evt) {  
