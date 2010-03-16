@@ -11,6 +11,7 @@ import org.LexGrid.LexBIG.DataModel.Collections.ConceptReferenceList;
 import org.LexGrid.LexBIG.DataModel.Collections.LocalNameList;
 import org.LexGrid.LexBIG.DataModel.Collections.NameAndValueList;
 import org.LexGrid.LexBIG.DataModel.Collections.ResolvedConceptReferenceList;
+import org.LexGrid.LexBIG.DataModel.Collections.SortOptionList;
 import org.LexGrid.LexBIG.DataModel.Core.ConceptReference;
 import org.LexGrid.LexBIG.DataModel.Core.ResolvedConceptReference;
 import org.LexGrid.LexBIG.Extensions.Generic.LexBIGServiceConvenienceMethods;
@@ -19,6 +20,7 @@ import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet;
 import org.LexGrid.LexBIG.LexBIGService.LexBIGService;
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet.SearchDesignationOption;
 import org.LexGrid.LexBIG.Utility.Constructors;
+import org.LexGrid.LexBIG.Utility.Iterators.ResolvedConceptReferencesIterator;
 import org.LexGrid.LexBIG.Utility.LBConstants.MatchAlgorithms;
 import org.LexGrid.commonTypes.Property;
 import org.LexGrid.concepts.Definition;
@@ -69,8 +71,14 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 							null
 						);
 			
-			ResolvedConceptReferenceList results = cns.resolveToList(null, null, null, -1);
-			evsConcepts = getEVSConcepts(results, includeRetiredConcepts);
+			if (!includeRetiredConcepts) {
+				cns.restrictToStatus(CodedNodeSet.ActiveOption.ACTIVE_ONLY, null);
+			}
+			CodedNodeSet.PropertyType propTypes[] = new CodedNodeSet.PropertyType[1];
+			propTypes[0] = CodedNodeSet.PropertyType.PRESENTATION;
+			
+			ResolvedConceptReferenceList results = cns.resolveToList(null, null, propTypes, -1);
+			evsConcepts = getEVSConcepts(results);
 		} catch (Exception e) {
 			log.error("Error finding concept for code ["+conceptCode+"]", e);
 			throw new EVSException("Error finding concept for code ["+conceptCode+"]", e);
@@ -100,16 +108,26 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		return findConceptsByCode(conceptCode, includeRetiredConcepts, rowCount, NCIT_SCHEME_NAME);
 	}
 	
-	private List<EVSConcept> getEVSConcepts(ResolvedConceptReferenceList rcRefList, boolean includeRetiredConcepts) throws Exception {
+	private List<EVSConcept> getEVSConcepts(ResolvedConceptReferenceList rcRefList) throws Exception {
 		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
 		if (rcRefList != null) {
 			Iterator<ResolvedConceptReference> iter = rcRefList.iterateResolvedConceptReference();
 			while (iter.hasNext()) {
 				ResolvedConceptReference conceptRef = iter.next();
-				if (doIncludeConcept(conceptRef, includeRetiredConcepts)) {
-					EVSConcept evsConcept = getEVSConcept(conceptRef);
-					evsConcepts.add(evsConcept);
-				}
+				EVSConcept evsConcept = getEVSConcept(conceptRef);
+				evsConcepts.add(evsConcept);
+			}
+		}
+		return evsConcepts;
+	}
+	
+	private List<EVSConcept> getEVSConcepts(ResolvedConceptReferencesIterator rcRefIter) throws Exception {
+		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
+		if (rcRefIter != null) {
+			while (rcRefIter.hasNext()) {
+				ResolvedConceptReference conceptRef = rcRefIter.next();
+				EVSConcept evsConcept = getEVSConcept(conceptRef);
+				evsConcepts.add(evsConcept);
 			}
 		}
 		return evsConcepts;
@@ -216,8 +234,15 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 					CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, 
 					MatchAlgorithms.exactMatch.name(), 
 					null);
-			ResolvedConceptReferenceList results = cns.resolveToList(null, null, null, -1);
-			evsConcepts = getEVSConcepts(results, includeRetiredConcepts);
+			
+			if (!includeRetiredConcepts) {
+				cns.restrictToStatus(CodedNodeSet.ActiveOption.ACTIVE_ONLY, null);
+			}
+			CodedNodeSet.PropertyType propTypes[] = new CodedNodeSet.PropertyType[1];
+			propTypes[0] = CodedNodeSet.PropertyType.PRESENTATION;
+			
+			ResolvedConceptReferenceList results = cns.resolveToList(null, null, propTypes, -1);
+			evsConcepts = getEVSConcepts(results);
 		} catch (Exception e) {
 			log.error("Error finding concepts for synonym ["+searchTerm+"]", e);
 			throw new EVSException("Error finding concepts for synonym ["+searchTerm+"]", e);
@@ -245,8 +270,20 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 					null
 				);
 			cns = restrictToSource(cns, "NCI");
-			ResolvedConceptReferenceList results = cns.resolveToList(null, null, null, -1);
-			evsConcepts = getEVSConcepts(results, includeRetiredConcepts);
+			
+			if (!includeRetiredConcepts) {
+				cns.restrictToStatus(CodedNodeSet.ActiveOption.ACTIVE_ONLY, null);
+			}
+			CodedNodeSet.PropertyType propTypes[] = new CodedNodeSet.PropertyType[1];
+			propTypes[0] = CodedNodeSet.PropertyType.PRESENTATION;
+			
+			SortOptionList sortCriteria = Constructors.createSortOptionList(new String[]{"matchToQuery"});
+			
+			/*ResolvedConceptReferenceList results = cns.resolveToList(sortCriteria, null, propTypes, -1);
+			evsConcepts = getEVSConcepts(results);*/
+			
+			ResolvedConceptReferencesIterator results = cns.resolve(sortCriteria, null, new LocalNameList(), null, true);
+			evsConcepts = getEVSConcepts(results);
 		} catch (Exception e) {
 			log.error("Error finding concepts for synonym ["+searchTerm+"]", e);
 			throw new EVSException("Error finding concepts for synonym ["+searchTerm+"]", e);
