@@ -18,7 +18,7 @@ import org.LexGrid.concepts.Definition;
 
 public class LexEVSTestCase extends TestCase{
 
-	public void testGetByConceptCode() {
+	/*public void testGetByConceptCode() {
 		try {
 			LexEVSQueryService evsModule = new LexEVSQueryServiceImpl();
 			List<EVSConcept> evsConcepts = evsModule.findConceptsByCode("C80736", false, 100, "NCI Thesaurus");
@@ -29,22 +29,83 @@ public class LexEVSTestCase extends TestCase{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
-	public void testGetBySynonym() {
+	/*public void testGetBySynonym() {
 		try {
 			LexEVSQueryService evsModule = new LexEVSQueryServiceImpl();
-			List<EVSConcept> evsConcepts = evsModule.findConceptsBySynonym("*clinical*", true, 0, "NCI Thesaurus");
+			List<EVSConcept> evsConcepts = evsModule.findConceptsBySynonym("*clin*", true, 0, "NCI Thesaurus");
+			
 			for (EVSConcept evsConcept: evsConcepts) {
 				System.out.println("Code: "+evsConcept.getCode()+", Name: "+evsConcept.getPreferredName());
 			}
+			
+			System.out.println("Size:" + evsConcepts.size());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}*/
+	
+	public void testGetSynonymThreaded() {
+		String[] strs = new String[] {"*gene*","*ene*","*clin*","*al*"};
+		ThreadRunner[] runners = new ThreadRunner[strs.length];
+		
+		for (int i=0;i<strs.length;i++) {
+			runners[i] = new ThreadRunner(strs[i]);
+			runners[i].start();
+		}
+		
+		boolean done = false;
+		try { 
+			int count = 0;
+			while (count < 5) {
+				while (!done) {
+					done = true;
+					for (ThreadRunner runner: runners) {
+						if (!runner.isDone()) {
+							done = false;
+							Thread.sleep(10000L);
+							break;
+						}
+					}
+				}
+				done = false;
+				Thread.sleep(10000L);
+				count ++;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public void testGetByPreferredName() {
+	private class ThreadRunner extends Thread {
+
+		private final String searchStr;
+		private boolean done = false;
+		
+		public ThreadRunner(String _searchStr) {
+			searchStr = _searchStr;
+		}
+		
+		public boolean isDone() {
+			return done;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				LexEVSQueryService evsModule = new LexEVSQueryServiceImpl();
+				List<EVSConcept> evsConcepts = evsModule.findConceptsBySynonym(searchStr, false, 0, "NCI Thesaurus");
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				done = true;
+			}
+		}
+	}
+	
+	/*public void testGetByPreferredName() {
 		try {
 			LexEVSQueryService evsModule = new LexEVSQueryServiceImpl();
 			List<EVSConcept> evsConcepts = evsModule.findConceptsByPreferredName("blood", false,  "NCI Thesaurus");
@@ -63,5 +124,5 @@ public class LexEVSTestCase extends TestCase{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 }
