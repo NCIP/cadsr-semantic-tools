@@ -3,19 +3,13 @@ package gov.nih.nci.ncicb.cadsr.evs;
 import gov.nih.nci.system.client.ApplicationServiceProvider;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.LexGrid.LexBIG.DataModel.Collections.ConceptReferenceList;
 import org.LexGrid.LexBIG.DataModel.Collections.LocalNameList;
 import org.LexGrid.LexBIG.DataModel.Collections.NameAndValueList;
-import org.LexGrid.LexBIG.DataModel.Collections.ResolvedConceptReferenceList;
 import org.LexGrid.LexBIG.DataModel.Collections.SortOptionList;
-import org.LexGrid.LexBIG.DataModel.Core.ConceptReference;
 import org.LexGrid.LexBIG.DataModel.Core.ResolvedConceptReference;
-import org.LexGrid.LexBIG.Extensions.Generic.LexBIGServiceConvenienceMethods;
-import org.LexGrid.LexBIG.LexBIGService.CodedNodeGraph;
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet;
 import org.LexGrid.LexBIG.LexBIGService.LexBIGService;
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet.SearchDesignationOption;
@@ -25,7 +19,6 @@ import org.LexGrid.LexBIG.Utility.LBConstants.MatchAlgorithms;
 import org.LexGrid.commonTypes.Property;
 import org.LexGrid.concepts.Definition;
 import org.LexGrid.concepts.Entity;
-import org.LexGrid.concepts.Presentation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,10 +26,6 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 
 	private static LexBIGService service;
 	private static final String NCIT_SCHEME_NAME = "NCI_Thesaurus";
-	private ResolvedConceptReference retiredRootCon = null;
-	private LexBIGServiceConvenienceMethods  conMthds = null;
-	
-	private static final int maxReturn = 5000;
 	
 	private static Log log = LogFactory.getLog(LexEVSQueryServiceImpl.class);
 	private static List<String> retiredStatuses = null;
@@ -58,6 +47,21 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		}
 	}
 	
+	public ResolvedConceptReferencesIterator resolveNodeSet(CodedNodeSet cns, boolean includeRetiredConcepts) throws Exception {
+		
+		if (!includeRetiredConcepts) {
+			cns.restrictToStatus(CodedNodeSet.ActiveOption.ACTIVE_ONLY, null);
+		}
+		CodedNodeSet.PropertyType propTypes[] = new CodedNodeSet.PropertyType[1];
+		propTypes[0] = CodedNodeSet.PropertyType.PRESENTATION;
+		
+		SortOptionList sortCriteria = Constructors.createSortOptionList(new String[]{"matchToQuery"});
+		
+		ResolvedConceptReferencesIterator results = cns.resolve(sortCriteria, null,new LocalNameList(), propTypes, true);
+		
+		return results;
+	}
+	
 	public List findConceptsByCode(String conceptCode, boolean includeRetiredConcepts, int rowCount, String vocabName)
 			throws EVSException {
 		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
@@ -71,13 +75,7 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 							null
 						);
 			
-			if (!includeRetiredConcepts) {
-				cns.restrictToStatus(CodedNodeSet.ActiveOption.ACTIVE_ONLY, null);
-			}
-			CodedNodeSet.PropertyType propTypes[] = new CodedNodeSet.PropertyType[1];
-			propTypes[0] = CodedNodeSet.PropertyType.PRESENTATION;
-			
-			ResolvedConceptReferenceList results = cns.resolveToList(null, null, propTypes, -1);
+			ResolvedConceptReferencesIterator results = resolveNodeSet(cns, includeRetiredConcepts);
 			evsConcepts = getEVSConcepts(results);
 		} catch (Exception e) {
 			log.error("Error finding concept for code ["+conceptCode+"]", e);
@@ -86,11 +84,10 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		return evsConcepts;
 	}
 	
-	public List<EVSConcept> findConceptDetailsByName(List<String> conceptNames, boolean includeRetiredConcepts) throws EVSException {
-		
-		return findConceptDetailsByName(conceptNames, includeRetiredConcepts, NCIT_SCHEME_NAME);
+	public List findConceptsByCode(String conceptCode, boolean includeRetiredConcepts, int rowCount) throws EVSException {
+		return findConceptsByCode(conceptCode, includeRetiredConcepts, rowCount, NCIT_SCHEME_NAME);
 	}
-
+	
 	public List<EVSConcept> findConceptDetailsByName(List<String> conceptNames, boolean includeRetiredConcepts, String vocabName) throws EVSException {
 		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
 		
@@ -100,27 +97,67 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 				evsConcepts.addAll(evsConceptsChunk);
 			}
 		}
-		
 		return evsConcepts;
 	}
 
-	public List findConceptsByCode(String conceptCode, boolean includeRetiredConcepts, int rowCount) throws EVSException {
-		return findConceptsByCode(conceptCode, includeRetiredConcepts, rowCount, NCIT_SCHEME_NAME);
+	public List<EVSConcept> findConceptDetailsByName(List<String> conceptNames, boolean includeRetiredConcepts) throws EVSException {
+		
+		return findConceptDetailsByName(conceptNames, includeRetiredConcepts, NCIT_SCHEME_NAME);
 	}
 	
-	private List<EVSConcept> getEVSConcepts(ResolvedConceptReferenceList rcRefList) throws Exception {
+	public List<EVSConcept> findConceptsByPreferredName(String searchTerm, boolean includeRetiredConcepts, String vocabName) throws EVSException {
 		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
-		if (rcRefList != null) {
-			Iterator<ResolvedConceptReference> iter = rcRefList.iterateResolvedConceptReference();
-			while (iter.hasNext()) {
-				ResolvedConceptReference conceptRef = iter.next();
-				EVSConcept evsConcept = getEVSConcept(conceptRef);
-				evsConcepts.add(evsConcept);
-			}
+		try {
+			CodedNodeSet cns = service.getNodeSet(vocabName, null, null);
+			cns = cns.restrictToMatchingDesignations(
+					searchTerm, 
+					CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, 
+					MatchAlgorithms.exactMatch.name(), 
+					null);
+			
+			ResolvedConceptReferencesIterator results = resolveNodeSet(cns, includeRetiredConcepts);
+			evsConcepts = getEVSConcepts(results);
+		} catch (Exception e) {
+			log.error("Error finding concepts for synonym ["+searchTerm+"]", e);
+			throw new EVSException("Error finding concepts for synonym ["+searchTerm+"]", e);
 		}
 		return evsConcepts;
 	}
 	
+	public List<EVSConcept> findConceptsByPreferredName(String searchTerm, boolean includeRetiredConcepts) throws EVSException {
+		return findConceptsByPreferredName(searchTerm, includeRetiredConcepts, NCIT_SCHEME_NAME);
+	}
+	
+	public List<EVSConcept> findConceptsBySynonym(String searchTerm,
+		boolean includeRetiredConcepts, int rowCount, String vocabName)
+			throws EVSException {
+		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
+		try {
+			CodedNodeSet cns = service.getNodeSet(vocabName, null, null);
+
+			String[][] termAndMatchAlgorithmName = getTermAndMatchAlgorithmName(searchTerm);
+			cns = cns.restrictToMatchingDesignations(
+					termAndMatchAlgorithmName[0][0], 
+					SearchDesignationOption.ALL, 
+					termAndMatchAlgorithmName[0][1],
+					null
+				);
+			cns = restrictToSource(cns, "NCI");
+			
+			ResolvedConceptReferencesIterator results = resolveNodeSet(cns, includeRetiredConcepts);
+			evsConcepts = getEVSConcepts(results);
+		} catch (Exception e) {
+			log.error("Error finding concepts for synonym ["+searchTerm+"]", e);
+			throw new EVSException("Error finding concepts for synonym ["+searchTerm+"]", e);
+		}
+		return evsConcepts;
+	}
+	
+	public List<EVSConcept> findConceptsBySynonym(String searchTerm,
+			boolean includeRetiredConcepts, int rowCount) throws EVSException {
+		return findConceptsBySynonym(searchTerm, includeRetiredConcepts, rowCount, NCIT_SCHEME_NAME);
+	}
+
 	private List<EVSConcept> getEVSConcepts(ResolvedConceptReferencesIterator rcRefIter) throws Exception {
 		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
 		if (rcRefIter != null) {
@@ -133,47 +170,6 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		return evsConcepts;
 	}
 	
-	private boolean doIncludeConcept(ResolvedConceptReference conceptRef, boolean includeRetiredConcepts) throws Exception {
-		if (includeRetiredConcepts) {
-			return true;
-		}
-		else {
-			Entity entity = conceptRef.getEntity();
-			if (entity.isIsActive() 
-					&& !isRetiredStatus(entity) 
-					&& !isRetiredConcept(conceptRef)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	private boolean isRetiredStatus(Entity entity) {
-		
-		if (((entity.getStatus() != null 
-				&& retiredStatuses.contains(entity.getStatus()))
-				||
-				hasConceptStatusRetiredProperty(entity))) {
-			return true;
-		}
-		
-		return false;
-	}
-	
-	private boolean hasConceptStatusRetiredProperty(Entity entity) {
-		Property[] props = entity.getAllProperties();
-		for (Property prop: props) {
-			if (prop.getPropertyName().equalsIgnoreCase("Concept_Status")) {
-				String statusVal = prop.getValue().getContent();
-				if (statusVal != null && retiredStatuses.contains(statusVal)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
 	private EVSConcept getEVSConcept(ResolvedConceptReference rcRef) {
 		EVSConcept evsConcept = new EVSConcept();
 		evsConcept.setCode(rcRef.getCode());
@@ -220,132 +216,7 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		
 		return evsConcept;
 	}
-	
-	public List<EVSConcept> findConceptsByPreferredName(String searchTerm, boolean includeRetiredConcepts) throws EVSException {
-		return findConceptsByPreferredName(searchTerm, includeRetiredConcepts, NCIT_SCHEME_NAME);
-	}
-
-	public List<EVSConcept> findConceptsByPreferredName(String searchTerm, boolean includeRetiredConcepts, String vocabName) throws EVSException {
-		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
-		try {
-			CodedNodeSet cns = service.getNodeSet(vocabName, null, null);
-			cns = cns.restrictToMatchingDesignations(
-					searchTerm, 
-					CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, 
-					MatchAlgorithms.exactMatch.name(), 
-					null);
-			
-			if (!includeRetiredConcepts) {
-				cns.restrictToStatus(CodedNodeSet.ActiveOption.ACTIVE_ONLY, null);
-			}
-			CodedNodeSet.PropertyType propTypes[] = new CodedNodeSet.PropertyType[1];
-			propTypes[0] = CodedNodeSet.PropertyType.PRESENTATION;
-			
-			ResolvedConceptReferenceList results = cns.resolveToList(null, null, propTypes, -1);
-			evsConcepts = getEVSConcepts(results);
-		} catch (Exception e) {
-			log.error("Error finding concepts for synonym ["+searchTerm+"]", e);
-			throw new EVSException("Error finding concepts for synonym ["+searchTerm+"]", e);
-		}
-		return evsConcepts;
-	}
-	
-	public List<EVSConcept> findConceptsBySynonym(String searchTerm,
-			boolean includeRetiredConcepts, int rowCount) throws EVSException {
-		return findConceptsBySynonym(searchTerm, includeRetiredConcepts, rowCount, NCIT_SCHEME_NAME);
-	}
-
-	public List<EVSConcept> findConceptsBySynonym(String searchTerm,
-		boolean includeRetiredConcepts, int rowCount, String vocabName)
-			throws EVSException {
-		List<EVSConcept> evsConcepts = new ArrayList<EVSConcept>();
-		try {
-			CodedNodeSet cns = service.getNodeSet(vocabName, null, null);
-
-			String[][] termAndMatchAlgorithmName = getTermAndMatchAlgorithmName(searchTerm);
-			cns = cns.restrictToMatchingDesignations(
-					termAndMatchAlgorithmName[0][0], 
-					SearchDesignationOption.ALL, 
-					termAndMatchAlgorithmName[0][1],
-					null
-				);
-			cns = restrictToSource(cns, "NCI");
-			
-			if (!includeRetiredConcepts) {
-				cns.restrictToStatus(CodedNodeSet.ActiveOption.ACTIVE_ONLY, null);
-			}
-			CodedNodeSet.PropertyType propTypes[] = new CodedNodeSet.PropertyType[1];
-			propTypes[0] = CodedNodeSet.PropertyType.PRESENTATION;
-			
-			SortOptionList sortCriteria = Constructors.createSortOptionList(new String[]{"matchToQuery"});
-			
-			/*ResolvedConceptReferenceList results = cns.resolveToList(sortCriteria, null, propTypes, -1);
-			evsConcepts = getEVSConcepts(results);*/
-			
-			ResolvedConceptReferencesIterator results = cns.resolve(sortCriteria, null, new LocalNameList(), null, true);
-			evsConcepts = getEVSConcepts(results);
-		} catch (Exception e) {
-			log.error("Error finding concepts for synonym ["+searchTerm+"]", e);
-			throw new EVSException("Error finding concepts for synonym ["+searchTerm+"]", e);
-		}
-		return evsConcepts;
-	}
-	
-	public boolean isRetiredConcept(ConceptReference conRef) throws Exception {
-		ConceptReference retiredCon = getRetiredRootConcept();
 		
-		if (retiredCon != null) {
-			CodedNodeGraph cng = service.getNodeGraph(NCIT_SCHEME_NAME, null, null);
-			ConceptReferenceList refList = cng.listCodeRelationships(conRef, retiredCon, false);
-			for (int i=0;i<refList.getConceptReferenceCount();i++) {
-				if(refList.getConceptReference(i).getConceptCode().equalsIgnoreCase("subClassOf")) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	
-	private ConceptReference getRetiredRootConcept() throws Exception {
-		if (retiredRootCon == null) {
-			ResolvedConceptReferenceList rootConcepts = getRootConcepts();
-			for (int i=0;i<rootConcepts.getResolvedConceptReferenceCount();i++) {
-				ResolvedConceptReference resConRef = rootConcepts.getResolvedConceptReference(i);
-				Presentation[] presentations = resConRef.getEntity().getPresentation();
-				for (Presentation pres: presentations) {
-					if (pres.getIsPreferred() && pres.getValue().getContent().contains("Retired")) {
-						retiredRootCon = resConRef;
-						break;
-					}
-				}
-				
-				if (retiredRootCon != null) break;
-			}
-		}
-		
-		return retiredRootCon;
-	}
-	
-	private ResolvedConceptReferenceList getRootConcepts() throws Exception {
-		LexBIGServiceConvenienceMethods  conMthds = getConvenienceMethods();
-		
-		String[] hirearchyIds = conMthds.getHierarchyIDs(NCIT_SCHEME_NAME, null);
-		ResolvedConceptReferenceList rootConcepts = conMthds.getHierarchyRoots(NCIT_SCHEME_NAME, null, hirearchyIds[0]);
-		
-		return rootConcepts;
-	}
-	
-	private LexBIGServiceConvenienceMethods getConvenienceMethods() throws Exception {
-		
-		if(conMthds == null) {
-			conMthds = (LexBIGServiceConvenienceMethods)service.getGenericExtension("LexBIGServiceConvenienceMethods");
-			conMthds.setLexBIGService(service);
-		}
-		
-		return conMthds;
-	}
-	
 	public static CodedNodeSet restrictToSource(CodedNodeSet cns, String source) {
 		if (cns == null) return cns;
 		if (source == null || source.compareTo("*") == 0 || source.compareTo("") == 0 || source.compareTo("ALL") == 0) return cns;
