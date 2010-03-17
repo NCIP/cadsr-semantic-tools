@@ -8,17 +8,13 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.LexGrid.LexBIG.DataModel.Collections.AssociatedConceptList;
-import org.LexGrid.LexBIG.DataModel.Collections.AssociationList;
-import org.LexGrid.LexBIG.DataModel.Core.AssociatedConcept;
-import org.LexGrid.LexBIG.DataModel.Core.Association;
 import org.LexGrid.commonTypes.Source;
 import org.LexGrid.concepts.Definition;
 
 
 public class LexEVSTestCase extends TestCase{
 
-	/*public void testGetByConceptCode() {
+	public void testGetByConceptCode() {
 		try {
 			LexEVSQueryService evsModule = new LexEVSQueryServiceImpl();
 			List<EVSConcept> evsConcepts = evsModule.findConceptsByCode("C80736", false, 100, "NCI Thesaurus");
@@ -29,9 +25,9 @@ public class LexEVSTestCase extends TestCase{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}*/
+	}
 	
-	/*public void testGetBySynonym() {
+	public void testGetBySynonym() {
 		try {
 			LexEVSQueryService evsModule = new LexEVSQueryServiceImpl();
 			List<EVSConcept> evsConcepts = evsModule.findConceptsBySynonym("*clin*", true, 0, "NCI Thesaurus");
@@ -45,21 +41,21 @@ public class LexEVSTestCase extends TestCase{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}*/
+	}
 	
-	public void testGetSynonymThreaded() {
+	/*public void testGetSynonymThreaded() {
 		String[] strs = new String[] {"*gene*","*ene*","*clin*","*al*"};
 		ThreadRunner[] runners = new ThreadRunner[strs.length];
 		
-		for (int i=0;i<strs.length;i++) {
-			runners[i] = new ThreadRunner(strs[i]);
-			runners[i].start();
-		}
-		
-		boolean done = false;
-		try { 
-			int count = 0;
-			while (count < 5) {
+		int count = 0;
+		while (count < 5) {
+			for (int i=0;i<strs.length;i++) {
+				runners[i] = new ThreadRunner(strs[i]);
+				runners[i].start();
+			}
+			
+			boolean done = false;
+			try { 
 				while (!done) {
 					done = true;
 					for (ThreadRunner runner: runners) {
@@ -70,14 +66,15 @@ public class LexEVSTestCase extends TestCase{
 						}
 					}
 				}
-				done = false;
 				Thread.sleep(10000L);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
 				count ++;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-	}
+	}*/
 	
 	private class ThreadRunner extends Thread {
 
@@ -105,7 +102,7 @@ public class LexEVSTestCase extends TestCase{
 		}
 	}
 	
-	/*public void testGetByPreferredName() {
+	public void testGetByPreferredName() {
 		try {
 			LexEVSQueryService evsModule = new LexEVSQueryServiceImpl();
 			List<EVSConcept> evsConcepts = evsModule.findConceptsByPreferredName("blood", false,  "NCI Thesaurus");
@@ -124,5 +121,5 @@ public class LexEVSTestCase extends TestCase{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}*/
+	}
 }
