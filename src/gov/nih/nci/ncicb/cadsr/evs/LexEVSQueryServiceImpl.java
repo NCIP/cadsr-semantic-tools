@@ -12,6 +12,7 @@ import org.LexGrid.LexBIG.DataModel.Collections.SortOptionList;
 import org.LexGrid.LexBIG.DataModel.Core.ResolvedConceptReference;
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet;
 import org.LexGrid.LexBIG.LexBIGService.LexBIGService;
+import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet.PropertyType;
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet.SearchDesignationOption;
 import org.LexGrid.LexBIG.Utility.Constructors;
 import org.LexGrid.LexBIG.Utility.Iterators.ResolvedConceptReferencesIterator;
@@ -52,8 +53,7 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		if (!includeRetiredConcepts) {
 			cns.restrictToStatus(CodedNodeSet.ActiveOption.ACTIVE_ONLY, null);
 		}
-		CodedNodeSet.PropertyType propTypes[] = new CodedNodeSet.PropertyType[1];
-		propTypes[0] = CodedNodeSet.PropertyType.PRESENTATION;
+		PropertyType[] propTypes = new PropertyType[]{PropertyType.PRESENTATION, PropertyType.DEFINITION};
 		
 		SortOptionList sortCriteria = Constructors.createSortOptionList(new String[]{"matchToQuery"});
 		
