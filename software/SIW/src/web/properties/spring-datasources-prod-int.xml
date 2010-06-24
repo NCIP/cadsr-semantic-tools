@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="dataSource" class="oracle.jdbc.pool.OracleConnectionPoolDataSource">
+    <property name="driverType"><value>oracle.jdbc.driver.OracleDriver</value></property> 
+    <property name="URL"><value>jdbc:oracle:thin:@cbiodb10.nci.nih.gov:1521:CBPROD</value></property> 
+    <property name="user"><value>THE_SIW</value></property> 
+    <property name="password"><value>THE_SIW</value></property> 
+  </bean> 
+
+</beans>

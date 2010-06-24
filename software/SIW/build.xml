@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="UML Loader / SIW" default="compile" basedir=".">
+  <property file="dev.properties"/>
+  <property name="src.dir" value="${basedir}/src"/>
+  <property name="test.src.dir" value="${basedir}/test/src"/>
+  <property name="class.dir" value="./classes"/>
+  <property name="lib.dir" value="${basedir}/lib"/>
+  <property name="dist.dir" value="${basedir}/dist" />
+  <property name="config.dir" value="${basedir}/src/web/properties"/>
+  <property name="docs.dir" value="${basedir}/javadoc" />
+  <property name="images.dir" value="${basedir}/src/web/images" />
+  <property name="jnlp.dir" value="${basedir}/src/web/jnlp" />
+  <property name="target.env" value="dev"/>
+  <property name="sqlsuite.dir" value="${basedir}/src/test/sqlsuite"/>
+
+  <property file="${config.dir}/db.properties" prefix="db"/>
+
+  <path id="proj.class.path">
+    <pathelement location="${class.dir}"/>
+    <fileset dir="${lib.dir}">
+      <include name="*.jar"/>
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <property name="PROP.FILE" location="${target.env}.properties" />
+  <property file="${PROP.FILE}" />
+
+  <condition property="check.props">
+    <and>
+      <isset property="TOOL.ROOT.DIR" />
+      <isset property="TOOL.LOG.DIR" />
+      <isset property="SCP.USER" />
+      <isset property="SCP.HOST" />
+      <isset property="SCP.PATH" />
+      <isset property="SCP.KEYFILE" />
+      <isset property="SCP.PORT" />
+      <isset property="SCP.PASSPHRASE" />
+    </and>
+  </condition>
+
+  <property name="scpPath.dir" location="${SCP.PATH}/siw" />
+    
+  <!--
+  <taskdef name="jalopy"
+    classname="de.hunsicker.jalopy.plugin.ant.AntPlugin">
+    <classpath>
+      <fileset dir="${lib.dir}/jalopy">
+        <include name="*.jar" />
+      </fileset>
+    </classpath>
+  </taskdef>
+-->
+
+  <target name="nci-deploy" depends="dist, sign">
+    
+  </target>
+
+  <target name="remote-deploy" depends="dist, sign">
+    <echo>Deploying binaries to remote file system "${SCP.USER}@${SCP.HOST}:${scpPath.dir}"</echo>
+    <scp todir="${SCP.USER}@${SCP.HOST}:${TOOL.ROOT.DIR}" port="${SCP.PORT}" passphrase="${SCP.PASSPHRASE}" keyfile="${SCP.KEYFILE}" trust="true" verbose="true">
+      <fileset dir="${dist.dir}">
+        <include name="siw.jnlp"/>
+        <include name="siw-logo3_2.gif"/>
+        <include name="datatype-mapping.xml"/>
+        <include name="lib/*.jar"/>
+      </fileset>
+    </scp>
+  </target>
+
+
+  <target name="sign" if="keystore">
+    <signjar alias="${alias}" storepass="${storepass}" keystore="${keystore}">
+      <fileset dir="${dist.dir}/lib" includes="*.jar"/>
+    </signjar>
+  </target>
+
+  <target name="format" depends="compile">
+    <jalopy fileformat="auto"
+            history="file"
+            loglevel="WARN"
+            threads="2"
+      classpathref="proj.class.path">
+      <fileset dir="${src.dir}">
+        <include name="**/*.java" />
+      </fileset>
+    </jalopy>
+  </target>
+
+  <target name="clean">
+    <delete dir="${class.dir}" failonerror="true" />
+    <delete dir="${dist.dir}/lib"/>
+    <delete dir="${dist.dir}/siw.jnlp"/>
+  </target>
+
+  <available file="${lib.dir}/cadsr-api.jar" property="available.cadsr"/>
+  <available file="build.properties" property="available.build.props"/>
+
+  <target name="fail1" unless="available.cadsr">
+    <fail message="missing cadsr-api jar, please build cadsr service layer first"/>
+  </target>
+
+  <target name="fail2" unless="available.build.props">
+    <fail message="missing build.properties, please create one first first"/>
+  </target>
+
+  <target name="compile" depends="fail1">
+    <mkdir dir="${class.dir}"/>
+    <javac
+      destdir="${class.dir}"
+      debug="on"
+      srcdir="${src.dir}"
+      deprecation="false"
+      fork="yes"
+      >
+      <!--
+           <compilerarg value="-Xlint"/>
+      -->
+      <classpath refid="proj.class.path"/>
+    </javac>
+    <javac
+      destdir="${class.dir}"
+      debug="on"
+      srcdir="${test.src.dir}"
+      deprecation="false"
+      fork="yes"
+      >
+      <classpath refid="proj.class.path"/>
+    </javac>
+  </target>
+
+  <target name="prepare"
+    depends="compile">
+    <copy todir="${class.dir}" overwrite="true">
+      <fileset dir="${config.dir}">
+        <include name="*.properties"/>
+        <include name="jaas.config"/>
+        <include name="beans.xml"/>
+        <include name="loader-spring.xml"/>
+        <include name="application-config-client.xml"/>
+        <include name="log4j.xml"/>
+        <include name="spring-datasources.xml"/>
+        <include name="ehcache.xml"/>
+        <!--        <include name="datatype-mapping.xml"/> -->
+        <include name="about.html"/>
+        <include name="cache.ccf"/>
+      </fileset>
+      <fileset dir="${images.dir}">
+        <include name="*.png"/>
+        <include name="*.jpg"/>
+        <include name="*.gif"/>
+      </fileset>
+    </copy>
+    <copy file="${config.dir}/application-config-client-${target.env}.xml"
+      tofile="${class.dir}/application-config-client.xml" overwrite="true"
+      >
+    </copy>
+    <replace file="${class.dir}/beans.xml" 
+      propertyFile="deploy.properties">
+      <replacefilter token="--Public API URL Here--" property="publicAPI.${target.env}"/>
+      <replacefilter token="--Freestyle URL Here--" property="freestyle.${target.env}"/>
+      <replacefilter token="--DatatypeMapping URL Here--" property="datatypeMapping.${target.env}"/>
+    </replace>
+
+    <replace file="${class.dir}/semantic.properties" 
+      propertyFile="deploy.properties">
+      <replacefilter token="--Public API URL Here--" property="publicAPI.${target.env}"/>
+    </replace>
+  	
+    <replace file="${class.dir}/resources.properties" 
+      propertyFile="deploy.properties">
+      <replacefilter token="--Public API URL Here--" property="publicAPI.${target.env}"/>
+    </replace>
+
+  </target>
+
+  <target name="dist" depends="prepare">
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${dist.dir}/lib"/>
+    <jar destfile="${dist.dir}/lib/uml-loader.jar"
+      manifest="${basedir}/src/web/MANIFEST.MF">
+      <fileset dir="${class.dir}">
+      </fileset>
+    </jar>
+    <copy file="${jnlp.dir}/siw.jnlp"
+      tofile="${dist.dir}/siw.jnlp"
+      >
+    </copy>
+    <copy file="${images.dir}/siw-logo3_2.gif"
+      tofile="${dist.dir}/siw-logo3_2.gif"
+      >
+    </copy>
+    <replace file="${dist.dir}/siw.jnlp" 
+      propertyFile="${jnlp.dir}/jnlp.properties">
+      <replacefilter token="@@CODEBASE@@" property="codebase.${target.env}"/>
+    </replace>
+    <copy todir="${dist.dir}/lib">
+      <fileset dir="${lib.dir}/cacore">
+        <include name="caDSR-beans.jar"/>
+        <include name="castor-1.0.2.jar"/>
+        <include name="dlbadapter.jar"/>
+        <include name="evsapi41-beans.jar"/>
+        <include name="evsapi41-framework.jar"/>
+        <include name="lbAdmin.jar"/>
+        <include name="lbImpl.jar"/>
+        <include name="lbInterfaces.jar"/>
+        <include name="lbModel.jar"/>
+        <include name="lgConverter.jar"/>
+        <include name="lgIndexer.jar"/>
+        <include name="lgModel.emf.jar"/>
+        <include name="lgModel.jar"/>
+        <include name="lgRDFConverter.jar"/>
+        <include name="lgResourceReader.jar"/>
+        <include name="lgUtility.jar"/>
+        <include name="lucene-core-2.0.0.jar"/>
+        <include name="lucene-regex-10-9-06-nightly.jar"/>
+        <include name="lucene-snowball-9-26-06-nightly.jar"/>
+        <include name="MSSOUserValidator.jar"/>
+        <include name="sdk-client-framework.jar"/>
+      </fileset>
+    </copy>
+    <copy file="${config.dir}/datatype-mapping.xml"
+      tofile="${dist.dir}/datatype-mapping.xml">
+    </copy>
+    <copy todir="${dist.dir}/lib">
+      <fileset dir="${lib.dir}">
+        <include name="acegi-security-1.0.4.jar"/>
+        <include name="activation.jar"/>
+        <include name="antlr-2.7.6.jar"/>
+        <include name="aopalliance.jar"/>
+        <include name="asm.jar"/>
+        <include name="cadsr-api.jar"/>
+        <include name="cglib-2.1.3.jar"/>
+        <include name="commons-collections-3.2.jar"/>
+        <include name="commons-logging-1.1.jar"/>
+        <include name="commons-pool-1.3.jar"/>
+        <include name="datafile.jar"/>
+        <include name="dom4j-1.4.jar"/>
+        <include name="ehcache-1.2.3.jar"/>
+        <include name="freemarker.jar"/>
+        <include name="freestylesearch.jar"/>
+        <include name="hibernate3.jar"/>
+        <include name="jakarta-oro-2.0.8.jar"/>
+        <include name="jaxen-core.jar"/>
+        <include name="jaxen-jdom.jar"/>
+        <include name="jdom.jar"/>
+        <include name="jmi.jar"/>
+        <include name="jmiutils.jar"/>
+        <include name="jta.jar"/>
+        <include name="log4j-1.2.8.jar"/>
+        <include name="mail.jar"/>
+        <include name="odmg-3.0.jar"/>
+        <include name="ojdbc14.jar"/>
+        <include name="openide-util.jar"/>
+        <include name="spring-aop.jar"/>
+        <include name="spring-core.jar"/>
+        <include name="spring-hibernate3.jar"/>
+        <include name="spring.jar"/>
+        <include name="xmi.in.out.jar"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="dist_lib" depends="prepare">
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${dist.dir}/lib"/>
+    <jar destfile="${dist.dir}/uml-loader-classes.jar"
+      manifest="MANIFEST.MF">
+      <fileset dir="${class.dir}">
+        <include name="**/*.class"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="doc">
+    <mkdir dir="${docs.dir}"/>
+    <mkdir dir="${docs.dir}/api"/>
+    <javadoc
+      destdir="${docs.dir}/api"
+      author="true"
+      version="true"
+      use="true"
+      windowtitle="UML Loader">
+
+      <packageset dir="src" defaultexcludes="no">
+        <include name="gov/nih/nci/ncicb/cadsr/**/*" />
+        <include name="gov/nih/nci/ncicb/cadsr/**/*" />
+      </packageset>
+
+      <doctitle><![CDATA[<h1>UML Loader</h1>]]></doctitle>
+      <bottom><![CDATA[<i>~~--~~</i>]]></bottom>
+      <tag name="todo" scope="all" description="To do:" />
+      <link href="http://java.sun.com/products/jdk/1.4/docs/api/" />
+      <link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/>
+    </javadoc>
+  </target>
+
+  <target name="prepare-password">
+    <java classname="gov.nih.nci.ncicb.cadsr.loader.util.AntSecretReplace" classpathref="proj.class.path">
+      <arg value="${class.dir}/spring-datasources.xml"/>
+      <arg value="${class.dir}/spring-datasources.xml"/>
+      <arg value="@@DB_PASSWD@@"/>
+    </java>
+  </target>
+  
+  <target name="run" depends="prepare, prepare-password">
+    <replace file="${class.dir}/spring-datasources.xml" 
+      propertyFile="${config.dir}/db.properties">
+      <replacefilter token="@@DB_URL@@" property="db.url.${target.env}"/>
+      <replacefilter token="@@DB_USER@@" property="db.loader.user"/>
+    </replace>
+
+    <copy file="${config.dir}/log4j-loader.xml"
+      tofile="${class.dir}/log4j.xml" overwrite="true"
+      >
+    </copy>
+
+    <java classname="gov.nih.nci.ncicb.cadsr.loader.UMLLoader" classpathref="proj.class.path" 
+      fork="yes" 
+      maxmemory="512m"
+      >
+      <jvmarg value="-Djava.security.auth.login.config=classes/jaas.config"/>
+      <jvmarg value="-Dignore-vd=false"/>
+      <jvmarg value="-Ddb.passwd=${db.passwd}"/>
+      <jvmarg value="-Ddb.user=${db.db.loader.user}"/>
+      <arg value="${dir}"/>
+      <arg value="${projectName}"/>
+      <arg value="${projectVersion}"/>
+    </java>
+
+    <delete file="${class.dir}/spring-datasources.xml"/>
+    
+  </target>
+
+  <target name="roundtrip" depends="prepare">
+    <java classname="gov.nih.nci.ncicb.cadsr.loader.RoundtripAction" classpathref="proj.class.path" 
+      fork="yes" 
+      maxmemory="512m"
+      input="input.properties"
+      >
+      <jvmarg value="-Djava.security.auth.login.config=classes/jaas.config"/>
+      <arg value="${in.file}"/>
+      <arg value="${projectName}"/>
+      <arg value="${projectVersion}"/>
+    </java>
+  </target>
+
+  <target name="siw" depends="gui"/>
+
+  <target name="gui" depends="prepare">
+    <replace file="${class.dir}/spring-datasources.xml" 
+      propertyFile="${config.dir}/db.properties">
+      <replacefilter token="@@DB_URL@@" property="db.url.${target.env}"/>
+      <replacefilter token="@@DB_USER@@" property="db.siw.user"/>
+      <replacefilter token="@@DB_PASSWD@@" property="db.siw.passwd.${target.env}"/>
+    </replace>
+
+    <java classname="gov.nih.nci.ncicb.cadsr.loader.SIW" classpathref="proj.class.path" 
+      fork="yes"
+      maxmemory="512m"
+      >
+      <!--
+      <jvmarg value="-Djava.security.auth.login.config=classes/jaas.config"/>
+      -->
+      <arg value="${dir}"/>
+      <arg value="${projectName}"/>
+      <arg value="${projectVersion}"/>
+    </java>
+  </target>
+
+  <target name="test-ui" depends="prepare">
+    <java classname="gov.nih.nci.ncicb.cadsr.loader.ui.${testClass}" classpathref="proj.class.path" 
+      fork="yes"
+      maxmemory="512m"
+      >
+    </java>    
+  </target>
+
+  <target name="test-class" depends="prepare">
+    <java classname="gov.nih.nci.ncicb.cadsr.${testClass}" classpathref="proj.class.path" 
+      fork="yes"
+      maxmemory="512m"
+      >
+    </java>    
+  </target>
+
+  <target name="unclassify" depends="prepare" 
+          description="Remove the given CS classification from all AC's, and remove CS-specific alt names and definitions">
+    <java classname="gov.nih.nci.ncicb.cadsr.loader.Unclassifier" classpathref="proj.class.path" 
+      fork="yes" 
+      maxmemory="512m"
+      >
+      <arg value="${projectName}"/>
+      <arg value="${projectVersion}"/>
+    </java>
+  </target>
+
+  <target name="sqlTestSuite">
+    <mkdir dir="${sqlsuite.dir}/classes"/>
+    
+    <copy file="${sqlsuite.dir}/properties/sqlsuite-beans.xml"
+      todir="${class.dir}" overwrite="true"
+      >
+    </copy>
+
+    <input 
+      message="url"
+      addproperty="url"
+      />
+    <input 
+      message="db user"
+      addproperty="user"
+      />
+    <input 
+      message="db password"
+      addproperty="password"
+      />
+    <input 
+      message="Read (r) or Read/Write (rw)"
+      addproperty="rw"
+      validargs="r,rw"
+      />
+    
+    <replace file="${class.dir}/sqlsuite-beans.xml">
+      <replacefilter token="@@URL@@" value="${url}"/>
+      <replacefilter token="@@USER@@" value="${user}"/>
+      <replacefilter token="@@PASSWORD@@" value="${password}"/>
+    </replace>
+    
+    <javac
+      destdir="${class.dir}"
+      debug="on"
+      srcdir="${sqlsuite.dir}/src"
+      deprecation="false"
+      fork="yes"
+      >
+      <classpath refid="proj.class.path"/>
+    </javac>
+    
+    <java classname="test.SQLTest" classpathref="proj.class.path" 
+      fork="yes" 
+      >
+      <arg value="${rw}"/>
+    </java>
+
+  </target>
+
+  <target name="unitTest" depends="compile">
+    <mkdir dir="${class.dir}"/>
+
+    <copy todir="${class.dir}" overwrite="true">
+      <fileset dir="test/data">
+        <include name="test-data-setup.xls"/>
+        <include name="test-cadsr.sql"/>
+        <include name="test-datasource.properties"/>
+      </fileset>
+    </copy>
+
+    <junit 
+      printsummary="on"
+      showoutput="false"
+      haltonerror="on"
+      fork="yes"
+      >
+
+      <jvmarg value="-XX:MaxPermSize=128M"/>
+      
+
+      <formatter type="brief" usefile="false" />
+      <formatter type="xml" />
+
+      <classpath refid="proj.class.path"/>
+      
+      <test name="gov.nih.nci.ncicb.cadsr.loader.test.parser.XMIParserTest"/>
+      <test name="gov.nih.nci.ncicb.cadsr.loader.test.validator.DuplicateClassValidatorTest"/>
+      <test name="gov.nih.nci.ncicb.cadsr.loader.test.validator.DatatypeValidatorTest"/>
+      <test name="gov.nih.nci.ncicb.cadsr.loader.test.parser.XMIWriterTest"/>
+      <test name="gov.nih.nci.ncicb.cadsr.loader.test.generic.GenericTestCase"/>
+      <test name="gov.nih.nci.ncicb.cadsr.loader.test.persister.ConceptPersisterTest"/>
+    </junit>
+  </target>
+
+</project>

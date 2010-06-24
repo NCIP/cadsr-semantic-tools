@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Datatype-mapping>
+  <alias-list name="java.lang.Float">
+    <alias name="float"/>
+  </alias-list>
+  
+<alias-list name="java.lang.Integer">
+  <alias name="int"/>
+  <alias name="integer"/>
+</alias-list>
+
+<alias-list name="java.lang.Boolean">
+  <alias name="boolean"/>
+  <alias name="bool"/>
+</alias-list>
+
+<alias-list name="java.lang.Short">
+  <alias name="short"/>
+</alias-list>
+
+<alias-list name="java.lang.Double">
+  <alias name ="double"/>
+  </alias-list>
+
+<alias-list name="java.lang.Character">
+  <alias name="char"/>
+</alias-list>
+
+<alias-list name="java.lang.Byte">
+  <alias name="byte"/>
+</alias-list>
+
+<alias-list name="java.lang.Long">
+  <alias name ="long"/>
+</alias-list>
+  
+<alias-list name="java.lang.String">
+    <alias name ="string"/>
+</alias-list>
+
+<alias-list name="java.util.Date">
+  <alias name="date"/>
+</alias-list>
+
+<alias-list name="java.util.Map">
+  <alias name="map"/>
+</alias-list>
+
+<alias-list name="java.util.Collection">
+  <alias name="java.lang.collection"/>
+  <alias name="collection"/>
+</alias-list>
+
+
+
+<alias-list name="double One Dimensional Array">
+  <alias name="double[]"/>
+  <alias name="Double[]"/>
+  <alias name="java.lang.Double[]"/>
+</alias-list>
+
+<alias-list name="float One Dimensional Array">
+  <alias name="float[]"/>
+</alias-list>
+
+<alias-list name="float Two Dimensional Array">
+  <alias name="float[][]"/>
+</alias-list>
+
+<alias-list name="double Two Dimensional Array">
+  <alias name="double[][]"/>
+</alias-list>
+
+<alias-list name="long One Dimensional Array">
+  <alias name="long[]"/>
+  <alias name="Long[]"/>
+  <alias name="java.lang.Long[]"/>
+</alias-list>
+
+<alias-list name="byte One Dimensional Array">
+  <alias name="byte[]"/>
+  <alias name="Byte[]"/>
+  <alias name="java.lang.Byte[]"/>
+</alias-list>
+
+<alias-list name="anyClass Three Dimensional Array">
+  <alias name="object[][][]"/>
+  <alias name="Object[][][]"/>
+  <alias name="java.lang.Object[][][]"/>
+</alias-list>
+
+<alias-list name="java.lang.IntegerArray">
+  <alias name="int[]"/>
+  <alias name="Integer[]"/>
+  <alias name="java.lang.Integer[]"/>
+</alias-list>
+
+<alias-list name="java.lang.Object">
+  <alias name="object"/>
+</alias-list>
+
+<alias-list name="java.lang.StringArrayArray">
+  <alias name="String[][]"/>
+  <alias name="java.lang.String[][]"/>
+</alias-list>
+
+<alias-list name="java.lang.Void">
+  <alias name="void"/>
+  <alias name="Void"/>
+</alias-list>
+
+<alias-list name="java.sql.Blob">
+  <alias name="Blob"/>
+</alias-list>
+
+<alias-list name="java.sql.Clob">
+  <alias name="Clob"/>
+</alias-list>
+
+<alias-list name="java.sql.Timestamp">
+  <alias name="Timestamp"/>
+</alias-list>
+
+<alias-list name="java.util.ArrayList">
+  <alias name="ArrayList"/>
+</alias-list>
+
+<alias-list name="java.util.HashSet">
+  <alias name="HashSet"/>
+</alias-list>
+
+<alias-list name="java.util.Hashtable">
+  <alias name="Hashtable"/>
+</alias-list>
+
+<alias-list name="java.util.Set">
+  <alias name="Set"/>
+</alias-list>
+
+<alias-list name="java.util.Vector">
+  <alias name="Vector"/>
+</alias-list>
+
+<alias-list name="java.math.BigDecimal">
+  <alias name="bigdecimal"/>
+</alias-list>
+
+<alias-list name="java.sql.Timestamp">
+  <alias name="timestamp"/>
+</alias-list>
+
+<!--  HL7 Mappings -->
+<alias-list name="HL7.ConceptDescriptor">
+  <alias name="cd"/>
+</alias-list>
+
+<alias-list name="HL7.InstanceIdentifier">
+  <alias name="ii"/>
+</alias-list>
+
+<alias-list name="HL7.SET.CD">
+  <alias name="set cd"/>
+</alias-list>
+
+<alias-list name="HL7.PQ">
+  <alias name="pq"/>
+</alias-list>
+
+<alias-list name="HL7.AD" complex="true">
+  <alias name="ad"/>
+</alias-list>
+
+<alias-list name="double Collection">
+  <alias name="collection&lt;double&gt;"/>
+</alias-list>
+
+<alias-list name="float Collection">
+  <alias name="collection&lt;float&gt;"/>
+</alias-list>
+
+<alias-list name="long Collection">
+  <alias name="collection&lt;long&gt;"/>
+</alias-list>
+
+<alias-list name="boolean Collection">
+  <alias name="collection&lt;boolean&gt;"/>
+</alias-list>
+
+<alias-list name="byte Collection">
+  <alias name="collection&lt;byte&gt;"/>
+</alias-list>
+
+<alias-list name="short Collection">
+  <alias name="collection&lt;short&gt;"/>
+</alias-list>
+
+<alias-list name="character Collection">
+  <alias name="collection&lt;char&gt;"/>
+  <alias name="collection&lt;character&gt;"/>
+</alias-list>
+
+<alias-list name="integer Collection">
+  <alias name="collection&lt;int&gt;"/>
+  <alias name="collection&lt;integer&gt;"/>
+</alias-list>
+
+<alias-list name="string Collection">
+  <alias name="collection&lt;string&gt;"/>
+</alias-list>
+
+
+  <alias-list name="ISO21090.DSET.TEL.1.0">
+    <alias name="dset&lt;tel&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.DSET.SC.v1.0">
+    <alias name="dset&lt;sc&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.EN.PN.v1.0">
+    <alias name="en.pn" />
+  </alias-list>
+  <alias-list name="ISO21090.IVL.INT.v1.0">
+    <alias name="ivl&lt;int&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.AD.v1.0">
+    <alias name="ad" />
+  </alias-list>
+  <alias-list name="ISO21090.RTO.INT:PQ.v1.0">
+    <alias name="rto&lt;int:pq&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.EN.TN.v1.0">
+    <alias name="en.tn" />
+  </alias-list>
+  <alias-list name="ISO21090.DSET.EN.ON.v1.0">
+    <alias name="dset&lt;en.on&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.IVL.PQ.v1.0">
+    <alias name="ivl&lt;pq&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.DSET.EN.TN.v1.0">
+    <alias name="dset&lt;en.tn&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.TS.v1.0">
+    <alias name="ts" />
+  </alias-list>
+  <alias-list name="ISO21090.CS.v1.0">
+    <alias name="cs" />
+  </alias-list>
+  <alias-list name="ISO21090.REAL.v1.0">
+    <alias name="real" />
+  </alias-list>
+  <alias-list name="ISO21090.DSET.ST.v1.0">
+    <alias name="dset&lt;st&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.II.v1.0">
+    <alias name="ii" />
+  </alias-list>
+  <alias-list name="ISO21090.PQ.v1.0">
+    <alias name="pq" />
+  </alias-list>
+  <alias-list name="ISO21090.TEL.URL.v1.0">
+    <alias name="tel.url" />
+  </alias-list>
+  <alias-list name="ISO21090.TEL.v1.0">
+    <alias name="tel" />
+  </alias-list>
+  <alias-list name="ISO21090.DSET.II.1.0">
+    <alias name="dset&lt;ii&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.RTO.PQ,PQ.v1.0">
+    <alias name="rto&lt;pq,pq&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.BL.v1.0">
+    <alias name="bl" />
+  </alias-list>
+  <alias-list name="ISO21090.IVL.TS.v1.0">
+    <alias name="ivl&lt;ts&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.SC.v1.0">
+    <alias name="sc" />
+  </alias-list>
+  <alias-list name="ISO21090.CD.v1.0">
+    <alias name="cd" />
+  </alias-list>
+  <alias-list name="ISO21090.DSET.CD.v1.0">
+    <alias name="dset&lt;cd&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.ED.v1.0">
+    <alias name="ed" />
+  </alias-list>
+  <alias-list name="BRIDG.SET.TEL.v2.1">
+    <alias name="set&lt;tel&gt;" />
+  </alias-list>
+  <alias-list name="ISO21090.ST.v1.0">
+    <alias name="st" />
+  </alias-list>
+
+
+</Datatype-mapping>
