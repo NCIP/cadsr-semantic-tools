@@ -69,7 +69,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 	<!-- *-ds.xml and WAR -->
 	<property name="SIW-webapp.dir.dist" location="${basedir}/${SIW-webapp.dist.relative.dir}" />
 	<property name="SIW-webapp.ds.file" value="SIW-ds.xml" />
-	<property name="SIW-webapp.name" value="SIW-webapp" />
+	<property name="SIW-webapp.name" value="SIW" />
 	<property name="SIW-webapp.war.file" value="${SIW-webapp.name}.war" />
 	<!-- Added to make sure that it works with both absolute and relative paths, this property is handed to sub-project scripts in absolute format. -->
 	<property name="jar-signing.keystore.abs-location" location="${jar-signing.keystore.location}"/>
@@ -121,8 +121,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 		</condition>
 		<echo message="application.base.path=${application.base.path}"/>
 		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
-		<jboss-version
-			/>		
+		<jboss-version/>
 	</target>
 
 	<target name="install:jboss:init" depends="common:init:pre">
@@ -300,24 +299,31 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 			</fileset>
 		</copy>
 	</target>
+	<!--
+	<target name="install:database" description="Runs datbase creation scripts then calls uprade database." unless="exclude.database"
+		depends="
 
+		common:init,
+		install:database:prep,
+		install:database:validation:pre-install
+		">-->
 	<!-- Drop all schema objects or re-create the db -->
-		<database-clean/>
-		<!-- Run baseline scripts stored in db.install.create.${database.type}.file.list variable -->
-		<switch value="${database.type}">
+	<!--<database-clean/> -->
+	<!-- Run baseline scripts stored in db.install.create.${database.type}.file.list variable -->
+	<!--<switch value="${database.type}">
 			<case value="oracle">
 				<database-install
 					db.install.create.file.list="${db.install.create.oracle.file.list}"
 					sql.delimiter="/"
 					sql.delimitertype="row"
 					/>
-			</case>			
+			</case>
 		</switch>
 		<database-upgrade
 			database.changelog.file="${os.temp.dir}/${project.name}/db-upgrade.xml"
 			/>
 		<database-tag/>
-	</target>
+	</target> -->
 
 	<target name="install:jboss:binaries" description="Install JBoss binaries" unless="exclude.jboss" depends="common:jboss:init, common:init">
 		<jboss-install-binaries
@@ -571,7 +577,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 		" >
 	</target>
 
-	<target name="install" description="Installs and configures JBOSS, creates database, and deploys application"
+	<target name="install" description="Installs and configures JBOSS, updates database, and deploys application"
 		depends="
 		common:jboss:init,
  		common:init,
@@ -619,13 +625,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 		-->
 	</target>
 
-	<target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss" depends="upgrade:jboss:init,common:init,upgrade-dac:jboss">
+	<target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss" depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss">
 	</target>
 
-	<target name="upgrade" description="Upgrades JBoss and Database" depends="upgrade:common:init,common:init,upgrade-dac">
+	<target name="upgrade" description="Upgrades JBoss and Database" depends="upgrade:common:init,common:init,upgrade-ncm">
 	</target>
 
-	<target name="upgrade-with-dbinstall" description="Upgrades JBoss and Database" depends="upgrade:common:init,common:init,upgrade-dac:with-dbinstall">
+	<target name="upgrade-with-dbinstall" description="Upgrades JBoss and Database" depends="upgrade:common:init,common:init,upgrade-ncm:with-dbinstall">
 	</target>
 
 	<target name="upgrade-dac:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss"
