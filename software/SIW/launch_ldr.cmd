@@ -8,6 +8,6 @@ set PATH=%JAVA_HOME%\bin;%ANT_HOME%\bin;%MAVEN_HOME%\bin
 
 :ant
 
-ant -Dtarget.env=dev run -propertyfile build.properties
+ant -Dtarget.env=dev run -propertyfile build.properties -propertyfile ./properties/resources.properties
 
 pause
