@@ -20,6 +20,18 @@ import java.util.Set;
 
 import org.junit.Test;
 
+/**
+ * Setup:
+ * 
+ * 1. Add classes/ directory into classpath (it needs to find resource.properties, beans.xml etc)
+ * 2. Make sure classes/ is after test/src in your classpath
+ * 3. Change test/src/spring-ds.properties accordingly
+ * 4. Run ant -Dtarget.env=dev run at least once to get all the properties in DEV tier replaced by ant (if it does not work, you need to modify all files under classes/ manually!)
+ * 5. Make sure all property/xml files are properly processed by ant/manually (e.g. beans.xml)
+ * 
+ * @author kim
+ *
+ */
 public class End2EndTestCase extends MainTestCase {
 
 	public End2EndTestCase(String name) {
@@ -53,6 +65,7 @@ public class End2EndTestCase extends MainTestCase {
 	
 	public void setUp() throws Exception{
 		super.setUp();
+//		setUserSelections();
 		LoaderDefault loaderDefault = getLoaderDefaults();
 		defaults.useDefaults(loaderDefault);
 		defaults.initWithDB();
@@ -75,7 +88,8 @@ public class End2EndTestCase extends MainTestCase {
 		try {
 			MockCaDSRLoader loader = new MockCaDSRLoader();
 //			loader.run("c:/documents and settings/mathura2/desktop/xmi/test", "SIW_TEST", new Float(1.0));
-			loader.run("C:/apps/SIW_4_117/data", "James_TEST", new Float(1.0));
+//			loader.run("C:/apps/SIW_4_117/data", "James_TEST", new Float(1.0));
+			loader.run("/Users/ag/SIW_4_117/data", "James_TEST", new Float(1.0));
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

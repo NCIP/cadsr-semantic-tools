@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.test.end2end;
 
+import gov.nih.nci.cadsr.common.Constants;
 import gov.nih.nci.ncicb.cadsr.domain.LoaderDefault;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
@@ -84,7 +85,7 @@ public class GF6757TestCase extends MainTestCase {
 		loaderDefault.setProjectLongName("SIW_TEST");
 		loaderDefault.setProjectName("SIW_TEST");
 		loaderDefault.setProjectDescription("SIW_TEST");
-		loaderDefault.setContextName("caBIG");
+		loaderDefault.setContextName(Constants.DEFAULT_CONTEXT);
 		
 		return loaderDefault;
 	}
@@ -107,10 +108,10 @@ public class GF6757TestCase extends MainTestCase {
 		private String projectName;
 		
 		public String getCdContextName() {
-			return "caBIG";
+			return Constants.DEFAULT_CONTEXT;
 		}
 		public String getCdName() {
-			return "CABIG";
+			return Constants.DEFAULT_CONTEXT;
 		}
 		public String getContextName() {
 			if (contextName == null) {
