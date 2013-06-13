@@ -1,5 +1,6 @@
 package gov.nih.nci.ncicb.cadsr.loader.test.end2end;
 
+import gov.nih.nci.cadsr.common.Constants;
 import gov.nih.nci.ncicb.cadsr.domain.LoaderDefault;
 import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
 import gov.nih.nci.ncicb.cadsr.loader.defaults.UMLDefaults;
@@ -17,13 +18,20 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Set;
 
+import org.junit.Test;
+
 public class End2EndTestCase extends MainTestCase {
+
+	public End2EndTestCase(String name) {
+		super(name);
+		// TODO Auto-generated constructor stub
+	}
 
 	private UMLDefaults defaults = UMLDefaults.getInstance();
 	
-	public End2EndTestCase() {
-		super("End2EndTestCase", End2EndTestCase.class, "/gov/nih/nci/ncicb/cadsr/loader/test/end2end/gf23659.xls");
-	}
+//	public End2EndTestCase() {
+//		super("End2EndTestCase", End2EndTestCase.class, "/gov/nih/nci/ncicb/cadsr/loader/test/end2end/gf23659.xls");
+//	}
 	
 	@Override
 	protected void containerSetUp() throws Exception {
@@ -62,10 +70,12 @@ public class End2EndTestCase extends MainTestCase {
 		}
 	}*/
 	
+	@Test	
 	public void testGF23659() {
 		try {
 			MockCaDSRLoader loader = new MockCaDSRLoader();
-			loader.run("c:/documents and settings/mathura2/desktop/xmi/test", "SIW_TEST", new Float(1.0));
+//			loader.run("c:/documents and settings/mathura2/desktop/xmi/test", "SIW_TEST", new Float(1.0));
+			loader.run("C:/apps/SIW_4_117/data", "James_TEST", new Float(1.0));
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -78,7 +88,7 @@ public class End2EndTestCase extends MainTestCase {
 		loaderDefault.setProjectLongName("SIW_TEST");
 		loaderDefault.setProjectName("SIW_TEST");
 		loaderDefault.setProjectDescription("SIW_TEST");
-		loaderDefault.setContextName("caBIG");
+		loaderDefault.setContextName("NCIP");
 		
 		return loaderDefault;
 	}
@@ -101,10 +111,10 @@ public class End2EndTestCase extends MainTestCase {
 		private String projectName;
 		
 		public String getCdContextName() {
-			return "caBIG";
+			return Constants.DEFAULT_CONTEXT;	//"caBIG";
 		}
 		public String getCdName() {
-			return "CABIG";
+			return Constants.DEFAULT_CONTEXT;	//"CABIG";
 		}
 		public String getContextName() {
 			if (contextName == null) {
