@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.LexGrid.LexBIG.LexBIGService.LexBIGService;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
@@ -37,14 +38,15 @@ public class CadsrPublicApiModule implements CadsrModule {
   private Logger logger = Logger.getLogger(CadsrPrivateApiModule.class.getName());
 
   public CadsrPublicApiModule() {
-    try {
-      service = ApplicationServiceProvider.getApplicationService("CadsrServiceInfo");
-    } catch (Exception e) {
-      logger.error("Can't get cadsr publicAPI, contact support");
-      e.printStackTrace();
-    } catch (Throwable t) {
-      t.printStackTrace();
-    }
+	  //=== commented out - UML Loaded is using privateAPI!
+//    try {
+//      service = ApplicationServiceProvider.getApplicationService("CadsrServiceInfo");      
+//    } catch (Exception e) {
+//      logger.error("Can't get cadsr publicAPI, contact support");
+//      e.printStackTrace();
+//    } catch (Throwable t) {
+//      t.printStackTrace();
+//    }
   }
 
   public CadsrPublicApiModule(String serviceURL) {

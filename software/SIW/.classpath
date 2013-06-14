@@ -19,12 +19,7 @@
 	<classpathentry kind="lib" path="lib/cacore/dlbadapter.jar"/>
 	<classpathentry kind="lib" path="lib/cacore/jakarta-regexp-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/cacore/jaxrpc.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/LexEVS_50_client.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/LexEVS_50_localRuntime_dependencies.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/LexEVS_50_localRuntime.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/lexevsapi50-framework.jar"/>
 	<classpathentry kind="lib" path="lib/cacore/LexEVSSecurity.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/lgModel.jar"/>
 	<classpathentry kind="lib" path="lib/cacore/lucene-core-2.4.0.jar"/>
 	<classpathentry kind="lib" path="lib/cacore/lucene-regex-2.4.0.jar"/>
 	<classpathentry kind="lib" path="lib/cacore/lucene-snowball-2.4.0.jar"/>
@@ -69,5 +64,15 @@
 	<classpathentry kind="lib" path="lib/spring-test.jar"/>
 	<classpathentry kind="lib" path="lib/spring.jar"/>
 	<classpathentry kind="lib" path="lib/xmi.in.out.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/lexbig.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/lexevs-client-framework.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/lexevs-core.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/lexevsapi60-beans.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/lucene-analyzers-2.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/lucene-queries-2.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/sdk-grid-remoting.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/aspectjrt-1.6.8.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/aspectjweaver-1.6.8.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/compass-2.2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

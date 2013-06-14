@@ -32,204 +32,208 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 
-
 /**
- *
- * <code>UMLLoader</code> is the starting class for running UML Loader un command line. <br/>
+ * 
+ * <code>UMLLoader</code> is the starting class for running UML Loader un
+ * command line. <br/>
  * Usage: UMLLoader dir-name project-name
- * <ul><li>dir-name is the full path to the directory containing the XMI files</li>
- * <li>project-name is the name of an existing project in the UML_LOADER_DEFAULTS table of CADSR.</li>
+ * <ul>
+ * <li>dir-name is the full path to the directory containing the XMI files</li>
+ * <li>project-name is the name of an existing project in the
+ * UML_LOADER_DEFAULTS table of CADSR.</li>
  * </ul>
- * In order to start UML Loader, one needs a 'defaults' record in CADSR. 
- *
+ * In order to start UML Loader, one needs a 'defaults' record in CADSR.
+ * 
  * @author <a href="mailto:chris.ludet@oracle.com">Christophe Ludet</a>
  * 
  */
 public class CadsrLoader {
 
-  private static Logger logger = Logger.getLogger(CadsrLoader.class.getName());
+	private static Logger logger = Logger
+			.getLogger(CadsrLoader.class.getName());
 
-  private Validator validator;
-  private Parser parser;
-  private Persister persister;
+	private Validator validator;
+	private Parser parser;
+	private Persister persister;
 
-  private UserPreferences prefs;
-  
-  private DataSource dataSource;
+	private UserPreferences prefs;
 
-  private java.util.List<RunModeListener> runModeListeners = new ArrayList<RunModeListener>();
+	private DataSource dataSource;
 
-  public void run(String fileDir, String projectName, Float projectVersion) throws Exception {
-    prefs.setUsePrivateApi(true);
+	private java.util.List<RunModeListener> runModeListeners = new ArrayList<RunModeListener>();
 
-    InitClass initClass = new InitClass(this);
-    Thread t = new Thread(initClass);
-    t.setPriority(Thread.MAX_PRIORITY);
-    t.start();
+	public void run(String fileDir, String projectName, Float projectVersion)
+			throws Exception {
+		prefs.setUsePrivateApi(true);
 
-//     try {
-//       Thread.currentThread().sleep(500);
-//     } catch (Exception e){
-//     } // end of try-catch
+		InitClass initClass = new InitClass(this);
+		Thread t = new Thread(initClass);
+		t.setPriority(Thread.MAX_PRIORITY);
+		t.start();
 
-    UserSelections userSelections = UserSelections.getInstance();
-    RunMode mode = RunMode.Loader;
-    userSelections.setProperty("MODE", mode);
-    userSelections.setProperty("SKIP_VD_VALIDATION", true);
-    
-    String[] filenames = new File(fileDir).list(new FilenameFilter() {
-	public boolean accept(File dir, String name) {
-	  return name.endsWith(".xmi") || name.endsWith(".uml");
+		// try {
+		// Thread.currentThread().sleep(500);
+		// } catch (Exception e){
+		// } // end of try-catch
+
+		UserSelections userSelections = UserSelections.getInstance();
+		RunMode mode = RunMode.Loader;
+		userSelections.setProperty("MODE", mode);
+		userSelections.setProperty("SKIP_VD_VALIDATION", true);
+
+		String[] filenames = new File(fileDir).list(new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".xmi") || name.endsWith(".uml");
+			}
+		});
+
+		if (filenames == null)
+			filenames = new String[0];
+
+		if (filenames.length == 0) {
+			logger.info(PropertyAccessor.getProperty("no.files"));
+			System.exit(0);
+		}
+
+		SwingCallbackHandler sch = new SwingCallbackHandler();
+		LoginContext lc = new LoginContext("UML_Loader", sch);
+
+		sch.dispose();
+
+		String username = null;
+
+		try {
+			lc.login();
+			boolean loginSuccess = true;
+
+			Subject subject = lc.getSubject();
+
+			Iterator it = subject.getPrincipals().iterator();
+			while (it.hasNext()) {
+				username = it.next().toString();
+				logger.debug(PropertyAccessor.getProperty("authenticated",
+						username));
+			}
+		} catch (Exception ex) {
+			logger.error(PropertyAccessor.getProperty("login.fail",
+					ex.getMessage()));
+			System.exit(1);
+		}
+
+		logger.info(PropertyAccessor.getProperty("nbOfFiles", filenames.length));
+
+		synchronized (initClass) {
+			if (!initClass.isDone())
+				try {
+					wait();
+				} catch (Exception e) {
+				} // end of try-catch
+		}
+
+		fireNewRunMode(mode);
+
+		try {
+			for (int i = 0; i < filenames.length; i++) {
+				logger.info(PropertyAccessor.getProperty("startingFile",
+						filenames[i]));
+
+				UMLDefaults defaults = UMLDefaults.getInstance();
+				try {
+					defaults.initParams(projectName, projectVersion, username);
+				} catch (Exception e) {
+					logger.error(e);
+					System.exit(1);
+				} // end of try-catch
+				defaults.initWithDB();
+				defaults.setUsername(username);
+
+				parser.parse(fileDir + "/" + filenames[i]);
+
+			}
+
+			ValidationItems items = validator.validate();
+			Set<ValidationError> errors = items.getErrors();
+			if (errors.size() > 0) {
+				for (ValidationError error : errors) {
+					logger.error(error.getMessage());
+				}
+				System.exit(1);
+			}
+
+			Set<ValidationWarning> warnings = items.getWarnings();
+			if (warnings.size() > 0) {
+				// Ask user if we should continue
+				for (ValidationWarning warning : warnings) {
+					logger.warn(warning.getMessage());
+				}
+				String answ = JOptionPane.showInputDialog(PropertyAccessor
+						.getProperty("validation.continue"));
+				if (answ == null || !answ.equals("y")) {
+					System.exit(1);
+				}
+			}
+
+			ProgressFrame progressFrame = new ProgressFrame(100);
+			progressFrame.setVisible(true);
+
+			persister.setProgressListener(progressFrame);
+
+			persister.persist();
+
+			progressFrame.dispose();
+
+			logger.info("refreshing database views");
+		} catch (PersisterException ex) {
+			logger.error(ex.getMessage());
+		}
+
+		// Refresh the views
+		Connection conn = null;
+		CallableStatement cs = null;
+		try {
+			conn = dataSource.getConnection();
+			cs = conn.prepareCall("{call sbrext_admin_mv.refresh_mvw}");
+			cs.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (conn != null) {
+				conn.close();
+			}
+		}
+
+		logger.info("refreshed databased views");
+
+		System.exit(0);
 	}
-      });
 
-    if(filenames == null) 
-      filenames = new String[0];
-    
-    if(filenames.length == 0) {
-      logger.info(PropertyAccessor.getProperty("no.files"));
-      System.exit(0);
-    }
+	public void setValidator(Validator validator) {
+		this.validator = validator;
+	}
 
-    SwingCallbackHandler sch = new SwingCallbackHandler();
-    LoginContext lc = new LoginContext("UML_Loader", sch);
+	public void setParser(Parser parser) {
+		this.parser = parser;
+	}
 
-    sch.dispose();
+	public void setPersister(Persister persister) {
+		this.persister = persister;
+	}
 
-    String username = null;
-    
-    try {
-      lc.login();
-      boolean loginSuccess = true;
-      
-      Subject subject = lc.getSubject();
+	public void setUserPreferences(UserPreferences preferences) {
+		prefs = preferences;
+	}
 
-      Iterator it = subject.getPrincipals().iterator();
-      while (it.hasNext()) {
-	username = it.next().toString();
-	logger.debug(PropertyAccessor.getProperty("authenticated", username));
-      }
-    } catch (Exception ex) {
-      logger.error(PropertyAccessor.getProperty("login.fail",ex.getMessage()));
-      System.exit(1);
-    }
-    
-    
-    logger.info(PropertyAccessor.getProperty("nbOfFiles", filenames.length));
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 
-    synchronized(initClass) {
-      if(!initClass.isDone())
-        try {
-          wait();
-        } catch (Exception e){
-        } // end of try-catch
-    }
+	public void setRunModeListeners(java.util.List<RunModeListener> listeners) {
+		this.runModeListeners = listeners;
+	}
 
-
-    fireNewRunMode(mode);
-
-    try {
-      for(int i=0; i<filenames.length; i++) {
-        logger.info(PropertyAccessor.getProperty("startingFile", filenames[i]));
-
-        UMLDefaults defaults = UMLDefaults.getInstance();
-        try {
-          defaults.initParams(projectName, projectVersion, username);
-        } catch (Exception e) {
-          logger.error(e);
-          System.exit(1);
-        } // end of try-catch
-        defaults.initWithDB();
-        defaults.setUsername(username);
-
-        parser.parse(fileDir + "/" + filenames[i]);
-      
-      }
-
-      ValidationItems items = validator.validate();
-      Set<ValidationError> errors = items.getErrors();
-      if(errors.size() > 0) {
-        for(ValidationError error : errors) {
-          logger.error(error.getMessage());
-        }
-        System.exit(1);
-      }
-
-      Set<ValidationWarning> warnings = items.getWarnings();
-      if(warnings.size() > 0) {
-        // Ask user if we should continue
-        for(ValidationWarning warning : warnings) {
-          logger.warn(warning.getMessage());
-        }
-        String answ = JOptionPane.showInputDialog(PropertyAccessor.getProperty("validation.continue"));
-        if(answ == null || !answ.equals("y")) {
-          System.exit(1);
-        }
-      }
-
-      ProgressFrame progressFrame = new ProgressFrame(100);
-      progressFrame.setVisible(true);
-    
-      persister.setProgressListener(progressFrame);
-
-      persister.persist();
-
-      progressFrame.dispose();
-
-      logger.info("refreshing database views");
-    } catch (PersisterException ex) {
-      logger.error(ex.getMessage());
-    }
-
-    // Refresh the views
-    Connection conn = null;
-    CallableStatement cs = null;
-    try {
-        conn = dataSource.getConnection();
-        cs = conn.prepareCall("{call sbrext_admin_mv.refresh_mvw}");
-        cs.execute();
-    }
-    catch (SQLException e) {
-        e.printStackTrace();
-    }
-    finally {
-        if (conn != null) {
-            conn.close();
-        }
-    }
-
-    logger.info("refreshed databased views");
-    
-
-    System.exit(0);
-  }
-
-  public void setValidator(Validator validator) {
-    this.validator = validator;
-  }
-
-  public void setParser(Parser parser) {
-    this.parser = parser;
-  }
-
-  public void setPersister(Persister persister) {
-    this.persister = persister;
-  }
-
-  public void setUserPreferences(UserPreferences preferences) {
-    prefs = preferences;
-  }
-
-  public void setDataSource(DataSource dataSource) {
-    this.dataSource = dataSource;
-  }
-  public void setRunModeListeners(java.util.List<RunModeListener> listeners) {
-    this.runModeListeners = listeners;
-  }
-
-  private void fireNewRunMode(RunMode runMode) {
-    for(RunModeListener l : runModeListeners)
-      l.setRunMode(runMode);
-  }
+	private void fireNewRunMode(RunMode runMode) {
+		for (RunModeListener l : runModeListeners)
+			l.setRunMode(runMode);
+	}
 
 }

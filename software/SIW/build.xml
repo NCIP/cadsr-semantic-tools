@@ -296,7 +296,7 @@
   </target>
 
   <target name="prepare-password">
-    <java classname="gov.nih.nci.ncicb.cadsr.loader.util.AntSecretReplace" classpathref="proj.class.path">
+    <java fork="yes" classname="gov.nih.nci.ncicb.cadsr.loader.util.AntSecretReplace" classpathref="proj.class.path">
       <arg value="${class.dir}/spring-datasources.xml"/>
       <arg value="${class.dir}/spring-datasources.xml"/>
       <arg value="@@DB_PASSWD@@"/>
