@@ -1,3 +1,10 @@
+/*L
+ * Copyright Oracle Inc, SAIC, SAIC-F
+ *
+ * Distributed under the OSI-approved BSD 3-Clause License.
+ * See http://ncip.github.com/cadsr-semantic-tools/LICENSE.txt for details.
+ */
+
 /*
  * Copyright 2000-2005 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *

@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--L
+  Copyright Oracle Inc, SAIC, SAIC-F
+
+  Distributed under the OSI-approved BSD 3-Clause License.
+  See http://ncip.github.com/cadsr-semantic-tools/LICENSE.txt for details.
+L-->
+
 <project name="UML Loader / SIW" default="compile" basedir=".">
   <property file="dev.properties"/>
   <property name="src.dir" value="${basedir}/src"/>

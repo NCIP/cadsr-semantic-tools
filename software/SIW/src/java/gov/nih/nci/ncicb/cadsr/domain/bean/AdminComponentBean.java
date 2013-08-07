@@ -1,3 +1,10 @@
+/*L
+ * Copyright Oracle Inc, SAIC, SAIC-F
+ *
+ * Distributed under the OSI-approved BSD 3-Clause License.
+ * See http://ncip.github.com/cadsr-semantic-tools/LICENSE.txt for details.
+ */
+
 /*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
 package gov.nih.nci.ncicb.cadsr.domain.bean;
 

@@ -1,3 +1,10 @@
+/*L
+  Copyright Oracle Inc, SAIC, SAIC-F
+
+  Distributed under the OSI-approved BSD 3-Clause License.
+  See http://ncip.github.com/cadsr-semantic-tools/LICENSE.txt for details.
+L*/
+
 DECLARE 
   projectCS_name VARCHAR(255) := 'Essai-UML-Project2';
   projectCS_id char(36);

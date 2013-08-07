@@ -1,3 +1,10 @@
+/*L
+  Copyright Oracle Inc, SAIC, SAIC-F
+
+  Distributed under the OSI-approved BSD 3-Clause License.
+  See http://ncip.github.com/cadsr-semantic-tools/LICENSE.txt for details.
+L*/
+
 DROP TABLE sbrext.UML_LOADER_DEFAULTS;
 create table sbrext.UML_LOADER_DEFAULTS (
     id                 NUMBER   (11)                   NOT NULL
