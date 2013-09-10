@@ -17,7 +17,7 @@ You will find more details about the caDSR Semantic Tools in the following links
  
 An NCI hosted instance of caDSR Semantic Tools is publicly available at:
 
-[Production Instance] (TBD) 
+[Production Instance] (http://cadsrsiw.nci.nih.gov) 
 
 
 Please join us in further developing and improving the caDSR Semantic Tools project.
