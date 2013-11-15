@@ -165,6 +165,7 @@ public class ValueDomainValidator implements Validator, CadsrModuleListener {
                 cadsrVD = result.iterator().next();
               
             } catch (Exception e){
+              e.printStackTrace();   //SIW-1
               logger.error(e);
             } 
           }
