@@ -10,6 +10,7 @@ L-->
 <project name="UML Loader / SIW" default="compile" basedir=".">
   <property file="dev.properties"/>
   <property name="src.dir" value="${basedir}/src"/>
+  <property name="manifest.dir" value="${basedir}/src/web"/>
   <property name="test.src.dir" value="${basedir}/test/src"/>
   <property name="class.dir" value="./classes"/>
   <property name="lib.dir" value="${basedir}/lib"/>
@@ -111,6 +112,12 @@ L-->
   <target name="fail2" unless="available.build.props">
     <fail message="missing build.properties, please create one first first"/>
   </target>
+
+  <manifest file="${manifest.dir}/MANIFEST.MF" mode="update">
+	  <attribute name="Permissions" value="all-permissions"/>
+	  <attribute name="Codebase" value="${jnlp.codebase}"/>
+	  <attribute name="Application-Name" value="${app.name}"/>
+  </manifest>
 
   <target name="compile" depends="fail1">
     <mkdir dir="${class.dir}"/>
