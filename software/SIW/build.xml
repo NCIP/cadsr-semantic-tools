@@ -113,12 +113,17 @@ L-->
     <fail message="missing build.properties, please create one first first"/>
   </target>
 
+  <!-- SIW-1 the following will be used by ant 1.8+ (will not have any effect for older ant -->
   <manifest file="${manifest.dir}/MANIFEST.MF" mode="update">
 	  <attribute name="Permissions" value="all-permissions"/>
 	  <attribute name="Codebase" value="${jnlp.codebase}"/>
 	  <attribute name="Application-Name" value="${app.name}"/>
   </manifest>
-
+  <!-- SIW-1 the following has to be added manually -->
+  <!-- 
+  	Caller-Allowable-Codebase: * localhost 127.0.0.1
+	Application-Library-Allowable-Codebase: *
+  -->
   <target name="compile" depends="fail1">
     <mkdir dir="${class.dir}"/>
     <javac
