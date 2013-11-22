@@ -30,6 +30,11 @@ L-->
       <include name="*.jar"/>
       <include name="**/*.jar"/>
     </fileset>
+	<!-- begin SIW-1 -->
+    <fileset dir="${lib.dir}/cacore">
+      <include name="*.jar"/>
+    </fileset>
+	<!-- end SIW-1 -->
   </path>
 
   <property name="PROP.FILE" location="${target.env}.properties" />
@@ -102,7 +107,7 @@ L-->
     <delete dir="${dist.dir}/siw.jnlp"/>
   </target>
 
-  <available file="${lib.dir}/cadsr-api.jar" property="available.cadsr"/>
+  <available file="${lib.dir}/caDSR-beans-4.0.jar" property="available.cadsr"/>	<!-- SIW-1 changed cadsr-api.jar to caDSR-beans.jar -->
   <available file="build.properties" property="available.build.props"/>
 
   <target name="fail1" unless="available.cadsr">
@@ -158,6 +163,7 @@ L-->
         <include name="beans.xml"/>
         <include name="loader-spring.xml"/>
         <include name="application-config-client.xml"/>
+        <include name="application-config-client-info.xml"/>
         <include name="log4j.xml"/>
         <include name="spring-datasources.xml"/>
         <include name="ehcache.xml"/>
@@ -193,7 +199,7 @@ L-->
     </replace>
 
   </target>
-
+  
   <target name="dist" depends="prepare">
     <mkdir dir="${dist.dir}"/>
     <mkdir dir="${dist.dir}/lib"/>
@@ -214,7 +220,8 @@ L-->
       propertyFile="${jnlp.dir}/jnlp.properties">
       <replacefilter token="@@CODEBASE@@" property="codebase.${target.env}"/>
     </replace>
-    <copy todir="${dist.dir}/lib">
+    <!-- SIW-1 -->
+<!--     <copy todir="${dist.dir}/lib">
       <fileset dir="${lib.dir}/cacore">
         <include name="caDSR-beans.jar"/>
         <include name="castor-1.0.2.jar"/>
@@ -238,7 +245,7 @@ L-->
         <include name="MSSOUserValidator.jar"/>
         <include name="sdk-client-framework.jar"/>
       </fileset>
-    </copy>
+    </copy> -->
     <copy file="${config.dir}/datatype-mapping.xml"
       tofile="${dist.dir}/datatype-mapping.xml">
     </copy>
@@ -364,9 +371,24 @@ L-->
       <arg value="${projectVersion}"/>
     </java>
   </target>
-
-  <target name="siw" depends="gui"/>
-
+  
+  <!-- begin SIW-1 -->
+  <target name="init_cacore_lib">
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${dist.dir}/lib"/>
+    <copy todir="${dist.dir}/lib">
+      <fileset dir="${lib.dir}">
+        <include name="*.jar"/>
+	  </fileset>
+      <fileset dir="${lib.dir}/cacore">
+        <include name="*.jar"/>
+	  </fileset>
+	</copy>
+  </target>
+  <!-- end SIW-1 -->
+  
+  <target name="siw" depends="init_cacore_lib, gui"/>
+  
   <target name="gui" depends="prepare">
     <replace file="${class.dir}/spring-datasources.xml" 
       propertyFile="${config.dir}/db.properties">
