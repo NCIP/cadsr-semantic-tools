@@ -7,38 +7,51 @@
 
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
-import gov.nih.nci.cadsr.domain.Property;
-import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
-import gov.nih.nci.ncicb.cadsr.domain.Concept;
-import gov.nih.nci.ncicb.cadsr.domain.DataElement;
-import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
-import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
-import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
-import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
-import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
+import gov.nih.nci.cadsr.domain.Concept;
+import gov.nih.nci.cadsr.domain.DataElement;
+import gov.nih.nci.cadsr.domain.ObjectClass;
+import gov.nih.nci.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.loader.ElementsLists;
-import gov.nih.nci.ncicb.cadsr.loader.util.*;
-import gov.nih.nci.ncicb.cadsr.loader.event.*;
+import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeEvent;
+import gov.nih.nci.ncicb.cadsr.loader.event.ElementChangeListener;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
+import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.AttributeDatatypePair;
+import gov.nih.nci.ncicb.cadsr.loader.util.BeansAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.ConventionUtil;
 import gov.nih.nci.ncicb.cadsr.loader.util.DEMappingUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.DatatypeMapping;
+import gov.nih.nci.ncicb.cadsr.loader.util.LookupUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
+import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
+import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GridBagLayout;
 import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.lang.reflect.Method;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.*;
-
-
-import java.util.List;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import gov.nih.nci.cadsr.domain.AdministeredComponent;
+//import gov.nih.nci.ncicb.cadsr.domain.Concept;
+//import gov.nih.nci.ncicb.cadsr.domain.DataElement;
+//import gov.nih.nci.ncicb.cadsr.domain.ValueDomain;
+//import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
+//import gov.nih.nci.ncicb.cadsr.domain.ObjectClass;
 
 public class DEPanel extends JPanel
   implements Editable, CadsrModuleListener {

@@ -45,14 +45,14 @@ public class CadsrPublicApiModule implements CadsrModule {
 
   public CadsrPublicApiModule() {
 	  //=== commented out - UML Loaded is using privateAPI!
-//    try {
-//      service = ApplicationServiceProvider.getApplicationService("CadsrServiceInfo");      
-//    } catch (Exception e) {
-//      gov.nih.nci.cadsr.common.Logger.error("Can't get cadsr publicAPI, contact support");
-//      e.printStackTrace();
-//    } catch (Throwable t) {
-//      t.printStackTrace();
-//    }
+    try {
+      service = ApplicationServiceProvider.getApplicationService("CadsrServiceInfo");      
+    } catch (Exception e) {
+      gov.nih.nci.cadsr.common.Logger.error("Can't get cadsr publicAPI, contact support");
+      e.printStackTrace();
+    } catch (Throwable t) {
+      t.printStackTrace();
+    }
   }
 
   public CadsrPublicApiModule(String serviceURL) {

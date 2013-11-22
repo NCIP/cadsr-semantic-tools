@@ -7,22 +7,21 @@
 
 package gov.nih.nci.ncicb.cadsr.dao.hibernate;
 
-import gov.nih.nci.ncicb.cadsr.dao.ContextDAO;
-import gov.nih.nci.ncicb.cadsr.domain.Context;
+import gov.nih.nci.cadsr.domain.Context;
 
 import java.sql.SQLException;
-
 import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
-
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public class ContextDAOImpl extends HibernateDaoSupport implements ContextDAO {
+public class ContextDAOImpl extends HibernateDaoSupport 
+//implements ContextDAO 	//SIW-1
+{
 
   public List<Context> findAll(){
     return (List<Context>)getHibernateTemplate().findByNamedQuery("context.findAll");
