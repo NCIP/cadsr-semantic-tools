@@ -24,7 +24,7 @@ public class FreestyleModule {
 
   private static Logger logger = Logger.getLogger(FreestyleModule.class.getName());
 
-  public List<gov.nih.nci.cadsr.domain.DataElement> findDataElements(String searchString) {
+  public List<gov.nih.nci.ncicb.cadsr.domain.DataElement> findDataElements(String searchString) {
     search.restrictResultsByType(SearchAC.DE);
     Vector<gov.nih.nci.cadsr.domain.AdministeredComponent> acResult = search.findReturningAdministeredComponent(searchString);
     

@@ -7,19 +7,8 @@
 
 package gov.nih.nci.ncicb.cadsr.loader.ui;
 
-import gov.nih.nci.cadsr.domain.DataElement;
-import gov.nih.nci.cadsr.domain.ObjectClass;
-import gov.nih.nci.cadsr.domain.ValueDomain;
-import gov.nih.nci.cadsr.domain.AdministeredComponent;
-import gov.nih.nci.cadsr.domain.ClassificationScheme;
-import gov.nih.nci.cadsr.domain.Concept;
-import gov.nih.nci.cadsr.domain.ConceptualDomain;
-import gov.nih.nci.cadsr.domain.DataElement;
-import gov.nih.nci.cadsr.domain.ObjectClass;
-import gov.nih.nci.cadsr.domain.Representation;
-import gov.nih.nci.cadsr.domain.ValueDomain;
 import gov.nih.nci.cadsr.freestylesearch.util.SearchResults;
-import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+import gov.nih.nci.ncicb.cadsr.domain.*;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModule;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrModuleListener;
 import gov.nih.nci.ncicb.cadsr.loader.ext.CadsrPublicApiModule;
@@ -27,13 +16,16 @@ import gov.nih.nci.ncicb.cadsr.loader.ext.FreestyleModule;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.AttributeNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.ClassNode;
 import gov.nih.nci.ncicb.cadsr.loader.ui.tree.UMLNode;
+import gov.nih.nci.ncicb.cadsr.loader.util.*;
+import gov.nih.nci.ncicb.cadsr.loader.UserSelections;
+
+// bad bad import. Fix me!
+import gov.nih.nci.ncicb.cadsr.dao.EagerConstants;
+
+
 import gov.nih.nci.ncicb.cadsr.loader.ui.util.UIUtil;
-import gov.nih.nci.ncicb.cadsr.loader.util.InheritedAttributeList;
-import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
-import gov.nih.nci.ncicb.cadsr.loader.util.UserPreferences;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -42,17 +34,20 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.Color;
+import java.awt.FlowLayout;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -65,14 +60,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ToolTipManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.LexGrid.commonTypes.Property;
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.apache.log4j.Logger;
-// bad bad import. Fix me!
-//import gov.nih.nci.ncicb.cadsr.dao.EagerConstants;
 
 public class CadsrDialog extends JDialog implements ActionListener, KeyListener, CadsrModuleListener
 {
@@ -130,7 +125,7 @@ public class CadsrDialog extends JDialog implements ActionListener, KeyListener,
 
   private int pageIndex = 0;
   
-  private AdministeredComponent choiceAdminComponent = null;
+  private AdminComponent choiceAdminComponent = null;
 
   public static final int MODE_OC = 1;
   public static final int MODE_PROP = 2;

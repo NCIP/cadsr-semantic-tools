@@ -8,28 +8,21 @@
 /*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
 package gov.nih.nci.ncicb.cadsr.domain.bean;
 
-//import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
-//import gov.nih.nci.ncicb.cadsr.domain.AdminComponentClassSchemeClassSchemeItem;
-//import gov.nih.nci.ncicb.cadsr.domain.AdminComponentContact;
-//import gov.nih.nci.ncicb.cadsr.domain.AdminComponentRegistration;
-//import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
-//import gov.nih.nci.ncicb.cadsr.domain.Audit;
-//import gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem;
-//import gov.nih.nci.ncicb.cadsr.domain.Context;
-//import gov.nih.nci.ncicb.cadsr.domain.Definition;
-//import gov.nih.nci.ncicb.cadsr.domain.Lifecycle;
-//import gov.nih.nci.ncicb.cadsr.domain.ReferenceDocument;
-import gov.nih.nci.cadsr.domain.ClassSchemeClassSchemeItem;
-import gov.nih.nci.cadsr.domain.Context;
-import gov.nih.nci.cadsr.domain.ReferenceDocument;
-
+import gov.nih.nci.ncicb.cadsr.domain.AdminComponent;
+import gov.nih.nci.ncicb.cadsr.domain.AdminComponentClassSchemeClassSchemeItem;
+import gov.nih.nci.ncicb.cadsr.domain.AdminComponentContact;
+import gov.nih.nci.ncicb.cadsr.domain.AdminComponentRegistration;
+import gov.nih.nci.ncicb.cadsr.domain.AlternateName;
+import gov.nih.nci.ncicb.cadsr.domain.Audit;
+import gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem;
+import gov.nih.nci.ncicb.cadsr.domain.Context;
+import gov.nih.nci.ncicb.cadsr.domain.Definition;
+import gov.nih.nci.ncicb.cadsr.domain.Lifecycle;
+import gov.nih.nci.ncicb.cadsr.domain.ReferenceDocument;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
-import org.LexGrid.concepts.Definition;
-import org.hibernate.classic.Lifecycle;
 
 public abstract class AdminComponentBean implements AdminComponent,
 		Serializable {

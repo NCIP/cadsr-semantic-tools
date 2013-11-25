@@ -7,16 +7,33 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/cacore/aspectjrt-1.6.8.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/aspectjweaver-1.6.8.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/caDSR-beans.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/caGrid-CQL-cql.1.0-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/castor-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/cglib-2.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/cog-jglobus.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/commons-cli-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/cacore/commons-codec-1.3.jar"/>
-	<classpathentry kind="lib" path="lib/acegi-security-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/commons-lang-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/compass-2.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/dlbadapter.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/jakarta-regexp-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/MSSOUserValidator.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/sdk-security-4.5.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/sdk-security-client-4.5.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/sdk-system-client-4.5.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/sdk-system-core-4.5.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/sdk-system-web-4.5.jar"/>
+	<classpathentry kind="lib" path="lib/cacore/sdk-system-ws-4.5.jar"/>
 	<classpathentry kind="lib" path="lib/activation.jar"/>
-	<classpathentry kind="lib" path="lib/antlr-2.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/aopalliance.jar"/>
 	<classpathentry kind="lib" path="lib/asm.jar"/>
 	<classpathentry kind="lib" path="lib/axis.jar"/>
-	<classpathentry kind="lib" path="lib/cglib-2.1.3.jar"/>
-	<classpathentry kind="lib" path="lib/commons-collections-3.2.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/cadsr-api.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pool-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/datafile.jar"/>
 	<classpathentry kind="lib" path="lib/dbunit-2.4.3-jdk15.jar"/>
@@ -24,84 +41,45 @@
 	<classpathentry kind="lib" path="lib/ehcache-1.2.3.jar"/>
 	<classpathentry kind="lib" path="lib/freemarker.jar"/>
 	<classpathentry kind="lib" path="lib/freestylesearch.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-core.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-jdom.jar"/>
 	<classpathentry kind="lib" path="lib/jcs-1.2.7.9.2.jar"/>
-	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry kind="lib" path="lib/jmi.jar"/>
 	<classpathentry kind="lib" path="lib/jmiutils.jar"/>
 	<classpathentry kind="lib" path="lib/jta.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.4.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
-	<classpathentry kind="lib" path="lib/mail.jar"/>
-	<classpathentry kind="lib" path="lib/odmg-3.0.jar"/>
-	<classpathentry kind="lib" path="lib/ojdbc14.jar"/>
-	<classpathentry kind="lib" path="lib/openide-util.jar"/>
-	<classpathentry kind="lib" path="lib/poi-3.2-FINAL-20081019.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.5.6.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-simple-1.5.6.jar"/>
-	<classpathentry kind="lib" path="lib/spring-test.jar"/>
-	<classpathentry kind="lib" path="lib/spring.jar"/>
-	<classpathentry kind="lib" path="lib/xmi.in.out.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/acegi-security-1.0.7.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/antlr-2.7.6.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/aopalliance-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/asm-1.5.3.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/asm-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/castor-1.0.4.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/cglib-2.1_3.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/cog-jglobus-4.0.3.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/commons-beanutils-1.8.3.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/commons-codec-1.5.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/commons-configuration-1.8.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/commons-lang-2.6.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/commons-lang3-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/cxf-2.4.2.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/dom4j-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/ejb3-persistence-1.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/hibernate-3.2.0.ga-modified.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/hibernate-annotations-3.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/hibernate-validator-3.0.0.GA.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/iso-datatypes-2.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/iso-datatypes-extensions-2.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/jaxen-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/jaxrpc-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/jdom-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/jsr311-api-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/log4j-1.2.16.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/neethi-3.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.aop-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.asm-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.beans-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.context-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.context.support-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.core-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.expression-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.jdbc-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.orm-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.transaction-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.web-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.web.servlet-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/org.springframework.web.struts-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/sdk-grid-remoting-4.5.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/sdk-security-client-4.5.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/sdk-system-client-4.5.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/sdk-writable-api-client-4.5.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/servlet-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/slf4j-api-1.4.3.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/slf4j-log4j12-1.4.3.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/wsdl4j-1.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/cacore/xercesImpl-2.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/lexbig.jar"/>
 	<classpathentry kind="lib" path="lib/lexevs-client-framework.jar"/>
 	<classpathentry kind="lib" path="lib/lexevs-core.jar"/>
 	<classpathentry kind="lib" path="lib/lexevsapi60-beans.jar"/>
 	<classpathentry kind="lib" path="lib/LexEVSSecurity.jar"/>
-	<classpathentry kind="lib" path="lib/caDSR-beans-4.0.jar"/>
-	<classpathentry kind="lib" path="lib/caDSR-client-framework-4.0.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="lib/mail.jar"/>
+	<classpathentry kind="lib" path="lib/odmg-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/ojdbc6.jar"/>
+	<classpathentry kind="lib" path="lib/openide-util.jar"/>
+	<classpathentry kind="lib" path="lib/poi-3.2-FINAL-20081019.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.5.6.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-simple-1.5.6.jar"/>
+	<classpathentry kind="lib" path="lib/spring-test.jar"/>
+	<classpathentry kind="lib" path="lib/xmi.in.out.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.aop-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.asm-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.beans-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.context-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.context.support-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.core-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.expression-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.jdbc-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.orm-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.test-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.transaction-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.web-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.web.servlet-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.web.struts-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate3.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
