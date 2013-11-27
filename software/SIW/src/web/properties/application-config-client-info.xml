@@ -29,7 +29,7 @@ L-->
 	<bean id="cadsrapiApplicationService" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target">
 			<bean class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
-				<property name="serviceUrl" value="http://localhost:8080/cadsrapi41/http/applicationService"/>
+				<property name="serviceUrl" value="http://cadsrapi-dev.nci.nih.gov/cadsrapi40/http/applicationService"/>
 				<property name="serviceInterface" value="gov.nih.nci.cadsrapi.applicationService.caDSRAPIService"/>
 				<property name="httpInvokerRequestExecutor">
 				
@@ -51,7 +51,7 @@ L-->
 				<bean class="org.acegisecurity.providers.rcp.RemoteAuthenticationProvider">
 					<property name="remoteAuthenticationManager">
 						<bean class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
-						    <property name="serviceUrl" value="http://localhost:8080/cadsrapi41/http/remoteAuthenticationManager"/>
+						    <property name="serviceUrl" value="http://cadsrapi-dev.nci.nih.gov/cadsrapi40/http/remoteAuthenticationManager"/>
 						    <property name="serviceInterface" value="org.acegisecurity.providers.rcp.RemoteAuthenticationManager"/>
 						</bean>
 					</property>
