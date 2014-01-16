@@ -71,6 +71,8 @@ public class CadsrLoader {
 
 	public void run(String fileDir, String projectName, Float projectVersion)
 			throws Exception {
+		//Set the private api false based on user requirement
+		//Reverted the use of private api based on user requirement
 		prefs.setUsePrivateApi(true);
 
 		InitClass initClass = new InitClass(this);

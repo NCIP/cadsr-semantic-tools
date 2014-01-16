@@ -15,6 +15,7 @@ import java.util.Vector;
 
 import org.LexGrid.LexBIG.DataModel.Collections.LocalNameList;
 import org.LexGrid.LexBIG.DataModel.Collections.NameAndValueList;
+import org.LexGrid.LexBIG.DataModel.Collections.ResolvedConceptReferenceList;
 import org.LexGrid.LexBIG.DataModel.Collections.SortOptionList;
 import org.LexGrid.LexBIG.DataModel.Core.ResolvedConceptReference;
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet;
@@ -33,14 +34,17 @@ import org.apache.commons.logging.LogFactory;
 public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 
 	private static LexBIGService service;
-	private static final String NCIT_SCHEME_NAME = "NCI_Thesaurus";
-	
+	private static final String NCIT_SCHEME_NAME = "NCI Thesaurus";
+	private static final String serviceURL="";
 	private static Log log = LogFactory.getLog(LexEVSQueryServiceImpl.class);
 	private static List<String> retiredStatuses = null;
 	
 	static {
 		try {
-			service = (LexBIGService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
+		//	service = (LexBIGService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
+			service = (LexBIGService)LexEVSServiceHolder.instance().getLexEVSAppService();
+			
+			
 			
 			retiredStatuses = new ArrayList<String>();
 			retiredStatuses.add("Retired");
@@ -51,23 +55,27 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 			retiredStatuses.add("removed");
 		} catch (Exception e) {
 			log.error("Error accessing EVS Service", e);
+			
 			throw new EVSRuntimeException("Error connecting to EVS. Please check the configuration and try again",e);
+			
 		}
 	}
 	
-	public ResolvedConceptReferencesIterator resolveNodeSet(CodedNodeSet cns, boolean includeRetiredConcepts) throws Exception {
-		
-		if (!includeRetiredConcepts) {
-			cns.restrictToStatus(CodedNodeSet.ActiveOption.ACTIVE_ONLY, null);
+	 public ResolvedConceptReferencesIterator resolveNodeSet(CodedNodeSet cns, boolean includeRetiredConcepts) throws Exception {
+			
+			if (!includeRetiredConcepts) {
+				cns.restrictToStatus(CodedNodeSet.ActiveOption.ACTIVE_ONLY, null);
+			}
+			CodedNodeSet.PropertyType propTypes[] = new CodedNodeSet.PropertyType[2];
+			propTypes[0] = CodedNodeSet.PropertyType.PRESENTATION;
+			propTypes[1] = CodedNodeSet.PropertyType.DEFINITION;
+			
+			SortOptionList sortCriteria = Constructors.createSortOptionList(new String[]{"matchToQuery"});
+			
+			ResolvedConceptReferencesIterator results = cns.resolve(sortCriteria, null,new LocalNameList(), propTypes, true);
+			
+			return results;
 		}
-		PropertyType[] propTypes = new PropertyType[]{PropertyType.PRESENTATION, PropertyType.DEFINITION};
-		
-		SortOptionList sortCriteria = Constructors.createSortOptionList(new String[]{"matchToQuery"});
-		
-		ResolvedConceptReferencesIterator results = cns.resolve(sortCriteria, null,new LocalNameList(), propTypes, true);
-		
-		return results;
-	}
 	
 	public List findConceptsByCode(String conceptCode, boolean includeRetiredConcepts, int rowCount, String vocabName)
 			throws EVSException {
@@ -149,10 +157,15 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 					termAndMatchAlgorithmName[0][1],
 					null
 				);
+			//cns=cns.restrictToMatchingDesignations(searchTerm, SearchDesignationOption.PREFERRED_ONLY, "LuceneQuery",  null);
 			cns = restrictToSource(cns, "NCI");
-			
+			//ResolvedConceptReferenceList  rcrl = cns.resolveToList(null, null, null, 10);
+
 			ResolvedConceptReferencesIterator results = resolveNodeSet(cns, includeRetiredConcepts);
+			log.error("results set from evs"+ results);
 			evsConcepts = getEVSConcepts(results);
+			
+			
 		} catch (Exception e) {
 			log.error("Error finding concepts for synonym ["+searchTerm+"]", e);
 			throw new EVSException("Error finding concepts for synonym ["+searchTerm+"]", e);
@@ -170,7 +183,9 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 		if (rcRefIter != null) {
 			while (rcRefIter.hasNext()) {
 				ResolvedConceptReference conceptRef = rcRefIter.next();
+				
 				EVSConcept evsConcept = getEVSConcept(conceptRef);
+				
 				evsConcepts.add(evsConcept);
 			}
 		}

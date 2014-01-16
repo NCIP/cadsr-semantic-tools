@@ -34,7 +34,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
-public class ExcelResultSetImpl implements ResultSet
+public class ExcelResultSetImpl<T> implements ResultSet
 {
     String          colnames[];
     String          coltypes[];
@@ -1122,7 +1122,20 @@ public class ExcelResultSetImpl implements ResultSet
 	public Object getObject(int arg0, Map<String, Class<?>> arg1) throws SQLException {
 		return null;
 	}
-    
+    //Added in support of jdk1.7
+	
+	@SuppressWarnings("javadoc")
+    public <T> T getObject(String columnLabel,  Class<T> type) throws SQLException {
+       
+		return null;
+    }
+
+	 @SuppressWarnings("javadoc")
+	    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+	       
+			return null;
+	    }
+	
 	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
 		// TODO Auto-generated method stub
 		return false;

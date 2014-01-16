@@ -1,0 +1,30 @@
+1.       Go to Admin tool, create a new account. You can find similar accounts in DEV tier, make the new account has same groups, privilege as the old accounts. The new password will be UMLLOADER_JAMES_DEV too.
+2.       There should be an existing account “umlldr” in DEV, ask system team what is the password.
+3.       Use Toad (or other tools) to login to DEV DB. Find table UML_LOADER_DEFAULTS Under SBREXT. Each row represents one model/CS loading.
+         Insert a new row at the end of the table, make the ID = the current biggest ID +1, give it a project name (e.g. James_TEST, version 1). context Name “NCIP” or any other context name to load model into selected context. Leave PACKAGE_FILTER empty to include the whole model or package names.
+  
+
+
+
+4.       Check out the latest UML Loader code
+5.       Under properties folder, there is db.properties file. Put correct tier(DEV/QA etc.) DB info into the file.
+		 changed to
+		 db.url.dev = jdbc:oracle:thin:@ncidb-dsr-d:1551:DSRDEV
+6.       Updated the build.properties file by changing dir and projectName.
+		 dir= C:/projects/SIW_4_117/data
+7.       Put the model xmi file into C:/projects/SIW_4_117/data. 
+8.       Run Loader with command “ant –Dtarget.env=dev run”  
+9.		 When the loader starts, it will ask DB password, type in account “umlldr” password. Then it will pop-up another dialog window, asking for username/password. Type the account name that you created through Admin Tool as first step in both fields.
+		 If Loader asks some question about missing JME tag (I don’t quite remember the message), say ‘Yes’, ‘OK’, ‘Ignore’, whatever to continue loading.
+		 At then end of loading, should see log like this
+		 [java] INFO CadsrLoader.run(179) | refreshing database views
+		 [java] INFO CadsrLoader.run(201) | refreshed databased views
+           
+		 Wait for minutes (depending on model size, might be much longer when load big model) until see
+		 BUILD SUCCESSFUL
+		 Total time: xx minutes xx second
+		 
+10.   	 Login to Admin Tool > Classification Schema, search Fields “Long Name”, Search For ‘James_TEST’, (the project name in step 4). In the search result, click “Modify” icon, change Workflow status from “Draft New” to “RELEASED”.
+11.  	 Open CDEBrowser, refresh tree. In the tree view, expend NCIP to find the newly loaded CS “James_TEST”. Newly created CDEs are under this CS.
+		 
+
