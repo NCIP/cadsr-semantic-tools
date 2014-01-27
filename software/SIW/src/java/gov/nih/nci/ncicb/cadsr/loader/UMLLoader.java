@@ -107,7 +107,7 @@ public class UMLLoader {
     CadsrLoader loader = BeansAccessor.getUmlLoader();
 
     String ignoreVd = (String)(System.getProperties().get("ignore-vd"));
-    if((ignoreVd != null) & (ignoreVd.equals("true"))) {
+    if((ignoreVd != null) && (ignoreVd.equals("true"))) {
       System.out.println("********** IGNORE VD ************");
       
       UserSelections.getInstance().setProperty("ignore-vd", new Boolean(true));
