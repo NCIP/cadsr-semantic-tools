@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
-<!--L
-  Copyright Oracle Inc, SAIC, SAIC-F
-
-  Distributed under the OSI-approved BSD 3-Clause License.
-  See http://ncip.github.com/cadsr-semantic-tools/LICENSE.txt for details.
-L-->
-
 <project name="UML Loader / SIW" default="compile" basedir=".">
 	<property file="dev.properties" />
 	<property file="build.properties" />
@@ -28,6 +20,34 @@ L-->
 	<path id="proj.class.path">
 		<pathelement location="${class.dir}" />
 		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<path id="run.class.path">
+		<pathelement location="${class.dir}" />
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${dist.dir}">
+			<include name="*.jar" />
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<path id="build.class.path">
+		<pathelement location="${class.dir}" />
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${dist.dir}">
+			<include name="*.jar" />
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${build.dir}">
 			<include name="*.jar" />
 			<include name="**/*.jar" />
 		</fileset>
@@ -66,7 +86,7 @@ L-->
 
 	</target>
 
-	<target name="remote-deploy" depends="dist, sign">
+	<target name="remote-deploy" depends="dist, sign, remote-delete">
 		<echo>Deploying binaries to remote file system "${SCP.USER}@${SCP.HOST}:${scpPath.dir}"</echo>
 		<scp todir="${SCP.USER}@${SCP.HOST}:${TOOL.ROOT.DIR}" port="${SCP.PORT}" passphrase="${SCP.PASSPHRASE}" keyfile="${SCP.KEYFILE}" trust="true" verbose="true">
 			<fileset dir="${dist.dir}">
@@ -76,6 +96,14 @@ L-->
 				<include name="lib/*.jar" />
 			</fileset>
 		</scp>
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: remote-delete                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="remote-delete">
+		<sshexec password="${SCP.PASSPHRASE}" host="${SCP.HOST}" username="${SCP.USER}" keyfile="${SCP.KEYFILE}" trust="yes" command="rm -rf ${TOOL.ROOT.DIR}/**/*.jar">
+		</sshexec>
 	</target>
 
 
@@ -124,6 +152,10 @@ L-->
       -->
 			<classpath refid="proj.class.path" />
 		</javac>
+
+	</target>
+
+	<target name="compile-test" depends="compile">
 		<javac destdir="${class.dir}" debug="on" srcdir="${test.src.dir}" deprecation="false" fork="yes">
 			<classpath refid="proj.class.path" />
 		</javac>
@@ -168,13 +200,32 @@ L-->
 
 	</target>
 
-	<target name="dist" depends="prepare">
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: prepare-for-bl                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="prepare-for-bulkloader" depends="prepare">
+		<delete>
+			<fileset dir="${class.dir}">
+				<include name="spring-datasources.xml" />
+			</fileset>
+		</delete>
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: package                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="package">
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${dist.dir}/lib" />
-		<jar destfile="${dist.dir}/lib/uml-loader.jar" manifest="${basedir}/src/web/MANIFEST.MF">
+		<jar destfile="${dist.dir}/lib/uml-loader.jar" manifest="MANIFEST.MF">
 			<fileset dir="${class.dir}">
 			</fileset>
 		</jar>
+		<jar destfile="${dist.dir}/lib/testData.jar" manifest="MANIFEST.MF">
+			<fileset dir="${test.data.dir}">
+			</fileset>
+		</jar>
+
 		<copy file="${jnlp.dir}/siw.jnlp" tofile="${dist.dir}/siw.jnlp">
 		</copy>
 		<copy file="${images.dir}/siw-logo3_2.gif" tofile="${dist.dir}/siw-logo3_2.gif">
@@ -182,32 +233,6 @@ L-->
 		<replace file="${dist.dir}/siw.jnlp" propertyFile="${jnlp.dir}/jnlp.properties">
 			<replacefilter token="@@CODEBASE@@" property="codebase.${target.env}" />
 		</replace>
-		<!--	 <copy todir="${dist.dir}/lib">
-      <fileset dir="${lib.dir}/cacore">
-        <include name="caDSR-beans.jar"/>
-        <include name="castor-1.0.2.jar"/>
-        <include name="dlbadapter.jar"/>
-        <include name="lexevsapi61-beans.jar"/>
-        <include name="lexevsapi61-framework.jar"/>
-        <include name="lbAdmin.jar"/>
-        <include name="lbImpl.jar"/>
-        <include name="lbInterfaces.jar"/>
-        <include name="lbModel.jar"/>
-        <include name="lgConverter.jar"/>
-        <include name="lgIndexer.jar"/>
-        <include name="lgModel.emf.jar"/>
-        <include name="lgModel.jar"/>
-        <include name="lgRDFConverter.jar"/>
-        <include name="lgResourceReader.jar"/>
-        <include name="lgUtility.jar"/>
-        <include name="lucene-core-2.0.0.jar"/>
-        <include name="lucene-regex-10-9-06-nightly.jar"/>
-        <include name="lucene-snowball-9-26-06-nightly.jar"/>
-        <include name="MSSOUserValidator.jar"/>
-        <include name="sdk-client-framework.jar"/>
-      </fileset>
-    </copy> -->
-
 		<copy todir="${dist.dir}/lib">
 			<fileset dir="${lib.dir}/cacore">
 				<include name="caDSR-beans.jar" />
@@ -303,6 +328,10 @@ L-->
 		</copy>
 	</target>
 
+	<target name="dist" depends="prepare, package" />
+
+	<target name="dist-for-bulkloader" depends="clean, prepare-for-bulkloader, package" />
+
 	<target name="dist_lib" depends="prepare">
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${dist.dir}/lib" />
@@ -334,18 +363,21 @@ L-->
 </target>
 
 <target name="prepare-password">
-<java fork="yes" classname="gov.nih.nci.ncicb.cadsr.loader.util.AntSecretReplace" classpathref="proj.class.path">
+<java classname="gov.nih.nci.ncicb.cadsr.loader.util.AntSecretReplace" classpathref="proj.class.path">
 	<arg value="${class.dir}/spring-datasources.xml" />
 	<arg value="${class.dir}/spring-datasources.xml" />
 	<arg value="@@DB_PASSWD@@" />
 </java>
 </target>
 
-<target name="run" depends="prepare, prepare-password">
+<target name="replace-db-tokens">
 <replace file="${class.dir}/spring-datasources.xml" propertyFile="${config.dir}/db.properties">
 	<replacefilter token="@@DB_URL@@" property="db.url.${target.env}" />
 	<replacefilter token="@@DB_USER@@" property="db.loader.user" />
 </replace>
+</target>
+
+<target name="run" depends="prepare, prepare-password, replace-db-tokens">
 
 <copy file="${config.dir}/log4j-loader.xml" tofile="${class.dir}/log4j.xml" overwrite="true">
 </copy>
@@ -402,7 +434,7 @@ L-->
 </java>
 </target>
 
-<target name="unclassify" depends="prepare" description="Remove the given CS classification from all AC's, and remove CS-specific alt names and definitions">
+<target name="unclassify" depends="prepare, prepare-password, replace-db-tokens" description="Remove the given CS classification from all AC's, and remove CS-specific alt names and definitions">
 <java classname="gov.nih.nci.ncicb.cadsr.loader.Unclassifier" classpathref="proj.class.path" fork="yes" maxmemory="512m">
 	<arg value="${projectName}" />
 	<arg value="${projectVersion}" />
@@ -436,7 +468,7 @@ L-->
 
 </target>
 
-<target name="unitTest" depends="compile">
+<target name="unitTest" depends="compile-test">
 <mkdir dir="${class.dir}" />
 
 <copy todir="${class.dir}" overwrite="true">
@@ -465,5 +497,26 @@ L-->
 	<test name="gov.nih.nci.ncicb.cadsr.loader.test.persister.ConceptPersisterTest" />
 </junit>
 </target>
+
+<target name="runScript">
+<property name="run.class.path" refId="run.class.path" />
+<echo message="${run.class.path}" />
+<script language="javascript" src="src/script/javascript/${script}.js">
+	<classpath refid="run.class.path" />
+</script>
+
+</target>
+
+<!--  we need to pull this out into a separate build file to
+	support ant hill pro
+	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
+
+	<target name="findbugs" >
+		<findbugs home="${findbugs.home}" output="html" outputFile="findbugs.html" >
+			<sourcePath path="${src.dir}" />
+			<class location="${dist.dir}/lib/uml-loader.jar" />
+		</findbugs>
+	</target>
+	-->
 
 </project>
