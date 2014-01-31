@@ -1,10 +1,3 @@
-/*L
- * Copyright Oracle Inc, SAIC, SAIC-F
- *
- * Distributed under the OSI-approved BSD 3-Clause License.
- * See http://ncip.github.com/cadsr-semantic-tools/LICENSE.txt for details.
- */
-
 /*
  * Copyright 2000-2003 Oracle, Inc. This software was developed in conjunction with the National Cancer Institute, and so to the extent government employees are co-authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
  *
@@ -97,7 +90,6 @@ public class UMLLoader {
 
     Float projectVersion = null;
     try {
-    	System.out.println("args 1=" + args[1] + " 2=" + args[2]);
       projectVersion = new Float(args[2]);
     } catch (NumberFormatException ex) {
       System.err.println("Parameter projectVersion must be a number");
@@ -107,7 +99,7 @@ public class UMLLoader {
     CadsrLoader loader = BeansAccessor.getUmlLoader();
 
     String ignoreVd = (String)(System.getProperties().get("ignore-vd"));
-    if((ignoreVd != null) && (ignoreVd.equals("true"))) {
+    if((ignoreVd != null) & (ignoreVd.equals("true"))) {
       System.out.println("********** IGNORE VD ************");
       
       UserSelections.getInstance().setProperty("ignore-vd", new Boolean(true));

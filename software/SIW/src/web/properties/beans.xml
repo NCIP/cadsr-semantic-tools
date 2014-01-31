@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!--L
-  Copyright Oracle Inc, SAIC, SAIC-F
-
-  Distributed under the OSI-approved BSD 3-Clause License.
-  See http://ncip.github.com/cadsr-semantic-tools/LICENSE.txt for details.
-L-->
-
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
  
 <beans>
@@ -374,7 +366,8 @@ L-->
         <ref bean="inheritanceValidator"/>
         <ref bean="definitionLengthValidator"/>
         <ref bean="gmeValidator"/>
-        <ref bean="conceptInheritanceValidator"/>
+        <!-- uncomment to enable concept inheritance -->
+        <!-- ref bean="conceptInheritanceValidator"/ -->
         <ref bean="duplicateConceptValidator"/>
         <ref bean="duplicateClassValidator"/>
         <ref bean="valueDomainRepTermValidator"/>
@@ -397,7 +390,8 @@ L-->
         <ref bean="inheritanceValidator"/>
         <ref bean="definitionLengthValidator"/>
         <ref bean="gmeValidator"/>
-        <ref bean="conceptInheritanceValidator"/>
+        <!-- uncomment to enable concept inheritance -->
+        <!-- ref bean="conceptInheritanceValidator"/ -->
         <ref bean="duplicateConceptValidator"/>
         <ref bean="duplicateClassValidator"/>
         <ref bean="valueDomainRepTermValidator"/>

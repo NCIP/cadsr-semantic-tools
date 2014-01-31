@@ -41,7 +41,7 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 	
 	static {
 		try {
-		//	service = (LexBIGService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
+			//service = (LexBIGService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
 			service = (LexBIGService)LexEVSServiceHolder.instance().getLexEVSAppService();
 			
 			

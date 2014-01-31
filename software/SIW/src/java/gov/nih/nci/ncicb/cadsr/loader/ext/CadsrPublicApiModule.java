@@ -1,10 +1,3 @@
-/*L
- * Copyright Oracle Inc, SAIC, SAIC-F
- *
- * Distributed under the OSI-approved BSD 3-Clause License.
- * See http://ncip.github.com/cadsr-semantic-tools/LICENSE.txt for details.
- */
-
 package gov.nih.nci.ncicb.cadsr.loader.ext;
 
 import gov.nih.nci.cadsr.domain.ComponentConcept;
@@ -44,11 +37,10 @@ public class CadsrPublicApiModule implements CadsrModule {
   private Logger logger = Logger.getLogger(CadsrPrivateApiModule.class.getName());
 
   public CadsrPublicApiModule() {
-	  //=== commented out - UML Loaded is using privateAPI!
     try {
-      service = ApplicationServiceProvider.getApplicationService("CadsrServiceInfo");      
+      service = ApplicationServiceProvider.getApplicationService("CadsrServiceInfo");
     } catch (Exception e) {
-      gov.nih.nci.cadsr.common.Logger.error("Can't get cadsr publicAPI, contact support");
+      logger.error("Can't get cadsr publicAPI, contact support");
       e.printStackTrace();
     } catch (Throwable t) {
       t.printStackTrace();
@@ -57,13 +49,12 @@ public class CadsrPublicApiModule implements CadsrModule {
 
   public CadsrPublicApiModule(String serviceURL) {
     if(serviceURL == null) {
-    	System.out.println();
-    	gov.nih.nci.cadsr.common.Logger.error("caDSR Public API not initialized, please initialize it first.");
+      logger.error("caDSR Public API not initialized, please initialize it first.");
     }
     try {
       service = ApplicationServiceProvider.getApplicationService("CadsrServiceInfo");
     } catch (Exception e) {
-      gov.nih.nci.cadsr.common.Logger.error("Can't get cadsr publicAPI, contact support");
+      logger.error("Can't get cadsr publicAPI, contact support");
       e.printStackTrace();
     } // end of try-catch
   }
@@ -110,7 +101,6 @@ public class CadsrPublicApiModule implements CadsrModule {
       
       return listResult;
     } catch (Exception e) {
-      e.printStackTrace();	//SIW-1
       throw new RuntimeException(e);
     } // end of try-catch
   }
@@ -152,7 +142,6 @@ public class CadsrPublicApiModule implements CadsrModule {
 
     buildExample(vd, queryFields);
 
-    gov.nih.nci.cadsr.common.Logger.error(this.getClass().getName() + ":findValueDomain service is " + service);
     List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.ValueDomain.class.getName(), vd)));
 
     return CadsrTransformer.vdListPublicToPrivate(listResult);
@@ -496,7 +485,7 @@ public class CadsrPublicApiModule implements CadsrModule {
       service.search(gov.nih.nci.cadsr.domain.DataElement.class.getName(), searchDE);
 
     if(results.size() == 0) {
-      gov.nih.nci.cadsr.common.Logger.error("Can't find CDE : " + de.getPublicId() + " v " + de.getVersion() + "\\n Please contact support");
+      logger.error("Can't find CDE : " + de.getPublicId() + " v " + de.getVersion() + "\\n Please contact support");
       return false;
     }
 
