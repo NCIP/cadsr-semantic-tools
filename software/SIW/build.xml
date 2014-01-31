@@ -13,7 +13,7 @@
 	<property name="docs.dir" value="${basedir}/javadoc" />
 	<property name="images.dir" value="${basedir}/src/web/images" />
 	<property name="jnlp.dir" value="${basedir}/src/web/jnlp" />
-	<property name="target.env" value="dev" />
+	<property name="target.env" value="${tier}" />
 	<property name="sqlsuite.dir" value="${basedir}/src/test/sqlsuite" />
 
 	<property file="${config.dir}/db.properties" prefix="db" />
