@@ -1,7 +1,7 @@
-1.       Go to Admin tool, create a new account. You can find similar accounts in DEV tier, make the new account has same groups, privilege as the old accounts. The new password will be UMLLOADER_JAMES_DEV too.
+1.       Go to Admin tool, create a new account. You can find similar accounts in DEV tier, make the new account has same groups, privilege as the old accounts. 
 2.       There should be an existing account “umlldr” in DEV, ask system team what is the password.
 3.       Use Toad (or other tools) to login to DEV DB. Find table UML_LOADER_DEFAULTS Under SBREXT. Each row represents one model/CS loading.
-         Insert a new row at the end of the table, make the ID = the current biggest ID +1, give it a project name (e.g. James_TEST, version 1). context Name “NCIP” or any other context name to load model into selected context. Leave PACKAGE_FILTER empty to include the whole model or package names.
+         Insert a new row at the end of the table, make the ID = the current biggest ID +1, give it a project name (e.g. UMLLoader_TEST, version 1). context Name “NCIP” or any other context name to load model into selected context. Leave PACKAGE_FILTER empty to include the whole model or package names.
   
 
 
@@ -10,7 +10,7 @@
 5.       Under properties folder, there is db.properties file. Put correct tier(DEV/QA etc.) DB info into the file.
 		 changed to
 		 db.url.dev = jdbc:oracle:thin:@ncidb-dsr-d:1551:DSRDEV
-6.       Updated the build.properties file by changing dir and projectName.
+6.       Update the build.properties file by changing dir and projectName.
 		 dir= C:/projects/SIW_4_117/data
 7.       Put the model xmi file into C:/projects/SIW_4_117/data. 
 8.       Run Loader with command “ant –Dtarget.env=dev run”  
@@ -25,6 +25,9 @@
 		 Total time: xx minutes xx second
 		 
 10.   	 Login to Admin Tool > Classification Schema, search Fields “Long Name”, Search For ‘James_TEST’, (the project name in step 4). In the search result, click “Modify” icon, change Workflow status from “Draft New” to “RELEASED”.
-11.  	 Open CDEBrowser, refresh tree. In the tree view, expend NCIP to find the newly loaded CS “James_TEST”. Newly created CDEs are under this CS.
+11.  	 Open CDEBrowser, refresh tree. In the tree view, expend NCIP to find the newly loaded CS “UMLLoader_TEST”. Newly created CDEs are under this CS.
+
+11.         Best way to test whether the loading is done properly, launch the SIW and validate the model that laded before. If it shows any validation errors after loading, then the loading is not successful.
+
 		 
 
