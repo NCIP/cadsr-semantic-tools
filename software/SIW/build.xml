@@ -7,6 +7,7 @@
 	<property name="test.src.dir" value="${basedir}/test/src" />
 	<property name="class.dir" value="./classes" />
 	<property name="lib.dir" value="${basedir}/lib" />
+	<property name="test.data.dir" value="${basedir}/data"/>
 	<property name="dist.dir" value="${basedir}/dist" />
 	<property name="config.dir" value="${basedir}/src/web/properties" />
 	<property name="docs.dir" value="${basedir}/javadoc" />
@@ -217,11 +218,11 @@
 	<target name="package">
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${dist.dir}/lib" />
-		<jar destfile="${dist.dir}/lib/uml-loader.jar" manifest="MANIFEST.MF">
+		<jar destfile="${dist.dir}/lib/uml-loader.jar" manifest="${basedir}/src/web/MANIFEST.MF">
 			<fileset dir="${class.dir}">
 			</fileset>
 		</jar>
-		<jar destfile="${dist.dir}/lib/testData.jar" manifest="MANIFEST.MF">
+		<jar destfile="${dist.dir}/lib/testData.jar" manifest="${basedir}/src/web/MANIFEST.MF">
 			<fileset dir="${test.data.dir}">
 			</fileset>
 		</jar>
