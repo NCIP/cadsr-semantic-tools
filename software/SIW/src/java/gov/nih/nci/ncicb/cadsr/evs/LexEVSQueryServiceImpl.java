@@ -41,10 +41,8 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 	
 	static {
 		try {
-			//service = (LexBIGService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
-			service = (LexBIGService)LexEVSServiceHolder.instance().getLexEVSAppService();
-			
-			
+			service = (LexBIGService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
+						
 			
 			retiredStatuses = new ArrayList<String>();
 			retiredStatuses.add("Retired");
@@ -162,7 +160,6 @@ public class LexEVSQueryServiceImpl implements LexEVSQueryService {
 			//ResolvedConceptReferenceList  rcrl = cns.resolveToList(null, null, null, 10);
 
 			ResolvedConceptReferencesIterator results = resolveNodeSet(cns, includeRetiredConcepts);
-			log.error("results set from evs"+ results);
 			evsConcepts = getEVSConcepts(results);
 			
 			
