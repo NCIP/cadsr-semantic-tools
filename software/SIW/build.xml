@@ -251,8 +251,7 @@
 				<include name="lexbig.jar" />
 				<include name="lexevs-client-framework.jar" />
 				<include name="lexevs-core.jar" />
-				<include name="lexevsapi61-beans.jar" />
-				<include name="lexevsapi61-framework.jar" />
+				<include name="lexevsapi60-beans.jar" />
 				<include name="LexEVSSecurity.jar" />
 				<include name="lucene-core-2.4.1.jar" />
 				<include name="lucene-analyzers-2.4.1.jar" />
