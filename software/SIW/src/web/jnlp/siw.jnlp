@@ -89,8 +89,7 @@
 	<jar href="lib/lexbig.jar" />
 	<jar href="lib/lexevs-client-framework.jar" />
 	<jar href="lib/lexevs-core.jar" />
-	<jar href="lib/lexevsapi61-beans.jar" />
-	<jar href="lib/lexevsapi61-framework.jar" />
+	<jar href="lib/lexevsapi60-beans.jar" />
 	<jar href="lib/LexEVSSecurity.jar" />
 	<jar href="lib/caGrid-CQL-cql.1.0-1.2.jar" />
 	<jar href="lib/commons-cli-1.0.jar" />
