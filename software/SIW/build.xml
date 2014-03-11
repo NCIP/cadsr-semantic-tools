@@ -287,6 +287,12 @@
 				<include name="ehcache-1.2.3.jar" />
 				<include name="freemarker.jar" />
 				<include name="freestylesearch.jar" />
+				<include name="dbunit-2.4.3-jdk15.jar" />
+				<include name="jcs-1.2.7.9.2.jar" />
+				<include name="junit-4.4.jar" />
+				<include name="poi-3.2-FINAL-20081019.jar" />
+				<include name="slf4j-api-1.5.6.jar" />
+				<include name="slf4j-simple-1.5.6.jar" />
 				<include name="hibernate-3.2.0.ga-modified.jar" />
 				<include name="hibernate-annotations-3.2.0.jar" />
 				<include name="hibernate-validator-3.0.0.GA.jar" />
