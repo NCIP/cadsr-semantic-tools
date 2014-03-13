@@ -7,6 +7,7 @@
 	<property name="test.src.dir" value="${basedir}/test/src" />
 	<property name="class.dir" value="./classes" />
 	<property name="lib.dir" value="${basedir}/lib" />
+	<property name="signlib.dir" value="${basedir}/distSigned" />
 	<property name="test.data.dir" value="${basedir}/data"/>
 	<property name="dist.dir" value="${basedir}/dist" />
 	<property name="config.dir" value="${basedir}/src/web/properties" />
@@ -222,6 +223,7 @@
 			<fileset dir="${class.dir}">
 			</fileset>
 		</jar>
+		
 		<jar destfile="${dist.dir}/lib/testData.jar" manifest="${basedir}/src/web/MANIFEST.MF">
 			<fileset dir="${test.data.dir}">
 			</fileset>
@@ -235,7 +237,8 @@
 			<replacefilter token="@@CODEBASE@@" property="codebase.${target.env}" />
 		</replace>
 		<copy todir="${dist.dir}/lib">
-			<fileset dir="${lib.dir}/cacore">
+		<!--	<fileset dir="${lib.dir}/cacore">-->
+			<fileset dir="${signlib.dir}/lib">
 				<include name="caDSR-beans.jar" />
 				<include name="caGrid-CQL-cql.1.0-1.2.jar" />
 				<include name="castor-1.0.2.jar" />
@@ -271,7 +274,8 @@
 		<copy file="${config.dir}/datatype-mapping.xml" tofile="${dist.dir}/datatype-mapping.xml">
 		</copy>
 		<copy todir="${dist.dir}/lib">
-			<fileset dir="${lib.dir}">
+		<!--	<fileset dir="${lib.dir}"> -->
+			<fileset dir="${signlib.dir}">
 				<include name="acegi-security-1.0.4.jar" />
 				<include name="activation.jar" />
 				<include name="antlr-2.7.6.jar" />
