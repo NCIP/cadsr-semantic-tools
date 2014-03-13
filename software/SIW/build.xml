@@ -216,18 +216,29 @@
 	<!-- - - - - - - - - - - - - - - - - - 
           target: package                      
          - - - - - - - - - - - - - - - - - -->
-	<target name="package">
+	<target name="package" depends="post-jar">
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${dist.dir}/lib" />
-		<jar destfile="${dist.dir}/lib/uml-loader.jar" manifest="${basedir}/src/web/MANIFEST.MF">
+		<jar destfile="${lib.dir}/cacore/uml-loader.jar" manifest="${basedir}/src/web/MANIFEST.MF">
 			<fileset dir="${class.dir}">
 			</fileset>
 		</jar>
 		
-		<jar destfile="${dist.dir}/lib/testData.jar" manifest="${basedir}/src/web/MANIFEST.MF">
+		
+		<jar destfile="${lib.dir}/cacore/testData.jar" manifest="${basedir}/src/web/MANIFEST.MF">
 			<fileset dir="${test.data.dir}">
 			</fileset>
 		</jar>
+		<signjar destDir="${dist.dir}/lib"
+						      alias="${aliasName}" keystore="${keystoreFileName}"
+						      storepass="${password}"
+						      preservelastmodified="true">
+						      <path>
+						      <fileset dir="${basedir}/lib/cacore" includes="uml-loader.jar" />
+						      	<fileset dir="${basedir}/lib/cacore" includes="testData.jar" />
+						      </path>
+						      <flattenmapper />
+						   </signjar>
 
 		<copy file="${jnlp.dir}/siw.jnlp" tofile="${dist.dir}/siw.jnlp">
 		</copy>
@@ -529,5 +540,56 @@
 		</findbugs>
 	</target>
 	-->
+	<target name="post-jar">
+		   <property name="aliasName" value="Harika"/>
+		   <property name="password" value="secret"/>
+		   <property name="keystoreFileName" location="keystoreFileName.ks"/>
+		   <property name="firstNameSurName" value="Harika Jonnala"/>
+		   <property name="organisationUnitOrDepartment" value="NCI"/>
+		   <property name="organisationName" value="NIH"/>
+		   <property name="cityOrLocality" value="Rockville"/>
+		   <property name="stateOrProvince" value="MD"/>
+		   <property name="twoLetterJavaLocaleCountryCode" value="US"/>
 
+
+
+		   <delete file="${keystoreFileName}" failonerror="false" />
+		   <genkey alias="${aliasName}" storepass="${password}" keystore="${keystoreFileName}">
+		      <dname>
+		      <param name="CN" value="${firstNameSurName}"/>
+		      <param name="OU" value="${organisationUnitOrDepartment}"/>
+		      <param name="O"  value="${organisationName}"/>
+		      <param name="L"  value="${cityOrLocality}"/>
+		      <param name="ST"  value="${stateOrProvince}"/>
+		      <param name="C"  value="${twoLetterJavaLocaleCountryCode}"/>   
+		      </dname>
+		   </genkey>
+
+	<!--	   <delete dir="distSigned" failonerror="false" />
+		   <mkdir dir="distSigned" />
+		   <signjar destDir="distSigned"
+		      alias="${aliasName}" keystore="${keystoreFileName}"
+		      storepass="${password}"
+		      preservelastmodified="true">
+		      <path>
+		      <fileset dir="${basedir}/lib" includes="*.jar" />
+		      </path>
+		      <flattenmapper />
+		   </signjar>
+
+		   <mkdir dir="distSigned/lib" />
+		   <signjar destDir="distSigned/lib"
+		      alias="${aliasName}" keystore="${keystoreFileName}"
+		      storepass="${password}"
+		      preservelastmodified="true">
+		      <path>
+		      <fileset dir="${basedir}/lib" includes="*.jar" />
+		      </path>
+		      <flattenmapper />
+		   </signjar> -->
+
+
+		</target>
+
+	
 </project>
