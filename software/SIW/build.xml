@@ -109,11 +109,11 @@
 
 
 	<target name="sign">
-		<property name="aliasName" value="${aliasName}" />
-		<property name="password" value="${password}" />
-		<property name="keystoreFileName" location="${keystoreFileName}" />
+		<property name="aliasName" value="${keystore.alias}" />
+		<property name="password" value="${keystore.password}" />
+		<property name="keystoreFileName" location="${keystore.location}" />
 
-		<signjar alias="${aliasName}" keystore="${keystoreFileName}" storepass="${password}">
+		<signjar alias="${keystore.alias}" keystore="${keystore.location}" storepass="${keystore.password}">
 			<path>
 				<fileset dir="${dist.dir}/lib" includes="*.jar" />
 			</path>
