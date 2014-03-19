@@ -109,9 +109,15 @@
 	</target>
 
 
-	<target name="sign" depends="post-jar" if="keystore">
-		<signjar alias="${aliasName}" storepass="${password}" keystore="${keystoreFileName}">
-			<fileset dir="${dist.dir}/lib" includes="*.jar" />
+	<target name="sign">
+		<property name="aliasName" value="${aliasName}" />
+		<property name="password" value="${password}" />
+		<property name="keystoreFileName" location="${keystoreFileName}" />
+
+		<signjar alias="${aliasName}" keystore="${keystoreFileName}" storepass="${password}">
+			<path>
+				<fileset dir="${dist.dir}/lib" includes="*.jar" />
+			</path>
 		</signjar>
 	</target>
 
@@ -216,29 +222,19 @@
 	<!-- - - - - - - - - - - - - - - - - - 
           target: package                      
          - - - - - - - - - - - - - - - - - -->
-	<target name="package" depends="post-jar">
+	<target name="package">
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${dist.dir}/lib" />
-		<jar destfile="${lib.dir}/cacore/uml-loader.jar" manifest="${basedir}/src/web/MANIFEST.MF">
+		<jar destfile="${dist.dir}/lib/uml-loader.jar" manifest="${basedir}/src/web/MANIFEST.MF">
 			<fileset dir="${class.dir}">
 			</fileset>
 		</jar>
-		
-		
-		<jar destfile="${lib.dir}/cacore/testData.jar" manifest="${basedir}/src/web/MANIFEST.MF">
+
+
+		<jar destfile="${dist.dir}/lib/testData.jar" manifest="${basedir}/src/web/MANIFEST.MF">
 			<fileset dir="${test.data.dir}">
 			</fileset>
 		</jar>
-		<signjar destDir="${dist.dir}/lib"
-						      alias="${aliasName}" keystore="${keystoreFileName}"
-						      storepass="${password}"
-						      preservelastmodified="true">
-						      <path>
-						      <fileset dir="${basedir}/lib/cacore" includes="uml-loader.jar" />
-						      	<fileset dir="${basedir}/lib/cacore" includes="testData.jar" />
-						      </path>
-						      <flattenmapper />
-						   </signjar>
 
 		<copy file="${jnlp.dir}/siw.jnlp" tofile="${dist.dir}/siw.jnlp">
 		</copy>
@@ -249,7 +245,7 @@
 		</replace>
 		<copy todir="${dist.dir}/lib">
 			<fileset dir="${lib.dir}/cacore">
-				<include name="caDSR-beans.jar" />
+				<!--		<include name="caDSR-beans.jar" /> -->
 				<include name="caGrid-CQL-cql.1.0-1.2.jar" />
 				<include name="castor-1.0.2.jar" />
 				<include name="cglib-2.1.3.jar" />
@@ -348,7 +344,7 @@
 		</copy>
 	</target>
 
-	<target name="dist" depends="prepare, package" />
+	<target name="dist" depends="prepare, package, sign" />
 
 	<target name="dist-for-bulkloader" depends="clean, prepare-for-bulkloader, package" />
 
@@ -538,56 +534,19 @@
 		</findbugs>
 	</target>
 	-->
-	<target name="post-jar">
-		   <property name="aliasName" value="Harika"/>
-		   <property name="password" value="secret"/>
-		   <property name="keystoreFileName" location="keystoreFileName.ks"/>
-		   <property name="firstNameSurName" value="Harika Jonnala"/>
-		   <property name="organisationUnitOrDepartment" value="NCI"/>
-		   <property name="organisationName" value="NIH"/>
-		   <property name="cityOrLocality" value="Rockville"/>
-		   <property name="stateOrProvince" value="MD"/>
-		   <property name="twoLetterJavaLocaleCountryCode" value="US"/>
+<!--<target name="post-jar">
+
+<property name="aliasName" value="${aliasName}" />
+<property name="password" value="${password}" />
+<property name="keystoreFileName" location="${keystoreFileName}" />
+
+<signjar alias="${aliasName}" keystore="${keystoreFileName}" storepass="${password}">
+	<path>
+		<fileset dir="${dist.dir}/lib" includes="*.jar" />
+	</path>
+</signjar>
+
+</target> -->
 
 
-
-		   <delete file="${keystoreFileName}" failonerror="false" />
-		   <genkey alias="${aliasName}" storepass="${password}" keystore="${keystoreFileName}">
-		      <dname>
-		      <param name="CN" value="${firstNameSurName}"/>
-		      <param name="OU" value="${organisationUnitOrDepartment}"/>
-		      <param name="O"  value="${organisationName}"/>
-		      <param name="L"  value="${cityOrLocality}"/>
-		      <param name="ST"  value="${stateOrProvince}"/>
-		      <param name="C"  value="${twoLetterJavaLocaleCountryCode}"/>   
-		      </dname>
-		   </genkey>
-
-	<!--	   <delete dir="distSigned" failonerror="false" />
-		   <mkdir dir="distSigned" />
-		   <signjar destDir="distSigned"
-		      alias="${aliasName}" keystore="${keystoreFileName}"
-		      storepass="${password}"
-		      preservelastmodified="true">
-		      <path>
-		      <fileset dir="${basedir}/lib" includes="*.jar" />
-		      </path>
-		      <flattenmapper />
-		   </signjar>
-
-		   <mkdir dir="distSigned/lib" />
-		   <signjar destDir="distSigned/lib"
-		      alias="${aliasName}" keystore="${keystoreFileName}"
-		      storepass="${password}"
-		      preservelastmodified="true">
-		      <path>
-		      <fileset dir="${basedir}/lib" includes="*.jar" />
-		      </path>
-		      <flattenmapper />
-		   </signjar> -->
-
-
-		</target>
-
-	
 </project>
