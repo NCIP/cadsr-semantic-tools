@@ -2,6 +2,7 @@
 <project name="UML Loader / SIW" default="compile" basedir=".">
 	<property file="dev.properties" />
 	<property file="build.properties" />
+	<property file="jnlp.properties" />
 	<property name="src.dir" value="${basedir}/src" />
 	<property name="manifest.dir" value="${basedir}/src/web" />
 	<property name="test.src.dir" value="${basedir}/test/src" />
@@ -145,11 +146,13 @@
 		<fail message="missing build.properties, please create one first first" />
 	</target>
 
+	<property name="Codebase" value="${codebase.dev}" />
+			<property name="Application-Name" value="${app.name}" />
 	<manifest file="${manifest.dir}/MANIFEST.MF" mode="update">
 		<attribute name="Permissions" value="all-permissions" />
-		<attribute name="Codebase" value="${jnlp.codebase}" />
+		<attribute name="Codebase" value="${codebase.dev}" />
 		<attribute name="Application-Name" value="${app.name}" />
-	</manifest>
+	</manifest> 
 
 	<target name="compile" depends="fail1">
 		<mkdir dir="${class.dir}" />
