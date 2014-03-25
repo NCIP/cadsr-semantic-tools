@@ -148,11 +148,11 @@
 
 	<property name="Codebase" value="${codebase.dev}" />
 			<property name="Application-Name" value="${app.name}" />
-	<manifest file="${manifest.dir}/MANIFEST.MF" mode="update">
+<!--	<manifest file="${manifest.dir}/MANIFEST.MF" mode="update">
 		<attribute name="Permissions" value="all-permissions" />
 		<attribute name="Codebase" value="${codebase.dev}" />
 		<attribute name="Application-Name" value="${app.name}" />
-	</manifest> 
+	</manifest> -->
 
 	<target name="compile" depends="fail1">
 		<mkdir dir="${class.dir}" />
