@@ -340,6 +340,8 @@
 				<include name="spring-oxm-3.1.0.RELEASE.jar" />
 				<include name="spring-test-3.1.0.RELEASE.jar" />
 				<include name="spring-tx-3.1.0.RELEASE.jar" />
+				<include name="jaxb-impl-2.1.8.jar" />
+				<include name="jaxb-api-2.1.jar" />
 
 				<include name="xmi.in.out.jar" />
 			</fileset>

@@ -54,7 +54,9 @@
 	<jar href="lib/jcs-1.2.7.9.2.jar" />
 	<jar href="lib/jdom.jar" />
 	<jar href="lib/jmi.jar" />
-	<jar href="lib/jmiutils.jar" />
+     <jar href="lib/jaxb-api-2.1.jar" />
+     <jar href="lib/jaxb-impl-2.1.8.jar" />
+     <jar href="lib/jmiutils.jar" />
 	<jar href="lib/jta.jar" />
 	<jar href="lib/junit-4.4.jar" />
 	<jar href="lib/log4j-1.2.8.jar" />
