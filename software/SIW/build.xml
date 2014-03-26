@@ -146,11 +146,11 @@
 		<fail message="missing build.properties, please create one first first" />
 	</target>
 
-	<property name="Codebase" value="${codebase.dev}" />
+	<property name="Codebase" value="*" />
 			<property name="Application-Name" value="${app.name}" />
 	<manifest file="${manifest.dir}/MANIFEST.MF" mode="update">
 		<attribute name="Permissions" value="all-permissions" />
-		<attribute name="Codebase" value="${codebase.dev}" />
+		<attribute name="Codebase" value="*" />
 		<attribute name="Application-Name" value="${app.name}" />
 	</manifest>
 
