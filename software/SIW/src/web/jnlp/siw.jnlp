@@ -39,6 +39,7 @@
 	<jar href="lib/commons-collections-3.2.jar" />
 	<jar href="lib/commons-logging-1.1.jar" />
 	<jar href="lib/commons-pool-1.3.jar" />
+       <jar href="lib/compass-2.2.0.jar" />
 	<jar href="lib/datafile.jar" />
 	<jar href="lib/dbunit-2.4.3-jdk15.jar" />
 	<jar href="lib/dom4j-1.4.jar" />
@@ -91,7 +92,7 @@
 	<jar href="lib/lexbig.jar" />
 	<jar href="lib/lexevs-client-framework.jar" />
 	<jar href="lib/lexevs-core.jar" />
-	<jar href="lib/lexevsapi60-beans.jar" />
+	<!--<jar href="lib/lexevsapi60-beans.jar" /> -->
 	<jar href="lib/LexEVSSecurity.jar" />
 	<jar href="lib/caGrid-CQL-cql.1.0-1.2.jar" />
 	<jar href="lib/commons-cli-1.0.jar" />
