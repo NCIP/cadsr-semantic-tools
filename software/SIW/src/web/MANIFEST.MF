@@ -3,6 +3,6 @@ Ant-Version: Apache Ant 1.8.3
 Created-By: 1.6.0_37-b06 (Sun Microsystems Inc.)
 Main-Class: gov.nih.nci.ncicb.cadsr.loader.UMLLoaderGUI
 Permissions: all-permissions
-Codebase: ${codebase.dev}
-Application-Name: ${app.name}
+Codebase: *
+Application-Name: SIW 4.1.1
 
