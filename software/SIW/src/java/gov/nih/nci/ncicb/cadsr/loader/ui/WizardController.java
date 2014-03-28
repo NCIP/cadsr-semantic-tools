@@ -222,7 +222,7 @@ public class WizardController implements ActionListener {
          
          gmeAction.generateDefaults(filename, outputFile, panel.getProjectName(), new Float(panel.getProjectVersion()), panel.getContext());
          
-         reportPanel.setOutputText("Default geration complete. The output file can be found here: <br>" + outputFile);
+         reportPanel.setOutputText("Default generation complete. The output file can be found here: <br>" + outputFile);
          
        }
 
