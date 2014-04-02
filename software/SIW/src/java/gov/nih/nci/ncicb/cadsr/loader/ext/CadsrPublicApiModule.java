@@ -6,6 +6,7 @@ import gov.nih.nci.cadsr.domain.Context;
 import gov.nih.nci.cadsr.domain.DataElement;
 import gov.nih.nci.cadsr.domain.EnumeratedValueDomain;
 import gov.nih.nci.cadsr.domain.ObjectClass;
+import gov.nih.nci.cadsr.domain.Protocol;
 import gov.nih.nci.cadsr.domain.Representation;
 import gov.nih.nci.cadsr.domain.ValueDomain;
 import gov.nih.nci.cadsr.umlproject.domain.Project;
@@ -156,30 +157,24 @@ public class CadsrPublicApiModule implements CadsrModule {
     findValueDomain(Map<String, Object> queryFields) throws Exception {
 
     gov.nih.nci.cadsr.domain.ValueDomain vd = new gov.nih.nci.cadsr.domain.ValueDomain();
-    gov.nih.nci.cadsr.domain.ValueDomain vdTemp = null;
-
 
     buildExample(vd, queryFields);
 
   //  List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.ValueDomain.class.getName(), vd)));
-    List listResult = service.search(gov.nih.nci.cadsr.domain.ValueDomain.class.getName(), vd);
-    gov.nih.nci.cadsr.common.Logger.error(":Printing the size of the result set for ValuDomain is " + listResult.size());
-    for(int i=0;i<listResult.size();i++){
-    	vdTemp=(gov.nih.nci.cadsr.domain.ValueDomain) listResult.get(i);
-    	System.out.println("Printing VD contents ="+vdTemp.getId()+":"+vdTemp.getLongName());
-    	
-    }
-    DetachedCriteria detachedCrit = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.ValueDomain.class).add( Property.forName("publicID").eq(vdTemp.getPublicID()) );
+
+    DetachedCriteria detachedCrit = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.ValueDomain.class).add( Property.forName("publicID").eq(vd.getPublicID()) );
     detachedCrit.setFetchMode("context", FetchMode.EAGER);
     detachedCrit.setFetchMode("conceptualDomain", FetchMode.EAGER);
     detachedCrit.setFetchMode("represention", FetchMode.EAGER);
     detachedCrit.setFetchMode("conceptualDomain.context", FetchMode.EAGER);
     detachedCrit.setFetchMode("represention.context", FetchMode.EAGER);
 
-    
+    Collection<gov.nih.nci.ncicb.cadsr.domain.ValueDomain> vdCollection = new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ValueDomain>();
+
     List<gov.nih.nci.cadsr.domain.ValueDomain> resultListVD = (List<gov.nih.nci.cadsr.domain.ValueDomain>)(List<?>)service.query(detachedCrit);
     System.out.println("Fetching ValueDomain information...count = " + resultListVD.size());
-    
+    if(resultListVD.size()==0)
+    		return vdCollection;
   	return CadsrTransformer.vdListPublicToPrivate(resultListVD);
   }
 
@@ -208,12 +203,7 @@ public class CadsrPublicApiModule implements CadsrModule {
     buildExample(searchCD, queryFields);
 
  //   List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.ConceptualDomain.class, searchCD)));
-  /*  List listResult = service.search(gov.nih.nci.cadsr.domain.ConceptualDomain.class, searchCD);
-    for(int i=0;i<listResult.size();i++){
-    	System.out.println("SIze of CDs ="+listResult.size());
-    	cdTemp=(ConceptualDomain) listResult.get(i);
-    }*/
-    
+      
     DetachedCriteria detachedCrit = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.ConceptualDomain.class).add( Property.forName("publicID").eq(searchCD.getPublicID()));
     detachedCrit.setFetchMode("context", FetchMode.EAGER);
     
@@ -232,7 +222,6 @@ public class CadsrPublicApiModule implements CadsrModule {
     buildExample(searchRep, queryFields);
 
 //    List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.Representation.class, searchRep)));
-//    List listResult = service.search(gov.nih.nci.cadsr.domain.Representation.class, searchRep);
     DetachedCriteria detachedCrit = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.Representation.class).add( Property.forName("publicID").eq(searchRep.getPublicID()));
     detachedCrit.setFetchMode("context", FetchMode.EAGER);
     
@@ -253,15 +242,7 @@ public class CadsrPublicApiModule implements CadsrModule {
 
    // List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.DataElement.class, searchDE)));
     
-    List listResult = service.search(gov.nih.nci.cadsr.domain.DataElement.class, searchDE);
-
-    gov.nih.nci.cadsr.common.Logger.error(":Printing the size of the result set for DataELement is " + listResult.size());
-    for(int i=0;i<listResult.size();i++){
-    	deTemp=(gov.nih.nci.cadsr.domain.DataElement) listResult.get(i);
-    	System.out.println("Printing DE contents ="+deTemp.getId()+":"+deTemp.getLongName()+":"+deTemp.getPublicID());
-    	
-    }
-    DetachedCriteria detachedCrit = DetachedCriteria.forClass(DataElement.class).add( Property.forName("publicID").eq(deTemp.getPublicID()));
+    DetachedCriteria detachedCrit = DetachedCriteria.forClass(DataElement.class).add( Property.forName("publicID").eq(searchDE.getPublicID()));
     detachedCrit.setFetchMode("context", FetchMode.EAGER);
     detachedCrit.setFetchMode("valueDomain", FetchMode.EAGER);
     detachedCrit.setFetchMode("valueDomain.context", FetchMode.EAGER);
@@ -281,7 +262,7 @@ public class CadsrPublicApiModule implements CadsrModule {
     detachedCrit.setFetchMode("dataElementConcept.conceptualDomain.context", FetchMode.EAGER);
     
     List<DataElement> results = (List<DataElement>)(List<?>)service.query(detachedCrit);
-    System.out.println("size is ="+results.size());
+    System.out.println("DE list size is ="+results.size());
     
     return CadsrTransformer.deListPublicToPrivate(results);
   }
