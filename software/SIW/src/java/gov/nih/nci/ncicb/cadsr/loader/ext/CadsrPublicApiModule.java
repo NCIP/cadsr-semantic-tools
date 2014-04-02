@@ -204,11 +204,15 @@ public class CadsrPublicApiModule implements CadsrModule {
     findConceptualDomain(Map<String, Object> queryFields) throws Exception {
     
     gov.nih.nci.cadsr.domain.ConceptualDomain searchCD = new gov.nih.nci.cadsr.domain.ConceptualDomain();
-    
+    gov.nih.nci.cadsr.domain.ConceptualDomain cdTemp = null;
     buildExample(searchCD, queryFields);
 
  //   List listResult = new ArrayList(new HashSet(service.search(gov.nih.nci.cadsr.domain.ConceptualDomain.class, searchCD)));
-  //  List listResult = service.search(gov.nih.nci.cadsr.domain.ConceptualDomain.class, searchCD);
+  /*  List listResult = service.search(gov.nih.nci.cadsr.domain.ConceptualDomain.class, searchCD);
+    for(int i=0;i<listResult.size();i++){
+    	System.out.println("SIze of CDs ="+listResult.size());
+    	cdTemp=(ConceptualDomain) listResult.get(i);
+    }*/
     
     DetachedCriteria detachedCrit = DetachedCriteria.forClass(gov.nih.nci.cadsr.domain.ConceptualDomain.class).add( Property.forName("publicID").eq(searchCD.getPublicID()));
     detachedCrit.setFetchMode("context", FetchMode.EAGER);
@@ -260,6 +264,7 @@ public class CadsrPublicApiModule implements CadsrModule {
     DetachedCriteria detachedCrit = DetachedCriteria.forClass(DataElement.class).add( Property.forName("publicID").eq(deTemp.getPublicID()));
     detachedCrit.setFetchMode("context", FetchMode.EAGER);
     detachedCrit.setFetchMode("valueDomain", FetchMode.EAGER);
+    detachedCrit.setFetchMode("valueDomain.context", FetchMode.EAGER);
     detachedCrit.setFetchMode("valueDomain.conceptualDomain", FetchMode.EAGER);
     detachedCrit.setFetchMode("valueDomain.represention", FetchMode.EAGER);
     detachedCrit.setFetchMode("valueDomain.conceptualDomain.context", FetchMode.EAGER);
@@ -267,6 +272,7 @@ public class CadsrPublicApiModule implements CadsrModule {
 
 
     detachedCrit.setFetchMode("dataElementConcept", FetchMode.EAGER);
+    detachedCrit.setFetchMode("dataElementConcept.context", FetchMode.EAGER);
     detachedCrit.setFetchMode("dataElementConcept.objectClass", FetchMode.EAGER);
     detachedCrit.setFetchMode("dataElementConcept.property", FetchMode.EAGER);
     detachedCrit.setFetchMode("dataElementConcept.conceptualDomain", FetchMode.EAGER);
@@ -704,7 +710,9 @@ public class CadsrPublicApiModule implements CadsrModule {
           return new ArrayList();
     
         else {
-          return CadsrTransformer.anListPublicToPrivate(((gov.nih.nci.cadsr.domain.AdministeredComponent)results.get(0)).getDesignationCollection());
+     //
+        	return null;
+        	//return CadsrTransformer.anListPublicToPrivate(((gov.nih.nci.cadsr.domain.AdministeredComponent)results.get(0)).getDesignationCollection());
         }
         
     }
@@ -745,7 +753,8 @@ public class CadsrPublicApiModule implements CadsrModule {
         return new ArrayList();
              
       else {
-        return new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship>(CadsrTransformer.ocrListPublicToPrivate(results));
+     //   return new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship>(CadsrTransformer.ocrListPublicToPrivate(results));
+        return null;
       }
  
     }

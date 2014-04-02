@@ -128,8 +128,11 @@ public class CadsrTransformer {
     List<gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain> result = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ConceptualDomain>();
 
-    for(gov.nih.nci.cadsr.domain.ConceptualDomain inCD : inCDs) {
-      result.add(cdPublicToPrivate(inCD));
+   // for(gov.nih.nci.cadsr.domain.ConceptualDomain inCD : inCDs) {
+   //   result.add(cdPublicToPrivate(inCD));
+   // }
+    for(int i=0;i<inCDs.size();i++){
+    	result.add(cdPublicToPrivate(inCDs.get(i)));
     }
     return result;
   }
@@ -139,8 +142,11 @@ public class CadsrTransformer {
     List<gov.nih.nci.ncicb.cadsr.domain.Representation> result = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.Representation>();
 
-    for(gov.nih.nci.cadsr.domain.Representation inRep : inReps) {
-      result.add(repPublicToPrivate(inRep));
+ //   for(gov.nih.nci.cadsr.domain.Representation inRep : inReps) {
+   //   result.add(repPublicToPrivate(inRep));
+   // }
+    for(int i=0;i<inReps.size();i++){
+    	result.add(repPublicToPrivate(inReps.get(i)));
     }
     return result;
   }
@@ -197,13 +203,16 @@ public class CadsrTransformer {
   /**
    * Transforms a Context List from public API to private API
    */
-  public static Collection<gov.nih.nci.ncicb.cadsr.domain.Context> contextListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.Context> inContexts) {
+  public static Collection<gov.nih.nci.ncicb.cadsr.domain.Context> contextListPublicToPrivate(List<gov.nih.nci.cadsr.domain.Context> inContexts) {
 
     List<gov.nih.nci.ncicb.cadsr.domain.Context> outContexts = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.Context>();
 
-    for(gov.nih.nci.cadsr.domain.Context _con : inContexts) {
-      outContexts.add(contextPublicToPrivate(_con));
+  //  for(gov.nih.nci.cadsr.domain.Context _con : inContexts) {
+  //    outContexts.add(contextPublicToPrivate(_con));
+  //  }
+    for(int i=0;i<inContexts.size();i++){
+    	outContexts.add(contextPublicToPrivate(inContexts.get(i)));
     }
 
     return outContexts;
@@ -254,13 +263,16 @@ public class CadsrTransformer {
   /**
    * Transforms a CS List from public API to private API
    */
-  public static Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme> csListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.ClassificationScheme> inCSs) {
+  public static Collection<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme> csListPublicToPrivate(List<gov.nih.nci.cadsr.domain.ClassificationScheme> inCSs) {
 
     List<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme> outCSs = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ClassificationScheme>();
 
-    for(gov.nih.nci.cadsr.domain.ClassificationScheme privateCs : inCSs) {
-      outCSs.add(csPublicToPrivate(privateCs));
+ //   for(gov.nih.nci.cadsr.domain.ClassificationScheme privateCs : inCSs) {
+ //     outCSs.add(csPublicToPrivate(privateCs));
+ //   }
+    for(int i=0;i<inCSs.size();i++){
+    	outCSs.add(csPublicToPrivate(inCSs.get(i)));
     }
     return outCSs;
 
@@ -269,13 +281,16 @@ public class CadsrTransformer {
   /**
    * Transforms an OC List from public API to private API
    */
-  public static Collection<gov.nih.nci.ncicb.cadsr.domain.ObjectClass> ocListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.ObjectClass> inOCs) {
+  public static Collection<gov.nih.nci.ncicb.cadsr.domain.ObjectClass> ocListPublicToPrivate(List<gov.nih.nci.cadsr.domain.ObjectClass> inOCs) {
 
     List<gov.nih.nci.ncicb.cadsr.domain.ObjectClass> outOCs = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ObjectClass>();
 
-    for(gov.nih.nci.cadsr.domain.ObjectClass privateOC : inOCs) {
-      outOCs.add(ocPublicToPrivate(privateOC));
+ //   for(gov.nih.nci.cadsr.domain.ObjectClass privateOC : inOCs) {
+ //     outOCs.add(ocPublicToPrivate(privateOC));
+ //   }
+    for(int i=0;i<inOCs.size();i++){
+    	outOCs.add(ocPublicToPrivate(inOCs.get(i)));
     }
     return outOCs;
 
@@ -284,13 +299,16 @@ public class CadsrTransformer {
   /**
    * Transforms an Property List from public API to private API
    */
-  public static Collection<gov.nih.nci.ncicb.cadsr.domain.Property> propListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.Property> inProps) {
+  public static Collection<gov.nih.nci.ncicb.cadsr.domain.Property> propListPublicToPrivate(List<gov.nih.nci.cadsr.domain.Property> inProps) {
 
     List<gov.nih.nci.ncicb.cadsr.domain.Property> outProps = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.Property>();
 
-    for(gov.nih.nci.cadsr.domain.Property privateProp : inProps) {
-      outProps.add(propPublicToPrivate(privateProp));
+ //   for(gov.nih.nci.cadsr.domain.Property privateProp : inProps) {
+ //     outProps.add(propPublicToPrivate(privateProp));
+ //   }
+    for(int i=0;i<inProps.size();i++){
+    	outProps.add(propPublicToPrivate(inProps.get(i)));
     }
     return outProps;
 
@@ -375,26 +393,33 @@ public class CadsrTransformer {
     return outVm;
   }
 
-  public static Collection<gov.nih.nci.ncicb.cadsr.domain.PermissibleValue> pvListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.PermissibleValue> inPvs) {
+  public static Collection<gov.nih.nci.ncicb.cadsr.domain.PermissibleValue> pvListPublicToPrivate(List<gov.nih.nci.cadsr.domain.PermissibleValue> inPvs) {
 
     List<gov.nih.nci.ncicb.cadsr.domain.PermissibleValue> outPvs = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.PermissibleValue>();
 
-    for(gov.nih.nci.cadsr.domain.PermissibleValue privatePv : inPvs) {
+   /* for(gov.nih.nci.cadsr.domain.PermissibleValue privatePv : inPvs) {
       outPvs.add(pvPublicToPrivate(privatePv));
+    }  */
+    
+    for(int i=0;i<inPvs.size();i++){
+    	outPvs.add(pvPublicToPrivate(inPvs.get(i)));
     }
     return outPvs;
 
   }
 
-  public static List<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship> ocrListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.ObjectClassRelationship> inOCRs) {
+  public static List<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship> ocrListPublicToPrivate(List<gov.nih.nci.cadsr.domain.ObjectClassRelationship> inOCRs) {
   
     List<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship> outOCRs = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship>();
     
     
-    for(gov.nih.nci.cadsr.domain.ObjectClassRelationship inOCR : inOCRs) {
+ /*   for(gov.nih.nci.cadsr.domain.ObjectClassRelationship inOCR : inOCRs) {
       outOCRs.add(ocrPublicToPrivate(inOCR));
+    }  */
+    for(int i=0;i<inOCRs.size();i++){
+    	outOCRs.add(ocrPublicToPrivate(inOCRs.get(i)));
     }
 
     return outOCRs;
@@ -425,13 +450,16 @@ public class CadsrTransformer {
   }
   
 
-  public static List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> anListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.Designation> inANs) {
+  public static List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> anListPublicToPrivate(List<gov.nih.nci.cadsr.domain.Designation> inANs) {
     List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> outANs = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.AlternateName>();
 
     
-    for(gov.nih.nci.cadsr.domain.Designation inAn : inANs) {
+/*    for(gov.nih.nci.cadsr.domain.Designation inAn : inANs) {
       outANs.add(anPublicToPrivate(inAn));
+    } */
+    for(int i=0;i<inANs.size();i++){
+    	outANs.add(anPublicToPrivate(inANs.get(i)));
     }
 
     return outANs;
