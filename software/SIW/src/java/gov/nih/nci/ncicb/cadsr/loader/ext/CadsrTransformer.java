@@ -1,4 +1,5 @@
 package gov.nih.nci.ncicb.cadsr.loader.ext;
+import gov.nih.nci.cadsr.domain.ValueDomain;
 import gov.nih.nci.ncicb.cadsr.domain.DomainObjectFactory;
 import java.util.*;
 
@@ -23,7 +24,10 @@ public class CadsrTransformer {
     gov.nih.nci.cadsr.domain.DataElementConcept dec = inDE.getDataElementConcept();
 
     outDE.setDataElementConcept(decPublicToPrivate(dec));
+    
     outDE.setValueDomain(vdPublicToPrivate(inDE.getValueDomain()));
+    
+    
 
     return outDE;
   }
@@ -50,7 +54,7 @@ public class CadsrTransformer {
     if(inDEC.getProperty() != null)
       outDEC.setProperty(propPublicToPrivate(inDEC.getProperty()));
 
-    if(outDEC.getConceptualDomain() != null)
+    if(inDEC.getConceptualDomain() != null)
       outDEC.setConceptualDomain(cdPublicToPrivate(inDEC.getConceptualDomain()));
 
     return outDEC;
@@ -172,7 +176,6 @@ public class CadsrTransformer {
 
     if(inAc.getPublicID() != null)
       outAc.setPublicId(inAc.getPublicID().toString());
-    
     outAc.setContext(contextPublicToPrivate(inAc.getContext()));
     
   }
@@ -210,13 +213,17 @@ public class CadsrTransformer {
   /**
    * Transforms a DE List from public API to private API
    */
-  public static Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> deListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.DataElement> inDEs) {
+  public static Collection<gov.nih.nci.ncicb.cadsr.domain.DataElement> deListPublicToPrivate(List<gov.nih.nci.cadsr.domain.DataElement> inDEs) {
 
     List<gov.nih.nci.ncicb.cadsr.domain.DataElement> outDEs = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.DataElement>();
 
-    for(gov.nih.nci.cadsr.domain.DataElement privateDe : inDEs) {
+   /* for(gov.nih.nci.cadsr.domain.DataElement privateDe : inDEs) {
       outDEs.add(dePublicToPrivate(privateDe));
+    } */
+    
+    for(int i=0;i<inDEs.size();i++){
+    	outDEs.add(dePublicToPrivate(inDEs.get(i)));
     }
     return outDEs;
 
@@ -292,14 +299,21 @@ public class CadsrTransformer {
   /**
    * Transforms a Value Domain List from public API to private API
    */
-  public static Collection<gov.nih.nci.ncicb.cadsr.domain.ValueDomain> vdListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.ValueDomain> inVDs) {
+  public static Collection<gov.nih.nci.ncicb.cadsr.domain.ValueDomain> vdListPublicToPrivate(List<gov.nih.nci.cadsr.domain.ValueDomain> inVDs) {
 
     List<gov.nih.nci.ncicb.cadsr.domain.ValueDomain> outVDs = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ValueDomain>();
+    gov.nih.nci.cadsr.domain.ValueDomain vd=null;
 
-    for(gov.nih.nci.cadsr.domain.ValueDomain privateVD : inVDs) {
+ /*   for(gov.nih.nci.cadsr.domain.ValueDomain privateVD : inVDs) {
       outVDs.add(vdPublicToPrivate(privateVD));
+    } */
+    if(!inVDs.isEmpty()){
+    for(int i=0;i<inVDs.size();i++){
+        outVDs.add(vdPublicToPrivate(inVDs.get(i)));
     }
+    }
+    	    
     return outVDs;
 
   }
