@@ -474,8 +474,8 @@ public class CadsrPublicApiModule implements CadsrModule {
       detachedCrit.setFetchMode("conceptDerivationRule", FetchMode.EAGER);
       detachedCrit.setFetchMode("conceptDerivationRule.componentConceptCollection", FetchMode.EAGER);
       detachedCrit.setFetchMode("conceptDerivationRule.componentConceptCollection.concept", FetchMode.EAGER);
+      detachedCrit.setFetchMode("conceptDerivationRule.componentConceptCollection.concept.context", FetchMode.EAGER);
 
-      
       List<ObjectClass> ocs = (List<ObjectClass>)(List<?>)service.query(detachedCrit);
       System.out.println("size is ="+ocs.size());
            
@@ -490,10 +490,11 @@ public class CadsrPublicApiModule implements CadsrModule {
       resOc = (gov.nih.nci.cadsr.domain.ObjectClass)ocs.get(i);
       Collection<gov.nih.nci.cadsr.domain.ComponentConcept> comps = resOc.getConceptDerivationRule().getComponentConceptCollection();
 
-      Collection<gov.nih.nci.cadsr.domain.ComponentConcept> sortedComps = sortCompConcepts(comps);
+      ArrayList<gov.nih.nci.cadsr.domain.ComponentConcept> sortedComps = sortCompConcepts(comps);
       
-      for(gov.nih.nci.cadsr.domain.ComponentConcept comp : sortedComps) {
-        gov.nih.nci.cadsr.domain.Concept conc = comp.getConcept();
+    // for(gov.nih.nci.cadsr.domain.ComponentConcept comp : sortedComps) {
+      for(int i=0;i<sortedComps.size();i++){
+        gov.nih.nci.cadsr.domain.Concept conc = sortedComps.get(i).getConcept();
         gov.nih.nci.ncicb.cadsr.domain.Concept concept = DomainObjectFactory.newConcept();
         CadsrTransformer.acPublicToPrivate(concept, conc);
         result.add(0, concept);
@@ -523,8 +524,8 @@ public class CadsrPublicApiModule implements CadsrModule {
       detachedCrit.setFetchMode("conceptDerivationRule", FetchMode.EAGER);
       detachedCrit.setFetchMode("conceptDerivationRule.componentConceptCollection", FetchMode.EAGER);
       detachedCrit.setFetchMode("conceptDerivationRule.componentConceptCollection.concept", FetchMode.EAGER);
+      detachedCrit.setFetchMode("conceptDerivationRule.componentConceptCollection.concept.context", FetchMode.EAGER);
 
-      
       List<gov.nih.nci.cadsr.domain.Property> props = (List<gov.nih.nci.cadsr.domain.Property>)(List<?>)service.query(detachedCrit);
       System.out.println("size is ="+props.size());
       
@@ -539,10 +540,11 @@ public class CadsrPublicApiModule implements CadsrModule {
       resProp = (gov.nih.nci.cadsr.domain.Property)props.get(i);
       Collection<gov.nih.nci.cadsr.domain.ComponentConcept> comps = resProp.getConceptDerivationRule().getComponentConceptCollection();
 
-      Collection<gov.nih.nci.cadsr.domain.ComponentConcept> sortedComps = sortCompConcepts(comps);
+      ArrayList<gov.nih.nci.cadsr.domain.ComponentConcept> sortedComps = sortCompConcepts(comps);
       
-      for(gov.nih.nci.cadsr.domain.ComponentConcept comp : sortedComps) {
-        gov.nih.nci.cadsr.domain.Concept conc = comp.getConcept();
+  //    for(gov.nih.nci.cadsr.domain.ComponentConcept comp : sortedComps) {
+      for(int i=0;i<sortedComps.size();i++){
+        gov.nih.nci.cadsr.domain.Concept conc = sortedComps.get(i).getConcept();
         gov.nih.nci.ncicb.cadsr.domain.Concept concept = DomainObjectFactory.newConcept();
         CadsrTransformer.acPublicToPrivate(concept, conc);
         result.add(0, concept);
@@ -554,7 +556,7 @@ public class CadsrPublicApiModule implements CadsrModule {
     return result;
   }
   
-  private Collection<gov.nih.nci.cadsr.domain.ComponentConcept> sortCompConcepts(Collection<gov.nih.nci.cadsr.domain.ComponentConcept> compConcepts) {
+  private ArrayList<gov.nih.nci.cadsr.domain.ComponentConcept> sortCompConcepts(Collection<gov.nih.nci.cadsr.domain.ComponentConcept> compConcepts) {
 	  ArrayList<gov.nih.nci.cadsr.domain.ComponentConcept> compsList = new ArrayList<gov.nih.nci.cadsr.domain.ComponentConcept>(compConcepts);
       
       Collections.sort(compsList, new Comparator<gov.nih.nci.cadsr.domain.ComponentConcept>() {
