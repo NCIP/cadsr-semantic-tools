@@ -213,6 +213,7 @@ public class CadsrPublicApiModule implements CadsrModule {
 					gov.nih.nci.cadsr.domain.ValueDomain.class).add(
 							Property.forName("longName").like(
 									vd.getLongName() + "%"));
+			System.out.println("VD Longname ="+vd.getLongName());
 		}
 		detachedCrit.setFetchMode("context", FetchMode.EAGER);
 		detachedCrit.setFetchMode("conceptualDomain", FetchMode.EAGER);
@@ -220,8 +221,7 @@ public class CadsrPublicApiModule implements CadsrModule {
 		detachedCrit.setFetchMode("conceptualDomain.context", FetchMode.EAGER);
 		detachedCrit.setFetchMode("represention.context", FetchMode.EAGER);
 
-		List<gov.nih.nci.cadsr.domain.ValueDomain> resultListVD = (List<gov.nih.nci.cadsr.domain.ValueDomain>) (List<?>) service
-				.query(detachedCrit);
+		List<gov.nih.nci.cadsr.domain.ValueDomain> resultListVD = (List<gov.nih.nci.cadsr.domain.ValueDomain>) (List<?>) service.query(detachedCrit);
 
 		return CadsrTransformer.vdListPublicToPrivate(resultListVD);
 	}
@@ -573,12 +573,15 @@ public class CadsrPublicApiModule implements CadsrModule {
 
 		criteria.createCriteria("enumeratedValueDomain").add(
 				Expression.eq("id", vd.getId()));
+		criteria.setFetchMode("permissibleValue", FetchMode.EAGER);
+		criteria.setFetchMode("permissibleValue.valueMeaning", FetchMode.EAGER);
 
-		Collection vdPvs = service.query(criteria);
+		List vdPvs = service.query(criteria);
 
-		for (Object o : vdPvs) {
+		for(int i=0;i<vdPvs.size();i++){
+	//	for (Object o : vdPvs) {
 
-			gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue vdPv = (gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue) o;
+			gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue vdPv = (gov.nih.nci.cadsr.domain.ValueDomainPermissibleValue) vdPvs.get(i);
 			result.add(vdPv.getPermissibleValue());
 		}
 
