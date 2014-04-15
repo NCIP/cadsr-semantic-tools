@@ -8,7 +8,7 @@
 	<property name="test.src.dir" value="${basedir}/test/src" />
 	<property name="class.dir" value="./classes" />
 	<property name="lib.dir" value="${basedir}/lib" />
-	<property name="test.data.dir" value="${basedir}/data"/>
+	<property name="test.data.dir" value="${basedir}/data" />
 	<property name="dist.dir" value="${basedir}/dist" />
 	<property name="config.dir" value="${basedir}/src/web/properties" />
 	<property name="docs.dir" value="${basedir}/javadoc" />
@@ -147,7 +147,7 @@
 	</target>
 
 	<property name="Codebase" value="*" />
-			<property name="Application-Name" value="${app.name}" />
+	<property name="Application-Name" value="${app.name}" />
 	<manifest file="${manifest.dir}/MANIFEST.MF" mode="update">
 		<attribute name="Permissions" value="all-permissions" />
 		<attribute name="Codebase" value="*" />
@@ -232,7 +232,6 @@
 			</fileset>
 		</jar>
 
-
 		<jar destfile="${dist.dir}/lib/testData.jar" manifest="${basedir}/src/web/MANIFEST.MF">
 			<fileset dir="${test.data.dir}">
 			</fileset>
@@ -245,9 +244,59 @@
 		<replace file="${dist.dir}/siw.jnlp" propertyFile="${jnlp.dir}/jnlp.properties">
 			<replacefilter token="@@CODEBASE@@" property="codebase.${target.env}" />
 		</replace>
+		<macrodef name="updatemanifest">
+			<attribute name="jarfile" />
+			<sequential>
+				<local name="manifest" />
+
+				<copy tofile="${manifest}">
+					<zipentry zipfile="@{jarfile}" name="META-INF/MANIFEST.MF" />
+				</copy>
+
+				<manifest file="${manifest}" mode="update">
+					<attribute name="permission" value="all-permissions" />
+					<attribute name="Codebase" value="*" />
+				</manifest>
+
+				<jar destfile="@{jarfile}" manifest="${manifest}" update="true" />
+
+			</sequential>
+		</macrodef>
+
+		<updatemanifest jarfile="${lib.dir}/cacore/caDSR-beans.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/caGrid-CQL-cql.1.0-1.2.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/castor-1.0.2.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/cglib-2.1.3.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/cog-jglobus.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/commons-cli-1.0.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/commons-codec-1.3.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/commons-discovery-0.2.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/commons-lang-2.2.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/compass-2.2.0.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/dlbadapter.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/jakarta-regexp-1.4.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/jaxrpc.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/lexbig.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/lexevs-client-framework.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/lexevs-core.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/lexevsapi60-beans.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/LexEVSSecurity.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/lucene-core-2.4.1.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/lucene-analyzers-2.4.1.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/lucene-queries-2.4.1.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/lucene-regex-2.4.1.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/lucene-snowball-2.4.1.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/MSSOUserValidator.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/sdk-security-4.5.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/sdk-security-client-4.5.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/sdk-system-client-4.5.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/sdk-system-core-4.5.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/sdk-system-web-4.5.jar" />
+		<updatemanifest jarfile="${lib.dir}/cacore/sdk-system-ws-4.5.jar" />
+
 		<copy todir="${dist.dir}/lib">
 			<fileset dir="${lib.dir}/cacore">
-				<include name="caDSR-beans.jar" /> 
+				<include name="caDSR-beans.jar" />
 				<include name="caGrid-CQL-cql.1.0-1.2.jar" />
 				<include name="castor-1.0.2.jar" />
 				<include name="cglib-2.1.3.jar" />
@@ -279,6 +328,66 @@
 				<include name="sdk-system-ws-4.5.jar" />
 			</fileset>
 		</copy>
+
+		<updatemanifest jarfile="${lib.dir}/acegi-security-1.0.4.jar" />
+		<updatemanifest jarfile="${lib.dir}/activation.jar" />
+		<updatemanifest jarfile="${lib.dir}/antlr-2.7.6.jar" />
+		<updatemanifest jarfile="${lib.dir}/aopalliance.jar" />
+		<updatemanifest jarfile="${lib.dir}/asm.jar" />
+		<updatemanifest jarfile="${lib.dir}/cadsr-api.jar" />
+		<updatemanifest jarfile="${lib.dir}/cglib-2.1.3.jar" />
+		<updatemanifest jarfile="${lib.dir}/commons-collections-3.2.jar" />
+		<updatemanifest jarfile="${lib.dir}/commons-logging-1.1.jar" />
+		<updatemanifest jarfile="${lib.dir}/commons-pool-1.3.jar" />
+		<updatemanifest jarfile="${lib.dir}/datafile.jar" />
+		<updatemanifest jarfile="${lib.dir}/dom4j-1.4.jar" />
+		<updatemanifest jarfile="${lib.dir}/ehcache-1.2.3.jar" />
+		<updatemanifest jarfile="${lib.dir}/freemarker.jar" />
+		<updatemanifest jarfile="${lib.dir}/freestylesearch.jar" />
+		<updatemanifest jarfile="${lib.dir}/dbunit-2.4.3-jdk15.jar" />
+		<updatemanifest jarfile="${lib.dir}/jcs-1.2.7.9.2.jar" />
+		<updatemanifest jarfile="${lib.dir}/junit-4.4.jar" />
+		<updatemanifest jarfile="${lib.dir}/poi-3.2-FINAL-20081019.jar" />
+		<updatemanifest jarfile="${lib.dir}/slf4j-api-1.5.6.jar" />
+		<updatemanifest jarfile="${lib.dir}/slf4j-simple-1.5.6.jar" />
+		<updatemanifest jarfile="${lib.dir}/axis.jar" />
+		<updatemanifest jarfile="${lib.dir}/hibernate-3.2.0.ga-modified.jar" />
+		<updatemanifest jarfile="${lib.dir}/hibernate-annotations-3.2.0.jar" />
+		<updatemanifest jarfile="${lib.dir}/hibernate-validator-3.0.0.GA.jar" />
+		<updatemanifest jarfile="${lib.dir}/jakarta-oro-2.0.8.jar" />
+		<updatemanifest jarfile="${lib.dir}/jaxen-core.jar" />
+		<updatemanifest jarfile="${lib.dir}/jaxen-jdom.jar" />
+		<updatemanifest jarfile="${lib.dir}/jdom.jar" />
+		<updatemanifest jarfile="${lib.dir}/jmi.jar" />
+		<updatemanifest jarfile="${lib.dir}/jmiutils.jar" />
+		<updatemanifest jarfile="${lib.dir}/jta.jar" />
+		<updatemanifest jarfile="${lib.dir}/log4j-1.2.8.jar" />
+		<updatemanifest jarfile="${lib.dir}/mail.jar" />
+		<updatemanifest jarfile="${lib.dir}/odmg-3.0.jar" />
+		<updatemanifest jarfile="${lib.dir}/ojdbc6.jar" />
+		<updatemanifest jarfile="${lib.dir}/openide-util.jar" />
+		<updatemanifest jarfile="${lib.dir}/org.apache.commons.dbcp.jar" />
+		<updatemanifest jarfile="${lib.dir}/org.springframework.transaction-3.0.5.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/org.springframework.web-3.0.5.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/org.springframework.web.servlet-3.0.5.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/org.springframework.web.struts-3.0.5.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-aop-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-asm-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-aspects-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-batch-core-2.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-batch-infrastructure-2.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-beans-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-context-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-context-support-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-core-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-expression-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-jdbc-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-orm-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-oxm-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-test-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/spring-tx-3.1.0.RELEASE.jar" />
+		<updatemanifest jarfile="${lib.dir}/jaxb-impl-2.1.8.jar" />
+		<updatemanifest jarfile="${lib.dir}/jaxb-api-2.1.jar" />
 
 		<copy file="${config.dir}/datatype-mapping.xml" tofile="${dist.dir}/datatype-mapping.xml">
 		</copy>

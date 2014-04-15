@@ -222,7 +222,6 @@ public class CadsrPublicApiModule implements CadsrModule {
 
 		List<gov.nih.nci.cadsr.domain.ValueDomain> resultListVD = (List<gov.nih.nci.cadsr.domain.ValueDomain>) (List<?>) service
 				.query(detachedCrit);
-		System.out.println("VD count = " + resultListVD.size());
 
 		return CadsrTransformer.vdListPublicToPrivate(resultListVD);
 	}
