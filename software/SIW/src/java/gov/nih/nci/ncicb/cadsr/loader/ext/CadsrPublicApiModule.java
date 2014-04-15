@@ -213,7 +213,6 @@ public class CadsrPublicApiModule implements CadsrModule {
 					gov.nih.nci.cadsr.domain.ValueDomain.class).add(
 							Property.forName("longName").like(
 									vd.getLongName() + "%"));
-			System.out.println("VD Longname ="+vd.getLongName());
 		}
 		detachedCrit.setFetchMode("context", FetchMode.EAGER);
 		detachedCrit.setFetchMode("conceptualDomain", FetchMode.EAGER);
