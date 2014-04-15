@@ -211,7 +211,8 @@ public class CadsrPublicApiModule implements CadsrModule {
 		} else {
 			detachedCrit = DetachedCriteria.forClass(
 					gov.nih.nci.cadsr.domain.ValueDomain.class).add(
-					Property.forName("longName").eq("blood"));
+							Property.forName("longName").like(
+									vd.getLongName() + "%"));
 		}
 		detachedCrit.setFetchMode("context", FetchMode.EAGER);
 		detachedCrit.setFetchMode("conceptualDomain", FetchMode.EAGER);
