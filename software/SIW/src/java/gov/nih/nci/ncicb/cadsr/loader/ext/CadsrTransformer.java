@@ -450,7 +450,7 @@ public class CadsrTransformer {
   }
   
 
-  public static List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> anListPublicToPrivate(List<gov.nih.nci.cadsr.domain.Designation> inANs) {
+  public static List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> anListPublicToPrivate(Collection<gov.nih.nci.cadsr.domain.Designation> inANs) {
     List<gov.nih.nci.ncicb.cadsr.domain.AlternateName> outANs = 
       new ArrayList<gov.nih.nci.ncicb.cadsr.domain.AlternateName>();
 
@@ -459,7 +459,7 @@ public class CadsrTransformer {
       outANs.add(anPublicToPrivate(inAn));
     } */
     for(int i=0;i<inANs.size();i++){
-    	outANs.add(anPublicToPrivate(inANs.get(i)));
+    	outANs.add(anPublicToPrivate(inANs.iterator().next()));
     }
 
     return outANs;

@@ -866,9 +866,7 @@ public class CadsrPublicApiModule implements CadsrModule {
 
 			else {
 
-				// return
-				// CadsrTransformer.anListPublicToPrivate(((gov.nih.nci.cadsr.domain.AdministeredComponent)results.get(0)).getDesignationCollection());
-				return null;
+				return CadsrTransformer.anListPublicToPrivate(((gov.nih.nci.cadsr.domain.AdministeredComponent)results.get(0)).getDesignationCollection());
 			}
 
 		} catch (ApplicationException e) {
