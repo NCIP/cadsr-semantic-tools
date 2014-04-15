@@ -254,7 +254,7 @@
 				</copy>
 
 				<manifest file="${manifest}" mode="update">
-					<attribute name="permission" value="all-permissions" />
+					<attribute name="Permissions" value="all-permissions" />
 					<attribute name="Codebase" value="*" />
 				</manifest>
 
@@ -388,6 +388,7 @@
 		<updatemanifest jarfile="${lib.dir}/spring-tx-3.1.0.RELEASE.jar" />
 		<updatemanifest jarfile="${lib.dir}/jaxb-impl-2.1.8.jar" />
 		<updatemanifest jarfile="${lib.dir}/jaxb-api-2.1.jar" />
+		<updatemanifest jarfile="${lib.dir}/xmi.in.out.jar" />
 
 		<copy file="${config.dir}/datatype-mapping.xml" tofile="${dist.dir}/datatype-mapping.xml">
 		</copy>
