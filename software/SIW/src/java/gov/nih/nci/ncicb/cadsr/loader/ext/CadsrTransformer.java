@@ -246,9 +246,12 @@ public class CadsrTransformer {
     acPublicToPrivate(outCs, inCs);
 
     try {
-      for(Iterator it = inCs.getClassSchemeClassSchemeItemCollection().iterator(); it.hasNext(); ) {
-        gov.nih.nci.cadsr.domain.ClassSchemeClassSchemeItem csCsi = (gov.nih.nci.cadsr.domain.ClassSchemeClassSchemeItem)it.next();
-        outCs.addCsCsi(csCsiPublicToPrivate(csCsi));
+    	List<gov.nih.nci.cadsr.domain.ClassSchemeClassSchemeItem> cscsiList = new ArrayList<gov.nih.nci.cadsr.domain.ClassSchemeClassSchemeItem>(inCs.getClassSchemeClassSchemeItemCollection());
+
+    	for(Iterator it = inCs.getClassSchemeClassSchemeItemCollection().iterator(); it.hasNext(); ) {
+    //	for(int i=0;i<cscsiList.size();i++){
+            gov.nih.nci.cadsr.domain.ClassSchemeClassSchemeItem csCsi = (gov.nih.nci.cadsr.domain.ClassSchemeClassSchemeItem)it.next();
+            outCs.addCsCsi(csCsiPublicToPrivate(csCsi));
 
       }
     } catch (org.hibernate.LazyInitializationException e){
@@ -458,8 +461,9 @@ public class CadsrTransformer {
 /*    for(gov.nih.nci.cadsr.domain.Designation inAn : inANs) {
       outANs.add(anPublicToPrivate(inAn));
     } */
-    for(int i=0;i<inANs.size();i++){
-    	outANs.add(anPublicToPrivate(inANs.iterator().next()));
+    ArrayList<gov.nih.nci.cadsr.domain.Designation> ANList = new ArrayList<gov.nih.nci.cadsr.domain.Designation>(inANs);
+    for(int i=0;i<ANList.size();i++){
+    	outANs.add(anPublicToPrivate(ANList.get(i)));
     }
 
     return outANs;

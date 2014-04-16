@@ -166,11 +166,10 @@ public class CadsrPublicApiModule implements CadsrModule {
 							searchCS.getLongName() + "%"));
 		}
 		detachedCrit.setFetchMode("context", FetchMode.EAGER);
-		detachedCrit.setFetchMode("ClassSchemeClassSchemeItemCollection",
-				FetchMode.EAGER);
+		detachedCrit.setFetchMode("classSchemeClassSchemeItemCollection",FetchMode.EAGER);
+		detachedCrit.setFetchMode("classSchemeClassSchemeItemCollection.classificationSchemeItem",FetchMode.EAGER);
 
-		List<ClassificationScheme> cs = (List<ClassificationScheme>) (List<?>) service
-				.query(detachedCrit);
+		List<ClassificationScheme> cs = (List<ClassificationScheme>) (List<?>) service.query(detachedCrit);
 
 		return CadsrTransformer.csListPublicToPrivate(cs);
 	}
@@ -390,11 +389,12 @@ public class CadsrPublicApiModule implements CadsrModule {
 			gov.nih.nci.ncicb.cadsr.domain.AlternateName altName,
 			gov.nih.nci.ncicb.cadsr.domain.ClassSchemeClassSchemeItem csCsi)
 			throws Exception {
+		
 
-		DetachedCriteria deCriteria = DetachedCriteria.forClass(
+		DetachedCriteria detachedCrit = DetachedCriteria.forClass(
 				gov.nih.nci.cadsr.domain.DataElement.class, "de");
 
-		DetachedCriteria subCriteria = deCriteria
+		DetachedCriteria subCriteria = detachedCrit
 				.createCriteria("designationCollection");
 		subCriteria.add(Expression.eq("name", altName.getName()));
 		subCriteria.add(Expression.eq("type", altName.getType()));
@@ -402,8 +402,34 @@ public class CadsrPublicApiModule implements CadsrModule {
 		subCriteria.createCriteria("designationClassSchemeItemCollection")
 				.createCriteria("classSchemeClassSchemeItem")
 				.add(Expression.eq("id", csCsi.getId()));
+		detachedCrit.setFetchMode("context", FetchMode.EAGER);
+		detachedCrit.setFetchMode("valueDomain", FetchMode.EAGER);
+		detachedCrit.setFetchMode("valueDomain.context", FetchMode.EAGER);
+		detachedCrit.setFetchMode("valueDomain.conceptualDomain",
+				FetchMode.EAGER);
+		detachedCrit.setFetchMode("valueDomain.represention", FetchMode.EAGER);
+		detachedCrit.setFetchMode("valueDomain.conceptualDomain.context",
+				FetchMode.EAGER);
+		detachedCrit.setFetchMode("valueDomain.represention.context",
+				FetchMode.EAGER);
 
-		List listResult = service.query(deCriteria,
+		detachedCrit.setFetchMode("dataElementConcept", FetchMode.EAGER);
+		detachedCrit
+				.setFetchMode("dataElementConcept.context", FetchMode.EAGER);
+		detachedCrit.setFetchMode("dataElementConcept.objectClass",
+				FetchMode.EAGER);
+		detachedCrit.setFetchMode("dataElementConcept.property",
+				FetchMode.EAGER);
+		detachedCrit.setFetchMode("dataElementConcept.conceptualDomain",
+				FetchMode.EAGER);
+		detachedCrit.setFetchMode("dataElementConcept.objectClass.context",
+				FetchMode.EAGER);
+		detachedCrit.setFetchMode("dataElementConcept.property.context",
+				FetchMode.EAGER);
+		detachedCrit.setFetchMode(
+				"dataElementConcept.conceptualDomain.context", FetchMode.EAGER);
+
+		List listResult = service.query(detachedCrit,
 				gov.nih.nci.cadsr.domain.DataElement.class.getName());
 
 		if (listResult.size() > 0) {
@@ -428,6 +454,8 @@ public class CadsrPublicApiModule implements CadsrModule {
 		subCriteria.createCriteria("designationClassSchemeItemCollection")
 				.createCriteria("classSchemeClassSchemeItem")
 				.add(Expression.eq("id", csCsi.getId()));
+		subCriteria.setFetchMode("context", FetchMode.EAGER);
+
 
 		List listResult = service.query(ocCriteria,
 				gov.nih.nci.cadsr.domain.ObjectClass.class.getName());
@@ -576,7 +604,6 @@ public class CadsrPublicApiModule implements CadsrModule {
 		criteria.setFetchMode("permissibleValue.valueMeaning", FetchMode.EAGER);
 
 		List vdPvs = service.query(criteria);
-		
 
 		for(int i=0;i<vdPvs.size();i++){
 	//	for (Object o : vdPvs) {
@@ -858,9 +885,21 @@ public class CadsrPublicApiModule implements CadsrModule {
 			gov.nih.nci.cadsr.domain.AdministeredComponent searchAC = new gov.nih.nci.cadsr.domain.AdministeredComponent();
 			searchAC.setId(ac.getId());
 
-			List results = service.search(
-					gov.nih.nci.cadsr.domain.AdministeredComponent.class
-							.getName(), searchAC);
+			DetachedCriteria criteria = DetachedCriteria.forClass(
+					gov.nih.nci.cadsr.domain.AdministeredComponent.class);
+			criteria = DetachedCriteria.forClass(
+					gov.nih.nci.cadsr.domain.AdministeredComponent.class).add(
+					Property.forName("id").eq(ac.getId()));
+	//		List results = service.search(
+		//			gov.nih.nci.cadsr.domain.AdministeredComponent.class
+			//				.getName(), searchAC);
+		//	criteria.setFetchMode("context", FetchMode.EAGER);
+			criteria.setFetchMode("designationClassSchemeItemCollection",FetchMode.EAGER);
+			criteria.setFetchMode("designationClassSchemeItemCollection.classSchemeClassSchemeItem",FetchMode.EAGER);
+			criteria.setFetchMode("designationClassSchemeItemCollection.classSchemeClassSchemeItem.classificationSchemeItem",FetchMode.EAGER);
+
+			List<gov.nih.nci.cadsr.domain.AdministeredComponent> results = (List<gov.nih.nci.cadsr.domain.AdministeredComponent>) (List<?>) service.query(criteria);
+
 
 			if (results.size() == 0)
 				return new ArrayList();
@@ -904,16 +943,16 @@ public class CadsrPublicApiModule implements CadsrModule {
 
 			criteria.createCriteria("targetObjectClass").add(
 					Expression.eq("id", ocr.getTarget().getId()));
+			criteria.setFetchMode("context", FetchMode.EAGER);
 
-			Collection results = service.query(criteria);
+
+			List results = service.query(criteria);
 
 			if (results.size() == 0)
 				return new ArrayList();
 
 			else {
-				// return new
-				// ArrayList<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship>(CadsrTransformer.ocrListPublicToPrivate(results));
-				return null;
+				 return new ArrayList<gov.nih.nci.ncicb.cadsr.domain.ObjectClassRelationship>(CadsrTransformer.ocrListPublicToPrivate(results));
 			}
 
 		} catch (ApplicationException e) {

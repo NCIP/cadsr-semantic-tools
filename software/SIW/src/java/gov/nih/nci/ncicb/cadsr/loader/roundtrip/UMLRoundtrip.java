@@ -200,8 +200,9 @@ public class UMLRoundtrip implements Roundtrip, CadsrModuleListener {
             for(AlternateName _an : _ans) {
               if (gmeNsAn == null || gmeEltAn == null)
                 if(_an.getType().equals(AlternateName.TYPE_GME_NAMESPACE)) {
-                  for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
-                    if(_csCsi.getId().equals(csCsi.getId())) {
+                	for(int i=0;i<_an.getCsCsis().size();i++){
+         //         for(ClassSchemeClassSchemeItem _csCsi : _an.getCsCsis()) {
+                    if(_an.getCsCsis().get(i).getId().equals(csCsi.getId())) {
                       gmeNsAn = _an;
                     }
                   }
