@@ -212,7 +212,7 @@ public class CadsrPublicApiModule implements CadsrModule {
 			detachedCrit = DetachedCriteria.forClass(
 					gov.nih.nci.cadsr.domain.ValueDomain.class).add(
 							Property.forName("longName").like(
-									vd.getLongName() + "%"));
+									vd.getLongName()));
 		}
 		detachedCrit.setFetchMode("context", FetchMode.EAGER);
 		detachedCrit.setFetchMode("conceptualDomain", FetchMode.EAGER);
@@ -576,6 +576,7 @@ public class CadsrPublicApiModule implements CadsrModule {
 		criteria.setFetchMode("permissibleValue.valueMeaning", FetchMode.EAGER);
 
 		List vdPvs = service.query(criteria);
+		System.out.println("VDPVS size for "+ vd.getLongName() +" = "+vdPvs.size());
 
 		for(int i=0;i<vdPvs.size();i++){
 	//	for (Object o : vdPvs) {
