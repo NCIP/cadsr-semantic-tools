@@ -576,7 +576,7 @@ public class CadsrPublicApiModule implements CadsrModule {
 		criteria.setFetchMode("permissibleValue.valueMeaning", FetchMode.EAGER);
 
 		List vdPvs = service.query(criteria);
-		System.out.println("VDPVS size for "+ vd.getLongName() +" = "+vdPvs.size());
+		
 
 		for(int i=0;i<vdPvs.size();i++){
 	//	for (Object o : vdPvs) {
