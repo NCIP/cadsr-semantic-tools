@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
@@ -168,8 +169,9 @@ public class CadsrPublicApiModule implements CadsrModule {
 		detachedCrit.setFetchMode("context", FetchMode.EAGER);
 		detachedCrit.setFetchMode("classSchemeClassSchemeItemCollection",FetchMode.EAGER);
 		detachedCrit.setFetchMode("classSchemeClassSchemeItemCollection.classificationSchemeItem",FetchMode.EAGER);
+        detachedCrit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY); 
 
-		List<ClassificationScheme> cs = (List<ClassificationScheme>) (List<?>) service.query(detachedCrit);
+		List<gov.nih.nci.cadsr.domain.ClassificationScheme> cs = (List<gov.nih.nci.cadsr.domain.ClassificationScheme>) (List<?>) service.query(detachedCrit);
 
 		return CadsrTransformer.csListPublicToPrivate(cs);
 	}
@@ -255,13 +257,12 @@ public class CadsrPublicApiModule implements CadsrModule {
 			detachedCrit = DetachedCriteria
 					.forClass(gov.nih.nci.cadsr.domain.ConceptualDomain.class)
 					.add(Property.forName("publicID")
-							.eq(searchCD.getPublicID()))
-					.add(Property.forName("version").eq(searchCD.getVersion()));
+							.eq(searchCD.getPublicID()));
 		} else {
 			detachedCrit = DetachedCriteria.forClass(
-					gov.nih.nci.cadsr.domain.ClassificationScheme.class).add(
+					gov.nih.nci.cadsr.domain.ConceptualDomain.class).add(
 					Property.forName("longName").like(
-							searchCD.getLongName() + "%"));
+							searchCD.getLongName()));
 		}
 		detachedCrit.setFetchMode("context", FetchMode.EAGER);
 
@@ -287,13 +288,12 @@ public class CadsrPublicApiModule implements CadsrModule {
 			detachedCrit = DetachedCriteria
 					.forClass(gov.nih.nci.cadsr.domain.Representation.class)
 					.add(Property.forName("publicID").eq(
-							searchRep.getPublicID()))
-					.add(Property.forName("version").eq(searchRep.getVersion()));
+							searchRep.getPublicID()));
 		} else {
 			detachedCrit = DetachedCriteria.forClass(
 					gov.nih.nci.cadsr.domain.Representation.class).add(
 					Property.forName("longName").eq(
-							searchRep.getLongName() + "%"));
+							searchRep.getLongName()));
 		}
 		detachedCrit.setFetchMode("context", FetchMode.EAGER);
 
