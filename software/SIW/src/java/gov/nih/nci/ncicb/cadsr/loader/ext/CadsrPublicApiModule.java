@@ -160,11 +160,16 @@ public class CadsrPublicApiModule implements CadsrModule {
 			detachedCrit = DetachedCriteria.forClass(
 					gov.nih.nci.cadsr.domain.ClassificationScheme.class).add(
 					Property.forName("publicID").eq(searchCS.getPublicID()));
-		} else {
+		} else if(searchCS.getLongName().contains("*")){
+			detachedCrit = DetachedCriteria.forClass(
+					gov.nih.nci.cadsr.domain.ClassificationScheme.class).add(
+							Property.forName("longName").like(
+									searchCS.getLongName().replace("*", "")+ "%")); 
+		}else {
 			detachedCrit = DetachedCriteria.forClass(
 					gov.nih.nci.cadsr.domain.ClassificationScheme.class).add(
 					Property.forName("longName").like(
-							searchCS.getLongName() + "%"));
+							searchCS.getLongName()));
 		}
 		detachedCrit.setFetchMode("context", FetchMode.EAGER);
 		detachedCrit.setFetchMode("classSchemeClassSchemeItemCollection",FetchMode.EAGER);
@@ -209,12 +214,18 @@ public class CadsrPublicApiModule implements CadsrModule {
 					gov.nih.nci.cadsr.domain.ValueDomain.class).add(
 					Property.forName("publicID").eq(vd.getPublicID())); // .add(
 																		// Property.forName("version").eq(vd.getVersion()));
-		} else {
+		} else if(vd.getLongName().contains("*")){
+			detachedCrit = DetachedCriteria.forClass(
+					gov.nih.nci.cadsr.domain.ValueDomain.class).add(
+							Property.forName("longName").like(
+									vd.getLongName().replace("*", "")+ "%")); 
+		}	else{
 			detachedCrit = DetachedCriteria.forClass(
 					gov.nih.nci.cadsr.domain.ValueDomain.class).add(
 							Property.forName("longName").like(
 									vd.getLongName()));
 		}
+		
 		detachedCrit.setFetchMode("context", FetchMode.EAGER);
 		detachedCrit.setFetchMode("conceptualDomain", FetchMode.EAGER);
 		detachedCrit.setFetchMode("represention", FetchMode.EAGER);
@@ -222,6 +233,7 @@ public class CadsrPublicApiModule implements CadsrModule {
 		detachedCrit.setFetchMode("represention.context", FetchMode.EAGER);
 
 		List<gov.nih.nci.cadsr.domain.ValueDomain> resultListVD = (List<gov.nih.nci.cadsr.domain.ValueDomain>) (List<?>) service.query(detachedCrit);
+		System.out.println("VD List = "+resultListVD.size());
 
 		return CadsrTransformer.vdListPublicToPrivate(resultListVD);
 	}
@@ -246,7 +258,6 @@ public class CadsrPublicApiModule implements CadsrModule {
 			Map<String, Object> queryFields) throws Exception {
 
 		gov.nih.nci.cadsr.domain.ConceptualDomain searchCD = new gov.nih.nci.cadsr.domain.ConceptualDomain();
-		gov.nih.nci.cadsr.domain.ConceptualDomain cdTemp = null;
 		DetachedCriteria detachedCrit = null;
 		buildExample(searchCD, queryFields);
 
@@ -258,6 +269,11 @@ public class CadsrPublicApiModule implements CadsrModule {
 					.forClass(gov.nih.nci.cadsr.domain.ConceptualDomain.class)
 					.add(Property.forName("publicID")
 							.eq(searchCD.getPublicID()));
+		}else if(searchCD.getLongName().contains("*")){
+			detachedCrit = DetachedCriteria.forClass(
+					gov.nih.nci.cadsr.domain.ConceptualDomain.class).add(
+							Property.forName("longName").like(
+									searchCD.getLongName().replace("*", "")+ "%")); 
 		} else {
 			detachedCrit = DetachedCriteria.forClass(
 					gov.nih.nci.cadsr.domain.ConceptualDomain.class).add(
@@ -289,7 +305,12 @@ public class CadsrPublicApiModule implements CadsrModule {
 					.forClass(gov.nih.nci.cadsr.domain.Representation.class)
 					.add(Property.forName("publicID").eq(
 							searchRep.getPublicID()));
-		} else {
+		} else if(searchRep.getLongName().contains("*")){
+			detachedCrit = DetachedCriteria.forClass(
+					gov.nih.nci.cadsr.domain.Representation.class).add(
+							Property.forName("longName").like(
+									searchRep.getLongName().replace("*", "")+ "%")); 
+		}else {
 			detachedCrit = DetachedCriteria.forClass(
 					gov.nih.nci.cadsr.domain.Representation.class).add(
 					Property.forName("longName").eq(
