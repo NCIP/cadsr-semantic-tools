@@ -233,7 +233,6 @@ public class CadsrPublicApiModule implements CadsrModule {
 		detachedCrit.setFetchMode("represention.context", FetchMode.EAGER);
 
 		List<gov.nih.nci.cadsr.domain.ValueDomain> resultListVD = (List<gov.nih.nci.cadsr.domain.ValueDomain>) (List<?>) service.query(detachedCrit);
-		System.out.println("VD List = "+resultListVD.size());
 
 		return CadsrTransformer.vdListPublicToPrivate(resultListVD);
 	}
