@@ -788,8 +788,25 @@ public class CadsrPublicApiModule implements CadsrModule {
 		searchDE.setPublicID(new Long(de.getPublicId()));
 		searchDE.setVersion(de.getVersion());
 
-		List results = service.search(
-				gov.nih.nci.cadsr.domain.DataElement.class.getName(), searchDE);
+	//	List results = service.search(
+	//			gov.nih.nci.cadsr.domain.DataElement.class.getName(), searchDE);
+		DetachedCriteria detachedCrit = DetachedCriteria
+				.forClass(DataElement.class)
+				.add(Property.forName("publicID").eq(searchDE.getPublicID()))
+				.add(Property.forName("version").eq(searchDE.getVersion()));
+		detachedCrit.setFetchMode("context", FetchMode.EAGER);
+		
+		detachedCrit.setFetchMode("dataElementConcept", FetchMode.EAGER);
+		detachedCrit.setFetchMode("dataElementConcept.property",
+				FetchMode.EAGER);
+		detachedCrit.setFetchMode("dataElementConcept.property.conceptDerivationRule", FetchMode.EAGER);
+		detachedCrit.setFetchMode("dataElementConcept.property.conceptDerivationRule.componentConceptCollection", FetchMode.EAGER);
+		detachedCrit.setFetchMode("dataElementConcept.property.conceptDerivationRule.componentConceptCollection.concept", FetchMode.EAGER);
+
+
+		List<DataElement> results = (List<DataElement>) (List<?>) service
+				.query(detachedCrit);
+
 
 		if (results.size() == 0) {
 			logger.error("Can't find CDE : " + de.getPublicId() + " v "
@@ -805,12 +822,15 @@ public class CadsrPublicApiModule implements CadsrModule {
 				.getConceptDerivationRule();
 
 		Collection compConcepts = conDR.getComponentConceptCollection();
+	    ArrayList<gov.nih.nci.cadsr.domain.ComponentConcept> list = new ArrayList<gov.nih.nci.cadsr.domain.ComponentConcept>(compConcepts);
+
 		if (compConcepts.size() != conceptCodes.length)
 			return false;
 
-		Iterator it = compConcepts.iterator();
-		while (it.hasNext()) {
-			ComponentConcept comp = (ComponentConcept) it.next();
+//		Iterator it = compConcepts.iterator();
+		for(int i=0;i<list.size();i++){
+//		while (it.hasNext()) {
+			ComponentConcept comp = (ComponentConcept) list.get(i);
 			if (!conceptCodes[comp.getDisplayOrder()].equals(comp.getConcept()
 					.getPreferredName()))
 				return false;

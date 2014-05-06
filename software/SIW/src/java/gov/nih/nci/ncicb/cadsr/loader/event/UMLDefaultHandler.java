@@ -107,27 +107,10 @@ public class UMLDefaultHandler implements UMLHandler, CadsrModuleListener,
 				+ event.getName());
 	}
 
-	Map<Character, Character> charReplacementMap = new HashMap<Character, Character>() {
-		{
-			put('Ü', 'Y');
-			put('’', '\'');
-			put('´', '\'');
-		}
-	};
-
 	public void newValueDomain(NewValueDomainEvent event) {
 		 StringBuilder builder = new StringBuilder();
 		logger.info("Value Domain: " + event.getName());
 		
-	//	 logger.info("vd Preferred definition before search = "+event.getDescription());
-		    StringBuilder output = new StringBuilder();
-		    for (char currentChar : event.getDescription().toCharArray()) {
-		    	Character replacementChar = charReplacementMap.get(currentChar);
-		        builder.append(replacementChar != null ? replacementChar : currentChar);
-		    }
-		    event.setDescription(builder.toString());
-	//	    System.out.println("def after encoding =="+event.getDescription());
-
 		List<Concept> concepts = createConcepts(event);
 
 		ValueDomain vd = DomainObjectFactory.newValueDomain();
