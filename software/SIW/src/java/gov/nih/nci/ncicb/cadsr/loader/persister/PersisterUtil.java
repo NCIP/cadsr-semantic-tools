@@ -20,8 +20,10 @@ import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -39,6 +41,14 @@ public class PersisterUtil {
   public PersisterUtil() {
    initDAOs();
   }
+  
+  Map<Character, Character> charReplacementMap = new HashMap<Character, Character>() {
+		{
+			put('Ü', 'Y');
+			put('’', '\'');
+			put('´', '\'');
+		}
+	};
 
   /* 
    */
@@ -272,6 +282,16 @@ public class PersisterUtil {
       altDef.setDefinition(newDef);
       altDef.setAudit(defaults.getAudit());
       altDef.setType(type);
+      
+      logger.info(" definition before search = "+altDef.getDefinition());
+	    StringBuilder builder = new StringBuilder();
+	    for (char currentChar : altDef.getDefinition().toCharArray()) {
+	    	Character replacementChar = charReplacementMap.get(currentChar);
+	        builder.append(replacementChar != null ? replacementChar : currentChar);
+	    }
+	   altDef.setDefinition(builder.toString());
+	    System.out.println("DEC def after encoding =="+altDef.getDefinition());
+
       altDef.setId(adminComponentDAO.addDefinition(ac, altDef));
       logger.info(PropertyAccessor.getProperty(
                     "added.altDef", 

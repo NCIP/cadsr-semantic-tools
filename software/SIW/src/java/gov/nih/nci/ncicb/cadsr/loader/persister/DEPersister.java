@@ -55,6 +55,13 @@ public class DEPersister implements Persister {
     initDAOs();
   }
 
+  Map<Character, Character> charReplacementMap = new HashMap<Character, Character>() {
+		{
+			put('Ü', 'Y');
+			put('’', '\'');
+			put('´', '\'');
+		}
+	};
   public void persist() {
     DataElement de = DomainObjectFactory.newDataElement();
     List<DataElement> des = elements.getElements(de);
@@ -125,6 +132,15 @@ public class DEPersister implements Persister {
               List<Definition> altDefs = new ArrayList<Definition>(de.getDefinitions());
               de.removeAlternateNames();
               de.removeDefinitions();
+
+              logger.info("DE Preferred definition before search = "+de.getPreferredDefinition());
+  		    StringBuilder builder = new StringBuilder();
+  		    for (char currentChar : de.getPreferredDefinition().toCharArray()) {
+  		    	Character replacementChar = charReplacementMap.get(currentChar);
+  		        builder.append(replacementChar != null ? replacementChar : currentChar);
+  		    }
+  		   de.setPreferredDefinition(builder.toString());
+  		    System.out.println("DEC def after encoding =="+de.getPreferredDefinition());
 
               newDe = dataElementDAO.create(de);
               

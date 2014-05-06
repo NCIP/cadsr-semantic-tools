@@ -57,6 +57,13 @@ public class DECPersister implements Persister {
     initDAOs();
   }
 
+  Map<Character, Character> charReplacementMap = new HashMap<Character, Character>() {
+		{
+			put('Ü', 'Y');
+			put('’', '\'');
+			put('´', '\'');
+		}
+	};
   public void persist() {
     DataElementConcept dec = DomainObjectFactory.newDataElementConcept();
     List<DataElementConcept> decs = elements.getElements(dec);
@@ -159,6 +166,15 @@ public class DECPersister implements Persister {
 
 	  dec.setAudit(defaults.getAudit());
           dec.setLifecycle(defaults.getLifecycle());
+          
+          logger.info("DEC Preferred definition before search = "+dec.getPreferredDefinition());
+		    StringBuilder builder = new StringBuilder();
+		    for (char currentChar : dec.getPreferredDefinition().toCharArray()) {
+		    	Character replacementChar = charReplacementMap.get(currentChar);
+		        builder.append(replacementChar != null ? replacementChar : currentChar);
+		    }
+		   dec.setPreferredDefinition(builder.toString());
+		    System.out.println("DEC def after encoding =="+dec.getPreferredDefinition());
 
           newDec = dataElementConceptDAO.create(dec);
 	  logger.info(PropertyAccessor.getProperty("created.dec"));
