@@ -41,8 +41,10 @@ import gov.nih.nci.ncicb.cadsr.loader.util.PropertyAccessor;
 import gov.nih.nci.ncicb.cadsr.loader.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -66,6 +68,13 @@ public class ObjectClassPersister implements Persister {
     initDAOs();
   }
 
+  Map<Character, Character> charReplacementMap = new HashMap<Character, Character>() {
+		{
+			put('Ü', 'Y');
+			put('’', '\'');
+			put('´', '\'');
+		}
+	};
   public void persist()   {
     ObjectClass oc = DomainObjectFactory.newObjectClass();
     List<ObjectClass> ocs = elements.getElements(oc);
@@ -140,8 +149,17 @@ public class ObjectClassPersister implements Persister {
           oc.setAudit(defaults.getAudit());
           oc.setOrigin(defaults.getOrigin());
           oc.setLifecycle(defaults.getLifecycle());
-
-          List<AdminComponentClassSchemeClassSchemeItem> acCsCsis = oc.getAcCsCsis();
+          
+          logger.info("OC Preferred definition before search = "+oc.getPreferredDefinition());
+		    StringBuilder builder = new StringBuilder();
+		    for (char currentChar : oc.getPreferredDefinition().toCharArray()) {
+		    	Character replacementChar = charReplacementMap.get(currentChar);
+		        builder.append(replacementChar != null ? replacementChar : currentChar);
+		    }
+		   oc.setPreferredDefinition(builder.toString());
+		    System.out.println("DEC def after encoding =="+oc.getPreferredDefinition());
+		    
+		 List<AdminComponentClassSchemeClassSchemeItem> acCsCsis = oc.getAcCsCsis();
           try
           {
             newOc = objectClassDAO.create(oc, conceptCodes);
