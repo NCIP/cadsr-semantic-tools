@@ -150,14 +150,12 @@ public class ObjectClassPersister implements Persister {
           oc.setOrigin(defaults.getOrigin());
           oc.setLifecycle(defaults.getLifecycle());
           
-          logger.info("OC Preferred definition before search = "+oc.getPreferredDefinition());
 		    StringBuilder builder = new StringBuilder();
 		    for (char currentChar : oc.getPreferredDefinition().toCharArray()) {
 		    	Character replacementChar = charReplacementMap.get(currentChar);
 		        builder.append(replacementChar != null ? replacementChar : currentChar);
 		    }
 		   oc.setPreferredDefinition(builder.toString());
-		    System.out.println("DEC def after encoding =="+oc.getPreferredDefinition());
 		    
 		 List<AdminComponentClassSchemeClassSchemeItem> acCsCsis = oc.getAcCsCsis();
           try

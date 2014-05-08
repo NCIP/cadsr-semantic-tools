@@ -60,6 +60,13 @@ public class ConceptPersister implements Persister {
 
   private PersisterUtil persisterUtil;
 
+  Map<Character, Character> charReplacementMap = new HashMap<Character, Character>() {
+		{
+			put('Ü', 'Y');
+			put('’', '\'');
+			put('´', '\'');
+		}
+	};
   public ConceptPersister() {
     initDAOs();
   }
@@ -134,6 +141,13 @@ public class ConceptPersister implements Persister {
                 c.setEvsSource(PropertyAccessor.getProperty("default.evsSource"));
                 c.setLifecycle(defaults.getLifecycle());
                 c.setDefinitionSource(evsConcept.getDefinitionSource());
+                StringBuilder builder = new StringBuilder();
+      		    for (char currentChar : c.getPreferredDefinition().toCharArray()) {
+      		    	Character replacementChar = charReplacementMap.get(currentChar);
+      		        builder.append(replacementChar != null ? replacementChar : currentChar);
+      		    }
+      		   c.setPreferredDefinition(builder.toString());
+
                 
                 c.setId(conceptDAO.create(c));
                 logger.info(PropertyAccessor.getProperty("created.concept"));

@@ -133,16 +133,14 @@ public class DEPersister implements Persister {
               de.removeAlternateNames();
               de.removeDefinitions();
 
-              logger.info("DE Preferred definition before search = "+de.getPreferredDefinition());
   		    StringBuilder builder = new StringBuilder();
   		    for (char currentChar : de.getPreferredDefinition().toCharArray()) {
   		    	Character replacementChar = charReplacementMap.get(currentChar);
   		        builder.append(replacementChar != null ? replacementChar : currentChar);
   		    }
   		   de.setPreferredDefinition(builder.toString());
-  		    System.out.println("DEC def after encoding =="+de.getPreferredDefinition());
-
-              newDe = dataElementDAO.create(de);
+  		    
+  	         newDe = dataElementDAO.create(de);
               
               // restore altNames
               for(AlternateName an : altNames) {

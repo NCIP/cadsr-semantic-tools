@@ -123,14 +123,12 @@ public class PropertyPersister implements Persister {
 					prop.setOrigin(defaults.getOrigin());
 					prop.setLifecycle(defaults.getLifecycle());
 
-					 logger.info("PROP Preferred definition before search = "+prop.getPreferredDefinition());
 					    StringBuilder builder = new StringBuilder();
 					    for (char currentChar : prop.getPreferredDefinition().toCharArray()) {
 					    	Character replacementChar = charReplacementMap.get(currentChar);
 					        builder.append(replacementChar != null ? replacementChar : currentChar);
 					    }
 					   prop.setPreferredDefinition(builder.toString());
-					    System.out.println("DEC def after encoding =="+prop.getPreferredDefinition());
 					    
 					   	logger.debug("property: " + prop.getLongName());
 

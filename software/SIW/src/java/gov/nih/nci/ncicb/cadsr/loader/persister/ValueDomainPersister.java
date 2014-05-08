@@ -120,16 +120,15 @@ public class ValueDomainPersister extends UMLPersister {
 
             vd.setLifecycle(defaults.getLifecycle());
             
-            logger.info("DE Preferred definition before search = "+vd.getPreferredDefinition());
   		    StringBuilder builder = new StringBuilder();
   		    for (char currentChar : vd.getPreferredDefinition().toCharArray()) {
   		    	Character replacementChar = charReplacementMap.get(currentChar);
   		        builder.append(replacementChar != null ? replacementChar : currentChar);
   		    }
   		   vd.setPreferredDefinition(builder.toString());
-  		    System.out.println("DEC def after encoding =="+vd.getPreferredDefinition());
-
-            newVd = valueDomainDAO.create(vd);
+  		    
+  		    
+  		    newVd = valueDomainDAO.create(vd);
             logger.info(PropertyAccessor.getProperty("created.vd"));
             valueDomains.put(newVd.getLongName(), vd);
             
