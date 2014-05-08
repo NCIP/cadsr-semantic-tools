@@ -283,14 +283,12 @@ public class PersisterUtil {
       altDef.setAudit(defaults.getAudit());
       altDef.setType(type);
       
-      logger.info(" definition before search = "+altDef.getDefinition());
 	    StringBuilder builder = new StringBuilder();
 	    for (char currentChar : altDef.getDefinition().toCharArray()) {
 	    	Character replacementChar = charReplacementMap.get(currentChar);
 	        builder.append(replacementChar != null ? replacementChar : currentChar);
 	    }
 	   altDef.setDefinition(builder.toString());
-	    System.out.println("DEC def after encoding =="+altDef.getDefinition());
 
       altDef.setId(adminComponentDAO.addDefinition(ac, altDef));
       logger.info(PropertyAccessor.getProperty(
